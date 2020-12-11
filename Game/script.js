@@ -151,7 +151,7 @@ function setupCharts() {
 
 	var autoDecimalTicks = {
 		callback: function (value, index, values) {
-			return formatWithThousandsSeparator(value, values[0] > 1 ? 1 : 3);
+			return formatWithThousandsSeparator(value + 0.000001, values[0] > 1 ? 1 : 3);
 		}
 	};
 	var simpleLeftAxis = [{ id: 'left' }];

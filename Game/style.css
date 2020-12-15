@@ -54,6 +54,10 @@ a:hover {
 	cursor: pointer;
 }
 
+#play:hover {
+	color: var(--light-blue);
+}
+
 #mitigation {
 	width: 66.7%;
 	float: left;
@@ -105,7 +109,7 @@ a:hover {
 
 #stats {
 	float: right;
-	width: 25%;
+	width: 20%;
 	line-height: .5em;
 	text-align: left;
 }
@@ -209,11 +213,11 @@ tbody {
 	width: 120px;
 	border-radius: 5px;
 	overflow: hidden;
-	transition: all .2s;
+	transition: all .1s;
 	cursor: pointer;
-	-webkit-transition: all .2s;
-	-moz-transition: all .2s;
-	-o-transition: all .2s;
+	-webkit-transition: all .1s;
+	-moz-transition: all .1s;
+	-o-transition: all .1s;
 }
 
 #restart:hover {

@@ -194,14 +194,15 @@ function setupCharts() {
 	createChart("chart-4-1", DISPLAY_N_DAYS, datasets41, autoDecimalLeftAxis);
 
 	var datasets42 = [{
-		label: 'celkem nakažených [tis]',
-		dataset: x => x.detectedInfectionsTotal / 1000,
-	}];
-	createChart("chart-4-2", DISPLAY_N_DAYS, datasets42, autoDecimalLeftAxis);
-
-	var datasets43 = [{
 		label: 'nová úmrtí',
 		dataset: x => x.deathsToday,
+		borderColor: 'rgba( 0, 0, 0, .7)',
+	}];
+	createChart("chart-4-2", DISPLAY_N_DAYS, datasets42, simpleLeftAxis);
+
+	var datasets43 = [{
+		label: 'sociální stabilita',
+		dataset: x => 200*(x.socialStability-0.75),
 		borderColor: 'rgba( 0, 0, 0, .7)',
 	}];
 	createChart("chart-4-3", DISPLAY_N_DAYS, datasets43, simpleLeftAxis);

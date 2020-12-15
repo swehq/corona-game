@@ -6,6 +6,8 @@ class CovidSimulation {
 		this.R0 = 2.5;
 		this.RNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
 		this.rSmoothing = 0.85;
+		this.stabilitySmoothing = 0.99;
+		this.stabilityEffectScale = 0.3;
 		this.mortalitySampler = normalPositiveSampler(0.01, 0.001);
 		this.initialPopulation = 10690000;
 		this.infectedStart = 3;
@@ -30,22 +32,28 @@ class CovidSimulation {
 		this.simDays = [];
 		this.simDayStats = [];
 
-		this.simDays.push({
-			date: startDate,
-			suspectible: this.initialPopulation - this.infectedStart,
-			infected: this.infectedStart,
+		this.stateBeforeStart = {
+			suspectible: this.initialPopulation,
+			infected: 0,
 			recovered: 0,
 			hospitalized: 0,
 			dead: 0,
-			infectedToday: this.infectedStart,
+			infectedToday: 0,
 			hospitalizedToday: 0,
 			deathsToday: 0,
 			costToday: 0,
 			R: this.R0,
-			mortality: this.mortalitySampler(),
+			mortality: 0,
 			vaccinationRate: 0,
-		});
+			stability: 1,
+		};
 
+		const stateToday = Object.assign({}, this.stateBeforeStart);
+		stateToday.date = startDate;
+		stateToday.suspectible = this.initialPopulation - this.infectedStart;
+		stateToday.infected = this.infectedStart;
+		stateToday.infectedToday = this.infectedStart;
+		this.simDays.push(stateToday);
 		this.calcStats();
 	}
 
@@ -69,6 +77,7 @@ class CovidSimulation {
 				R: this.R0,
 				mortality: 0,
 				vaccinationRate: 0,
+				socialStability: 1,
 			};
 		}
 	}
@@ -83,7 +92,13 @@ class CovidSimulation {
 		let dead = yesterday.dead;
 
 		let mitigation = getMitigation();
-		let R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigation.mult);
+
+		let stabilityToday = Math.max(0, 1 - mitigation.stabilityCost);
+		let socialStability = this.stabilitySmoothing * yesterday.stability + (1. - this.stabilitySmoothing) * stabilityToday;
+
+		let stabilityEffect = 1 - this.stabilityEffectScale * (1 - socialStability);
+		let mitigationMult = stabilityEffect * mitigation.mult + (1 - stabilityEffect) * 1.;
+		let R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationMult);
 
 		let population = yesterday.suspectible + yesterday.infected + yesterday.recovered;
 		let infectious = 0.;
@@ -139,6 +154,7 @@ class CovidSimulation {
 			R: R,
 			mortality: this.mortalitySampler() * hospitalsOverwhelmedMultiplier,
 			vaccinationRate: vaccinationRate,
+			stability: socialStability,
 		});
 
 		return this.calcStats();
@@ -176,6 +192,7 @@ class CovidSimulation {
 			costTotal: costTotal,
 			vaccinationRate: today.vaccinationRate,
 			hospitalizationCapacity: this.hospitalsBaselineUtilization + today.hospitalized / this.hospitalsOverwhelmedThreshold,
+			socialStability: today.stability,
 		};
 
 		this.simDayStats.push(stats);

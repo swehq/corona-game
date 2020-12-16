@@ -13,11 +13,10 @@ let playBool = false;
 let simulation = null;
 
 
-function addDataDisplay(func, chartDataset, maxDays) {
+function addDataDisplay(func, chartDataset) {
 	dataDisplays.push({
 		func: func,
 		chartDataset: chartDataset,
-		maxDays: maxDays
 	});
 }
 
@@ -26,18 +25,16 @@ function displayData(simDay) {
 	dataDisplays.forEach(display => {
 		let chartData = display.chartDataset.data;
 		chartData.push(display.func(simDay));
-		if (chartData.length > display.maxDays) {
-			chartData.shift();
-		}
 	});
 
 	// Update all charts
 	charts.forEach(chart => {
-		let data = chart.data;
-		data.labels.push(simDay.date);
-		if (data.labels.length > data.datasets[0].data.length) {
-			data.labels.shift();
-		}
+		let labels = chart.data.labels;
+		let ticks = chart.scales.x.options.ticks;
+
+		labels.push(simDay.date);
+		ticks.min = labels[Math.max(0, labels.length - chart.options.maxDays)];
+		ticks.max = simDay.date;
 		chart.update();
 	});
 
@@ -110,6 +107,7 @@ function createChart(canvasId, maxDays, datasets, yAxes, fontSize = SMALLER_CHAR
 			datasets: chartDatasets
 		},
 		options: {
+			maxDays: maxDays,
 			layout: {
 				padding: {
 					left: 0,
@@ -121,6 +119,7 @@ function createChart(canvasId, maxDays, datasets, yAxes, fontSize = SMALLER_CHAR
 			scales: {
 				yAxes: chartYAxes,
 				xAxes: [{
+					id: "x",
 					ticks: {
 						fontSize: fontSize,
 						autoskip: true,
@@ -140,7 +139,7 @@ function createChart(canvasId, maxDays, datasets, yAxes, fontSize = SMALLER_CHAR
 	});
 
 	for (let i = 0; i < datasets.length; i++) {
-		addDataDisplay(datasets[i].dataset, chart.data.datasets[i], maxDays);
+		addDataDisplay(datasets[i].dataset, chart.data.datasets[i]);
 	}
 	charts.push(chart);
 }

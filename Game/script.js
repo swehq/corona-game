@@ -209,10 +209,9 @@ function setupCharts() {
 
 	var datasets43 = [{
 		label: 'sociální stabilita',
-		dataset: x => 200*(x.socialStability-0.75),
-		borderColor: 'rgba( 0, 0, 0, .7)',
+		dataset: x => Math.max(-50, 200*(x.socialStability-0.75)),
 	}];
-	createChart("chart-4-3", DISPLAY_N_DAYS, datasets43, simpleLeftAxis);
+	createChart("chart-4-3", DISPLAY_N_DAYS, datasets43, [{ticks: {suggestedMin: -50, suggestedMax: 50}}]);
 
 	var datasets44 = [{
 		label: 'potřeba lůžek [%]',

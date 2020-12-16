@@ -160,6 +160,11 @@ class CovidSimulation {
 		return this.calcStats();
 	}
 
+	rewindOneDay() {
+		this.simDays.pop();
+		this.simDayStats.pop();
+	}
+
 	calcStats() {
 		let today = this.getDayInPast(1);
 		let lastStat = (this.simDayStats.length > 0) ? this.simDayStats[this.simDayStats.length - 1] : null;

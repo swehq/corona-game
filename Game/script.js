@@ -1,5 +1,7 @@
 const DISPLAY_N_DAYS = 150;
-const playSpeed = 350; // ms
+const PLAY_SPEED = 350; // ms
+const FORWARD_SPEED = 150; // ms
+const REVERSE_SPEED = 50; // ms
 
 const SMALLER_CHART_FONT_SIZE = 10;
 const BIGGER_CHART_FONT_SIZE = 12;
@@ -8,7 +10,8 @@ const minSizeOfData = 150;
 let dataDisplays = [];
 let charts = [];
 
-let playBool = false;
+let playState = null;
+let tickerId = null;
 
 let simulation = null;
 
@@ -20,19 +23,12 @@ function addDataDisplay(func, chartDataset) {
 	});
 }
 
-function displayData(simDay) {
-	// Display all new data
-	dataDisplays.forEach(display => {
-		let chartData = display.chartDataset.data;
-		chartData.push(display.func(simDay));
-	});
-
+function refreshData(simDay) {
 	// Update all charts
 	charts.forEach(chart => {
 		let labels = chart.data.labels;
 		let ticks = chart.scales.x.options.ticks;
 
-		labels.push(simDay.date);
 		ticks.min = labels[Math.max(0, labels.length - chart.options.maxDays)];
 		ticks.max = simDay.date;
 		chart.update();
@@ -45,6 +41,18 @@ function displayData(simDay) {
 	document.getElementById("sickToday").innerHTML = formatWithThousandsSeparator(Math.round(simDay.detectedInfectionsToday), 0);
 	document.getElementById("mortality").innerHTML = simDay.mortality ? formatWithThousandsSeparator(simDay.mortality * 100, 2) : 0;
 	document.getElementById("costTotal").innerHTML = formatWithThousandsSeparator(simDay.costTotal / 1e9, 1);
+}
+
+function displayData(simDay) {
+	// Display all new data
+	dataDisplays.forEach(display => {
+		let chartData = display.chartDataset.data;
+		chartData.push(display.func(simDay));
+	});
+
+	charts.forEach(chart => chart.data.labels.push(simDay.date));
+
+	refreshData(simDay);
 
 	// End of game
 	if (simDay.date >= simulation.endDate) {
@@ -223,26 +231,64 @@ function setupSimulation() {
 	simulation.simDayStats.forEach(day => displayData(day));
 }
 
+function onButtonSetPlaySpeed(btnId) {
+	setPlaySpeed(btnId.slice(4));
+}
+
+function setPlaySpeed(speed) {
+	if (playState == speed) {
+		return;
+	}
+
+	["rev", "pause", "play", "fwd"].forEach( x => {
+		let id = "btn-" + x;
+		if (speed == x) {
+			document.getElementById(id).className = "btn-pressed";
+		} else {
+			document.getElementById(id).className = "btn-not-pressed";
+		}
+	});
+
+	if (playState != "pause") {
+		clearInterval(tickerId);
+	}
+
+	playState = speed;
+
+	if (speed == "play") {
+		tickerId = setInterval(tick, PLAY_SPEED);
+	} else if (speed == "fwd") {
+		tickerId = setInterval(tick, FORWARD_SPEED);
+	} else if (speed == "rev") {
+		tickerId = setInterval(tick, REVERSE_SPEED);
+	}
+}
+
+function tick() {
+	if (playState != "rev") {
+		displayData(simulation.simOneDay());
+	} else {
+		if (simulation.simDays.length <= 1) {
+			setPlaySpeed("pause");
+		} else {
+			simulation.rewindOneDay();
+
+			charts.forEach(chart => {
+				chart.data.labels.pop();
+				chart.data.datasets.forEach(dataset => dataset.data.pop());
+			});
+
+			refreshData(simulation.simDayStats[simulation.simDayStats.length - 1]);
+		}
+	}
+}
+
 function initialize() {
 	setupCharts();
 	setupSimulation();
+	setPlaySpeed("pause");
 }
 initialize();
-
-document.getElementById("play").innerHTML = "<i class=\"fas fa-play\"></i>";
-document.getElementById("play").style = "background-color: var(--blue)";
-function play() {
-	if (!playBool) {
-		document.getElementById("play").innerHTML = "<i class=\"fas fa-play\"></i>";
-		document.getElementById("play").style = "background-color: var(--blue)";
-		return;
-	}
-	document.getElementById("play").innerHTML = "<i class=\"fas fa-pause\"></i>";
-	document.getElementById("play").style = "background-color: var(--red)";
-	displayData(simulation.simOneDay());
-
-	setTimeout(play, playSpeed);
-}
 
 function endSimulation(endDay) {
 	document.getElementById("datumEndOfGame").innerHTML = endDay.date;
@@ -250,12 +296,12 @@ function endSimulation(endDay) {
 	document.getElementById("deadTotalEndOfGame").innerHTML = formatWithThousandsSeparator(Math.round(endDay.deadTotal), 0);
 	document.getElementById("mortalityEndOfGame").innerHTML = `${formatWithThousandsSeparator(endDay.mortality * 100, 2)} %`;
 	document.getElementById("costTotalEndOfGame").innerHTML = formatWithThousandsSeparator(endDay.costTotal / 1e9, 1) + " mld. Kč";
-	playBool = !playBool;
+	setPlaySpeed("pause");
 	displayEndOfGame(true);
 }
 
 function restartSimulation() {
-	playBool = false;
+	setPlaySpeed("pause");
 	resetChartData();
 	setupSimulation();
 	displayEndOfGame(false);

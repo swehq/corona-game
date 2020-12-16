@@ -113,7 +113,11 @@
 		</table>
 
 		<div id="btn">
-			<button title="play/pause" id="play" onclick="playBool = !playBool, play()"></button><br>
+			<button title="rev" id="btn-rev" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-backward"></i></button>
+			<button title="pause" id="btn-pause" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-pause"></i></button>
+			<button title="play" id="btn-play" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-play"></i></button>
+			<button title="fwd" id="btn-fwd" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-forward"></i></button>
+			</br>
 			<button title="restart" id="restart" onclick="restartSimulation()">RESTART</button>
 		</div>
 

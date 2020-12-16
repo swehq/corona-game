@@ -44,18 +44,12 @@ a:hover {
 	margin-top: 15px;
 }
 
-#play {
-	border-radius: 50%;
-	color: var(--white);
-	font-size: 1.8em;
-	border: none;
-	width: 2em;
-	height: 2em;
-	cursor: pointer;
+.btn-pressed {
+	background-color: var(--blue);
 }
 
-#play:hover {
-	color: var(--light-blue);
+.btn-not-pressed {
+	background-color: var(--light-blue);
 }
 
 #mitigation {

@@ -5,7 +5,7 @@ function randomizeMitigations() {
 
 	let es = normalPositiveSampler(1, 0.2); // Efficiency scaler
 	let cs = normalPositiveSampler(4e6, 0.5e6); // Cost scaler
-	let ss = normalPositiveSampler(0.01, 0.002); // Stability
+	let ss = normalPositiveSampler(0.007, 0.002); // Stability
 
 	addMitigation("faceMasks",		0.30 * es(), 10 * cs(),  2 * ss(), "Roušky");
 	addMitigation("distancing",		0.23 * es(), 15 * cs(),  2 * ss(), "Rozestupy");

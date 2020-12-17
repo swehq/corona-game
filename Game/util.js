@@ -93,4 +93,11 @@ function normalPositiveSampler(mean, variance) {
 	return () => {x = sample(); while(x <= 0) x = sample(); return x; };
 }
 
-
+// Simple templating; should be replaced by a framework
+function evalTemplate(template, values) {
+	let res = template;
+	for (k in values) {
+		res = res.replace("{{" + k + "}}", values[k].toString());
+	}
+	return res;
+}

@@ -196,6 +196,30 @@ tbody {
 	width: 50%;
 }
 
+#newspaper {
+	position: absolute;
+	left: 50%;
+	visibility: hidden;
+}
+
+#newspaperContent {
+	background-color: var(--white);
+	color: var(--black);
+	width: 1000px;
+	margin: auto;
+	z-index: 15;
+	margin-top: 60px;
+	padding: 20px;
+	position: relative;
+	left: -500px;
+	padding: 0px 0px;
+	border:1px solid black;
+}
+
+#newsheader {
+	width: 100%;
+}
+
 #restart {
 	float: right;
 	margin-top: 20px;

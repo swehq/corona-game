@@ -252,6 +252,10 @@ function setPlaySpeed(speed) {
 		clearInterval(tickerId);
 	}
 
+	if (speed != "pause") {
+		displayNewspaper(false);
+	}
+
 	playState = speed;
 
 	if (speed == "play") {
@@ -265,7 +269,10 @@ function setPlaySpeed(speed) {
 
 function tick() {
 	if (playState != "rev") {
-		displayData(simulation.simOneDay());
+		let prevDate = simulation.getDayInPast(1).date;
+		let dayStats = simulation.simOneDay();
+		displayData(dayStats);
+		evalEvents(dayStats, prevDate);
 	} else {
 		if (simulation.simDays.length <= 1) {
 			setPlaySpeed("pause");
@@ -282,10 +289,21 @@ function tick() {
 	}
 }
 
+function restartSimulation() {
+	setPlaySpeed("pause");
+	resetChartData();
+	setupSimulation();
+	displayEndOfGame(false);
+	randomizeMitigations();
+	initializeEvents();
+
+	document.getElementById("pes-0").checked = true;
+	pesLevelOnChange("pes-0");
+}
+
 function initialize() {
 	setupCharts();
-	setupSimulation();
-	setPlaySpeed("pause");
+	restartSimulation()
 }
 initialize();
 
@@ -299,22 +317,27 @@ function endSimulation(endDay) {
 	displayEndOfGame(true);
 }
 
-function restartSimulation() {
-	setPlaySpeed("pause");
-	resetChartData();
-	setupSimulation();
-	displayEndOfGame(false);
-	randomizeMitigations();
-
-	initialize();
-	document.getElementById("pes-0").checked = true;
-	pesLevelOnChange("pes-0");
+function setVisibility(id, visible) {
+	document.getElementById(id).style.visibility = visible ? "visible" : "hidden";
 }
 
 function displayEndOfGame(visible) {
-	document.getElementById("endOfGame").style.visibility = visible ? "visible" : "hidden";
+	setVisibility("endOfGame", visible);
 }
 
 function displayInstructions(visible) {
-	document.getElementById("instructions").style.visibility = visible ? "visible" : "hidden";
+	setVisibility("instructions", visible);
 }
+
+function displayNewspaper(visible) {
+	setVisibility("newspaper", visible);
+}
+
+function showEvent(title, text, options, dayStats) {
+	setPlaySpeed("pause");
+	document.getElementById("newspaper-title").innerHTML = evalTemplate(title, dayStats);
+	document.getElementById("newspaper-text").innerHTML = evalTemplate(text, dayStats);
+	setVisibility("newspaper", true);
+}
+
+// displayInstructions(false);

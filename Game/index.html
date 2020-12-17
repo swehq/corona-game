@@ -11,7 +11,7 @@
 
 <body>
 
-	<!-- END OF GAME -->
+	<!-- INSTRUCTIONS -->
 	<div id="instructions">
 		<div id="instructionsTable">
 			<i title="close" class="fas fa-times" id="close" onclick="displayInstructions(false)"></i>
@@ -34,6 +34,17 @@
 				Nezapomeňte, že stejně jako vláda dostáváte data zpožděně od reality. Musíte se rozhodnout, které údaje
 				jsou důležité a nejvíce vypovídají o aktuální situaci.
 			</p>
+		</div>
+	</div>
+
+	<!-- NEWSPAPER -->
+	<div id="newspaper">
+		<div id="newspaperContent">
+			<img id="newsheader" src="images/newspaper.jpeg">
+			<h1 id="newspaper-title">Titulek</h1>
+			<p id="newspaper-text">Clanek</p>
+
+			<button title="play" id="newsbtn-play" onclick="setPlaySpeed('play')" class="btn-not-pressed"><i class="fas fa-play"></i></button><br><br>
 		</div>
 	</div>
 
@@ -189,6 +200,7 @@
 	<script type="text/javascript" src="util.js"></script>
 	<script type="text/javascript" src="mitigation.js"></script>
 	<script type="text/javascript" src="simulation.js"></script>
+	<script type="text/javascript" src="events.js"></script>
 	<script type="text/javascript" src="script.js"></script>
 
 </body>

@@ -268,8 +268,12 @@ function tick() {
 		}
 
 		updateMitigationState();
-		let stats = game.moveForward();
-		displayData(stats);
+		let gameUpdate = game.moveForward();
+		displayData(gameUpdate.dayStats);
+		if (gameUpdate.evnt != null) {
+			let evnt = gameUpdate.evnt;
+			showEvent(evnt.title, evnt.text, evnt.options, gameUpdate.dayStats);
+		}
 	} else {
 		if (game.getSimStats().length <= 1) {
 			setPlaySpeed("pause");
@@ -292,7 +296,6 @@ function restartSimulation() {
 	displayEndOfGame(false);
 	game = new Game();
 	game.getSimStats().forEach(day => displayData(day));
-	initializeEvents();
 
 	document.getElementById("pes-0").checked = true;
 	pesLevelOnChange("pes-0");

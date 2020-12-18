@@ -3,6 +3,7 @@ class Game {
 		this.startDate = '2020-03-01';
 		this.endDate = '2021-07-01';
 		this.simulation = new CovidSimulation(this.startDate);
+		this.eventHandler = new EventHandler();
 		this.allMitigations = randomizeMitigations();
 		this.nonEventMitigations = [];
 		this.mitigationStates = [];
@@ -24,12 +25,13 @@ class Game {
 		let dayStats = this.simulation.simOneDay(mitigationEffect);
 
 		this.mitigationStates.push(deepCopy(oldMitigationState));
-		evalEvents(dayStats, prevDate);
-		return dayStats;
+		let evnt = this.eventHandler.evaluateDay(dayStats);
+		return { dayStats: dayStats, evnt: evnt };
 	}
 
 	moveBackward() {
 		this.simulation.rewindOneDay();
+		this.eventHandler.rewindOneDay();
 		this.mitigationStates.pop();
 		return this.simulation.getLastStats();
 	}

@@ -1,11 +1,11 @@
-var eventTriggers;
-var eventsState;
 
-var triggerId = 0;
+function populateTriggers() {
+	let eventTriggers = [];
+	let triggerId = 0;
 
-function initializeEvents() {
-	eventTriggers = [];
-	eventsState = {};
+	/*************************************************************
+	 * Start event definitions
+	 *************************************************************/
 
 	let deathRecord1 = {
 		title: "Smutný rekord: {{deathsToday}} mrtvých za jediný den",
@@ -20,46 +20,59 @@ function initializeEvents() {
 
 	addEventTrigger(x => x.deathsToday > 10, chooseRandom([deathRecord1, deathRecord2]));
 	addEventTrigger(x => x.deathsToday > 100, chooseRandom([deathRecord1, deathRecord2]));
-}
 
-function getNextTriggerId() {
-	triggerId += 1;
-	return "trigger-" + triggerId;
-}
+	/*************************************************************
+	 * End event definitions
+	 *************************************************************/
 
-function addEventTrigger(fn, evnt) {
-	let trigger = {
-		id: getNextTriggerId(),
-		fn: fn,
-		evnt: evnt
-	};
-
-	eventTriggers.push(trigger);
-}
-
-function evalEvents(dayStats, prevDate) {
-	let prevState = {};
-	if (prevDate in eventsState) {
-		prevState = eventsState[prevDate];
-	}
-	let newState = Object.assign({}, prevState);
-
-	for (id in eventTriggers) {
-		let trigger = eventTriggers[id];
-
-		// Check if event was triggered
-		if (id in newState && newState[id].triggered) {
-			continue;
-		}
-
-		// Check if event triggers
-		if (trigger.fn(dayStats)) {
-			newState[id] = {triggered: true};
-			let evnt = trigger.evnt;
-
-			showEvent(evnt.title, evnt.text, evnt.options, dayStats);
-		}
+	function getNextTriggerId() {
+		triggerId += 1;
+		return "trigger-" + triggerId;
 	}
 
-	eventsState[dayStats.date] = newState;
+	function addEventTrigger(fn, evnt) {
+		let trigger = {
+			id: getNextTriggerId(),
+			fn: fn,
+			evnt: evnt
+		};
+
+		eventTriggers.push(trigger);
+	}
+
+	return eventTriggers;
 }
+
+class EventHandler {
+	constructor() {
+		this.eventTriggers = populateTriggers();
+		this.triggerStates = [];
+
+		let triggerState = {};
+		this.eventTriggers.forEach( trigger => triggerState[trigger.id] = false );
+		this.triggerStates.push(triggerState);
+	}
+
+	evaluateDay(dayStats) {
+		let prevState = lastElement(this.triggerStates);
+		let newState = deepCopy(prevState);
+		let evnt = null;
+
+		this.eventTriggers.forEach( trigger => {
+			// Check if event triggers
+			if (!prevState[trigger.id] && trigger.fn(dayStats)) {
+				newState[trigger.id] = true;
+				evnt = trigger.evnt;
+			}
+		});
+
+		this.triggerStates.push(newState);
+
+		return evnt;
+	}
+
+	rewindOneDay() {
+		this.triggerStates.pop();
+	}
+}
+

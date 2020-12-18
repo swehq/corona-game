@@ -113,7 +113,8 @@
 			<button title="play" id="btn-play" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-play"></i></button>
 			<button title="fwd" id="btn-fwd" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-forward"></i></button>
 			</br>
-			<button title="restart" id="restart" onclick="restartSimulation()">RESTART</button>
+			<button title="restart" id="restart" onclick="restartSimulation()">RESTART</button><br>
+			<div id="tuning"></div>
 		</div>
 
 		<div id="stats">
@@ -187,6 +188,8 @@
 	<script type="text/javascript" src="events.js"></script>
 	<script type="text/javascript" src="game.js"></script>
 	<script type="text/javascript" src="ui.js"></script>
+	<!-- <script type="text/javascript" src="../Tuning/tuning.js"></script> -->
+	<script type="text/javascript">initialize();</script>
 
 </body>
 

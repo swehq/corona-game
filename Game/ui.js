@@ -45,7 +45,7 @@ function refreshData(simDay) {
 	document.getElementById("costTotal").innerHTML = formatWithThousandsSeparator(simDay.costTotal / 1e9, 1);
 }
 
-function displayData(simDay) {
+function displayData(simDay, refresh=true) {
 	// Display all new data
 	dataDisplays.forEach(display => {
 		let chartData = display.chartDataset.data;
@@ -54,7 +54,9 @@ function displayData(simDay) {
 
 	charts.forEach(chart => chart.data.labels.push(simDay.date));
 
-	refreshData(simDay);
+	if (refresh) {
+		refreshData(simDay);
+	}
 }
 
 function resetChartData() {
@@ -272,7 +274,7 @@ function tick() {
 		displayData(gameUpdate.dayStats);
 		if (gameUpdate.evnt != null) {
 			let evnt = gameUpdate.evnt;
-			showEvent(evnt.title, evnt.text, evnt.options, gameUpdate.dayStats);
+			showEvent(evnt, gameUpdate.dayStats);
 		}
 	} else {
 		if (game.getSimStats().length <= 1) {
@@ -306,7 +308,6 @@ function initialize() {
 	populateMitigationCheckboxes();
 	restartSimulation();
 }
-initialize();
 
 function endSimulation() {
 	let endDay = game.getLastStats();
@@ -335,10 +336,10 @@ function displayNewspaper(visible) {
 	setVisibility("newspaper", visible);
 }
 
-function showEvent(title, text, options, dayStats) {
+function showEvent(evnt, dayStats) {
 	setPlaySpeed("pause");
-	document.getElementById("newspaper-title").innerHTML = evalTemplate(title, dayStats);
-	document.getElementById("newspaper-text").innerHTML = evalTemplate(text, dayStats);
+	document.getElementById("newspaper-title").innerHTML = evalTemplate(evnt.title, dayStats);
+	document.getElementById("newspaper-text").innerHTML = evalTemplate(evnt.text, dayStats);
 	setVisibility("newspaper", true);
 }
 
@@ -386,5 +387,3 @@ function uncheckPes() {
 		document.getElementById("pes-" + i).checked = false;
 	}
 }
-
-displayInstructions(false);

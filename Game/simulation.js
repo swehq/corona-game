@@ -14,7 +14,6 @@ class CovidSimulation {
 		this.vaccinationStartDate = '2021-03-01';
 		this.vaccinationPerDay = 0.01;
 		this.vaccinationMaxRate = 0.75;
-		this.endDate = '2021-07-01';
 
 		// All covid parameters counted from the infection day
 		this.incubationDays = 5; // Days until infection is detected
@@ -29,7 +28,7 @@ class CovidSimulation {
 		this.hospitalsOverwhelmedMortalityMultiplier = 2;
 		this.hospitalsBaselineUtilization = 0.5;
 
-		this.simDays = [];
+		this.modelStates = [];
 		this.simDayStats = [];
 
 		this.stateBeforeStart = {
@@ -53,37 +52,22 @@ class CovidSimulation {
 		stateToday.suspectible = this.initialPopulation - this.infectedStart;
 		stateToday.infected = this.infectedStart;
 		stateToday.infectedToday = this.infectedStart;
-		this.simDays.push(stateToday);
+		this.modelStates.push(stateToday);
 		this.calcStats();
 	}
 
-	getDayInPast(n) {
-		let i = this.simDays.length - n;
+	getModelStateInPast(n) {
+		let i = this.modelStates.length - n;
 		if (i >= 0) {
-			return this.simDays[i];
+			return this.modelStates[i];
 		} else {
 			// Days before the start of the epidemic have no sick people
-			return {
-				date: null,
-				suspectible: this.initialPopulation,
-				infected: 0,
-				recovered: 0,
-				hospitalized: 0,
-				dead: 0,
-				infectedToday: 0,
-				hospitalizedToday: 0,
-				deathsToday: 0,
-				costToday: 0,
-				R: this.R0,
-				mortality: 0,
-				vaccinationRate: 0,
-				socialStability: 1,
-			};
+			return this.stateBeforeStart;
 		}
 	}
 
 	simOneDay() {
-		let yesterday = this.getDayInPast(1);
+		let yesterday = this.getModelStateInPast(1);
 		let todayDate = plusDay(yesterday.date);
 
 		let suspectible = yesterday.suspectible;
@@ -103,7 +87,7 @@ class CovidSimulation {
 		let population = yesterday.suspectible + yesterday.infected + yesterday.recovered;
 		let infectious = 0.;
 		for (let i = this.infectiousFrom; i <= this.infectiousTo; ++i) {
-			infectious += this.getDayInPast(i).infectedToday;
+			infectious += this.getModelStateInPast(i).infectedToday;
 		}
 		infectious /= (this.infectiousTo - this.infectiousFrom + 1);
 		// Simplifying assumption that only uninfected people got vaccinated
@@ -112,24 +96,24 @@ class CovidSimulation {
 		infected += infectedToday;
 		suspectible -= infectedToday;
 
-		let recoveryFromDay = this.getDayInPast(this.recoveryDays);
+		let recoveryFromDay = this.getModelStateInPast(this.recoveryDays);
 		let recoveredToday = recoveryFromDay.infectedToday * (1 - recoveryFromDay.mortality);
 		recovered += recoveredToday;
 		infected -= recoveredToday;
 
-		let deathsFromDay = this.getDayInPast(this.timeToDeathDays);
+		let deathsFromDay = this.getModelStateInPast(this.timeToDeathDays);
 		let deathsToday = deathsFromDay.infectedToday * deathsFromDay.mortality;
 		dead += deathsToday;
 		infected -= deathsToday;
 
-		let endedImmunityFromDay = this.getDayInPast(this.immunityDays);
+		let endedImmunityFromDay = this.getModelStateInPast(this.immunityDays);
 		let endedImmunityToday = endedImmunityFromDay.infectedToday * (1 - endedImmunityFromDay.mortality);
 		suspectible += endedImmunityToday;
 		recovered -= endedImmunityToday;
 
-		let hospitalizedToday = this.getDayInPast(this.incubationDays).infectedToday * this.hospitalizationRateSampler();
+		let hospitalizedToday = this.getModelStateInPast(this.incubationDays).infectedToday * this.hospitalizationRateSampler();
 		let hospitalized = yesterday.hospitalized + hospitalizedToday
-			- this.getDayInPast(this.hospitalizationDays).hospitalizedToday;
+			- this.getModelStateInPast(this.hospitalizationDays).hospitalizedToday;
 
 		let vaccinationRate = yesterday.vaccinationRate;
 		if (todayDate >= this.vaccinationStartDate) {
@@ -140,7 +124,7 @@ class CovidSimulation {
 		if (hospitalized > (1 - this.hospitalsBaselineUtilization) * this.hospitalsOverwhelmedThreshold) {
 			hospitalsOverwhelmedMultiplier = this.hospitalsOverwhelmedMortalityMultiplier;
 		}
-		this.simDays.push({
+		this.modelStates.push({
 			date: todayDate,
 			suspectible: suspectible,
 			infected: infected,
@@ -161,26 +145,34 @@ class CovidSimulation {
 	}
 
 	rewindOneDay() {
-		this.simDays.pop();
+		this.modelStates.pop();
 		this.simDayStats.pop();
 	}
 
+	getLastStats() {
+		return this.simDayStats[this.simDayStats.length - 1];
+	}
+
+	getLastDate() {
+		return this.getLastStats().date;
+	}
+
 	calcStats() {
-		let today = this.getDayInPast(1);
+		let today = this.getModelStateInPast(1);
 		let lastStat = (this.simDayStats.length > 0) ? this.simDayStats[this.simDayStats.length - 1] : null;
 
 
 		let undetectedInfections = 0;
 		for (let i = 1; i <= this.incubationDays; i++) {
-			undetectedInfections += this.getDayInPast(i).infectedToday;
+			undetectedInfections += this.getModelStateInPast(i).infectedToday;
 		}
 
-		let detectedInfectionsToday = this.getDayInPast(this.incubationDays + 1).infectedToday;
+		let detectedInfectionsToday = this.getModelStateInPast(this.incubationDays + 1).infectedToday;
 		let detectedInfectionsTotal = ((lastStat != null) ? lastStat.detectedInfectionsTotal : 0)
 			+ detectedInfectionsToday;
 		let detectedInfections7DayAvg = 0;
 		for (let i = 1; i <= 7; i++) {
-			detectedInfections7DayAvg += this.getDayInPast(i + this.incubationDays).infectedToday / 7;
+			detectedInfections7DayAvg += this.getModelStateInPast(i + this.incubationDays).infectedToday / 7;
 		}
 
 		let costTotal = ((lastStat != null) ? lastStat.costTotal : 0) + today.costToday;

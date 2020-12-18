@@ -13,7 +13,7 @@ let charts = [];
 let playState = null;
 let tickerId = null;
 
-let simulation = null;
+let game = null;
 
 
 function addDataDisplay(func, chartDataset) {
@@ -53,11 +53,6 @@ function displayData(simDay) {
 	charts.forEach(chart => chart.data.labels.push(simDay.date));
 
 	refreshData(simDay);
-
-	// End of game
-	if (simDay.date >= simulation.endDate) {
-		endSimulation(simDay);
-	}
 }
 
 function resetChartData() {
@@ -225,11 +220,6 @@ function setupCharts() {
 	createChart("chart-4-4", DISPLAY_N_DAYS, datasets44, simpleLeftAxis);
 }
 
-function setupSimulation() {
-	simulation = new CovidSimulation("2020-03-01");
-	simulation.simDayStats.forEach(day => displayData(day));
-}
-
 function onButtonSetPlaySpeed(btnId) {
 	setPlaySpeed(btnId.slice(4));
 }
@@ -269,22 +259,26 @@ function setPlaySpeed(speed) {
 
 function tick() {
 	if (playState != "rev") {
-		let prevDate = simulation.getDayInPast(1).date;
-		let dayStats = simulation.simOneDay();
-		displayData(dayStats);
-		evalEvents(dayStats, prevDate);
+		// End of game
+		if (game.isFinished()) {
+			endSimulation(simDay);
+			return;
+		}
+
+		let state = game.moveForward();
+		displayData(state.dayStats);
 	} else {
-		if (simulation.simDays.length <= 1) {
+		if (game.getSimStats().length <= 1) {
 			setPlaySpeed("pause");
 		} else {
-			simulation.rewindOneDay();
+			let state = game.moveBackward();
 
 			charts.forEach(chart => {
 				chart.data.labels.pop();
 				chart.data.datasets.forEach(dataset => dataset.data.pop());
 			});
 
-			refreshData(simulation.simDayStats[simulation.simDayStats.length - 1]);
+			refreshData(state.dayStats);
 		}
 	}
 }
@@ -292,8 +286,9 @@ function tick() {
 function restartSimulation() {
 	setPlaySpeed("pause");
 	resetChartData();
-	setupSimulation();
 	displayEndOfGame(false);
+	game = new Game();
+	game.getSimStats().forEach(day => displayData(day));
 	randomizeMitigations();
 	initializeEvents();
 

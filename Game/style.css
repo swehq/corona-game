@@ -53,25 +53,13 @@ a:hover {
 }
 
 #mitigation {
-	width: 66.7%;
+	width: 65%;
 	float: left;
-	border-collapse: collapse;
 	margin-top: 10px;
 }
 
-#mitigation td {
-	vertical-align: top;
-	text-align: left;
-}
-
-.pes-row-unselected {}
-
-.pes-row-selected {
-	background-color: var(--light-blue);
-}
-
-#pes-1-checkboxes,
-#pes-2-checkboxes {
+#checkboxes,
+#pes-levels {
 	line-break: auto;
 	text-align: left;
 	line-break: auto;
@@ -83,18 +71,21 @@ a:hover {
 	margin: auto;
 }
 
+.checkbox-label,
+.pes-label,
 .lockdown {
-	color: var(--white);
-	background-color: var(--red);
-	border-radius: 5px;
-}
-
-.checkbox-label {
 	padding-left: 3px;
 	padding-right: 3px;
 	cursor: pointer;
 	width: 23%;
 	float: left;
+}
+
+.lockdown {
+	color: var(--white);
+	background-color: var(--red);
+	border-radius: 5px;
+	width: 20%;
 }
 
 #checkboxes input {

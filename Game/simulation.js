@@ -66,7 +66,7 @@ class CovidSimulation {
 		}
 	}
 
-	simOneDay() {
+	simOneDay(mitigationEffect) {
 		let yesterday = this.getModelStateInPast(1);
 		let todayDate = plusDay(yesterday.date);
 
@@ -75,13 +75,11 @@ class CovidSimulation {
 		let recovered = yesterday.recovered;
 		let dead = yesterday.dead;
 
-		let mitigation = getMitigation();
-
-		let stabilityToday = Math.max(0, 1 - mitigation.stabilityCost);
+		let stabilityToday = Math.max(0, 1 - mitigationEffect.stabilityCost);
 		let socialStability = this.stabilitySmoothing * yesterday.stability + (1. - this.stabilitySmoothing) * stabilityToday;
 
 		let stabilityEffect = 1 - this.stabilityEffectScale * (1 - socialStability);
-		let mitigationMult = stabilityEffect * mitigation.mult + (1 - stabilityEffect) * 1.;
+		let mitigationMult = stabilityEffect * mitigationEffect.mult + (1 - stabilityEffect) * 1.;
 		let R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationMult);
 
 		let population = yesterday.suspectible + yesterday.infected + yesterday.recovered;
@@ -134,7 +132,7 @@ class CovidSimulation {
 			infectedToday: infectedToday,
 			hospitalizedToday: hospitalizedToday,
 			deathsToday: deathsToday,
-			costToday: mitigation.cost,
+			costToday: mitigationEffect.cost,
 			R: R,
 			mortality: this.mortalitySampler() * hospitalsOverwhelmedMultiplier,
 			vaccinationRate: vaccinationRate,
@@ -150,16 +148,12 @@ class CovidSimulation {
 	}
 
 	getLastStats() {
-		return this.simDayStats[this.simDayStats.length - 1];
-	}
-
-	getLastDate() {
-		return this.getLastStats().date;
+		return lastElement(this.simDayStats);
 	}
 
 	calcStats() {
 		let today = this.getModelStateInPast(1);
-		let lastStat = (this.simDayStats.length > 0) ? this.simDayStats[this.simDayStats.length - 1] : null;
+		let lastStat = (this.simDayStats.length > 0) ? lastElement(this.simDayStats) : null;
 
 
 		let undetectedInfections = 0;

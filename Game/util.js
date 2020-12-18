@@ -53,10 +53,14 @@ function formatWithThousandsSeparator(value, dec) {
 	return ret;
 }
 
+function deepCopy(obj) {
+	// Hacky way to do deep copy
+	return JSON.parse(JSON.stringify(obj));
+}
+
 // Copy of dictionary with default values
 function copyDictWithDefault(dict, defaults) {
-	// Hacky way to do clone
-	let ret = JSON.parse(JSON.stringify(defaults));
+	let ret = deepCopy(defaults);
 
 	for (var key in dict) {
 		if (key in ret
@@ -100,4 +104,12 @@ function evalTemplate(template, values) {
 		res = res.replace("{{" + k + "}}", values[k].toString());
 	}
 	return res;
+}
+
+function lastElement(arr) {
+	return arr[arr.length - 1];
+}
+
+function chooseRandom(arr) {
+	return arr[Math.floor(Math.random() * arr.length)];
 }

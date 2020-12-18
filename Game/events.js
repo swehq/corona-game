@@ -18,8 +18,8 @@ function initializeEvents() {
 		options: [{label: "OK"}],
 	};
 
-	addEventTrigger(x => x.deathsToday > 10, [deathRecord1, deathRecord2]);
-	addEventTrigger(x => x.deathsToday > 100, [deathRecord1, deathRecord2]);
+	addEventTrigger(x => x.deathsToday > 10, chooseRandom([deathRecord1, deathRecord2]));
+	addEventTrigger(x => x.deathsToday > 100, chooseRandom([deathRecord1, deathRecord2]));
 }
 
 function getNextTriggerId() {
@@ -27,11 +27,11 @@ function getNextTriggerId() {
 	return "trigger-" + triggerId;
 }
 
-function addEventTrigger(fn, events) {
+function addEventTrigger(fn, evnt) {
 	let trigger = {
 		id: getNextTriggerId(),
 		fn: fn,
-		events: events
+		evnt: evnt
 	};
 
 	eventTriggers.push(trigger);
@@ -55,9 +55,9 @@ function evalEvents(dayStats, prevDate) {
 		// Check if event triggers
 		if (trigger.fn(dayStats)) {
 			newState[id] = {triggered: true};
+			let evnt = trigger.evnt;
 
-			let event = trigger.events[Math.floor(Math.random() * trigger.events.length)];
-			showEvent(event.title, event.text, event.options, dayStats);
+			showEvent(evnt.title, evnt.text, evnt.options, dayStats);
 		}
 	}
 

@@ -7,6 +7,8 @@ const SMALLER_CHART_FONT_SIZE = 10;
 const BIGGER_CHART_FONT_SIZE = 12;
 const minSizeOfData = 150;
 
+const MITIGATION_PREFIX = "mitigation-";
+
 let dataDisplays = [];
 let charts = [];
 
@@ -261,24 +263,25 @@ function tick() {
 	if (playState != "rev") {
 		// End of game
 		if (game.isFinished()) {
-			endSimulation(simDay);
+			endSimulation();
 			return;
 		}
 
-		let state = game.moveForward();
-		displayData(state.dayStats);
+		updateMitigationState();
+		let stats = game.moveForward();
+		displayData(stats);
 	} else {
 		if (game.getSimStats().length <= 1) {
 			setPlaySpeed("pause");
 		} else {
-			let state = game.moveBackward();
+			let stats = game.moveBackward();
 
 			charts.forEach(chart => {
 				chart.data.labels.pop();
 				chart.data.datasets.forEach(dataset => dataset.data.pop());
 			});
 
-			refreshData(state.dayStats);
+			refreshData(stats);
 		}
 	}
 }
@@ -289,7 +292,6 @@ function restartSimulation() {
 	displayEndOfGame(false);
 	game = new Game();
 	game.getSimStats().forEach(day => displayData(day));
-	randomizeMitigations();
 	initializeEvents();
 
 	document.getElementById("pes-0").checked = true;
@@ -298,11 +300,13 @@ function restartSimulation() {
 
 function initialize() {
 	setupCharts();
-	restartSimulation()
+	populateMitigationCheckboxes();
+	restartSimulation();
 }
 initialize();
 
-function endSimulation(endDay) {
+function endSimulation() {
+	let endDay = game.getLastStats();
 	document.getElementById("datumEndOfGame").innerHTML = endDay.date;
 	document.getElementById("vaccinationRateEndOfGame").innerHTML = `${formatWithThousandsSeparator(100 * endDay.vaccinationRate, 0)} %`;
 	document.getElementById("deadTotalEndOfGame").innerHTML = formatWithThousandsSeparator(Math.round(endDay.deadTotal), 0);
@@ -335,4 +339,49 @@ function showEvent(title, text, options, dayStats) {
 	setVisibility("newspaper", true);
 }
 
-// displayInstructions(false);
+function updateMitigationState() {
+	let mitigationState = game.getMitigationState();
+	game.getMitigations().forEach( mitigation => {
+		mitigationState[mitigation.id].active = document.getElementById(MITIGATION_PREFIX + mitigation.id).checked;
+	});
+}
+
+function populateMitigationCheckboxes() {
+	let checkboxesHtml = "";
+	randomizeMitigations().forEach(mitigation =>
+		checkboxesHtml += `<label for="${MITIGATION_PREFIX + mitigation.id}" class="checkbox-label">\n\
+			<input type="checkbox" name="${MITIGATION_PREFIX + mitigation.id}" id="${MITIGATION_PREFIX + mitigation.id}" onchange="mitigationCheckboxOnChange(this.id)"> \n\
+			${mitigation.label}\n\
+		</label>`
+    );
+
+	document.getElementById("checkboxes").innerHTML = checkboxesHtml;
+}
+
+function mitigationCheckboxOnChange(id) {
+	let mitigation = id.slice(MITIGATION_PREFIX.length);
+
+	uncheckPes();
+
+	if (!document.getElementById(id).checked) {
+		return;
+	}
+
+	if (mitigation == "eventsAll") document.getElementById(MITIGATION_PREFIX + "eventsSome").checked = false;
+	if (mitigation == "eventsSome") document.getElementById(MITIGATION_PREFIX + "eventsAll").checked = false;
+}
+
+function pesLevelOnChange(pes) {
+	game.getMitigations().forEach( mitigation => {
+		document.getElementById(MITIGATION_PREFIX + mitigation.id).checked
+			= defaultMitigation[pes].includes(mitigation.id);
+	});
+}
+
+function uncheckPes() {
+	for (let i = 0; i < 4; ++i) {
+		document.getElementById("pes-" + i).checked = false;
+	}
+}
+
+displayInstructions(false);

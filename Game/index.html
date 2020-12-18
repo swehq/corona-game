@@ -84,44 +84,28 @@
 	</table>
 
 	<div id="playground">
-		<table id="mitigation">
-			<tr id="pes-0-row" class="pes-row-selected">
-				<td width="12%">
+		<div id="mitigation">
+			<div id="checkboxes"></div>
+			<br>
+			<div id="pes-levels">
+				<label for="pes-0" class="pes-label">
 					<input type="radio" name="pes" id="pes-0" onchange="pesLevelOnChange(this.id)" checked="checked">
-					<label for="pes-0" id="pes-0-label">PES-0</label>
-				</td>
-				<td>
-					Otevřít vše
-				</td>
-			</tr>
-			<tr id="pes-1-row" class="pes-row-unselected">
-				<td>
-					<input type="radio" name="pes" id="pes-1" onchange="pesLevelOnChange(this.id)">
-					<label for="pes-1" id="pes-1-label">PES-1</label>
-				</td>
-				<td>
-					<div id="pes-1-checkboxes"></div>
-				</td>
-			</tr>
-			<tr id="pes-2-row" class="pes-row-unselected">
-				<td>
-					<input type="radio" name="pes" id="pes-2" onchange="pesLevelOnChange(this.id)">
-					<label for="pes-2" id="pes-2-label">PES-2</label>
-				</td>
-				<td>
-					<div id="pes-2-checkboxes"></div>
-				</td>
-			</tr>
-			<tr id="pes-3-row" class="pes-row-unselected">
-				<td>
-					<input type="radio" name="pes" id="pes-3" onchange="pesLevelOnChange(this.id)">
-					<label for="pes-3" id="pes-3-label">PES-3</label>
-				</td>
-				<td>
-					<label class="lockdown">LOCKDOWN</label>
-				</td>
-			</tr>
-		</table>
+					Otevřít
+				</label>
+				<label for="pes-1" class="pes-label">
+					<input type="radio" name="pes" id="pes-1" onchange="pesLevelOnChange(this.id)" checked="checked">
+					PES-1
+				</label>
+				<label for="pes-2" class="pes-label">
+					<input type="radio" name="pes" id="pes-2" onchange="pesLevelOnChange(this.id)" checked="checked">
+					PES-2
+				</label>
+				<label for="pes-3" class="lockdown">
+					<input type="radio" name="pes" id="pes-3" onchange="pesLevelOnChange(this.id)" checked="checked">
+					Lockdown
+				</label>
+			</div>
+		</div>
 
 		<div id="btn">
 			<button title="rev" id="btn-rev" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-backward"></i></button>
@@ -202,7 +186,7 @@
 	<script type="text/javascript" src="simulation.js"></script>
 	<script type="text/javascript" src="events.js"></script>
 	<script type="text/javascript" src="game.js"></script>
-	<script type="text/javascript" src="script.js"></script>
+	<script type="text/javascript" src="ui.js"></script>
 
 </body>
 

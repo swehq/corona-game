@@ -4,7 +4,7 @@ type Spacing = 0 | 4 | 8 | 16 | 24 | 32 | 64 | 128;
 export type Orientation = 'row' | 'col';
 
 @Component({
-  selector: 'app-row',
+  selector: 'cvd-row',
   templateUrl: './row.component.html',
   styleUrls: ['./row.component.scss'],
 })

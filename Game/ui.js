@@ -31,7 +31,7 @@ function refreshData(simDay) {
 		let labels = chart.data.labels;
 		let ticks = chart.scales.x.options.ticks;
 
-		ticks.min = game.startDate;
+		ticks.min = '2020-02-29';
 		ticks.max = simDay.date;
 		chart.update();
 	});

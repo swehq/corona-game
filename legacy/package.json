@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "npm run build:charts && docker build --tag corona-legacy .",
+    "build:charts": "cd Chart.js-2.9.4/Chart.js-2.9.4 && npm i && ./node_modules/gulp/bin/gulp.js",
+    "restart": "npm stop && npm start",
+    "start": "npm run build && docker run --detach --rm --publish 80:80 --name corona-legacy corona-legacy && echo Running at http://localhost",
+    "stop": "docker stop corona-legacy || true && docker rm corona-legacy || true"
+  }
+}

@@ -3,17 +3,20 @@
 class CovidSimulation {
 	constructor(startDate) {
 		// pandemic params
-		this.R0 = 2.5;
+		this.R0 = 3.05;  // Tuned to match Czech reality
 		this.RNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
+		this.RSeasonalityEffect = 0.10;
 		this.rSmoothing = 0.85;
 		this.stabilitySmoothing = 0.99;
-		this.stabilityEffectScale = 0.3;
+		this.stabilityEffectScale = 0.1;
 		this.mortalitySampler = normalPositiveSampler(0.01, 0.001);
 		this.initialPopulation = 10690000;
 		this.infectedStart = 3;
 		this.vaccinationStartDate = '2021-03-01';
 		this.vaccinationPerDay = 0.01;
 		this.vaccinationMaxRate = 0.75;
+		this.infectionsWhenBordersOpen = 10;
+		this.infectionsWhenBordersClosed = 5;
 
 		// All covid parameters counted from the infection day
 		this.incubationDays = 5; // Days until infection is detected
@@ -75,12 +78,18 @@ class CovidSimulation {
 		let recovered = yesterday.recovered;
 		let dead = yesterday.dead;
 
+		// Hacky
+		let month = parseInt(mesic(todayDate));
+		let day = parseInt(den(todayDate));
+		let seasonalityPhase = (month * 30. + day - 1 * 30 - 15) / 360.;  // 360 day "accounting", peak mid Jan
+		let seasonalityMult = 1. + this.RSeasonalityEffect * Math.cos(2 * Math.PI * seasonalityPhase);
+
 		let stabilityToday = Math.max(0, 1 - mitigationEffect.stabilityCost);
 		let socialStability = this.stabilitySmoothing * yesterday.stability + (1. - this.stabilitySmoothing) * stabilityToday;
 
 		let stabilityEffect = 1 - this.stabilityEffectScale * (1 - socialStability);
 		let mitigationMult = stabilityEffect * mitigationEffect.mult + (1 - stabilityEffect) * 1.;
-		let R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationMult);
+		let R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationMult * seasonalityMult);
 
 		let population = yesterday.suspectible + yesterday.infected + yesterday.recovered;
 		let infectious = 0.;
@@ -91,6 +100,8 @@ class CovidSimulation {
 		// Simplifying assumption that only uninfected people got vaccinated
 		let suspectibleToday = Math.max(0, yesterday.suspectible - population * yesterday.vaccinationRate);
 		let infectedToday = infectious * this.RNoiseMultSampler() * R * suspectibleToday / population;
+		infectedToday += mitigationEffect.borders ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
+		infectedToday = Math.min(infectedToday, suspectible);
 		infected += infectedToday;
 		suspectible -= infectedToday;
 

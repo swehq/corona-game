@@ -74,13 +74,21 @@ class Game {
 		let stabilityCost = 0;
 
 		this.allMitigations.forEach(mitigation => {
-			if (mitigationState[mitigation.id].active) {
+			let month = mesic(this.getLastDate());
+			let isSummerBreak = month == "07" || month == "08";
+
+			if (isSummerBreak && mitigation.isSchool) {
+				// Closure of all schools is free during the summer break
+				if (mitigation.isActiveDuringSchoolBreak) {
+					mult *= (1 - mitigation.eff);
+				}
+			} else if (mitigationState[mitigation.id].active) {
 				mult *= (1 - mitigation.eff);
 				cost += mitigation.cost;
 				stabilityCost += mitigation.stabilityCost;
 			}
 		});
 
-		return { mult: mult, cost: cost, stabilityCost: stabilityCost };
+		return { mult: mult, cost: cost, stabilityCost: stabilityCost, borders: mitigationState["borders"].active };
 	}
 };

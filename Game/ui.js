@@ -371,8 +371,16 @@ function mitigationCheckboxOnChange(id) {
 		return;
 	}
 
-	if (mitigation == "eventsAll") document.getElementById(MITIGATION_PREFIX + "eventsSome").checked = false;
-	if (mitigation == "eventsSome") document.getElementById(MITIGATION_PREFIX + "eventsAll").checked = false;
+	function exclusiveMitigation(group) {
+		if (group.includes(mitigation)) {
+			group.forEach(m => document.getElementById(MITIGATION_PREFIX + m).checked = (m == mitigation));
+		}
+	}
+
+	exclusiveMitigation(["eventsAll", "eventsSome"]);
+	exclusiveMitigation(["events10", "events100", "events1000"]);
+	exclusiveMitigation(["businessesSome", "businessesMost"]);
+	exclusiveMitigation(["schools", "universities"]);
 }
 
 function pesLevelOnChange(pes) {

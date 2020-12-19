@@ -26,6 +26,10 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
+            "allowedCommonJsDependencies": [
+              "chartjs-plugin-datalabels",
+              "chart.js"
+            ],
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -34,7 +38,9 @@
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js"
+            ]
           },
           "configurations": {
             "production": {

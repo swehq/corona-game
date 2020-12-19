@@ -6,7 +6,7 @@ export interface Serie {
   unit?: string;
 }
 @Component({
-  selector: 'app-chart',
+  selector: 'cvd-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })

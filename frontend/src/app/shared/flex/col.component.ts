@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {RowComponent} from './row.component';
 
 @Component({
-  selector: 'app-col',
+  selector: 'cvd-col',
   templateUrl: './row.component.html',
   styleUrls: ['./row.component.scss'],
 })

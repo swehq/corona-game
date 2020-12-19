@@ -1,69 +1,73 @@
 {
   "extends": "tslint:recommended",
   "rulesDirectory": [
-    "codelyzer"
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/codelyzer",
+    "node_modules/rxjs-tslint-rules/dist/rules"
   ],
   "rules": {
-    "align": {
-      "options": [
-        "parameters",
-        "statements"
-      ]
-    },
-    "array-type": false,
-    "arrow-return-shorthand": true,
-    "curly": true,
-    "deprecation": {
-      "severity": "warning"
-    },
-    "eofline": true,
-    "import-blacklist": [
+    "arrow-parens": [
       true,
-      "rxjs/Rx"
+      "ban-single-arg-parens"
     ],
-    "import-spacing": true,
-    "indent": {
-      "options": [
-        "spaces"
-      ]
-    },
-    "max-classes-per-file": false,
-    "max-line-length": [
-      true,
-      140
-    ],
-    "member-ordering": [
+    "ban": [
       true,
       {
-        "order": [
-          "static-field",
-          "instance-field",
-          "static-method",
-          "instance-method"
-        ]
+        "name": "fdescribe",
+        "message": "Remove focused tests before PR."
+      },
+      {
+        "name": "fit",
+        "message": "Remove focused tests before PR."
       }
     ],
+    "component-class-suffix": true,
+    "component-selector": [
+      true,
+      "element",
+      "cvd",
+      "kebab-case"
+    ],
+    "curly": [
+      true,
+      "ignore-same-line"
+    ],
+    "directive-class-suffix": true,
+    "directive-selector": [
+      true,
+      "attribute",
+      "cvd",
+      "camelCase"
+    ],
+    "interface-name": false,
+    "member-access": [
+      true,
+      "no-public"
+    ],
+    "no-attribute-decorator": true,
     "no-console": [
       true,
+      "log",
+      "trace",
       "debug",
-      "info",
-      "time",
-      "timeEnd",
-      "trace"
+      "info"
     ],
+    "no-duplicate-variable": true,
     "no-empty": false,
-    "no-inferrable-types": [
+    "no-forward-ref": true,
+    "no-inferrable-types": true,
+    "no-input-rename": true,
+    "no-multi-spaces": true,
+    "no-output-rename": true,
+    "object-curly-spacing": [
       true,
-      "ignore-params"
+      "never"
     ],
-    "no-non-null-assertion": true,
-    "no-redundant-jsdoc": true,
-    "no-switch-case-fall-through": true,
-    "no-var-requires": false,
     "object-literal-key-quotes": [
       true,
       "as-needed"
     ],
+    "object-literal-sort-keys": false,
     "quotemark": [
       true,
       "single"
@@ -118,32 +122,15 @@
         "check-typecast"
       ]
     },
-    "component-class-suffix": true,
     "contextual-lifecycle": true,
-    "directive-class-suffix": true,
     "no-conflicting-lifecycle": true,
     "no-host-metadata-property": true,
-    "no-input-rename": true,
     "no-inputs-metadata-property": true,
-    "no-output-native": true,
-    "no-output-on-prefix": true,
-    "no-output-rename": true,
-    "no-outputs-metadata-property": true,
-    "template-banana-in-box": true,
-    "template-no-negated-async": true,
     "use-lifecycle-interface": true,
+    "no-outputs-metadata-property": true,
     "use-pipe-transform-interface": true,
-    "directive-selector": [
-      true,
-      "attribute",
-      "app",
-      "camelCase"
-    ],
-    "component-selector": [
-      true,
-      "element",
-      "app",
-      "kebab-case"
-    ]
+    "rxjs-no-internal": {
+      "severity": "error"
+    }
   }
 }

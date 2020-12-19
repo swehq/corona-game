@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-charts',
+  selector: 'cvd-charts',
   templateUrl: './charts.component.html',
   styleUrls: ['./charts.component.scss']
 })

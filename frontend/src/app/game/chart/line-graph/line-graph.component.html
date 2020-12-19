@@ -1,0 +1,8 @@
+<div style="width: 500px; height: 300px">
+  <canvas *ngIf="data" baseChart
+          [datasets]="datasets"
+          [labels]="labels"
+          [options]="options"
+          [plugins]="plugins"
+          [chartType]="'line'"></canvas>
+</div>

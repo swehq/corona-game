@@ -1,0 +1,36 @@
+:host {
+  display: flex;
+}
+
+.wrapper {
+  display: flex;
+  flex: 1;
+}
+
+::ng-deep {
+  $spacings: (
+    2: 2px,
+    4: 4px,
+    8: 8px,
+    16: 16px,
+    24: 24px,
+    32: 32px,
+    64: 64px,
+    128: 128px,
+  );
+
+  $spacings-incl-0: map-merge((0: 0), $spacings);
+
+  @each $verticalKey, $verticalVal in $spacings-incl-0 {
+    @each $horizontalKey, $horizontalVal in $spacings-incl-0 {
+      .container-spacing-#{$verticalKey}-#{$horizontalKey} {
+        margin: #{-$verticalVal} #{-$horizontalVal};
+        padding: #{$verticalVal/2} #{$horizontalVal/2};
+
+        > * {
+          margin: #{$verticalVal/2} #{$horizontalVal/2};
+        }
+      }
+    }
+  }
+}

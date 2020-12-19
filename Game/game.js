@@ -1,8 +1,9 @@
 class Game {
 	constructor () {
 		this.startDate = '2020-03-01';
+		this.rampupStartDate = '2020-02-25';
 		this.endDate = '2021-07-01';
-		this.simulation = new CovidSimulation(this.startDate);
+		this.simulation = new CovidSimulation(this.rampupStartDate);
 		this.eventHandler = new EventHandler();
 		this.allMitigations = randomizeMitigations();
 		this.nonEventMitigations = [];
@@ -16,6 +17,10 @@ class Game {
 			}
 		});
 		this.mitigationStates.push(mitigationState);
+
+		while (this.getLastDate() < this.startDate) {
+			this.moveForward();
+		}
 	}
 
 	moveForward() {
@@ -30,6 +35,9 @@ class Game {
 	}
 
 	moveBackward() {
+		if (this.getLastDate() <= this.startDate) {
+			return null;
+		}
 		this.simulation.rewindOneDay();
 		this.eventHandler.rewindOneDay();
 		this.mitigationStates.pop();

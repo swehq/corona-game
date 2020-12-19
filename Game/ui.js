@@ -31,7 +31,7 @@ function refreshData(simDay) {
 		let labels = chart.data.labels;
 		let ticks = chart.scales.x.options.ticks;
 
-		ticks.min = labels[Math.max(0, labels.length - chart.options.maxDays)];
+		ticks.min = game.startDate;
 		ticks.max = simDay.date;
 		chart.update();
 	});
@@ -135,7 +135,7 @@ function createChart(canvasId, maxDays, datasets, yAxes, fontSize = SMALLER_CHAR
 				}]
 			},
 			tooltips: {
-				enabled: false
+				enabled: true
 			},
 			legend: {
 				labels: {
@@ -277,11 +277,10 @@ function tick() {
 			showEvent(evnt, gameUpdate.dayStats);
 		}
 	} else {
-		if (game.getSimStats().length <= 1) {
+		let stats = game.moveBackward();
+		if (stats == null) {
 			setPlaySpeed("pause");
 		} else {
-			let stats = game.moveBackward();
-
 			charts.forEach(chart => {
 				chart.data.labels.pop();
 				chart.data.datasets.forEach(dataset => dataset.data.pop());
@@ -297,7 +296,8 @@ function restartSimulation() {
 	resetChartData();
 	displayEndOfGame(false);
 	game = new Game();
-	game.getSimStats().forEach(day => displayData(day));
+	game.getSimStats().forEach(day => displayData(day, refresh=false));
+	refreshData(game.getLastStats());
 
 	document.getElementById("pes-0").checked = true;
 	pesLevelOnChange("pes-0");

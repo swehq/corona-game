@@ -1,0 +1,11 @@
+<app-col grow>
+
+  <app-row>
+    <li *ngFor="let serie of series" [ngStyle]="{color: serie.color}">
+      {{serie.label}} <span *ngIf="serie.unit">[{{serie.unit}}]</span>
+    </li>
+  </app-row>
+
+  <div grow class="chart"></div>
+
+</app-col>

@@ -7,7 +7,7 @@
   </cvd-row>
 
   <div grow class="chart">
-    <cvd-line-graph [title]="series[0].label" [setData]="data$ | async"></cvd-line-graph>
+    <cvd-line-graph #lineGraph [title]="series[0].label" [setData]="(data$ | async)!"></cvd-line-graph>
   </div>
 
   <!--  This is temporary code -->
@@ -22,6 +22,9 @@
   </cvd-row>
   <cvd-row>
     <button style="width: 180px; z-index: 100" (click)="removeData()">Remove last node</button>
+  </cvd-row>
+  <cvd-row>
+    <button style="width: 180px; z-index: 100" (click)=lineGraph.resetZoom()>Reset zoom</button>
   </cvd-row>
 
 </cvd-col>

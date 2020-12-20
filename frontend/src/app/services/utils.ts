@@ -1,10 +1,8 @@
-import * as moment from 'moment';
-
 export function nextDay(day: string): string {
-  const date = moment(day);
-  date.add(1, 'day');
+  const date = new Date(day);
+  date.setDate(date.getDate() + 1);
 
-  return date.toISOString(true).slice(0, 10);
+  return date.toISOString().slice(0, 10);
 }
 
 // Create a function sampling from a normal distribution

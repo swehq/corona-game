@@ -16,15 +16,14 @@ export interface LineNode {
   styleUrls: ['./line-graph.component.scss']
 })
 export class LineGraphComponent implements OnInit {
+  @Input() title = '';
 
   @Input()
-  title: string;
+  set setData(data: LineNode[] | null) {
+    if (!data) return;
 
-  @Input()
-  set setData(data: LineNode[]) {
     const today = new Date();
-
-    this.labels = data.map((node, index) => {
+    this.labels = data.map((_, index) => {
       today.setDate(today.getDate() + index);
       return today.toLocaleDateString();
     });
@@ -34,15 +33,15 @@ export class LineGraphComponent implements OnInit {
     this.datasets[0].data = this.data;
   }
 
-  data: SingleDataSet;
+  data: SingleDataSet = [];
   eventNodes: NodeEvent[] = [];
   datasets: ChartDataSets[] = [{
     data: [],
-    pointRadius: context => Boolean(this.eventNodes[context.dataIndex]) ? 4 : 1,
+    pointRadius: context => context.dataIndex && this.eventNodes[context.dataIndex] ? 4 : 1,
     pointHitRadius: 5
   }];
 
-  labels: Label[];
+  labels: Label[] = [];
 
   font = {
     family: '"worksans", "Helvetica Neue", arial',
@@ -64,7 +63,7 @@ export class LineGraphComponent implements OnInit {
       displayColors: false,
       callbacks: {
         label: tooltipItem => `Počet nakažených: ${tooltipItem?.value?.toString()}`,
-        title: tooltipItem => this.eventNodes[tooltipItem[0].index],
+        title: tooltipItem => (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '',
       },
     },
     plugins: {

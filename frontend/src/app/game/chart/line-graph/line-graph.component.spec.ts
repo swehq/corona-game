@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LineGraphComponent } from './line-graph.component';
+import {LineGraphComponent} from './line-graph.component';
 
 describe('LineComponent', () => {
   let component: LineGraphComponent;

@@ -1,0 +1,41 @@
+version: 2.1
+
+commands:
+  npm:
+    steps:
+      - restore_cache:
+          keys:
+            - npm-cache-v2-{{checksum "frontend/package-lock.json"}}
+            - npm-cache-v2-
+      - run:
+          name: Install FE dependencies
+          working_directory: frontend
+          command: npx npm@6.14 ci
+      - save_cache:
+          key: npm-cache-v2-{{checksum "frontend/package-lock.json"}}
+          paths:
+            - ~/.npm
+            - ~/.cache
+
+jobs:
+  test-fe:
+    working_directory: ~/repo
+    docker:
+      - image: cimg/node:14.15.2-browsers
+    steps:
+      - checkout
+      - npm
+      - run:
+          name: Angular build
+          working_directory: frontend
+          command: npm run build -- --progress=false
+      - run:
+          name: Angular lint
+          working_directory: frontend
+          command: npm run lint
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-fe

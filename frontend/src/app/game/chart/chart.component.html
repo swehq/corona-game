@@ -10,9 +10,9 @@
     <cvd-line-graph [title]="series[0].label" [setData]="data$ | async"></cvd-line-graph>
   </div>
 
-<!--  This is temporary code -->
+  <!--  This is temporary code -->
   <cvd-row>
-<!--    I had to put z-index fot btn to be clickable.. ? -->
+    <!--    I had to put z-index fot btn to be clickable.. ? -->
     <button style="width: 180px; z-index: 100" (click)="addData(undefined)">Add node</button>
     <button style="width: 180px; z-index: 100" (click)="addData('Zavření škol')">Add node - zavření škol</button>
   </cvd-row>

@@ -15,10 +15,9 @@ export interface Serie {
 })
 export class ChartComponent {
   @Input()
-  series: Serie[];
+  series: Serie[] = [{label: ''}];
 
-  // MOCK DATA
-
+  // mock data
   data$ = new BehaviorSubject<LineNode[]>([
     {
       value: 86
@@ -52,7 +51,6 @@ export class ChartComponent {
       value: 1700
     },
   ]);
-
 
   addData(event: NodeEvent) {
     const currentData: LineNode[] = this.data$.value;

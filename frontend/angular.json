@@ -28,7 +28,8 @@
             "aot": true,
             "allowedCommonJsDependencies": [
               "chartjs-plugin-datalabels",
-              "chart.js"
+              "chart.js",
+              "lodash"
             ],
             "assets": [
               "src/favicon.ico",

@@ -10,8 +10,8 @@ export type Orientation = 'row' | 'col';
 })
 export class RowComponent {
   @Input() spacing: Spacing = 16;
-  @Input() horizontalSpacing: Spacing;
-  @Input() verticalSpacing: Spacing;
+  @Input() horizontalSpacing: Spacing = 0;
+  @Input() verticalSpacing: Spacing = 0;
 
   @Input()
   set wrap(value: boolean | '') { this._wrap = value === '' ? true : value; }
@@ -20,7 +20,7 @@ export class RowComponent {
 
   @Input() alignItems: 'start' | 'center' | 'baseline' | 'end' = 'center';
   @Input() justifyContent: 'flex-start' | 'center' | 'space-between' | 'space-around' | 'flex-end' = 'center';
-  @HostBinding('style.overflow') @Input() overflow: 'unset' | 'hidden' | 'auto';
+  @HostBinding('style.overflow') @Input() overflow: 'unset' | 'hidden' | 'auto' = 'auto';
 
   @Input()
   set reversed(value: boolean | '') { this._reversed = value === '' ? true : value; }

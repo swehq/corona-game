@@ -1,0 +1,136 @@
+{
+  "extends": "tslint:recommended",
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/codelyzer",
+    "node_modules/rxjs-tslint-rules/dist/rules"
+  ],
+  "rules": {
+    "arrow-parens": [
+      true,
+      "ban-single-arg-parens"
+    ],
+    "ban": [
+      true,
+      {
+        "name": "fdescribe",
+        "message": "Remove focused tests before PR."
+      },
+      {
+        "name": "fit",
+        "message": "Remove focused tests before PR."
+      }
+    ],
+    "component-class-suffix": true,
+    "component-selector": [
+      true,
+      "element",
+      "cvd",
+      "kebab-case"
+    ],
+    "curly": [
+      true,
+      "ignore-same-line"
+    ],
+    "directive-class-suffix": true,
+    "directive-selector": [
+      true,
+      "attribute",
+      "cvd",
+      "camelCase"
+    ],
+    "interface-name": false,
+    "member-access": [
+      true,
+      "no-public"
+    ],
+    "no-attribute-decorator": true,
+    "no-console": [
+      true,
+      "log",
+      "trace",
+      "debug",
+      "info"
+    ],
+    "no-duplicate-variable": true,
+    "no-empty": false,
+    "no-forward-ref": true,
+    "no-inferrable-types": true,
+    "no-input-rename": true,
+    "no-multi-spaces": true,
+    "no-output-rename": true,
+    "object-curly-spacing": [
+      true,
+      "never"
+    ],
+    "object-literal-key-quotes": [
+      true,
+      "as-needed"
+    ],
+    "object-literal-sort-keys": false,
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "semicolon": {
+      "options": [
+        "always"
+      ]
+    },
+    "space-before-function-paren": {
+      "options": {
+        "anonymous": "never",
+        "asyncArrow": "always",
+        "constructor": "never",
+        "method": "never",
+        "named": "never"
+      }
+    },
+    "typedef-whitespace": {
+      "options": [
+        {
+          "call-signature": "nospace",
+          "index-signature": "nospace",
+          "parameter": "nospace",
+          "property-declaration": "nospace",
+          "variable-declaration": "nospace"
+        },
+        {
+          "call-signature": "onespace",
+          "index-signature": "onespace",
+          "parameter": "onespace",
+          "property-declaration": "onespace",
+          "variable-declaration": "onespace"
+        }
+      ]
+    },
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-pascal-case",
+        "allow-leading-underscore"
+      ]
+    },
+    "whitespace": {
+      "options": [
+        "check-branch",
+        "check-decl",
+        "check-operator",
+        "check-separator",
+        "check-type",
+        "check-typecast"
+      ]
+    },
+    "contextual-lifecycle": true,
+    "no-conflicting-lifecycle": true,
+    "no-host-metadata-property": true,
+    "no-inputs-metadata-property": true,
+    "use-lifecycle-interface": true,
+    "no-outputs-metadata-property": true,
+    "use-pipe-transform-interface": true,
+    "rxjs-no-internal": {
+      "severity": "error"
+    }
+  }
+}

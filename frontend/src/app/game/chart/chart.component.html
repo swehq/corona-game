@@ -1,0 +1,27 @@
+<cvd-col grow>
+
+  <cvd-row>
+    <li *ngFor="let serie of series" [ngStyle]="{color: serie.color}">
+      {{serie.label}} <span *ngIf="serie.unit">[{{serie.unit}}]</span>
+    </li>
+  </cvd-row>
+
+  <div grow class="chart">
+    <app-line-graph [title]="series[0].label" [setData]="data$ | async"></app-line-graph>
+  </div>
+
+<!--  This is temporary code -->
+  <app-row>
+<!--    I had to put z-index fot btn to be clickable.. ? -->
+    <button style="width: 180px; z-index: 100" (click)="addData(undefined)">Add node</button>
+    <button style="width: 180px; z-index: 100" (click)="addData('Zavření škol')">Add node - zavření škol</button>
+  </app-row>
+  <app-row>
+    <button style="width: 180px; z-index: 100" (click)="addData('Otevření škol')">Add node - otevření škol</button>
+    <button style="width: 180px; z-index: 100" (click)="addData('Zákaz všeho')">Add node - zákaz všeho</button>
+  </app-row>
+  <app-row>
+    <button style="width: 180px; z-index: 100" (click)="removeData()">Remove last node</button>
+  </app-row>
+
+</cvd-col>

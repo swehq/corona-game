@@ -1,0 +1,53 @@
+{
+    "@context": [
+        "http://www.w3.org/ns/csvw",
+        {
+            "@language": "cs"
+        }
+    ],
+    "url": "nakaza.csv",
+    "dc:title": "COVID-19: Celkový (kumulativní) počet osob s prokázanou nákazou dle krajských hygienických stanic včetně laboratoří (v2)",
+    "dc:description": "Datová sada obsahující přírůstkové a kumulativní denní počty osob s prokázaným onemocněním COVID-19 dle hlášení krajských hygienických stanic včetně laboratoří. Datová sada nahrazuje předchozí verzi dostupnou na adrese https://onemocneni-aktualne.mzcr.cz/api/v1/covid-19/ .",
+    "dc:source": "Krajské hygienické stanice v ČR",
+    "dcat:keyword": [
+        "koronavirus",
+        "covid-19",
+        "prokázaná nákaza",
+        "krajské hygienické stanice",
+        "laboratoře"
+    ],
+    "dc:publisher": {
+        "schema:name": "ÚZIS ČR",
+        "schema:url": {
+            "@id": "https://www.uzis.cz/"
+        }
+    },
+    "dc:license": {
+        "@id": "https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/"
+    },
+    "dc:modified": {
+        "@value": "2020-11-07",
+        "@type": "xsd:date"
+    },
+    "tableSchema": {
+        "columns": [
+            {
+                "name": "datum",
+                "titles": "datum",
+                "datatype": "date"
+            },
+            {
+                "name": "prirustkovy_pocet_nakazenych",
+                "titles": "prirustkovy_pocet_nakazenych",
+                "datatype": "integer",
+                "dc:description": "Přírůstkový počet osob s prokázanou nákazou."
+            },
+            {
+                "name": "kumulativni_pocet_nakazenych",
+                "titles": "kumulativni_pocet_nakazenych",
+                "datatype": "integer",
+                "dc:description": "Kumulativní počet osob s prokázanou nákazou."
+            }
+        ]
+    }
+}

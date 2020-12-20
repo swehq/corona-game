@@ -1,0 +1,15 @@
+:host {
+  min-width: 20rem;
+  min-height: 20rem;
+  display: flex;
+  border: 1px solid chocolate;
+}
+
+li {
+  padding: 0.5rem;
+}
+
+.chart {
+  width: 100%;
+  background: bisque;
+}

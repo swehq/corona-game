@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>KoronaHra</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+	<!-- <?php 
+		//echo phpinfo();
+		$url = "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/nakazeni-vyleceni-umrti-testy.min.json";
+		if(file_put_contents("nakaza.min.json", file_get_contents($url))) { 
+			echo "File downloaded successfully";
+		} else { 
+			echo "File downloading failed."; 
+		}
+	?> -->
+
+	<p>Data z <span id="dataZ"></span></p>
+
+	<canvas id="canvas"></canvas>
+
+	<button onclick="iteraceDne(1)">+ 1 den</button>
+	<button onclick="iteraceDne(20)">+ 20 dní</button>
+
+	<input type="checkbox" name="rousky" id="rousky">
+	<label for="rousky">Roušky</label>
+
+	<input type="checkbox" name="rozestupy" id="rozestupy">
+	<label for="rozestupy">Rozestupy</label>
+	<p>Počet úmrtí: <span id="kumulativniUmrti"></span></p>
+	<p>Počet úmrtí dnes: <span id="dnesUmrti"></span></p>
+
+	<script type="text/javascript" src="..\Chart.js-2.9.4\Chart.js-2.9.4\dist\Chart.js"></script>
+	<script type="text/javascript" src="datum.js"></script>
+	<script type="text/javascript" src="dataOperations.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+
+</body>
+
+</html>

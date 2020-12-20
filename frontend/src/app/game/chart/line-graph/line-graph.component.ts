@@ -11,7 +11,7 @@ export interface LineNode {
 }
 
 @Component({
-  selector: 'app-line-graph',
+  selector: 'cvd-line-graph',
   templateUrl: './line-graph.component.html',
   styleUrls: ['./line-graph.component.scss']
 })

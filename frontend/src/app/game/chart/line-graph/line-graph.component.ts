@@ -1,7 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
-import {Label, PluginServiceGlobalRegistrationAndOptions, SingleDataSet} from 'ng2-charts';
+import {BaseChartDirective, Label, PluginServiceGlobalRegistrationAndOptions, SingleDataSet} from 'ng2-charts';
 import * as ChartDataLabels from 'chartjs-plugin-datalabels';
+import 'chartjs-plugin-zoom';
 
 export type NodeEvent = 'Zavření škol' | 'Otevření škol' | 'Zákaz všeho' | undefined;
 
@@ -19,7 +20,7 @@ export class LineGraphComponent implements OnInit {
   @Input() title = '';
 
   @Input()
-  set setData(data: LineNode[] | null) {
+  set setData(data: LineNode[]) {
     if (!data) return;
 
     const today = new Date();
@@ -29,11 +30,11 @@ export class LineGraphComponent implements OnInit {
     });
 
     this.eventNodes = data.map(node => node.event);
-    this.data = data.map(node => node.value);
-    this.datasets[0].data = this.data;
+    this.datasets[0].data = data.map(node => node.value);
   }
 
-  data: SingleDataSet = [];
+  @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
+
   eventNodes: NodeEvent[] = [];
   datasets: ChartDataSets[] = [{
     data: [],
@@ -78,6 +79,18 @@ export class LineGraphComponent implements OnInit {
         formatter: (_, context) => this.eventNodes[context.dataIndex],
         font: this.font,
       },
+      zoom: {
+        pan: {
+          enabled: true,
+          mode: 'x',
+          speed: 2,
+        },
+        zoom: {
+          enabled: true,
+          speed: 1,
+          mode: 'x',
+        }
+      }
     },
   };
   plugins = [ChartDataLabels] as PluginServiceGlobalRegistrationAndOptions[];
@@ -87,5 +100,9 @@ export class LineGraphComponent implements OnInit {
       text: this.title,
       display: Boolean(this.title),
     };
+  }
+
+  resetZoom() {
+    (this.chart.chart as any).resetZoom();
   }
 }

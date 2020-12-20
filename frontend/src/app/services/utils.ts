@@ -1,8 +1,9 @@
-export function nextDay(day: string): string {
-  const date = new Date(day);
-  date.setDate(date.getDate() + 1);
+import {addDays, format} from 'date-fns';
 
-  return date.toISOString().slice(0, 10);
+export function nextDay(day: string): string {
+  // works internally with local time (TZ-resistant)
+  const date = addDays(new Date(`${day} 00:00`), 1);
+  return format(date, 'yyyy-MM-dd');
 }
 
 // Create a function sampling from a normal distribution

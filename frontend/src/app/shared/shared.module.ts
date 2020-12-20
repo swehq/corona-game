@@ -9,12 +9,14 @@ import {RowComponent} from './flex/row.component';
 import {SharedMaterialModule} from './shared.material.module';
 import {LineGraphComponent} from '../game/chart/line-graph/line-graph.component';
 import {ChartsModule} from 'ng2-charts';
+import {ScatterGraphComponent} from '../game/chart/scatter-graph/scatter-graph.component';
 
 const DECLARATIONS: Declaration[] = [
   ColComponent,
   FlexItemDirective,
   LineGraphComponent,
   RowComponent,
+  ScatterGraphComponent,
 ];
 
 @NgModule({

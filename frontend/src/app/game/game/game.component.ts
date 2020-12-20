@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {last} from 'lodash';
 import {Game} from 'src/app/services/game';
 import {DayState} from 'src/app/services/simulation';
 

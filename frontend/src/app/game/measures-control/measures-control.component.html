@@ -1,0 +1,33 @@
+<cvd-col alignItems="start">
+
+  <cvd-measure-bool
+    measure="rousky"
+    label="Roušky, ruce, rozestupy"
+  >3R</cvd-measure-bool>
+
+  <cvd-measure-bool
+    measure="doma"
+    label="Zakázat"
+  >Vycházení</cvd-measure-bool>
+
+  <cvd-measure-bool
+    measure="hranice"
+    label="Zavřít"
+  >Hranice</cvd-measure-bool>
+
+  <cvd-measure-toggle
+    measure="akce"
+    [options]="[[null, 'Neomezeno'], [1000, 'max. 1 000'], [100, 'max. 100'], [10, 'max. 10']]"
+  >Akce</cvd-measure-toggle>
+
+  <cvd-measure-toggle
+    measure="sluzby"
+    [options]="[[null, 'Neomezeno'], ['risk', 'Zavřít rizikové'], ['all', 'Zavřít většinu']]"
+  >Služby</cvd-measure-toggle>
+
+  <cvd-measure-toggle
+    measure="skoly"
+    [options]="[[null, 'Neomezeno'], ['university', 'Zavřít university'], ['all', 'Zavřít všechny']]"
+  >Školy</cvd-measure-toggle>
+
+</cvd-col>

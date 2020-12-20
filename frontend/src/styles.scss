@@ -1,4 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: small;
+}
+
+@import '~@angular/material/theming';
+$custom-typography: mat-typography-config(
+  $body-1:        mat-typography-level(12px, 20px, 400),
+);
+@include mat-core($custom-typography);
+
+.measure-label {
+  min-width: 4rem;
+}

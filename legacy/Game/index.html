@@ -113,7 +113,8 @@
 			<button title="play" id="btn-play" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-play"></i></button>
 			<button title="fwd" id="btn-fwd" onclick="onButtonSetPlaySpeed(this.id)" class="btn-not-pressed"><i class="fas fa-forward"></i></button>
 			</br>
-			<button title="restart" id="restart" onclick="restartSimulation()">RESTART</button>
+			<button title="restart" id="restart" onclick="restartSimulation()">RESTART</button><br>
+			<div id="tuning"></div>
 		</div>
 
 		<div id="stats">
@@ -177,16 +178,19 @@
 		</div>
 	</div>
 
+	<p>
+		Source code <a href="https://github.com/daeglin/KoronaHra">https://github.com/daeglin/KoronaHra</a>
+	</p>
 
-
-
-	<script type="text/javascript" src="../Chart.js-2.9.4/Chart.js-2.9.4/dist/Chart.js"></script>
+	<script type="text/javascript" src="../Chart.js-dist/Chart.js"></script>
 	<script type="text/javascript" src="util.js"></script>
 	<script type="text/javascript" src="mitigation.js"></script>
 	<script type="text/javascript" src="simulation.js"></script>
 	<script type="text/javascript" src="events.js"></script>
 	<script type="text/javascript" src="game.js"></script>
 	<script type="text/javascript" src="ui.js"></script>
+	<!--<script type="text/javascript" src="../Tuning/tuning.js"></script>-->
+	<script type="text/javascript">initialize();</script>
 
 </body>
 

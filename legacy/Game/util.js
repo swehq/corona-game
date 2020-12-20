@@ -9,8 +9,12 @@ function rok(datum) {
 }
 
 
-const dnyVMesici = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const dnyVMesiciNeprestupny = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const dnyVMesiciPrestupny = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 function plusDay(datum) {
+	let r = parseInt(rok(datum));
+	let dnyVMesici = (r % 4 == 0 && r != 2000) ? dnyVMesiciPrestupny : dnyVMesicineprestupny;
+
 	if (den(datum) < dnyVMesici[mesic(datum) - 1]) {
 		let novyDen = parseInt(den(datum)) + 1;
 		return (rok(datum) + "-" + mesic(datum) + "-" + ("0" + novyDen).slice(-2));

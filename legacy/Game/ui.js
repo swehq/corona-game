@@ -31,7 +31,7 @@ function refreshData(simDay) {
 		let labels = chart.data.labels;
 		let ticks = chart.scales.x.options.ticks;
 
-		ticks.min = labels[Math.max(0, labels.length - chart.options.maxDays)];
+		ticks.min = '2020-02-29';
 		ticks.max = simDay.date;
 		chart.update();
 	});
@@ -45,7 +45,7 @@ function refreshData(simDay) {
 	document.getElementById("costTotal").innerHTML = formatWithThousandsSeparator(simDay.costTotal / 1e9, 1);
 }
 
-function displayData(simDay) {
+function displayData(simDay, refresh=true) {
 	// Display all new data
 	dataDisplays.forEach(display => {
 		let chartData = display.chartDataset.data;
@@ -54,7 +54,9 @@ function displayData(simDay) {
 
 	charts.forEach(chart => chart.data.labels.push(simDay.date));
 
-	refreshData(simDay);
+	if (refresh) {
+		refreshData(simDay);
+	}
 }
 
 function resetChartData() {
@@ -133,7 +135,7 @@ function createChart(canvasId, maxDays, datasets, yAxes, fontSize = SMALLER_CHAR
 				}]
 			},
 			tooltips: {
-				enabled: false
+				enabled: true
 			},
 			legend: {
 				labels: {
@@ -272,14 +274,13 @@ function tick() {
 		displayData(gameUpdate.dayStats);
 		if (gameUpdate.evnt != null) {
 			let evnt = gameUpdate.evnt;
-			showEvent(evnt.title, evnt.text, evnt.options, gameUpdate.dayStats);
+			showEvent(evnt, gameUpdate.dayStats);
 		}
 	} else {
-		if (game.getSimStats().length <= 1) {
+		let stats = game.moveBackward();
+		if (stats == null) {
 			setPlaySpeed("pause");
 		} else {
-			let stats = game.moveBackward();
-
 			charts.forEach(chart => {
 				chart.data.labels.pop();
 				chart.data.datasets.forEach(dataset => dataset.data.pop());
@@ -295,7 +296,8 @@ function restartSimulation() {
 	resetChartData();
 	displayEndOfGame(false);
 	game = new Game();
-	game.getSimStats().forEach(day => displayData(day));
+	game.getSimStats().forEach(day => displayData(day, refresh=false));
+	refreshData(game.getLastStats());
 
 	document.getElementById("pes-0").checked = true;
 	pesLevelOnChange("pes-0");
@@ -306,7 +308,6 @@ function initialize() {
 	populateMitigationCheckboxes();
 	restartSimulation();
 }
-initialize();
 
 function endSimulation() {
 	let endDay = game.getLastStats();
@@ -335,10 +336,10 @@ function displayNewspaper(visible) {
 	setVisibility("newspaper", visible);
 }
 
-function showEvent(title, text, options, dayStats) {
+function showEvent(evnt, dayStats) {
 	setPlaySpeed("pause");
-	document.getElementById("newspaper-title").innerHTML = evalTemplate(title, dayStats);
-	document.getElementById("newspaper-text").innerHTML = evalTemplate(text, dayStats);
+	document.getElementById("newspaper-title").innerHTML = evalTemplate(evnt.title, dayStats);
+	document.getElementById("newspaper-text").innerHTML = evalTemplate(evnt.text, dayStats);
 	setVisibility("newspaper", true);
 }
 
@@ -370,8 +371,16 @@ function mitigationCheckboxOnChange(id) {
 		return;
 	}
 
-	if (mitigation == "eventsAll") document.getElementById(MITIGATION_PREFIX + "eventsSome").checked = false;
-	if (mitigation == "eventsSome") document.getElementById(MITIGATION_PREFIX + "eventsAll").checked = false;
+	function exclusiveMitigation(group) {
+		if (group.includes(mitigation)) {
+			group.forEach(m => document.getElementById(MITIGATION_PREFIX + m).checked = (m == mitigation));
+		}
+	}
+
+	exclusiveMitigation(["eventsAll", "eventsSome"]);
+	exclusiveMitigation(["events10", "events100", "events1000"]);
+	exclusiveMitigation(["businessesSome", "businessesMost"]);
+	exclusiveMitigation(["schools", "universities"]);
 }
 
 function pesLevelOnChange(pes) {
@@ -386,5 +395,3 @@ function uncheckPes() {
 		document.getElementById("pes-" + i).checked = false;
 	}
 }
-
-displayInstructions(false);

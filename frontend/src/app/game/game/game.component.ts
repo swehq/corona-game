@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {last} from 'lodash';
+import {Event} from 'src/app/services/event-list';
 import {Game} from 'src/app/services/game';
-import {DayState} from 'src/app/services/simulation';
+import {SimStats} from 'src/app/services/simulation';
 
 type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
 
@@ -60,7 +61,7 @@ export class GameComponent implements OnInit {
 
   tick() {
     if (this.speed === 'rev') {
-      if (this.game.simulation.modelStates.length <= 1) {
+      if (this.game.simulation.simDays.length <= 1) {
         this.setSpeed('pause');
       } else {
         this.game.moveBackward();
@@ -80,19 +81,19 @@ export class GameComponent implements OnInit {
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
-    if (event) this.showEvent(event.title, event.text, gameUpdate.dayState);
+    if (event) this.showEvent(event, gameUpdate.dayStats);
   }
 
-  showEvent(title: string, text: string, dayState: DayState) {
+  showEvent(event: Event, dayStats: SimStats) {
     this.setSpeed('pause');
-    this.eventMessage = `${title}, ${text}, ${dayState}`;
+    this.eventMessage = `${event.title}, ${event.text}, ${dayStats}`;
   }
 
   download() {
     const element = document.createElement('a');
     element.style.display = 'none';
 
-    const data = JSON.stringify(this.game.simulation.modelStates, null, 2);
+    const data = JSON.stringify(this.game.simulation.simDays, null, 2);
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
     element.setAttribute('download', 'data.json');
 

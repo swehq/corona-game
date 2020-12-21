@@ -3,8 +3,8 @@
 import {last} from 'lodash';
 import {nextDay, normalPositiveSampler} from './utils';
 
-interface Results {
-  date: string;
+// Internal simulation state
+interface SimState {
   suspectible: number;
   infected: number;
   recovered: number;
@@ -20,18 +20,21 @@ interface Results {
   stability: number;
 }
 
-interface Stats {
+// Public simulation statistics
+export interface SimStats {
   detectedInfectionsToday: number;
   detectedInfectionsTotal: number;
   detectedInfections7DayAvg: number;
   detectedActiveInfectionsTotal: number;
   mortality: number;
-  costTotal: any;
+  costTotal: number;
   hospitalizationCapacity: number;
 }
 
-export interface DayState extends Results {
-  stats: Stats;
+interface SimDayData {
+  date: string;
+  state: SimState;
+  stats: SimStats;
 }
 
 
@@ -61,10 +64,9 @@ export class Simulation {
   hospitalsOverwhelmedMortalityMultiplier = 2;
   hospitalsBaselineUtilization = 0.5;
 
-  modelStates: DayState[] = [];
+  simDays: SimDayData[] = [];
 
-  stateBeforeStart: Results = {
-    date: '',
+  stateBeforeStart: SimState = {
     suspectible: this.initialPopulation,
     infected: 0,
     recovered: 0,
@@ -83,28 +85,28 @@ export class Simulation {
   // TODO move to Date
   constructor(startDate: string) {
     // pandemic params
-    const initialState: Results = {...this.stateBeforeStart};
-    initialState.date = startDate;
+    const initialState: SimState = {...this.stateBeforeStart};
     initialState.suspectible = this.initialPopulation - this.infectedStart;
     initialState.infected = this.infectedStart;
     initialState.infectedToday = this.infectedStart;
-    this.modelStates.push({...initialState, stats: this.calcStats(initialState)});
+    this.simDays.push({date: startDate, state: initialState, stats: this.calcStats(initialState)});
   }
 
-  getModelStateInPast(n: number) {
-    const i = this.modelStates.length - n;
+  getSimStateInPast(n: number) {
+    const i = this.simDays.length - n;
 
     if (i >= 0) {
-      return this.modelStates[i];
+      return this.simDays[i].state;
     } else {
       // days before the start of the epidemic have no sick people
       return this.stateBeforeStart;
     }
   }
 
-  simOneDay(mitigationEffect: any) {
-    const yesterday = this.getModelStateInPast(1);
-    const todayDate = nextDay(yesterday.date);
+  simOneDay(mitigationEffect: any): SimStats {
+    const lastSimDay = this.getLastSimDayData();
+    const yesterday = lastSimDay.state;
+    const date = nextDay(lastSimDay.date);
 
     let suspectible = yesterday.suspectible;
     let infected = yesterday.infected;
@@ -122,7 +124,7 @@ export class Simulation {
     let infectious = 0;
 
     for (let i = this.infectiousFrom; i <= this.infectiousTo; ++i) {
-      infectious += this.getModelStateInPast(i).infectedToday;
+      infectious += this.getSimStateInPast(i).infectedToday;
     }
 
     infectious /= (this.infectiousTo - this.infectiousFrom + 1);
@@ -133,27 +135,27 @@ export class Simulation {
     infected += infectedToday;
     suspectible -= infectedToday;
 
-    const recoveryFromDay = this.getModelStateInPast(this.recoveryDays);
+    const recoveryFromDay = this.getSimStateInPast(this.recoveryDays);
     const recoveredToday = recoveryFromDay.infectedToday * (1 - recoveryFromDay.mortality);
     recovered += recoveredToday;
     infected -= recoveredToday;
 
-    const deathsFromDay = this.getModelStateInPast(this.timeToDeathDays);
+    const deathsFromDay = this.getSimStateInPast(this.timeToDeathDays);
     const deathsToday = deathsFromDay.infectedToday * deathsFromDay.mortality;
     dead += deathsToday;
     infected -= deathsToday;
 
-    const endedImmunityFromDay = this.getModelStateInPast(this.immunityDays);
+    const endedImmunityFromDay = this.getSimStateInPast(this.immunityDays);
     const endedImmunityToday = endedImmunityFromDay.infectedToday * (1 - endedImmunityFromDay.mortality);
     suspectible += endedImmunityToday;
     recovered -= endedImmunityToday;
 
-    const hospitalizedToday = this.getModelStateInPast(this.incubationDays).infectedToday * this.hospitalizationRateSampler();
+    const hospitalizedToday = this.getSimStateInPast(this.incubationDays).infectedToday * this.hospitalizationRateSampler();
     const hospitalized = yesterday.hospitalized + hospitalizedToday -
-      this.getModelStateInPast(this.hospitalizationDays).hospitalizedToday;
+      this.getSimStateInPast(this.hospitalizationDays).hospitalizedToday;
 
     let vaccinationRate = yesterday.vaccinationRate;
-    if (todayDate >= this.vaccinationStartDate) {
+    if (date >= this.vaccinationStartDate) {
       vaccinationRate = Math.min(vaccinationRate + this.vaccinationPerDay, this.vaccinationMaxRate);
     }
 
@@ -162,8 +164,7 @@ export class Simulation {
       hospitalsOverwhelmedMultiplier = this.hospitalsOverwhelmedMortalityMultiplier;
     }
 
-    const modelState: Results = {
-      date: todayDate,
+    const state: SimState = {
       suspectible,
       infected,
       recovered,
@@ -179,36 +180,47 @@ export class Simulation {
       stability: socialStability,
     };
 
-    const stats = this.calcStats(modelState);
-    const state = {...modelState, stats};
-    this.modelStates.push(state);
+    const stats = this.calcStats(state);
+    const simData = {date, state, stats};
+    this.simDays.push(simData);
 
-    return state;
+    return stats;
   }
 
   rewindOneDay() {
-    this.modelStates.pop();
+    this.simDays.pop();
   }
 
-  getLastStats() {
-    return last(this.modelStates)?.stats;
+  getLastSimDayData(): SimDayData {
+    const lastSimDayData = last(this.simDays);
+    if (!lastSimDayData) throw new Error('Absent sim day data');
+
+    return lastSimDayData;
+  }
+
+  getLastStats(): SimStats {
+    return this.getLastSimDayData().stats;
+  }
+
+  getLastDate(): string {
+    return this.getLastSimDayData().date;
   }
 
   // TODO consider removal and computation on-the-fly
-  calcStats(state: Results): Stats {
-    const lastStat = this.getLastStats();
+  calcStats(state: SimState): SimStats {
+    const lastStat = this.simDays.length > 0 ? this.getLastStats() : null;
 
     let undetectedInfections = 0;
     for (let i = 1; i <= this.incubationDays; i++) {
-      undetectedInfections += this.getModelStateInPast(i).infectedToday;
+      undetectedInfections += this.getSimStateInPast(i).infectedToday;
     }
 
-    const detectedInfectionsToday = this.getModelStateInPast(this.incubationDays + 1).infectedToday;
+    const detectedInfectionsToday = this.getSimStateInPast(this.incubationDays + 1).infectedToday;
     const detectedInfectionsTotal = (lastStat ? lastStat.detectedInfectionsTotal : 0) + detectedInfectionsToday;
 
     let detectedInfections7DayAvg = 0;
     for (let i = 1; i <= 7; i++) {
-      detectedInfections7DayAvg += this.getModelStateInPast(i + this.incubationDays).infectedToday / 7;
+      detectedInfections7DayAvg += this.getSimStateInPast(i + this.incubationDays).infectedToday / 7;
     }
 
     const costTotal = ((lastStat != null) ? lastStat.costTotal : 0) + state.costToday;

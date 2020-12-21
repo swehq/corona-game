@@ -32,13 +32,12 @@ export class Game {
     if (!oldMitigationState) throw new Error('Absent mitigation');
 
     const mitigationEffect = this.calcMitigationEffect(oldMitigationState);
-    const dayState = this.simulation.simOneDay(mitigationEffect);
-    const dayStats = dayState.stats;
+    const dayStats = this.simulation.simOneDay(mitigationEffect);
 
     this.mitigationStates.push(cloneDeep(oldMitigationState));
     const event = this.eventHandler.evaluateDay(dayStats);
 
-    return {dayState, event};
+    return {dayStats, event};
   }
 
   moveBackward() {
@@ -50,12 +49,11 @@ export class Game {
   }
 
   get lastDate() {
-    const lastState = last(this.simulation.modelStates);
-    return lastState?.date;
+    return this.simulation.getLastDate();
   }
+
   isFinished() {
-    const lastState = last(this.simulation.modelStates);
-    return Boolean(this.lastDate && this.lastDate >= this.endDate);
+    return Boolean(this.lastDate >= this.endDate);
   }
 
   getMitigationState() {

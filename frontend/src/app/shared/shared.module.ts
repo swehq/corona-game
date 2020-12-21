@@ -3,12 +3,14 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {Declaration} from '../utils/ng.model';
+import {ButtonComponent} from './button/button.component';
 import {ColComponent} from './flex/col.component';
 import {FlexItemDirective} from './flex/flex-item.directive';
 import {RowComponent} from './flex/row.component';
 import {SharedMaterialModule} from './shared-material.module';
 
 const DECLARATIONS: Declaration[] = [
+  ButtonComponent,
   ColComponent,
   FlexItemDirective,
   RowComponent,

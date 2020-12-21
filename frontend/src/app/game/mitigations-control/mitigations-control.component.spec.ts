@@ -1,19 +1,19 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {MeasuresControlComponent} from './measures-control.component';
+import {MitigationsControlComponent} from './mitigations-control.component';
 
-describe('MeasuresControlComponent', () => {
-  let component: MeasuresControlComponent;
-  let fixture: ComponentFixture<MeasuresControlComponent>;
+describe('MitigationsControlComponent', () => {
+  let component: MitigationsControlComponent;
+  let fixture: ComponentFixture<MitigationsControlComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MeasuresControlComponent]
+      declarations: [MitigationsControlComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MeasuresControlComponent);
+    fixture = TestBed.createComponent(MitigationsControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

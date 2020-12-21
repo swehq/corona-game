@@ -9,10 +9,10 @@ import {ScatterGraphComponent} from './chart/scatter-graph/scatter-graph.compone
 import {ChartsComponent} from './charts/charts.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
-import {MeasureBoolComponent} from './measures-control/controls/measure-bool.component';
-import {MeasureToggleComponent} from './measures-control/controls/measure-toggle.component';
-import {MeasureDirective} from './measures-control/measure.directive';
-import {MeasuresControlComponent} from './measures-control/measures-control.component';
+import {MitigationBoolComponent} from './mitigations-control/controls/mitigation-bool.component';
+import {MitigationToggleComponent} from './mitigations-control/controls/mitigation-toggle.component';
+import {MitigationDirective} from './mitigations-control/mitigation.directive';
+import {MitigationsControlComponent} from './mitigations-control/mitigations-control.component';
 import {SimulationControlComponent} from './simulation-control/simulation-control.component';
 import {StatusDisplayComponent} from './status-display/status-display.component';
 
@@ -22,13 +22,13 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
     ChartsComponent,
     GameComponent,
     LineGraphComponent,
-    MeasureBoolComponent,
-    MeasuresControlComponent,
-    MeasureToggleComponent,
+    MitigationBoolComponent,
+    MitigationsControlComponent,
+    MitigationToggleComponent,
     ScatterGraphComponent,
     SimulationControlComponent,
     StatusDisplayComponent,
-    MeasureDirective,
+    MitigationDirective,
   ],
   imports: [
     ChartsModule,

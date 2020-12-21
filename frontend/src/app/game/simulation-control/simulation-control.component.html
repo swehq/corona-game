@@ -1,10 +1,10 @@
 <cvd-col>
 
   <cvd-row wrap>
-    <button (click)="restartSimulation()">Restart</button>
-    <button (click)="togglePause()">{{this.speed === 'pause' ? 'Resume' : 'Pause'}}</button>
-    <button (click)="restartSimulation('max')">Compute</button>
-    <button (click)="download()">Download</button>
+    <cvd-button (click)="restartSimulation()">Restart</cvd-button>
+    <cvd-button (click)="togglePause()">{{this.speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
+    <cvd-button (click)="restartSimulation('max')">Compute</cvd-button>
+    <cvd-button (click)="download()">Download</cvd-button>
   </cvd-row>
 
   <p>Last date: {{this.game.lastDate}}</p>

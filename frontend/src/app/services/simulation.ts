@@ -203,9 +203,9 @@ export class Simulation {
 
   getSeasonalityEffect(date: string): number {
     // Hacky
-    let month = parseInt(date.slice(5, 7));
-    let day = parseInt(date.slice(8, 9));
-    let seasonalityPhase = (month * 30. + day - 1 * 30 - 15) / 360.;  // 360 day "accounting", peak mid Jan
+    const month = parseInt(date.slice(5, 7), 10);
+    const day = parseInt(date.slice(8, 9), 10);
+    const seasonalityPhase = (month * 30. + day - 1 * 30 - 15) / 360.;  // 360 day "accounting", peak mid Jan
     return this.RSeasonalityEffect * Math.cos(2 * Math.PI * seasonalityPhase);
   }
 

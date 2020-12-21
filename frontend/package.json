@@ -25,6 +25,7 @@
     "chartjs-plugin-datalabels": "^0.7.0",
     "chartjs-plugin-zoom": "^0.7.7",
     "date-fns": "^2.16.1",
+    "date-fns-tz": "^1.0.12",
     "lodash": "^4.17.20",
     "ng2-charts": "~2.4.2",
     "rxjs": "~6.6.3",

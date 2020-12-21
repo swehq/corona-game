@@ -1,9 +1,10 @@
-import {addDays, format} from 'date-fns';
+import {addDays} from 'date-fns';
+import {utcToZonedTime, format} from 'date-fns-tz';
 
 export function nextDay(day: string): string {
-  // works internally with local time (TZ-resistant)
-  const date = addDays(new Date(day), 1);
-  return format(date, 'yyyy-MM-dd');
+  // Keep date arithmetic explicitly in UTC
+  const date = addDays(utcToZonedTime(day, 'UTC'), 1);
+  return format(date, 'yyyy-MM-dd', {timeZone: 'UTC'});
 }
 
 // Create a function sampling from a normal distribution

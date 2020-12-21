@@ -9,6 +9,8 @@ interface Mitigation {
   cost: number; // million per day
   stabilityCost: number;
   label: string;
+  isSchool: boolean;
+  isBorders: boolean;
   eventOnly: boolean;
 }
 
@@ -106,13 +108,13 @@ export class Game {
     this.allMitigations.forEach(mitigation => {
       // Special treatment of school break
       if (mitigation.isSchool && isSchoolBreak) {
-        if (mitigation.id == "schools") mult *= (1 - mitigation.eff);
+        if (mitigation.id == "schools") mult *= (1 - mitigation.effectivity);
         return;
       }
       if (!mitigationState[mitigation.id].active) return;
       bordersClosed ||= mitigation.isBorders;
 
-      mult *= (1 - mitigation.eff);
+      mult *= (1 - mitigation.effectivity);
       cost += mitigation.cost;
       stabilityCost += mitigation.stabilityCost;
     });
@@ -151,7 +153,7 @@ export class Game {
       mitigations.push({
         id,
         label,
-        eff: effectivity + ens() * (effectivityConfidence[1]-effectivityConfidence[0]) / 4,
+        effectivity: effectivity + ens() * (effectivityConfidence[1]-effectivityConfidence[0]) / 4,
         cost: costMPerDay,
         stabilityCost,
         isSchool: flags?.isSchool == true,

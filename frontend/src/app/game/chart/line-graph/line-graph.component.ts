@@ -1,7 +1,8 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
-import {BaseChartDirective, Label, PluginServiceGlobalRegistrationAndOptions, SingleDataSet} from 'ng2-charts';
-import * as ChartDataLabels from 'chartjs-plugin-datalabels';
+import {BaseChartDirective, Label} from 'ng2-charts';
+
+import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
 
 export type NodeEvent = 'Zavření škol' | 'Otevření škol' | 'Zákaz všeho' | undefined;
@@ -93,7 +94,6 @@ export class LineGraphComponent implements OnInit {
       }
     },
   };
-  plugins = [ChartDataLabels] as PluginServiceGlobalRegistrationAndOptions[];
 
   ngOnInit() {
     this.options.title = {

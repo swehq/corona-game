@@ -27,8 +27,8 @@
             "tsConfig": "tsconfig.app.json",
             "aot": true,
             "allowedCommonJsDependencies": [
-              "chartjs-plugin-datalabels",
               "chart.js",
+              "chartjs-plugin-datalabels",
               "chartjs-plugin-zoom",
               "lodash"
             ],
@@ -41,7 +41,9 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js"
+              "node_modules/chart.js/dist/Chart.js",
+              "node_modules/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.js",
+              "node_modules/chartjs-plugin-zoom/dist/chartjs-plugin-zoom.js"
             ]
           },
           "configurations": {

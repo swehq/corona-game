@@ -2,10 +2,10 @@ import {Component, Input} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
 @Component({
-  selector: 'cvd-measure-toggle',
+  selector: 'cvd-mitigation-toggle',
   template: `
     <cvd-row wrap justifyContent="flex-start">
-      <div class="measure-label"><ng-content></ng-content></div>
+      <div class="mitigation-label"><ng-content></ng-content></div>
       <mat-button-toggle-group [formControl]="formControl">
         <mat-button-toggle
           *ngFor="let option of options"
@@ -25,7 +25,7 @@ import {FormControl} from '@angular/forms';
     }
   `]
 })
-export class MeasureToggleComponent {
+export class MitigationToggleComponent {
   @Input() options: [value: any, label: string][] = [];
   formControl = new FormControl();
 }

@@ -1,1 +1,6 @@
-<p>simulation-control works!</p>
+<cvd-row wrap>
+  <cvd-button (click)="gameService.restartSimulation()">Restart</cvd-button>
+  <cvd-button (click)="gameService.togglePause()">{{gameService.speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
+  <cvd-button (click)="gameService.restartSimulation('max')">Compute</cvd-button>
+  <cvd-button (click)="download()">Download</cvd-button>
+</cvd-row>

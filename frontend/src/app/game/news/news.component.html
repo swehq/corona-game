@@ -1,0 +1,10 @@
+<cvd-col>
+
+  <p>Last date: {{gameService.lastDate}}</p>
+
+  <div *ngIf="gameService.eventMessages.length">
+    <h3>Events</h3>
+    <p *ngFor="let m of gameService.eventMessages">{{m}}</p>
+  </div>
+
+</cvd-col>

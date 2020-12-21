@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MeasuresService} from '../measures-control/measures.service';
+import {MitigationsService} from '../mitigations-control/mitigations.service';
 
 @Component({
   selector: 'cvd-status-display',
@@ -8,7 +8,7 @@ import {MeasuresService} from '../measures-control/measures.service';
 })
 export class StatusDisplayComponent {
   constructor(
-    public measuresService: MeasuresService,
+    public mitigationsService: MitigationsService,
   ) {
   }
 }

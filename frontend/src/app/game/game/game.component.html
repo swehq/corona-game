@@ -1,23 +1,11 @@
 <cvd-col [spacing]="32">
 
-  <cvd-row wrap>
-    <button (click)="restartSimulation()">Restart</button>
-    <button (click)="togglePause()">{{this.speed === 'pause' ? 'Resume' : 'Pause'}}</button>
-    <button (click)="restartSimulation('max')">Compute</button>
-    <button (click)="download()">Download</button>
-  </cvd-row>
-
-  <p>Last date: {{this.game.lastDate}}</p>
-
-  <div *ngIf="eventMessages.length">
-    <h3>Events</h3>
-    <p *ngFor="let m of eventMessages">{{m}}</p>
-  </div>
+  <cvd-news></cvd-news>
 
   <cvd-charts></cvd-charts>
 
   <cvd-row wrap>
-    <cvd-measures-control></cvd-measures-control>
+    <cvd-mitigations-control></cvd-mitigations-control>
     <cvd-status-display></cvd-status-display>
     <cvd-simulation-control></cvd-simulation-control>
   </cvd-row>

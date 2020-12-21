@@ -7,10 +7,10 @@ export type Labels = {
 };
 
 @Component({
-  selector: 'cvd-measure-bool',
+  selector: 'cvd-mitigation-bool',
   template: `
     <cvd-row wrap>
-      <div class="measure-label"><ng-content></ng-content></div>
+      <div class="mitigation-label"><ng-content></ng-content></div>
       <mat-slide-toggle [formControl]="formControl">{{label || ''}}</mat-slide-toggle>
     </cvd-row>
   `,
@@ -20,7 +20,7 @@ export type Labels = {
     }
   `]
 })
-export class MeasureBoolComponent {
+export class MitigationBoolComponent {
   @Input() label = '';
   formControl = new FormControl();
 }

@@ -13,6 +13,7 @@ import {MitigationBoolComponent} from './mitigations-control/controls/mitigation
 import {MitigationToggleComponent} from './mitigations-control/controls/mitigation-toggle.component';
 import {MitigationDirective} from './mitigations-control/mitigation.directive';
 import {MitigationsControlComponent} from './mitigations-control/mitigations-control.component';
+import {NewsComponent} from './news/news.component';
 import {SimulationControlComponent} from './simulation-control/simulation-control.component';
 import {StatusDisplayComponent} from './status-display/status-display.component';
 
@@ -23,12 +24,13 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
     GameComponent,
     LineGraphComponent,
     MitigationBoolComponent,
+    MitigationDirective,
     MitigationsControlComponent,
     MitigationToggleComponent,
+    NewsComponent,
     ScatterGraphComponent,
     SimulationControlComponent,
     StatusDisplayComponent,
-    MitigationDirective,
   ],
   imports: [
     ChartsModule,

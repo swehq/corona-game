@@ -1,17 +1,6 @@
-<cvd-col>
-
-  <cvd-row wrap>
-    <cvd-button (click)="restartSimulation()">Restart</cvd-button>
-    <cvd-button (click)="togglePause()">{{this.speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
-    <cvd-button (click)="restartSimulation('max')">Compute</cvd-button>
-    <cvd-button (click)="download()">Download</cvd-button>
-  </cvd-row>
-
-  <p>Last date: {{this.game.lastDate}}</p>
-
-  <div *ngIf="eventMessages.length">
-    <h3>Events</h3>
-    <p *ngFor="let m of eventMessages">{{m}}</p>
-  </div>
-
-</cvd-col>
+<cvd-row wrap>
+  <cvd-button (click)="gameService.restartSimulation()">Restart</cvd-button>
+  <cvd-button (click)="gameService.togglePause()">{{gameService.speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
+  <cvd-button (click)="gameService.restartSimulation('max')">Compute</cvd-button>
+  <cvd-button (click)="download()">Download</cvd-button>
+</cvd-row>

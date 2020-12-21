@@ -9,6 +9,11 @@
 
   <p>Last date: {{this.game.lastDate}}</p>
 
+  <div *ngIf="eventMessages.length">
+    <h3>Events</h3>
+    <p *ngFor="let m of eventMessages">{{m}}</p>
+  </div>
+
   <cvd-charts></cvd-charts>
 
   <cvd-row wrap>

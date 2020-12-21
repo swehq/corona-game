@@ -26,7 +26,7 @@ interface Results {
   stability: number;
 }
 
-interface Stats {
+export interface Stats {
   detectedInfectionsToday: number;
   detectedInfectionsTotal: number;
   detectedInfections7DayAvg: number;
@@ -216,7 +216,7 @@ export class Simulation {
       detectedInfections7DayAvg += this.getModelStateInPast(i + this.incubationDays).infectedToday / 7;
     }
 
-    const costTotal = ((lastStat != null) ? lastStat.costTotal : 0) + state.costToday;
+    const costTotal = (lastStat ? lastStat.costTotal : 0) + state.costToday;
     const stats = {
       detectedInfectionsToday: Math.round(detectedInfectionsToday),
       detectedInfectionsTotal: Math.round(detectedInfectionsTotal),

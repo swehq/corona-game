@@ -15,7 +15,7 @@ export class GameComponent implements OnInit {
   readonly REVERSE_SPEED = 50; // ms
 
   game = new Game();
-  eventMessage = '';
+  eventMessages: string[] = [];
   speed: Speed = 'pause';
   tickerId: number | undefined;
 
@@ -29,6 +29,7 @@ export class GameComponent implements OnInit {
 
   restartSimulation(speed: Speed = 'play') {
     this.setSpeed('pause');
+    this.eventMessages = [];
     this.game = new Game();
     this.setSpeed(speed);
   }
@@ -84,7 +85,7 @@ export class GameComponent implements OnInit {
 
   showEvent(title: string, text: string, dayState: DayState) {
     this.setSpeed('pause');
-    this.eventMessage = `${title}, ${text}, ${dayState}`;
+    this.eventMessages.push(`${title}: ${text}`);
   }
 
   download() {

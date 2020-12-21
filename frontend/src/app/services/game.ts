@@ -42,17 +42,15 @@ export class Game {
 
     const mitigationEffect = this.calcMitigationEffect(oldMitigationState);
     const dayState = this.simulation.simOneDay(mitigationEffect);
-    const dayStats = dayState.stats;
 
     this.mitigationStates.push(cloneDeep(oldMitigationState));
-    const event = this.eventHandler.evaluateDay(dayStats);
+    const event = this.eventHandler.evaluateDay(dayState);
 
     return {dayState, event};
   }
 
   moveBackward() {
     this.simulation.rewindOneDay();
-    this.eventHandler.rewindOneDay();
     this.mitigationStates.pop();
 
     return this.simulation.getLastStats();

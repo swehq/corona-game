@@ -1,68 +1,32 @@
-import {cloneDeep, last, sample} from 'lodash';
+import {cloneDeep, get, isNil, last, shuffle} from 'lodash';
 import {eventList, Event} from './event-list';
+import {DayState} from './simulation';
 
-interface Trigger {
-  id: string;
-  fn: (stats: any) => boolean;
-  event: Event;
-}
-
-function populateTriggers() {
-  const eventTriggers: Trigger[] = [];
-  let triggerId = 0;
-
-  addEventTrigger((x: any) => x.deathsToday > 10, sample(eventList));
-  addEventTrigger((x: any) => x.deathsToday > 100, sample(eventList));
-
-  function getNextTriggerId() {
-    triggerId += 1;
-    return 'trigger-' + triggerId;
-  }
-
-  function addEventTrigger(fn: any, event: any) {
-    const trigger: Trigger = {
-      id: getNextTriggerId(),
-      fn,
-      event,
-    };
-
-    eventTriggers.push(trigger);
-  }
-
-  return eventTriggers;
+interface TriggeredEvents extends Event {
+  triggered: boolean;
 }
 
 export class EventHandler {
-  eventTriggers = populateTriggers();
-  triggerStates: Record<string, boolean>[] = [];
+  triggeredEvents: TriggeredEvents[] = cloneDeep(eventList).map(e => ({...e, triggered: false}));
 
-  constructor() {
-    const triggerState: Record<string, boolean> = {};
-    this.eventTriggers.forEach(trigger => triggerState[trigger.id] = false);
-    this.triggerStates.push(triggerState);
-  }
+  evaluateDay(dayState: DayState) {
+    const untriggered = shuffle(this.triggeredEvents.filter(e => !e.triggered));
+    const event = untriggered.find((trigger, idx) => !trigger.condition || trigger.condition(dayState));
 
-  evaluateDay(dayStats: any) {
-    const prevState = last(this.triggerStates);
-    if (!prevState) return;
+    if (!event) return;
 
-    const newState = cloneDeep(prevState);
-    let event: Event | undefined;
-
-    this.eventTriggers.forEach(trigger => {
-      // Check if event triggers
-      if (!prevState[trigger.id] && trigger.fn(dayStats)) {
-        newState[trigger.id] = true;
-        event = trigger.event;
-      }
-    });
-
-    this.triggerStates.push(newState);
+    event.triggered = true;
+    event.title = this.interpolate(event.title, dayState);
+    event.text = this.interpolate(event.text, dayState);
 
     return event;
   }
 
-  rewindOneDay() {
-    this.triggerStates.pop();
+  private interpolate(text: string, data: any) {
+    // TODO add number formatting
+    return text.replace(/\{\{([^}]+)}}/g, (original, attr) => {
+      const value = get(data, attr);
+      return isNil(value) ? original : value.toLocaleString();
+    });
   }
 }

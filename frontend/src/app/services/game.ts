@@ -1,7 +1,16 @@
 import {cloneDeep, last} from 'lodash';
 import {EventHandler} from './events';
-import {Simulation} from './simulation';
+import {MitigationEffect, Simulation} from './simulation';
 import {normalPositiveSampler} from './utils';
+
+interface Mitigation {
+  id: string;
+  effectivity: number;
+  cost: number; // million per day
+  stabilityCost: number;
+  label: string;
+  eventOnly: boolean;
+}
 
 type MitigationState = Record<string, { active: boolean }>;
 
@@ -12,7 +21,7 @@ export class Game {
   simulation = new Simulation(this.startDate);
   eventHandler = new EventHandler();
   allMitigations = Game.randomizeMitigations();
-  nonEventMitigations = [] as any[];
+  nonEventMitigations: Mitigation[] = [];
   mitigationStates: MitigationState[] = [];
 
   constructor() {
@@ -53,6 +62,7 @@ export class Game {
     const lastState = last(this.simulation.modelStates);
     return lastState?.date;
   }
+
   isFinished() {
     const lastState = last(this.simulation.modelStates);
     return Boolean(this.lastDate && this.lastDate >= this.endDate);
@@ -62,11 +72,7 @@ export class Game {
     return last(this.mitigationStates);
   }
 
-  getMitigations() {
-    return this.nonEventMitigations;
-  }
-
-  calcMitigationEffect(mitigationState: any) {
+  calcMitigationEffect(mitigationState: MitigationState): MitigationEffect {
     let mult = 1.0;
     let cost = 0;
     let stabilityCost = 0;
@@ -74,7 +80,7 @@ export class Game {
     this.allMitigations.forEach(mitigation => {
       if (!mitigationState[mitigation.id].active) return;
 
-      mult *= (1 - mitigation.eff);
+      mult *= (1 - mitigation.effectivity);
       cost += mitigation.cost;
       stabilityCost += mitigation.stabilityCost;
     });
@@ -83,7 +89,7 @@ export class Game {
   }
 
   static randomizeMitigations() {
-    const mitigations = [] as any[];
+    const mitigations: Mitigation[] = [];
 
     const es = normalPositiveSampler(1, 0.2); // Efficiency scaler
     const cs = normalPositiveSampler(4e6, 0.5e6); // Cost scaler
@@ -98,12 +104,12 @@ export class Game {
     addMitigation('eventsSome', 0.12 * es(), 20 * cs(), 5 * ss(), 'Omezení akcí');
     addMitigation('eventsAll', 0.20 * es(), 30 * cs(), 10 * ss(), 'Zrušit akce');
 
-    function addMitigation(id: string, effectivity: number, costMPerDay: number, stabilityCost: number, label: string) {
+    function addMitigation(id: string, effectivity: number, cost: number, stabilityCost: number, label: string) {
       mitigations.push({
         id,
         label,
-        eff: effectivity,
-        cost: costMPerDay,
+        effectivity,
+        cost,
         stabilityCost,
         eventOnly: false,
       });

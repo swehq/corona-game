@@ -3,6 +3,12 @@
 import {last} from 'lodash';
 import {nextDay, normalPositiveSampler} from './utils';
 
+export interface MitigationEffect {
+  mult: number;
+  cost: number;
+  stabilityCost: number;
+}
+
 interface Results {
   date: string;
   suspectible: number;
@@ -26,14 +32,13 @@ interface Stats {
   detectedInfections7DayAvg: number;
   detectedActiveInfectionsTotal: number;
   mortality: number;
-  costTotal: any;
+  costTotal: number;
   hospitalizationCapacity: number;
 }
 
 export interface DayState extends Results {
   stats: Stats;
 }
-
 
 export class Simulation {
   R0 = 2.5;
@@ -102,7 +107,7 @@ export class Simulation {
     }
   }
 
-  simOneDay(mitigationEffect: any) {
+  simOneDay(mitigationEffect: MitigationEffect): DayState {
     const yesterday = this.getModelStateInPast(1);
     const todayDate = nextDay(yesterday.date);
 
@@ -179,8 +184,8 @@ export class Simulation {
       stability: socialStability,
     };
 
-    const stats = this.calcStats(modelState);
-    const state = {...modelState, stats};
+    const stats: Stats = this.calcStats(modelState);
+    const state: DayState = {...modelState, stats};
     this.modelStates.push(state);
 
     return state;

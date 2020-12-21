@@ -1,5 +1,6 @@
 {
   "typescript.tsdk": "frontend/node_modules/typescript/lib",
   "editor.formatOnSave": true,
-  "git.ignoreLimitWarning": true
+  "git.ignoreLimitWarning": true,
+  "files.eol": "\n",
 }

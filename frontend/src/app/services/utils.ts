@@ -1,10 +1,9 @@
-import * as moment from 'moment';
+import {addDays, format} from 'date-fns';
 
 export function nextDay(day: string): string {
-  const date = moment(day);
-  date.add(1, 'day');
-
-  return date.toISOString(true).slice(0, 10);
+  // works internally with local time (TZ-resistant)
+  const date = addDays(new Date(day), 1);
+  return format(date, 'yyyy-MM-dd');
 }
 
 // Create a function sampling from a normal distribution

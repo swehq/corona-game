@@ -27,18 +27,17 @@ export class Game {
   }
 
   moveForward() {
-    // TODO keep current and add changes to the states for each day with new mitigations
     const oldMitigationState = last(this.mitigationStates);
-    if (!oldMitigationState) throw new Error('Absent mitigation');
+
+    if (!oldMitigationState) return;
 
     const mitigationEffect = this.calcMitigationEffect(oldMitigationState);
-    const dayState = this.simulation.simOneDay(mitigationEffect);
-    const dayStats = dayState.stats;
+    const dayStats = this.simulation.simOneDay(mitigationEffect);
 
     this.mitigationStates.push(cloneDeep(oldMitigationState));
     const event = this.eventHandler.evaluateDay(dayStats);
 
-    return {dayState, event};
+    return {dayStats, event};
   }
 
   moveBackward() {
@@ -49,17 +48,30 @@ export class Game {
     return this.simulation.getLastStats();
   }
 
-  get lastDate() {
-    const lastState = last(this.simulation.modelStates);
-    return lastState?.date;
+  rewind(date: string) {
+    while (this.simulation.simDayStats.length > 1 && this.getLastDate() > date) {
+      this.moveBackward();
+    }
   }
-  isFinished() {
-    const lastState = last(this.simulation.modelStates);
-    return Boolean(this.lastDate && this.lastDate >= this.endDate);
+
+  getSimStats() {
+    return this.simulation.simDayStats;
+  }
+
+  getLastStats() {
+    return this.simulation.getLastStats();
+  }
+
+  getLastDate() {
+    return this.simulation.getLastStats().date;
   }
 
   getMitigationState() {
     return last(this.mitigationStates);
+  }
+
+  isFinished() {
+    return this.getLastDate() >= this.endDate;
   }
 
   getMitigations() {

@@ -29,7 +29,6 @@
             "allowedCommonJsDependencies": [
               "chartjs-plugin-datalabels",
               "chart.js",
-              "chartjs-plugin-zoom",
               "lodash"
             ],
             "assets": [

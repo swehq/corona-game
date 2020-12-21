@@ -3,38 +3,6 @@
 import {last} from 'lodash';
 import {nextDay, normalPositiveSampler} from './utils';
 
-interface Results {
-  date: string;
-  suspectible: number;
-  infected: number;
-  recovered: number;
-  hospitalized: number;
-  dead: number;
-  infectedToday: number;
-  hospitalizedToday: number;
-  deathsToday: number;
-  costToday: number;
-  R: number;
-  mortality: number;
-  vaccinationRate: number;
-  stability: number;
-}
-
-interface Stats {
-  detectedInfectionsToday: number;
-  detectedInfectionsTotal: number;
-  detectedInfections7DayAvg: number;
-  detectedActiveInfectionsTotal: number;
-  mortality: number;
-  costTotal: any;
-  hospitalizationCapacity: number;
-}
-
-export interface DayState extends Results {
-  stats: Stats;
-}
-
-
 export class Simulation {
   R0 = 2.5;
   RNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
@@ -42,7 +10,7 @@ export class Simulation {
   stabilitySmoothing = 0.99;
   stabilityEffectScale = 0.3;
   mortalitySampler = normalPositiveSampler(0.01, 0.001);
-  initialPopulation = 10_690_000;
+  initialPopulation = 10690000;
   infectedStart = 3;
   vaccinationStartDate = '2021-03-01';
   vaccinationPerDay = 0.01;
@@ -61,10 +29,10 @@ export class Simulation {
   hospitalsOverwhelmedMortalityMultiplier = 2;
   hospitalsBaselineUtilization = 0.5;
 
-  modelStates: DayState[] = [];
+  modelStates = [] as any[];
+  simDayStats = [] as any[];
 
-  stateBeforeStart: Results = {
-    date: '',
+  stateBeforeStart = {
     suspectible: this.initialPopulation,
     infected: 0,
     recovered: 0,
@@ -83,15 +51,16 @@ export class Simulation {
   // TODO move to Date
   constructor(startDate: string) {
     // pandemic params
-    const initialState: Results = {...this.stateBeforeStart};
-    initialState.date = startDate;
-    initialState.suspectible = this.initialPopulation - this.infectedStart;
-    initialState.infected = this.infectedStart;
-    initialState.infectedToday = this.infectedStart;
-    this.modelStates.push({...initialState, stats: this.calcStats(initialState)});
+    const stateToday: any = {...this.stateBeforeStart};
+    stateToday.date = startDate;
+    stateToday.suspectible = this.initialPopulation - this.infectedStart;
+    stateToday.infected = this.infectedStart;
+    stateToday.infectedToday = this.infectedStart;
+    this.modelStates.push(stateToday);
+    this.calcStats();
   }
 
-  getModelStateInPast(n: number) {
+  getModelStateInPast(n: any) {
     const i = this.modelStates.length - n;
 
     if (i >= 0) {
@@ -162,7 +131,7 @@ export class Simulation {
       hospitalsOverwhelmedMultiplier = this.hospitalsOverwhelmedMortalityMultiplier;
     }
 
-    const modelState: Results = {
+    this.modelStates.push({
       date: todayDate,
       suspectible,
       infected,
@@ -177,26 +146,23 @@ export class Simulation {
       mortality: this.mortalitySampler() * hospitalsOverwhelmedMultiplier,
       vaccinationRate,
       stability: socialStability,
-    };
+    });
 
-    const stats = this.calcStats(modelState);
-    const state = {...modelState, stats};
-    this.modelStates.push(state);
-
-    return state;
+    return this.calcStats();
   }
 
   rewindOneDay() {
     this.modelStates.pop();
+    this.simDayStats.pop();
   }
 
   getLastStats() {
-    return last(this.modelStates)?.stats;
+    return last(this.simDayStats);
   }
 
-  // TODO consider removal and computation on-the-fly
-  calcStats(state: Results): Stats {
-    const lastStat = this.getLastStats();
+  calcStats() {
+    const today = this.getModelStateInPast(1);
+    const lastStat = (this.simDayStats.length > 0) ? last(this.simDayStats) : null;
 
     let undetectedInfections = 0;
     for (let i = 1; i <= this.incubationDays; i++) {
@@ -204,24 +170,33 @@ export class Simulation {
     }
 
     const detectedInfectionsToday = this.getModelStateInPast(this.incubationDays + 1).infectedToday;
-    const detectedInfectionsTotal = (lastStat ? lastStat.detectedInfectionsTotal : 0) + detectedInfectionsToday;
+    const detectedInfectionsTotal = ((lastStat != null) ? lastStat.detectedInfectionsTotal : 0) +
+      detectedInfectionsToday;
 
     let detectedInfections7DayAvg = 0;
     for (let i = 1; i <= 7; i++) {
       detectedInfections7DayAvg += this.getModelStateInPast(i + this.incubationDays).infectedToday / 7;
     }
 
-    const costTotal = ((lastStat != null) ? lastStat.costTotal : 0) + state.costToday;
+    const costTotal = ((lastStat != null) ? lastStat.costTotal : 0) + today.costToday;
     const stats = {
+      date: today.date,
+      deadTotal: Math.round(today.dead),
+      deathsToday: Math.round(today.deathsToday),
       detectedInfectionsToday: Math.round(detectedInfectionsToday),
       detectedInfectionsTotal: Math.round(detectedInfectionsTotal),
       detectedInfections7DayAvg,
-      detectedActiveInfectionsTotal: Math.round(state.infected - undetectedInfections),
-      mortality: state.dead / detectedInfectionsTotal,
+      detectedActiveInfectionsTotal: Math.round(today.infected - undetectedInfections),
+      mortality: today.dead / detectedInfectionsTotal,
       costTotal,
-      hospitalizationCapacity: this.hospitalsBaselineUtilization + state.hospitalized / this.hospitalsOverwhelmedThreshold,
+      vaccinationRate: today.vaccinationRate,
+      hospitalizationCapacity: this.hospitalsBaselineUtilization + today.hospitalized / this.hospitalsOverwhelmedThreshold,
+      socialStability: today.stability,
     };
+
+    this.simDayStats.push(stats);
 
     return stats;
   }
 }
+

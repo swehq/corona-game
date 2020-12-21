@@ -66,4 +66,3 @@ export class EventHandler {
     this.triggerStates.pop();
   }
 }
-

@@ -1,1 +1,17 @@
-<p>simulation-control works!</p>
+<cvd-col>
+
+  <cvd-row wrap>
+    <button (click)="restartSimulation()">Restart</button>
+    <button (click)="togglePause()">{{this.speed === 'pause' ? 'Resume' : 'Pause'}}</button>
+    <button (click)="restartSimulation('max')">Compute</button>
+    <button (click)="download()">Download</button>
+  </cvd-row>
+
+  <p>Last date: {{this.game.lastDate}}</p>
+
+  <div *ngIf="eventMessages.length">
+    <h3>Events</h3>
+    <p *ngFor="let m of eventMessages">{{m}}</p>
+  </div>
+
+</cvd-col>

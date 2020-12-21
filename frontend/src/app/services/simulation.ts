@@ -7,6 +7,8 @@ export interface MitigationEffect {
   mult: number;
   cost: number;
   stabilityCost: number;
+  vaccinationPerDay: number;
+  bordersClosed: boolean;
 }
 
 interface Results {
@@ -41,16 +43,14 @@ export interface DayState extends Results {
 }
 
 export class Simulation {
-  R0 = 2.5;
+  R0 = 3.1;
   RNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
+  RSeasonalityEffect = 0.10;
   rSmoothing = 0.85;
   stabilitySmoothing = 0.99;
-  stabilityEffectScale = 0.3;
   mortalitySampler = normalPositiveSampler(0.01, 0.001);
   initialPopulation = 10_690_000;
   infectedStart = 3;
-  vaccinationStartDate = '2021-03-01';
-  vaccinationPerDay = 0.01;
   vaccinationMaxRate = 0.75;
 
   // All covid parameters counted from the infection day
@@ -65,6 +65,8 @@ export class Simulation {
   hospitalsOverwhelmedThreshold = 20000;
   hospitalsOverwhelmedMortalityMultiplier = 2;
   hospitalsBaselineUtilization = 0.5;
+  infectionsWhenBordersOpen = 10;
+  infectionsWhenBordersClosed = 5;
 
   modelStates: DayState[] = [];
 
@@ -119,9 +121,9 @@ export class Simulation {
     const stabilityToday = Math.max(0, 1 - mitigationEffect.stabilityCost);
     const socialStability = this.stabilitySmoothing * yesterday.stability + (1. - this.stabilitySmoothing) * stabilityToday;
 
-    const stabilityEffect = 1 - this.stabilityEffectScale * (1 - socialStability);
-    const mitigationMult = stabilityEffect * mitigationEffect.mult + (1 - stabilityEffect) * 1.;
-    const R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationMult);
+    const seasonalityMult = 1. + this.getSeasonalityEffect(todayDate);
+
+    const R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationEffect.mult * seasonalityMult);
 
     const population = yesterday.suspectible + yesterday.infected + yesterday.recovered;
     let infectious = 0;
@@ -134,7 +136,9 @@ export class Simulation {
 
     // Simplifying assumption that only uninfected people got vaccinated
     const suspectibleToday = Math.max(0, yesterday.suspectible - population * yesterday.vaccinationRate);
-    const infectedToday = infectious * this.RNoiseMultSampler() * R * suspectibleToday / population;
+    let infectedToday = infectious * this.RNoiseMultSampler() * R * suspectibleToday / population;
+    infectedToday += mitigationEffect.bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
+    infectedToday = Math.min(infectedToday, suspectible);
     infected += infectedToday;
     suspectible -= infectedToday;
 
@@ -157,10 +161,7 @@ export class Simulation {
     const hospitalized = yesterday.hospitalized + hospitalizedToday -
       this.getModelStateInPast(this.hospitalizationDays).hospitalizedToday;
 
-    let vaccinationRate = yesterday.vaccinationRate;
-    if (todayDate >= this.vaccinationStartDate) {
-      vaccinationRate = Math.min(vaccinationRate + this.vaccinationPerDay, this.vaccinationMaxRate);
-    }
+    const vaccinationRate = Math.min(yesterday.vaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
 
     let hospitalsOverwhelmedMultiplier = 1;
     if (hospitalized > (1 - this.hospitalsBaselineUtilization) * this.hospitalsOverwhelmedThreshold) {
@@ -197,6 +198,14 @@ export class Simulation {
 
   getLastStats() {
     return last(this.modelStates)?.stats;
+  }
+
+  getSeasonalityEffect(date: string): number {
+    // Hacky
+    const month = parseInt(date.slice(5, 7), 10);
+    const day = parseInt(date.slice(8, 9), 10);
+    const seasonalityPhase = (month * 30. + day - 1 * 30 - 15) / 360.;  // 360 day "accounting", peak mid Jan
+    return this.RSeasonalityEffect * Math.cos(2 * Math.PI * seasonalityPhase);
   }
 
   // TODO consider removal and computation on-the-fly

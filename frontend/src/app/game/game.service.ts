@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
 import {DayState} from '../services/simulation';
+import {BehaviorSubject, Subject} from 'rxjs';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
 
@@ -18,6 +19,16 @@ export class GameService {
   speed: Speed = 'pause';
   tickerId: number | undefined;
 
+
+  private _infectedToday$ = new BehaviorSubject<number>(0);
+  infectedToday$ = this._infectedToday$.asObservable();
+
+  private _deathsToday$ = new BehaviorSubject<number>(0);
+  deathsToday$ = this._deathsToday$.asObservable();
+
+  private _reset$ = new Subject<void>();
+  reset$ = this._reset$.asObservable();
+
   get lastDate() {
     return this.game.lastDate;
   }
@@ -27,6 +38,7 @@ export class GameService {
   }
 
   restartSimulation(speed: Speed = 'play') {
+    this._reset$.next();
     this.setSpeed('pause');
     this.eventMessages = [];
     this.game = new Game();
@@ -78,6 +90,9 @@ export class GameService {
 
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
+
+    this._infectedToday$.next(Math.floor(gameUpdate.dayState.infectedToday));
+    this._deathsToday$.next(Math.floor(gameUpdate.dayState.deathsToday));
 
     if (event) this.showEvent(event.title, event.text, gameUpdate.dayState);
   }

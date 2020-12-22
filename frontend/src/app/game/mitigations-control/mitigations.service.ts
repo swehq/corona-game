@@ -8,6 +8,19 @@ export type EventsLevel = null | 'events1000' | 'events100' | 'events10';
 export type BusinessesLevel = null | 'businessesSome' | 'businessesMost';
 export type SchoolsLevel = null | 'universities' | 'schools';
 
+export const mitigationsI18n = {
+  rrr: 'Roušky, ruce, rozestupy',
+  stayHome: 'Zákaz vycházení',
+  bordersClosed: 'Zavřené hranice',
+  events1000: 'Akce - max. 1 000',
+  events100: 'Akce - max. 100',
+  events10: 'Akce - max. 10',
+  businessesSome: 'Služby - zavřené univerzity',
+  businessesMost: 'Služby - všechny zavřené',
+  universities: 'Školy - zavřené univerzity',
+  schools: 'Školy - všechny zavřené'
+};
+
 export interface Mitigations {
   rrr: boolean;
   stayHome: boolean;

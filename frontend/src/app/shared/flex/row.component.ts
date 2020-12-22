@@ -1,4 +1,4 @@
-import {Component, HostBinding, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 type Spacing = 0 | 4 | 8 | 16 | 24 | 32 | 64 | 128;
 export type Orientation = 'row' | 'col';
@@ -20,7 +20,9 @@ export class RowComponent {
 
   @Input() alignItems: 'start' | 'center' | 'baseline' | 'end' = 'center';
   @Input() justifyContent: 'flex-start' | 'center' | 'space-between' | 'space-around' | 'flex-end' = 'center';
-  @HostBinding('style.overflow') @Input() overflow: 'unset' | 'hidden' | 'auto' = 'auto';
+
+  // TODO to fix shown scrollbars -
+  // @HostBinding('style.overflow') @Input() overflow: 'unset' | 'hidden' | 'auto' = 'auto';
 
   @Input()
   set reversed(value: boolean | '') { this._reversed = value === '' ? true : value; }

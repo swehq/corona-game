@@ -2,6 +2,7 @@ import {cloneDeep, last} from 'lodash';
 import {EventHandler} from './events';
 import {MitigationEffect, Simulation} from './simulation';
 import {normalSampler, normalPositiveSampler, nextDay} from './utils';
+import {scenarios} from './scenario';
 
 interface Mitigation {
   id: string;
@@ -14,11 +15,9 @@ interface Mitigation {
   eventOnly: boolean;
 }
 
-type MitigationState = Record<string, { active: boolean }>;
+export type MitigationState = Record<string, { active: boolean }>;
 
 export class Game {
-  readonly startDate = '2020-03-01';
-  readonly endDate = '2021-07-01';
   readonly vaccinationStartDate = '2021-03-01';
   readonly vaccinationPerDay = 0.01;
 
@@ -29,7 +28,8 @@ export class Game {
     ['schools', 'universities']
   ];
 
-  simulation = new Simulation(this.startDate);
+  scenario = scenarios.CZECHIA_MARCH2020;
+  simulation = new Simulation(this.scenario.dates.rampUpStartDate);
   eventHandler = new EventHandler();
   allMitigations = Game.randomizeMitigations();
   nonEventMitigations: Mitigation[] = [];
@@ -44,24 +44,37 @@ export class Game {
       }
     });
     this.mitigationStates.push(mitigationState);
+
+    while (this.lastDate < this.scenario.dates.rampUpEndDate) {
+      const currentMitigationState = last(this.mitigationStates);
+      const nextDate = nextDay(this.lastDate);
+      if (!currentMitigationState) throw new Error('Absent mitigation');
+
+      this.scenario.applyMitigationActions(currentMitigationState, nextDate);
+      this.sanitizeMitigationState(currentMitigationState); // scenarios may set multiple exclusive mitiations
+      this.moveForward();
+    }
   }
 
   moveForward() {
     // TODO keep current and add changes to the states for each day with new mitigations
-    const oldMitigationState = last(this.mitigationStates);
-    if (!oldMitigationState) throw new Error('Absent mitigation');
+    const currentMitigationState = last(this.mitigationStates);
+    const nextDate = nextDay(this.lastDate);
+    if (!currentMitigationState) throw new Error('Absent mitigation');
 
-    this.sanitizeMitigationState(oldMitigationState);
-    const mitigationEffect = this.calcMitigationEffect(oldMitigationState, nextDay(this.lastDate));
+    this.sanitizeMitigationState(currentMitigationState); // Safguerd, should not be needed
+    const mitigationEffect = this.calcMitigationEffect(currentMitigationState, nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect);
 
-    this.mitigationStates.push(cloneDeep(oldMitigationState));
+    this.mitigationStates.push(cloneDeep(currentMitigationState));
     const event = this.eventHandler.evaluateDay(dayState);
 
     return {dayState, event};
   }
 
   moveBackward() {
+    if (!this.canMoveBackward()) throw new Error('Trying to move before start date');
+
     this.simulation.rewindOneDay();
     this.mitigationStates.pop();
 
@@ -75,8 +88,12 @@ export class Game {
     return lastState.date;
   }
 
+  canMoveBackward() {
+    return this.lastDate > this.scenario.dates.startDate;
+  }
+
   isFinished() {
-    return this.lastDate >= this.endDate;
+    return this.lastDate >= this.scenario.dates.endDate;
   }
 
   getMitigationState() {

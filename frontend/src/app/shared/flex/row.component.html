@@ -1,9 +1,9 @@
+<!-- TODO to revert deleted overflow add 'overflow': overflow to [ngStyle] -->
 <div class="wrapper" [ngClass]="spacingClass" [ngStyle]="{
   'flex-wrap': isWrapping ? 'wrap' : 'nowrap',
   'flex-direction': isColumn ? (isReversed ? 'column-reverse' : 'column') : (isReversed ? 'row-reverse' : 'row'),
   'align-items': alignItems,
-  'justify-content': justifyContent,
-  'overflow': overflow
+  'justify-content': justifyContent
 }">
   <ng-content></ng-content>
 </div>

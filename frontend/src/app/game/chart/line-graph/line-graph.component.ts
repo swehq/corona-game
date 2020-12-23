@@ -4,7 +4,7 @@ import {BaseChartDirective, Label} from 'ng2-charts';
 
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
-import {Observable} from 'rxjs';
+import {EMPTY, Observable} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
@@ -43,7 +43,7 @@ export class LineGraphComponent implements OnInit {
   };
 
   @Input()
-  reset$!: Observable<void>;
+  reset$: Observable<void> = EMPTY;
 
   @Input() title = '';
 

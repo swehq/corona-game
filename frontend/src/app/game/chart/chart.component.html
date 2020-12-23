@@ -7,21 +7,12 @@
   </cvd-row>
 
   <div grow class="chart">
-    <cvd-line-graph #lineGraph [title]="series[0].label" [setData]="(data$ | async)!"></cvd-line-graph>
+    <cvd-line-graph #lineGraph [reset$]="gameService.reset$" [title]="series[0].label" [tick]="data$ | async"></cvd-line-graph>
   </div>
-
-  <!--  This is temporary code -->
   <cvd-row>
-    <!--    I had to put z-index fot btn to be clickable.. ? -->
-    <button style="width: 180px; z-index: 100" (click)="addData(undefined)">Add node</button>
-    <button style="width: 180px; z-index: 100" (click)="addData('Zavření škol')">Add node - zavření škol</button>
-  </cvd-row>
-  <cvd-row>
-    <button style="width: 180px; z-index: 100" (click)="addData('Otevření škol')">Add node - otevření škol</button>
-    <button style="width: 180px; z-index: 100" (click)="addData('Zákaz všeho')">Add node - zákaz všeho</button>
-  </cvd-row>
-  <cvd-row>
-    <button style="width: 180px; z-index: 100" (click)="removeData()">Remove last node</button>
+    <button style="width: 180px; z-index: 100" (click)="currentState = 'ok'">Change OK!</button>
+    <button style="width: 180px; z-index: 100" (click)="currentState = 'warn'">Change Warn!</button>
+    <button style="width: 180px; z-index: 100" (click)="currentState = 'critical'">Change Critical!</button>
   </cvd-row>
   <cvd-row>
     <button style="width: 180px; z-index: 100" (click)=lineGraph.resetZoom()>Reset zoom</button>

@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {GameService} from '../game.service';
 
 @Component({
   selector: 'cvd-charts',
@@ -6,4 +7,8 @@ import {Component} from '@angular/core';
   styleUrls: ['./charts.component.scss']
 })
 export class ChartsComponent {
+
+  constructor(public gameService: GameService) {
+  }
+
 }

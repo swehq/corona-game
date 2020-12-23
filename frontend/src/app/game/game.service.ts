@@ -71,10 +71,10 @@ export class GameService {
 
   tick() {
     if (this.speed === 'rev') {
-      if (this.game.simulation.modelStates.length <= 1) {
-        this.setSpeed('pause');
-      } else {
+      if (this.game.canMoveBackward()) {
         this.game.moveBackward();
+      } else {
+        this.setSpeed('pause');
       }
 
       return;

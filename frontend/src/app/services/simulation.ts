@@ -43,12 +43,12 @@ export interface DayState extends Results {
 }
 
 export class Simulation {
-  R0 = 3.1;
+  R0 = 2.9;
   RNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
   RSeasonalityEffect = 0.10;
   rSmoothing = 0.85;
   stabilitySmoothing = 0.99;
-  mortalitySampler = normalPositiveSampler(0.01, 0.001);
+  mortalitySampler = normalPositiveSampler(0.02, 0.001);
   initialPopulation = 10_690_000;
   infectedStart = 3;
   vaccinationMaxRate = 0.75;

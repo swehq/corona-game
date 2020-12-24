@@ -1,16 +1,18 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {BaseChartDirective, Label} from 'ng2-charts';
+import {Observable, EMPTY} from 'rxjs';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
-import {EMPTY, Observable} from 'rxjs';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
 export interface LineNode {
   value: number;
+  label: string;
   event?: string;
   state: NodeState;
 }
@@ -23,7 +25,6 @@ export interface LineNode {
   styleUrls: ['./line-graph.component.scss']
 })
 export class LineGraphComponent implements OnInit {
-
   readonly colors = {
     ok: '869c66',
     warn: 'ff9502',
@@ -46,54 +47,22 @@ export class LineGraphComponent implements OnInit {
   reset$: Observable<void> = EMPTY;
 
   @Input() title = '';
-
-  @Input()
-  set tick(tick: LineNode | null) {
-    if (!tick) return;
-
-    if (tick.state !== this.currentState) {
-      this.currentState = tick.state;
-      this.currentDatasetIndex++;
-
-      this.datasets = [...this.datasets, {
-        ...this.defaultDataset,
-        borderColor: `#${this.colors[tick.state!]}`,
-        backgroundColor: `#${this.colors[tick.state!]}33`,
-        data: [...this.allData, this.lastValue, tick.value]
-      }];
-    } else {
-      this.datasets[this.currentDatasetIndex].data!.push(tick.value);
-    }
-
-    if (!this.isInitValue) this.allData.push(NaN);
-
-    this.lastValue = tick.value;
-    const lastDate = this.currentDate;
-    lastDate.setDate(lastDate.getDate() + 1);
-
-    this.currentDate = lastDate;
-    this.labels.push(lastDate.toLocaleDateString());
-    this.eventNodes.push(tick.event);
-    this.isInitValue = false;
-  }
-
+  @Input() tick$!: Observable<LineNode>;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
   private allData: number[] = [];
-  private isInitValue = true;
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
-  private currentDate = new Date();
-  private lastValue = 0;
   private eventNodes: (string | undefined)[] = [];
   private font = {
+    // TODO ensure this is correct
     family: '"worksans", "Helvetica Neue", arial',
     size: 11,
     weight: 600,
   };
 
   datasets: ChartDataSets[] = [{...this.defaultDataset, data: []}];
-  labels: Label[] = [new Date().toLocaleDateString()];
+  labels: Label[] = [];
   options: ChartOptions = {
     title: {
       display: false,
@@ -150,6 +119,27 @@ export class LineGraphComponent implements OnInit {
       display: Boolean(this.title),
     };
 
+    this.tick$.pipe(
+      untilDestroyed(this)
+    ).subscribe(tick => {
+      if (tick.state !== this.currentState) {
+        this.currentState = tick.state;
+        this.currentDatasetIndex++;
+
+        this.datasets = [...this.datasets, {
+          ...this.defaultDataset,
+          borderColor: `#${this.colors[tick.state!]}`,
+          backgroundColor: `#${this.colors[tick.state!]}33`,
+          data: [...this.allData, tick.value]
+        }];
+      } else {
+        this.datasets[this.currentDatasetIndex].data!.push(tick.value);
+      }
+
+      this.labels.push(tick.label);
+      this.eventNodes.push(tick.event);
+    });
+
     this.reset$.pipe(
       untilDestroyed(this)
     ).subscribe(() => this.reset());
@@ -157,14 +147,11 @@ export class LineGraphComponent implements OnInit {
 
   reset() {
     this.datasets = [{...this.defaultDataset, data: []}];
-    this.labels = [new Date().toLocaleDateString()];
+    this.labels = [];
     this.eventNodes = [];
     this.currentState = 'ok';
     this.currentDatasetIndex = 0;
-    this.currentDate = new Date();
-    this.lastValue = 0;
     this.allData = [];
-    this.isInitValue = true;
   }
 
   resetZoom() {

@@ -1,6 +1,4 @@
-import {Component, OnInit} from '@angular/core';
-import {Game} from '../../services/game';
-import {DayState} from '../../services/simulation';
+import {Component} from '@angular/core';
 import {GameService} from '../game.service';
 
 @Component({
@@ -8,16 +6,10 @@ import {GameService} from '../game.service';
   templateUrl: './simulation-control.component.html',
   styleUrls: ['./simulation-control.component.scss']
 })
-export class SimulationControlComponent implements OnInit {
-
+export class SimulationControlComponent {
   constructor(
     public gameService: GameService,
-  ) {
-  }
-
-  ngOnInit() {
-    this.gameService.restartSimulation();
-  }
+  ) { }
 
   download() {
     const element = document.createElement('a');

@@ -23,6 +23,8 @@
         "app/shared/*"
       ]
     },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,

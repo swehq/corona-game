@@ -1,4 +1,4 @@
-import {cloneDeep, get, isNil, last, shuffle} from 'lodash';
+import {cloneDeep, get, isNil, shuffle} from 'lodash';
 import {eventList, Event} from './event-list';
 import {DayState} from './simulation';
 
@@ -11,7 +11,7 @@ export class EventHandler {
 
   evaluateDay(dayState: DayState) {
     const untriggered = shuffle(this.triggeredEvents.filter(e => !e.triggered));
-    const event = untriggered.find((trigger, idx) => !trigger.condition || trigger.condition(dayState));
+    const event = untriggered.find(trigger => !trigger.condition || trigger.condition(dayState));
 
     if (!event) return;
 

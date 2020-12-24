@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {Subject} from 'rxjs';
+import {Component, Input, OnInit} from '@angular/core';
+import {Observable, Subject} from 'rxjs';
 import {LineNode, NodeState} from './line-graph/line-graph.component';
 import {
   BusinessesLevel,
@@ -18,30 +18,45 @@ export interface Serie {
   unit?: string;
 }
 
+export interface ChartValue {
+  label: string | Date;
+  value: number;
+}
+
 @UntilDestroy()
 @Component({
   selector: 'cvd-chart',
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss']
 })
-export class ChartComponent {
+export class ChartComponent implements OnInit {
   @Input()
   series: Serie[] = [{label: ''}];
 
   @Input()
-  set tick(tick: number) {
-    const tickE: LineNode = {value: tick, event: this.currentEvent, state: this.currentState};
-    this.data$.next({value: tickE.value, event: tickE.event, state: tickE.state});
-
-    // TODO focus more on logic of showing mitigations!
-    if (this.currentEvent) this.currentEvent = undefined;
-  }
+  tick$!: Observable<ChartValue>;
 
   currentState: NodeState = 'ok';
   currentEvent: string | undefined = undefined;
   data$ = new Subject<LineNode>();
 
-  constructor(private mitigationsService: MitigationsService, public gameService: GameService) {
+  constructor(private mitigationsService: MitigationsService, public gameService: GameService) { }
+
+  ngOnInit() {
+    this.tick$.pipe(
+      untilDestroyed(this)
+    ).subscribe(tick => {
+      this.data$.next({
+        value: tick.value,
+        label: typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString(),
+        event: this.currentEvent,
+        state: this.currentState,
+      });
+
+      // TODO focus more on logic of showing mitigations!
+      if (this.currentEvent) this.currentEvent = undefined;
+    });
+
     this.gameService.reset$.pipe(
       untilDestroyed(this),
     ).subscribe(() => {

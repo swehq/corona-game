@@ -29,6 +29,7 @@ export class Game {
   ];
 
   scenario = scenarios.CZECHIA_MARCH2020;
+  // scenario = scenarios.CZECHIA_DECEMBER2020;
   simulation = new Simulation(this.scenario.dates.rampUpStartDate);
   eventHandler = new EventHandler();
   allMitigations = Game.randomizeMitigations();

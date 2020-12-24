@@ -1,3 +1,16 @@
+<cvd-col [spacing]="8" alignItems="start">
+
+  <cvd-row style="color: red">
+    <cvd-icon svgIcon="virus"></cvd-icon>
+    Počet nakažených dnes: 3
+  </cvd-row>
+
+  <cvd-row style="color: dodgerblue">
+    <cvd-icon svgIcon="vaccine"></cvd-icon>
+    Vakcinace: 0 %
+  </cvd-row>
+
+</cvd-col>
+
 <!-- TODO remove -->
-<p>status-display works!</p>
 <pre>{{mitigationsService.value$ | async | json}}</pre>

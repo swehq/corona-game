@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
-import {DayState} from '../services/simulation';
-import {BehaviorSubject, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
+import {ChartValue} from './chart/chart.component';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
 
@@ -9,22 +9,20 @@ export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
   providedIn: 'root',
 })
 export class GameService {
-
   readonly PLAY_SPEED = 350; // ms
   readonly FORWARD_SPEED = 150; // ms
   readonly REVERSE_SPEED = 50; // ms
 
   game = new Game();
   eventMessages: string[] = [];
-  speed: Speed = 'pause';
   tickerId: number | undefined;
 
+  private speed: Speed | undefined;
+  private _speed$ = new Subject<Speed>();
+  speed$ = this._speed$.asObservable();
 
-  private _infectedToday$ = new BehaviorSubject<number>(0);
+  private _infectedToday$ = new Subject<ChartValue>();
   infectedToday$ = this._infectedToday$.asObservable();
-
-  private _deathsToday$ = new BehaviorSubject<number>(0);
-  deathsToday$ = this._deathsToday$.asObservable();
 
   private _reset$ = new Subject<void>();
   reset$ = this._reset$.asObservable();
@@ -42,6 +40,12 @@ export class GameService {
     this.setSpeed('pause');
     this.eventMessages = [];
     this.game = new Game();
+
+    const chartData = this.game.simulation.modelStates.map(s => ({
+      label: s.date,
+      value: s.infectedToday,
+    }));
+    chartData.forEach(i => this._infectedToday$.next(i));
     this.setSpeed(speed);
   }
 
@@ -67,6 +71,7 @@ export class GameService {
     }
 
     this.speed = speed;
+    this._speed$.next(speed);
   }
 
   tick() {
@@ -91,13 +96,12 @@ export class GameService {
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
-    this._infectedToday$.next(Math.floor(gameUpdate.dayState.infectedToday));
-    this._deathsToday$.next(Math.floor(gameUpdate.dayState.deathsToday));
+    this._infectedToday$.next({label: gameUpdate.dayState.date, value: Math.floor(gameUpdate.dayState.infectedToday)});
 
-    if (event) this.showEvent(event.title, event.text, gameUpdate.dayState);
+    if (event) this.showEvent(event.title, event.text);
   }
 
-  showEvent(title: string, text: string, dayState: DayState) {
+  showEvent(title: string, text: string) {
     this.setSpeed('pause');
     this.eventMessages.push(`${title}: ${text}`);
   }

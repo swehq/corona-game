@@ -1,5 +1,5 @@
 import {Component, HostBinding, Input, SecurityContext} from '@angular/core';
-import {DomSanitizer, SafeValue} from '@angular/platform-browser';
+import {DomSanitizer} from '@angular/platform-browser';
 
 export type IconSize = 'tiny' | 'small' | 'default' | 'large';
 
@@ -10,9 +10,7 @@ export type IconSize = 'tiny' | 'small' | 'default' | 'large';
 })
 export class IconComponent {
   @Input() svgIcon = '';
-
-  @Input() set color(newColor: string) { this._color = this.domSanitizer.sanitize(SecurityContext.STYLE, newColor); }
-  @HostBinding('style.color') private _color: string | null = null;
+  @Input() set color(newColor: string) { this.domSanitizer.sanitize(SecurityContext.STYLE, newColor); }
 
   @Input() size: IconSize = 'default';
   @HostBinding('class.small') get isSmall() { return this.size === 'small'; }

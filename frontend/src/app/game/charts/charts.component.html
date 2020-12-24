@@ -1,10 +1,3 @@
 <cvd-row wrap>
-  <cvd-chart [tick]="(gameService.infectedToday$ | async)!" [series]="[{label: 'nově nakažení', unit: 'tis.'}]"></cvd-chart>
-<!--  <cvd-chart [tick]="(gameService.deathsToday$ | async)!" [series]="[{label: 'nově nakažených za poslední měsíc', unit: 'tis.'}]"></cvd-chart>-->
-<!--  <cvd-chart [series]="[{label: 'nově nakažených - 7 denní průměr', unit: 'tis.'}]"></cvd-chart>-->
-<!--  <cvd-chart [series]="[{label: 'aktuální smrtnost', unit: '%'}]"></cvd-chart>-->
-<!--  <cvd-chart [series]="[{label: 'aktuálně nakažených', unit: 'tis'}]"></cvd-chart>-->
-<!--  <cvd-chart [series]="[{label: 'nová úmrtí'}]"></cvd-chart>-->
-<!--  <cvd-chart [series]="[{label: 'sociální stabilita'}]"></cvd-chart>-->
-<!--  <cvd-chart [series]="[{label: 'potřeba lůžek', unit: '%'}, {label: '100 %'}]"></cvd-chart>-->
+  <cvd-chart [tick$]="gameService.infectedToday$" [series]="[{label: 'nově nakažení', unit: 'tis.'}]"></cvd-chart>
 </cvd-row>

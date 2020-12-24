@@ -1,22 +1,25 @@
-import {Component, OnInit} from '@angular/core';
-import {Game} from '../../services/game';
-import {DayState} from '../../services/simulation';
-import {GameService} from '../game.service';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {GameService, Speed} from '../game.service';
 
+@UntilDestroy()
 @Component({
   selector: 'cvd-simulation-control',
   templateUrl: './simulation-control.component.html',
-  styleUrls: ['./simulation-control.component.scss']
+  styleUrls: ['./simulation-control.component.scss'],
 })
 export class SimulationControlComponent implements OnInit {
+  speed: Speed | undefined;
 
-  constructor(
-    public gameService: GameService,
-  ) {
-  }
+  constructor(public gameService: GameService, private cd: ChangeDetectorRef) { }
 
   ngOnInit() {
-    this.gameService.restartSimulation();
+    this.gameService.speed$.pipe(
+      untilDestroyed(this),
+    ).subscribe(speed => {
+      this.speed = speed;
+      this.cd.markForCheck();
+    });
   }
 
   download() {

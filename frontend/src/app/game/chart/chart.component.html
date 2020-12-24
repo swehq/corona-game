@@ -7,7 +7,8 @@
   </cvd-row>
 
   <div grow class="chart">
-    <cvd-line-graph #lineGraph [reset$]="gameService.reset$" [title]="series[0].label" [tick]="data$ | async"></cvd-line-graph>
+    <cvd-line-graph #lineGraph [reset$]="gameService.reset$" [title]="series[0].label" [tick$]="data$">
+    </cvd-line-graph>
   </div>
   <cvd-row>
     <button style="width: 180px; z-index: 100" (click)="currentState = 'ok'">Change OK!</button>

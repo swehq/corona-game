@@ -7,8 +7,6 @@ import {GameService} from '../game.service';
   styleUrls: ['./charts.component.scss']
 })
 export class ChartsComponent {
-
   constructor(public gameService: GameService) {
   }
-
 }

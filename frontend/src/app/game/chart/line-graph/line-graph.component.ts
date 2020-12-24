@@ -1,7 +1,8 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+
+import {Observable, EMPTY} from 'rxjs';
+import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {BaseChartDirective, Label} from 'ng2-charts';
-import {Observable, EMPTY} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 import 'chartjs-plugin-datalabels';
@@ -22,7 +23,7 @@ export interface LineNode {
 @Component({
   selector: 'cvd-line-graph',
   templateUrl: './line-graph.component.html',
-  styleUrls: ['./line-graph.component.scss']
+  styleUrls: ['./line-graph.component.scss'],
 })
 export class LineGraphComponent implements OnInit {
   readonly colors = {
@@ -50,12 +51,11 @@ export class LineGraphComponent implements OnInit {
   @Input() tick$!: Observable<LineNode>;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
-  private allData: number[] = [];
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
   private eventNodes: (string | undefined)[] = [];
-  private isInitValue = true;
-  private lastValue = 0;
+  private seriesLength = 0;
+  private lastValue: number | undefined;
   private font = {
     // TODO ensure this is correct
     family: '"worksans", "Helvetica Neue", arial',
@@ -75,16 +75,22 @@ export class LineGraphComponent implements OnInit {
     },
     animation: {
       duration: 300,
-
     },
     responsive: true,
     tooltips: {
       enabled: true,
       displayColors: false,
       callbacks: {
-        label: tooltipItem => `Počet nakažených: ${tooltipItem?.value?.toString()}`,
+        label: tooltipItem => `Počet nakaženýchx: ${tooltipItem?.yLabel?.toLocaleString()}`,
         title: tooltipItem => (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '',
       },
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          callback: value => value.toLocaleString(),
+        }
+      }]
     },
     plugins: {
       datalabels: {
@@ -115,6 +121,8 @@ export class LineGraphComponent implements OnInit {
     },
   };
 
+  constructor(private cd: ChangeDetectorRef) { }
+
   ngOnInit() {
     this.options.title = {
       text: this.title,
@@ -124,26 +132,29 @@ export class LineGraphComponent implements OnInit {
     this.tick$.pipe(
       untilDestroyed(this)
     ).subscribe(tick => {
-      if (tick.state !== this.currentState) {
+      if (tick.state === this.currentState) {
+        this.datasets[this.currentDatasetIndex].data!.push(tick.value);
+      } else {
         this.currentState = tick.state;
         this.currentDatasetIndex++;
+
+        const padData = this.seriesLength ?
+          [...Array(this.seriesLength - 1).fill(NaN), this.lastValue] :
+          [];
 
         this.datasets = [...this.datasets, {
           ...this.defaultDataset,
           borderColor: `#${this.colors[tick.state!]}`,
           backgroundColor: `#${this.colors[tick.state!]}33`,
-          data: [...this.allData, this.lastValue, tick.value]
+          data: [...padData, tick.value]
         }];
-      } else {
-        this.datasets[this.currentDatasetIndex].data!.push(tick.value);
       }
 
-      if (!this.isInitValue) this.allData.push(NaN);
-
+      this.seriesLength++;
       this.lastValue = tick.value;
       this.labels.push(tick.label);
       this.eventNodes.push(tick.event);
-      this.isInitValue = false;
+      this.cd.detectChanges();
     });
 
     this.reset$.pipe(
@@ -157,8 +168,8 @@ export class LineGraphComponent implements OnInit {
     this.eventNodes = [];
     this.currentState = 'ok';
     this.currentDatasetIndex = 0;
-    this.allData = [];
-    this.isInitValue = true;
+    this.seriesLength = 0;
+    this.lastValue = undefined;
   }
 
   resetZoom() {

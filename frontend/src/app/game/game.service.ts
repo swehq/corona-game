@@ -15,9 +15,11 @@ export class GameService {
 
   game = new Game();
   eventMessages: string[] = [];
-  speed: Speed = 'pause';
   tickerId: number | undefined;
 
+  private speed: Speed | undefined;
+  private _speed$ = new Subject<Speed>();
+  speed$ = this._speed$.asObservable();
 
   private _infectedToday$ = new Subject<ChartValue>();
   infectedToday$ = this._infectedToday$.asObservable();
@@ -69,6 +71,7 @@ export class GameService {
     }
 
     this.speed = speed;
+    this._speed$.next(speed);
   }
 
   tick() {

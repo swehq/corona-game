@@ -1,7 +1,3 @@
 <div style="width: 800px; height: 400px">
-  <canvas *ngIf="datasets" baseChart
-          [datasets]="datasets"
-          [labels]="labels"
-          [options]="options"
-          [chartType]="'line'"></canvas>
+  <canvas baseChart [datasets]="datasets" [labels]="labels" [options]="options" [chartType]="'line'"></canvas>
 </div>

@@ -54,6 +54,8 @@ export class LineGraphComponent implements OnInit {
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
   private eventNodes: (string | undefined)[] = [];
+  private isInitValue = true;
+  private lastValue = 0;
   private font = {
     // TODO ensure this is correct
     family: '"worksans", "Helvetica Neue", arial',
@@ -130,14 +132,18 @@ export class LineGraphComponent implements OnInit {
           ...this.defaultDataset,
           borderColor: `#${this.colors[tick.state!]}`,
           backgroundColor: `#${this.colors[tick.state!]}33`,
-          data: [...this.allData, tick.value]
+          data: [...this.allData, this.lastValue, tick.value]
         }];
       } else {
         this.datasets[this.currentDatasetIndex].data!.push(tick.value);
       }
 
+      if (!this.isInitValue) this.allData.push(NaN);
+
+      this.lastValue = tick.value;
       this.labels.push(tick.label);
       this.eventNodes.push(tick.event);
+      this.isInitValue = false;
     });
 
     this.reset$.pipe(
@@ -152,6 +158,7 @@ export class LineGraphComponent implements OnInit {
     this.currentState = 'ok';
     this.currentDatasetIndex = 0;
     this.allData = [];
+    this.isInitValue = true;
   }
 
   resetZoom() {

@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ConfigService} from './services/config.service';
 
 @Component({
   selector: 'cvd-app',
@@ -7,4 +8,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
+  constructor(
+    public configService: ConfigService,
+  ) {
+  }
 }

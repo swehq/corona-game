@@ -1,5 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {ConfigService} from '../../services/config.service';
 import {GameService, Speed} from '../game.service';
 
 @UntilDestroy()
@@ -11,7 +12,11 @@ import {GameService, Speed} from '../game.service';
 export class SimulationControlComponent implements OnInit {
   speed: Speed | undefined;
 
-  constructor(public gameService: GameService, private cd: ChangeDetectorRef) { }
+  constructor(
+    private cd: ChangeDetectorRef,
+    public gameService: GameService,
+    public configService: ConfigService,
+  ) { }
 
   ngOnInit() {
     this.gameService.speed$.pipe(

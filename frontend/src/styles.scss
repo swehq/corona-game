@@ -8,12 +8,6 @@ body {
   font-size: small;
 }
 
-@import '~@angular/material/theming';
-$custom-typography: mat-typography-config(
-  $body-1:        mat-typography-level(12px, 20px, 400),
-);
-@include mat-core($custom-typography);
-
 .mitigation-label {
   min-width: 4rem;
 }

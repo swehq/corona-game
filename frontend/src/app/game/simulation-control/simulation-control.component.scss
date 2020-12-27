@@ -1,6 +1,9 @@
+@import '~@angular/material/theming';
+@import '~src/material-theme';
+
 :host {
   min-width: 10rem;
   min-height: 10rem;
-  background: bisque;
+  background: mat-color($theme-warn, 300);;
   padding: 1rem;
 }

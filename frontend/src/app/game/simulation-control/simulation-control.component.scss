@@ -1,9 +1,12 @@
-@import '~@angular/material/theming';
 @import '~src/material-theme';
 
 :host {
   min-width: 10rem;
   min-height: 10rem;
-  background: mat-color($theme-warn, 300);;
   padding: 1rem;
+
+  @include apply-themes {
+    $background: map-get($theme, background);
+    background-color: mat-color($background, card);
+  }
 }

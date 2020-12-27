@@ -244,3 +244,21 @@ $altTheme: mat-light-theme($theme-primary, $theme-accent, $theme-warn);
     font-family: 'Roboto';
   }
 }
+
+@mixin apply-themes() {
+  // use definitions with default $theme
+  @content;
+
+  // alter $theme variable
+  $old: $theme;
+  $theme: $altTheme !global;
+
+  // prefix with theme-alternate class
+  @at-root .theme-alternate #{&} {
+    // use definitions with alternate $theme
+    @content;
+  }
+
+  // restore default $theme variable
+  $theme: $old !global;
+}

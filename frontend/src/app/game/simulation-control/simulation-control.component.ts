@@ -1,5 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {map} from 'rxjs/operators';
 import {ConfigService} from '../../services/config.service';
 import {GameService, Speed} from '../game.service';
 
@@ -11,6 +12,14 @@ import {GameService, Speed} from '../game.service';
 })
 export class SimulationControlComponent implements OnInit {
   speed: Speed | undefined;
+
+  isLightTheme$ = this.configService.config$.pipe(
+    map(config => config.themeIsLight),
+  );
+
+  set isLightTheme(themeIsLight: boolean) {
+    this.configService.update({themeIsLight});
+  }
 
   constructor(
     private cd: ChangeDetectorRef,

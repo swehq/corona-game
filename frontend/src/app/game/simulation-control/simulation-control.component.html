@@ -8,8 +8,8 @@
   </cvd-row>
 
   <mat-slide-toggle
-    [checked]="configService.isLightTheme$ | async"
-    (change)="configService.isLightTheme = $event.checked"
+    [checked]="isLightTheme$ | async"
+    (change)="isLightTheme = $event.checked"
   >
     Světlý režim
   </mat-slide-toggle>

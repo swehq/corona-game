@@ -1,3 +1,7 @@
+export enum LocalStorageKey {
+  CONFIG = 'config',
+}
+
 export interface Environment {
   production: boolean;
 }

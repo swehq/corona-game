@@ -141,19 +141,7 @@ $mat-dark-theme-background: (
   disabled-list-option:     $dark-bg-lighter-10,
 );
 
-// Compute font config
-@include mat-core($fontConfig);
-
 // Theme Config
-
-body {
-  --primary-color: #9fe348;
-  --primary-lighter-color: #e2f7c8;
-  --primary-darker-color: #83d830;
-  --text-primary-color: #{$dark-primary-text};
-  --text-primary-lighter-color: #{$dark-primary-text};
-  --text-primary-darker-color: #{$dark-primary-text};
-}
 
 $mat-primary: (
   main: #9fe348,
@@ -168,15 +156,6 @@ $mat-primary: (
 );
 $theme-primary: mat-palette($mat-primary, main, lighter, darker);
 
-body {
-  --accent-color: #479ae3;
-  --accent-lighter-color: #c8e1f7;
-  --accent-darker-color: #2f7ed8;
-  --text-accent-color: #{$dark-primary-text};
-  --text-accent-lighter-color: #{$dark-primary-text};
-  --text-accent-darker-color: #{$light-primary-text};
-}
-
 $mat-accent: (
   main: #479ae3,
   lighter: #c8e1f7,
@@ -189,15 +168,6 @@ $mat-accent: (
   )
 );
 $theme-accent: mat-palette($mat-accent, main, lighter, darker);
-
-body {
-  --warn-color: #e348a1;
-  --warn-lighter-color: #f7c8e3;
-  --warn-darker-color: #d83085;
-  --text-warn-color: #{$dark-primary-text};
-  --text-warn-lighter-color: #{$dark-primary-text};
-  --text-warn-darker-color: #{$light-primary-text};
-}
 
 $mat-warn: (
   main: #e348a1,
@@ -214,36 +184,6 @@ $theme-warn: mat-palette($mat-warn, main, lighter, darker);;
 
 $theme: mat-dark-theme($theme-primary, $theme-accent, $theme-warn);
 $altTheme: mat-light-theme($theme-primary, $theme-accent, $theme-warn);
-
-// Theme Init
-@include angular-material-theme($theme);
-
-.theme-alternate {
-  @include angular-material-theme($altTheme);
-}
-
-// Specific component overrides, pieces that are not in line with the general theming
-
-// Handle buttons appropriately, with respect to line-height
-.mat-raised-button, .mat-stroked-button, .mat-flat-button {
-  padding: 0 1.15em;
-  margin: 0 .65em;
-  min-width: 3em;
-  line-height: 36.4px
-}
-
-.mat-standard-chip {
-  padding: .5em .85em;
-  min-height: 2.5em;
-}
-
-.material-icons {
-  font-size: 24px;
-  font-family: 'Material Icons Two Tone', 'Material Icons';
-  .mat-badge-content {
-    font-family: 'Roboto';
-  }
-}
 
 @mixin apply-themes() {
   // use definitions with default $theme

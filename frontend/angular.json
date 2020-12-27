@@ -39,7 +39,7 @@
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.scss",
-              "src/material-theme.scss"
+              "src/material-styles.scss"
             ],
             "scripts": [
               "node_modules/chart.js/dist/Chart.js",
@@ -108,7 +108,7 @@
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
               "src/styles.scss",
-              "src/material-theme.scss"
+              "src/material-styles.scss"
             ],
             "scripts": []
           }

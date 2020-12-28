@@ -1,17 +1,17 @@
-import {normalPositiveSampler} from './utils';
+import {clippedLogNormalSampler} from './utils';
 
 interface Settings {
-  R: [number, number];
-  mortality: [number, number];
+  rNoiseMult: [number, number];
+  baseMortality: [number, number];
   hospitalizationRate: [number, number];
 }
 
 export const settings: Settings = {
-  R: [1.0, 0.15],
-  mortality: [0.02, 0.001],
+  rNoiseMult: [1.0, 0.15],
+  baseMortality: [0.02, 0.001],
   hospitalizationRate: [0.05, 0.01],
 };
 
 export function getRandom(variable: keyof typeof settings) {
-  return normalPositiveSampler(settings[variable][0], settings[variable][1]);
+  return clippedLogNormalSampler(settings[variable][0], settings[variable][1]);
 }

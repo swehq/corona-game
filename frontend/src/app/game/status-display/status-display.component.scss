@@ -1,6 +1,19 @@
+@import '~src/material-definitions';
+
 :host {
   min-width: 10rem;
   min-height: 10rem;
-  background: bisque;
   padding: 1rem;
+
+  @include apply-themes {
+    background-color: mat-color(map-get($theme, background), card);
+
+    .color-virus {
+      color: mat-color(map-get($theme, warn));
+    }
+
+    .color-medicine {
+      color: mat-color(map-get($theme, accent));
+    }
+  }
 }

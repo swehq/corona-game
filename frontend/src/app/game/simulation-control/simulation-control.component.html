@@ -1,6 +1,17 @@
-<cvd-row wrap>
-  <cvd-button (click)="gameService.restartSimulation()">Restart</cvd-button>
-  <cvd-button (click)="gameService.togglePause()">{{speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
-  <cvd-button (click)="gameService.restartSimulation('max')">Compute</cvd-button>
-  <cvd-button (click)="download()">Download</cvd-button>
-</cvd-row>
+<cvd-col [spacing]="16">
+
+  <cvd-row wrap>
+    <cvd-button (click)="gameService.restartSimulation()">Restart</cvd-button>
+    <cvd-button (click)="gameService.togglePause()">{{speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
+    <cvd-button (click)="gameService.restartSimulation('max')">Compute</cvd-button>
+    <cvd-button (click)="download()">Download</cvd-button>
+  </cvd-row>
+
+  <mat-slide-toggle
+    [checked]="isLightTheme$ | async"
+    (change)="isLightTheme = $event.checked"
+  >
+    Světlý režim
+  </mat-slide-toggle>
+
+</cvd-col>

@@ -1,4 +1,22 @@
-// Discrete SIR model variant with delay and reinfections
+/*
+  The epidemics is modeled by compartmental model
+  that is a modification of SIR model.
+  There are sx states with nonzero duration:
+    suspectible
+    exposed - infected but not yet infectious
+    infectious
+    hospitalized
+    resistant (recovered) - temporary resistant to infections
+    dead
+
+  The transition diagram looks like:
+
+  suspectible -> exposed -> infectious -+---------------------+-> resistant -> suspectible
+                                         \                   /
+                                          +-> hospitalized -+
+                                                             \
+                                                              +-> dead
+*/
 
 import {last} from 'lodash';
 import {nextDay, normalPositiveSampler} from './utils';
@@ -11,182 +29,235 @@ export interface MitigationEffect {
   bordersClosed: boolean;
 }
 
-interface Results {
-  date: string;
+interface SirState {
   suspectible: number;
-  infected: number;
-  recovered: number;
+  exposed: number;
+  infectious: number;
+  resistant: number;
   hospitalized: number;
   dead: number;
-  infectedToday: number;
-  hospitalizedToday: number;
-  deathsToday: number;
-  costToday: number;
+  exposedNew: number;
+  infectiousNew: number;
+  resistantNew: number;
+  hospitalizedNew: number;
+  deathsNew: number;
+}
+
+interface Randomness {
+  rNoiseMult: number;
+  baseMortality: number;
+  hospitalizationRate: number;
+}
+
+interface ModelInputs {
+  bordersDrift: number;
+  seasonalityMult: number;
   R: number;
-  mortality: number;
-  vaccinationRate: number;
   stability: number;
+  costToday: number;
+  vaccinationRate: number;
+}
+
+interface MetricStats {
+  today: number;
+  total: number;
+  avg7Day: number;
+  totalUnrounded: number;
 }
 
 export interface Stats {
-  detectedInfectionsToday: number;
-  detectedInfectionsTotal: number;
-  detectedInfections7DayAvg: number;
-  detectedActiveInfectionsTotal: number;
+  detectedInfections: MetricStats;
+  resolvedInfections: MetricStats;
+  deaths: MetricStats;
+  activeInfections: number;
   mortality: number;
   costTotal: number;
   hospitalizationCapacity: number;
+  vaccinationRate: number;
 }
 
-export interface DayState extends Results {
+export interface DayState {
+  date: string;
+  randomness?: Randomness;
+  modelInputs?: ModelInputs;
+  sirState: SirState;
   stats: Stats;
 }
 
 export class Simulation {
-  R0 = 2.9;
-  RNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
+  R0 = 3.15;
+  rNoiseMultSampler = normalPositiveSampler(1.0, 0.15);
   RSeasonalityEffect = 0.10;
-  rSmoothing = 0.85;
-  stabilitySmoothing = 0.99;
-  mortalitySampler = normalPositiveSampler(0.02, 0.001);
+  rEmaUpdater = createEmaUpdater(7, this.R0);
+  stabilityEmaUpdater = createEmaUpdater(100, 1);
+  baseMortalitySampler = normalPositiveSampler(0.02, 0.001);
   initialPopulation = 10_690_000;
-  infectedStart = 3;
+  exposedStart = 3;
   vaccinationMaxRate = 0.75;
-
-  // All covid parameters counted from the infection day
-  incubationDays = 5; // Days until infection is detected
-  infectiousFrom = 3; // First day when people are infectious
-  infectiousTo = 8;   // Last day when people are infectious (they will isolate after the onset of COVID)
-  recoveryDays = 14 + this.incubationDays;
-  timeToDeathDays = 21 + this.incubationDays;
-  immunityDays = 90 + this.recoveryDays;
-  hospitalizationDays = 21; // How long people stay in hospital after incubation
-  hospitalizationRateSampler = normalPositiveSampler(0.05, 0.01);
+  hospitalizationRateMean = 0.05;
+  hospitalizationRateSampler = normalPositiveSampler(this.hospitalizationRateMean, 0.01);
   hospitalsOverwhelmedThreshold = 20000;
   hospitalsOverwhelmedMortalityMultiplier = 2;
-  hospitalsBaselineUtilization = 0.5;
-  infectionsWhenBordersOpen = 10;
-  infectionsWhenBordersClosed = 5;
+  hospitalsBaselineUtilization = 0.7;
+  infectionsWhenBordersOpen = 5;
+  infectionsWhenBordersClosed = 2;
+
+  // Durations of various model states
+  exposedDuration = 3;          // Duration people spend in exposed state
+  infectiousDuration = 5;       // How long people stay infectious before they isolate or get hospitalized
+  hospitalizationDuration = 7;  // Duration of hospitalization (TODO too short)
+  resistantDuration = 90;       // Immunity duration
+
+  // These two are used to calculate the number of active cases
+  incubationDays = 5;       // Days until infection is detected
+  recoveryDuration = 14;    // How long is the infection considered active after entering the resistant state
 
   modelStates: DayState[] = [];
 
-  stateBeforeStart: Results = {
-    date: '',
+  sirStateBeforeStart: SirState = {
     suspectible: this.initialPopulation,
-    infected: 0,
-    recovered: 0,
+    exposed: 0,
+    infectious: 0,
+    resistant: 0,
     hospitalized: 0,
     dead: 0,
-    infectedToday: 0,
-    hospitalizedToday: 0,
-    deathsToday: 0,
-    costToday: 0,
-    R: this.R0,
-    mortality: 0,
-    vaccinationRate: 0,
-    stability: 1,
+    exposedNew: 0,
+    infectiousNew: 0,
+    resistantNew: 0,
+    hospitalizedNew: 0,
+    deathsNew: 0,
   };
 
   // TODO move to Date
   constructor(startDate: string) {
     // pandemic params
-    const initialState: Results = {...this.stateBeforeStart};
-    initialState.date = startDate;
-    initialState.suspectible = this.initialPopulation - this.infectedStart;
-    initialState.infected = this.infectedStart;
-    initialState.infectedToday = this.infectedStart;
-    this.modelStates.push({...initialState, stats: this.calcStats(initialState)});
+    const sirState: SirState = {...this.sirStateBeforeStart};
+    sirState.suspectible = this.initialPopulation - this.exposedStart;
+    sirState.exposed = this.exposedStart;
+    sirState.exposedNew = this.exposedStart;
+    this.modelStates.push({date: startDate, sirState, stats: this.calcStats(sirState, undefined)});
   }
 
-  getModelStateInPast(n: number) {
+  private getSirStateInPast(n: number) {
     const i = this.modelStates.length - n;
 
     if (i >= 0) {
-      return this.modelStates[i];
+      return this.modelStates[i].sirState;
     } else {
       // days before the start of the epidemic have no sick people
-      return this.stateBeforeStart;
+      return this.sirStateBeforeStart;
     }
   }
 
-  simOneDay(mitigationEffect: MitigationEffect): DayState {
-    const yesterday = this.getModelStateInPast(1);
-    const todayDate = nextDay(yesterday.date);
+  calcRandomness(): Randomness {
+    return {
+      rNoiseMult: this.rNoiseMultSampler(),
+      baseMortality: this.baseMortalitySampler(),
+      hospitalizationRate: this.hospitalizationRateSampler(),
+    };
+  }
 
-    let suspectible = yesterday.suspectible;
-    let infected = yesterday.infected;
-    let recovered = yesterday.recovered;
-    let dead = yesterday.dead;
+  calcModelInputs(date: string, mitigationEffect: MitigationEffect): ModelInputs {
+    const yesterday = last(this.modelStates)?.modelInputs;
+    const seasonalityMult = 1. + this.getSeasonalityEffect(date);
+
+    const bordersDrift = mitigationEffect.bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
+
+    const prevVaccinationRate = yesterday?.vaccinationRate ? yesterday.vaccinationRate : 0;
+    const vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
 
     const stabilityToday = Math.max(0, 1 - mitigationEffect.stabilityCost);
-    const socialStability = this.stabilitySmoothing * yesterday.stability + (1. - this.stabilitySmoothing) * stabilityToday;
+    const stability = this.stabilityEmaUpdater(yesterday?.stability, stabilityToday);
 
-    const seasonalityMult = 1. + this.getSeasonalityEffect(todayDate);
+    const R = this.rEmaUpdater(yesterday?.R, this.R0 * mitigationEffect.mult * seasonalityMult);
 
-    const R = this.rSmoothing * yesterday.R + (1. - this.rSmoothing) * (this.R0 * mitigationEffect.mult * seasonalityMult);
+    return {
+      stability,
+      seasonalityMult,
+      bordersDrift,
+      vaccinationRate,
+      R,
+      costToday: mitigationEffect.cost,
+    };
+  }
 
-    const population = yesterday.suspectible + yesterday.infected + yesterday.recovered;
-    let infectious = 0;
+  calcSirState(modelInputs: ModelInputs, randomness: Randomness): SirState {
+    const yesterday = this.getSirStateInPast(1);
 
-    for (let i = this.infectiousFrom; i <= this.infectiousTo; ++i) {
-      infectious += this.getModelStateInPast(i).infectedToday;
-    }
+    let suspectible = yesterday.suspectible;
+    let exposed = yesterday.exposed;
+    let infectious = yesterday.infectious;
+    let resistant = yesterday.resistant;
+    let hospitalized = yesterday.hospitalized;
+    let dead = yesterday.dead;
 
-    infectious /= (this.infectiousTo - this.infectiousFrom + 1);
+    // Hospitals overwhelmedness logic
+    const hospitalsUtilization = this.hospitalsBaselineUtilization + hospitalized / this.hospitalsOverwhelmedThreshold;
+    const hospitalsOverwhelmedMultiplier = (hospitalsUtilization > 1) ? this.hospitalsOverwhelmedMortalityMultiplier : 1;
 
-    // Simplifying assumption that only uninfected people got vaccinated
-    const suspectibleToday = Math.max(0, yesterday.suspectible - population * yesterday.vaccinationRate);
-    let infectedToday = infectious * this.RNoiseMultSampler() * R * suspectibleToday / population;
-    infectedToday += mitigationEffect.bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
-    infectedToday = Math.min(infectedToday, suspectible);
-    infected += infectedToday;
-    suspectible -= infectedToday;
+    // suspectible -> exposed
+    const activePopulation = suspectible + exposed + infectious + resistant;
+    const totalPopulation = activePopulation + hospitalized;
+    // Simplifying assumption that only people in "suspectible" compartement are vaccinated
+    const suspectibleUnvaccinated = Math.max(0, suspectible - totalPopulation * modelInputs.vaccinationRate);
+    let exposedNew = infectious * randomness.rNoiseMult * modelInputs.R / this.infectiousDuration * suspectibleUnvaccinated / activePopulation;
+    exposedNew += modelInputs.bordersDrift;
+    exposedNew = Math.min(exposedNew, suspectible);
+    suspectible -= exposedNew;
+    exposed += exposedNew;
 
-    const recoveryFromDay = this.getModelStateInPast(this.recoveryDays);
-    const recoveredToday = recoveryFromDay.infectedToday * (1 - recoveryFromDay.mortality);
-    recovered += recoveredToday;
-    infected -= recoveredToday;
+    // exposed -> infectious
+    const infectiousNew = this.getSirStateInPast(this.exposedDuration).exposedNew;
+    exposed -= infectiousNew;
+    infectious += infectiousNew;
 
-    const deathsFromDay = this.getModelStateInPast(this.timeToDeathDays);
-    const deathsToday = deathsFromDay.infectedToday * deathsFromDay.mortality;
-    dead += deathsToday;
-    infected -= deathsToday;
+    // infectious -> resistant
+    // infectious -> hospitalized
+    const infectiousEnd = this.getSirStateInPast(this.infectiousDuration).infectiousNew;
+    const hospitalizedNew = infectiousEnd * randomness.hospitalizationRate;
+    let resistantNew = infectiousEnd - hospitalizedNew;
+    infectious -= infectiousEnd;
+    hospitalized += hospitalizedNew;
+    // resistant will be updated in the next block
 
-    const endedImmunityFromDay = this.getModelStateInPast(this.immunityDays);
-    const endedImmunityToday = endedImmunityFromDay.infectedToday * (1 - endedImmunityFromDay.mortality);
-    suspectible += endedImmunityToday;
-    recovered -= endedImmunityToday;
+    // hospitalized -> resistant
+    // hospitalized -> dead
+    const hospitalizedEnd = this.getSirStateInPast(this.hospitalizationDuration).hospitalizedNew;
+    const mortalityToday = hospitalsOverwhelmedMultiplier * randomness.baseMortality;
+    const deathsNew = hospitalizedEnd * mortalityToday / this.hospitalizationRateMean;
+    resistantNew += hospitalizedEnd - deathsNew;
+    hospitalized -= hospitalizedEnd;
+    dead += deathsNew;
+    resistant += resistantNew;
 
-    const hospitalizedToday = this.getModelStateInPast(this.incubationDays).infectedToday * this.hospitalizationRateSampler();
-    const hospitalized = yesterday.hospitalized + hospitalizedToday -
-      this.getModelStateInPast(this.hospitalizationDays).hospitalizedToday;
+    // resistant -> suspectible
+    const resistantEnd = this.getSirStateInPast(this.resistantDuration).resistantNew;
+    resistant -= resistantEnd;
+    suspectible += resistantEnd;
 
-    const vaccinationRate = Math.min(yesterday.vaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
-
-    let hospitalsOverwhelmedMultiplier = 1;
-    if (hospitalized > (1 - this.hospitalsBaselineUtilization) * this.hospitalsOverwhelmedThreshold) {
-      hospitalsOverwhelmedMultiplier = this.hospitalsOverwhelmedMortalityMultiplier;
-    }
-
-    const modelState: Results = {
-      date: todayDate,
+    return {
       suspectible,
-      infected,
-      recovered,
+      exposed,
+      infectious,
+      resistant,
       hospitalized,
       dead,
-      infectedToday,
-      hospitalizedToday,
-      deathsToday,
-      costToday: mitigationEffect.cost,
-      R,
-      mortality: this.mortalitySampler() * hospitalsOverwhelmedMultiplier,
-      vaccinationRate,
-      stability: socialStability,
+      exposedNew,
+      infectiousNew,
+      resistantNew,
+      hospitalizedNew,
+      deathsNew,
     };
+  }
 
-    const stats: Stats = this.calcStats(modelState);
-    const state: DayState = {...modelState, stats};
+  simOneDay(mitigationEffect: MitigationEffect): DayState {
+    const date = nextDay(last(this.modelStates)!.date);
+
+    const randomness: Randomness = this.calcRandomness();
+    const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
+    const sirState: SirState = this.calcSirState(modelInputs, randomness);
+    const stats: Stats = this.calcStats(sirState, modelInputs);
+    const state: DayState = {date, sirState, randomness, modelInputs, stats};
     this.modelStates.push(state);
 
     return state;
@@ -208,34 +279,60 @@ export class Simulation {
     return this.RSeasonalityEffect * Math.cos(2 * Math.PI * seasonalityPhase);
   }
 
+  private calcMetricStats(name: string, todayUnrounded: number): MetricStats {
+    const lastStat = this.getLastStats() as any;
+    const prevTotalUnrounded = lastStat ? lastStat[name].totalUnrounded : 0;
+    const prevTotal = lastStat ? lastStat[name].total : 0;
+    const totalUnrounded = prevTotalUnrounded + todayUnrounded;
+    const total = Math.round(totalUnrounded);
+    const today = total - prevTotal;
+    const sum7DayNDays = Math.min(7, this.modelStates.length + 1);
+    let sum7Day = today;
+
+    for (let i = 1; i < sum7DayNDays; ++i) {
+      const stats = this.modelStates[this.modelStates.length - i].stats as any;
+      sum7Day += stats[name].today;
+    }
+
+    return {
+      total,
+      today,
+      totalUnrounded,
+      avg7Day: sum7Day / sum7DayNDays,
+    };
+  }
+
   // TODO consider removal and computation on-the-fly
-  calcStats(state: Results): Stats {
+  calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
     const lastStat = this.getLastStats();
 
-    let undetectedInfections = 0;
-    for (let i = 1; i <= this.incubationDays; i++) {
-      undetectedInfections += this.getModelStateInPast(i).infectedToday;
-    }
+    const detectedInfections = this.calcMetricStats('detectedInfections', this.getSirStateInPast(this.incubationDays).exposedNew);
+    const resolvedInfections = this.calcMetricStats('resolvedInfections', this.getSirStateInPast(this.recoveryDuration).resistantNew + state.deathsNew);
+    const deaths = this.calcMetricStats('deaths', state.deathsNew);
 
-    const detectedInfectionsToday = this.getModelStateInPast(this.incubationDays + 1).infectedToday;
-    const detectedInfectionsTotal = (lastStat ? lastStat.detectedInfectionsTotal : 0) + detectedInfectionsToday;
+    const costTotal = (lastStat ? lastStat.costTotal : 0) + (modelInputs ? modelInputs.costToday : 0);
 
-    let detectedInfections7DayAvg = 0;
-    for (let i = 1; i <= 7; i++) {
-      detectedInfections7DayAvg += this.getModelStateInPast(i + this.incubationDays).infectedToday / 7;
-    }
-
-    const costTotal = (lastStat ? lastStat.costTotal : 0) + state.costToday;
     const stats = {
-      detectedInfectionsToday: Math.round(detectedInfectionsToday),
-      detectedInfectionsTotal: Math.round(detectedInfectionsTotal),
-      detectedInfections7DayAvg,
-      detectedActiveInfectionsTotal: Math.round(state.infected - undetectedInfections),
-      mortality: state.dead / detectedInfectionsTotal,
+      detectedInfections,
+      resolvedInfections,
+      deaths,
+      activeInfections: detectedInfections.total - resolvedInfections.total,
+      mortality: deaths.total / detectedInfections.total,
       costTotal,
       hospitalizationCapacity: this.hospitalsBaselineUtilization + state.hospitalized / this.hospitalsOverwhelmedThreshold,
+      vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
     };
 
     return stats;
   }
 }
+
+function createEmaUpdater(halfLife: number, initialValue: number) {
+  const alpha = Math.pow(0.5, 1 / halfLife);
+  return (old: number | undefined, update: number) => {
+    const prev = (old === undefined) ? initialValue : old;
+
+    return prev * alpha + update * (1 - alpha);
+  };
+}
+

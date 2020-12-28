@@ -1,0 +1,7 @@
+version: "3"
+
+services:
+  # overrides
+  postgres:
+    ports:
+      - 5432:5432

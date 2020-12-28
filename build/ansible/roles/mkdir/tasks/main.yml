@@ -1,0 +1,9 @@
+- name: Create deployment directory
+  file:
+    path: "{{ deploy_dir }}"
+    state: directory
+
+- name: Empty deployment directory
+  shell: "cd {{ deploy_dir }} && rm -rf *"
+  args:
+    warn: False

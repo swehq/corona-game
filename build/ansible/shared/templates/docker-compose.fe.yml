@@ -1,0 +1,17 @@
+version: "3"
+
+networks:
+  nginx:
+    external: true
+
+services:
+  frontend:
+    image: {{ frontend_remote_image_latest }}
+    container_name: {{ frontend_container }}
+    restart: unless-stopped
+    networks:
+      - nginx
+    environment:
+      - VIRTUAL_HOST={{ url }}
+      - LETSENCRYPT_HOST={{ url }}
+      - LETSENCRYPT_EMAIL={{ admin_email }}

@@ -1,0 +1,20 @@
+version: "3"
+
+networks:
+  corona-{{ env }}:
+
+volumes:
+  corona-postgres-{{ env }}:
+
+services:
+  postgres:
+    container_name: corona-postgres-{{ env }}
+    image: postgres:9.6.10
+    networks:
+      - corona-{{ env }}
+    volumes:
+      - corona-postgres-{{ env }}:/var/lib/postgresql/data
+    environment: # TODO: set correct credentials
+      POSTGRES_PASSWORD: webuser
+      POSTGRES_USER: webuser
+      POSTGRES_DB: corona-game

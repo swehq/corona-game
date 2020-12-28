@@ -1,0 +1,28 @@
+- name: Build frontend
+  shell: |
+    npm run version -- {{ env }}
+    npm run build -- -c {{ env }}
+  args:
+    chdir: ../../frontend
+
+- shell: git rev-parse --short HEAD
+  register: git_output
+
+- set_fact:
+    commit: "{{ git_output.stdout }}"
+
+- set_fact:
+    frontend_remote_image_commit: "{{ frontend_remote_image }}:{{ commit }}"
+
+- name: Build frontend docker image
+  shell: docker build -t {{ frontend_image }} -f build/docker/Dockerfile .
+  args:
+    chdir: ../../frontend
+
+- name: Tag frontend docker image
+  shell: |
+    docker tag {{ frontend_image }} {{ frontend_remote_image_commit }}
+    docker tag {{ frontend_image }} {{ frontend_remote_image_latest }}
+
+- name: Push frontend docker image
+  shell: docker push {{ frontend_remote_image }}

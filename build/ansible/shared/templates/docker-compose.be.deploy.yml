@@ -1,0 +1,58 @@
+version: "3"
+
+networks:
+  nginx:
+    external:
+      name: nginx
+
+volumes:
+  corona-log-{{ env }}:
+
+services:
+  backend:
+    container_name: {{ backend_container }}
+    image: {{ backend_remote_image_latest }}
+    command: /venv/bin/uwsgi --ini /etc/uwsgi.ini
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - corona-{{ env }}
+      - nginx
+    volumes:
+      - corona-log-{{ env }}:/code/log
+    expose:
+      - 80
+    environment:
+      - DJANGO_SETTINGS_MODULE=settings.{{ env }}
+
+  static:
+    container_name: {{ static_container }}
+    image: {{ static_remote_image_latest }}
+    restart: unless-stopped
+    networks:
+      - nginx
+    expose:
+      - 80
+
+  backend-deploy:
+    container_name: {{ backend_deploy_container }}
+    image: {{ backend_remote_image_latest }}
+    command: >-
+      sh -c "
+      /venv/bin/python manage.py migrate --settings settings.{{ env }} &&
+      /venv/bin/python manage.py create_superuser --settings settings.{{ env }}
+      "
+    working_dir: /code/server
+    depends_on:
+      - postgres
+    networks:
+      - corona-{{ env }}
+    volumes:
+      - corona-log-{{ env }}:/code/log
+
+  # overrides
+  postgres:
+    restart: unless-stopped
+    expose:
+      - 5432

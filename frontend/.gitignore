@@ -4,3 +4,5 @@
 /dist
 /tmp
 /*.log
+/src/assets/version.json
+/src/environments/version.ts

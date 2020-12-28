@@ -1,0 +1,10 @@
+- name: Docker login
+  shell: docker login -u _json_key -p "$(cat {{ deploy_dir }}/gcloud-key.json)" https://eu.gcr.io
+
+- name: Compose docker containers
+  shell: docker-compose {{item}}
+  with_items:
+    - pull
+    - up -d
+  args:
+    chdir: "{{ deploy_dir }}"

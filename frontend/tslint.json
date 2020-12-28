@@ -131,6 +131,12 @@
     "use-pipe-transform-interface": true,
     "rxjs-no-internal": {
       "severity": "error"
+    },
+    "max-line-length": {
+      "options": {
+        "limit": 120,
+        "check-strings": false
+      }
     }
   }
 }

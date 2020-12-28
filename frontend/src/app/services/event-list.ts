@@ -12,12 +12,12 @@ export const eventList: Event[] = [
   {
     title: '{{deathsToday}} mrtvých za jediný den',
     text: 'Vláda podcenila situaci. Nespokojení občané žádají, tvrdší opatření. K situaci se vyjádřil předseda odborného sdružení...',
-    condition: (s: DayState) => s.deathsToday > 10,
+    condition: (s: DayState) => s.stats.deaths.today >= 10,
   },
   {
     title: 'Šok: {{deathsToday}} mrtvých za jediný den',
     text: 'Předseda vlády vydal prohlášení. Předsedkyně občanského sdružení antiCOVID, vyzývá k okamžité akci.',
-    condition: (s: DayState) => s.deathsToday > 100,
+    condition: (s: DayState) => s.stats.deaths.today >= 100,
   },
   {
     title: 'Ekonomika: První miliarda v nákladech!',
@@ -28,6 +28,6 @@ export const eventList: Event[] = [
   {
     title: 'Úspěšně očkujeme',
     text: 'Polovina populace již byla očkována.',
-    condition: (s: DayState) => s.vaccinationRate > .5,
+    condition: (s: DayState) => s.stats.vaccinationRate > .5,
   },
 ];

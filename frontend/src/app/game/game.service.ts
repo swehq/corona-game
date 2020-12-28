@@ -43,7 +43,7 @@ export class GameService {
 
     const chartData = this.game.simulation.modelStates.map(s => ({
       label: s.date,
-      value: s.infectedToday,
+      value: s.stats.detectedInfections.today,
     }));
     chartData.forEach(i => this._infectedToday$.next(i));
     this.setSpeed(speed);
@@ -96,7 +96,7 @@ export class GameService {
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
-    this._infectedToday$.next({label: gameUpdate.dayState.date, value: Math.floor(gameUpdate.dayState.infectedToday)});
+    this._infectedToday$.next({label: gameUpdate.dayState.date, value: gameUpdate.dayState.stats.detectedInfections.today});
 
     if (event) this.showEvent(event.title, event.text);
   }

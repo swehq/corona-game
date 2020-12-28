@@ -140,15 +140,16 @@ export class Game {
   static randomizeMitigations() {
     const mitigations: Mitigation[] = [];
 
-    const ens = normalSampler(0, 0); // FIXME: Effectivity randomness turned off during testing
-    const cs = normalPositiveSampler(4e6, 0.5e6); // Cost scaler
+    const ens = normalSampler(0, 0); // TODO enable effectivity randomness, turned off during testing
+    const cs = normalPositiveSampler(4_000_000, 500_000); // Cost scaler
     const ss = normalPositiveSampler(0.007, 0.002); // Stability
 
     // Special mitigation: controls drift across borders
     addMitigation('borders', 0.00, [0.00, 0.00], 10 * cs(), 10 * ss(), 'Zavřít hranice', {isBorders: true});
 
     // TODO Find reference?
-    // maybe? https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)31142-9/fulltext cites 14.3% for face masks?
+    // maybe? https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)31142-9/fulltext
+    // cites 14.3 % for face masks ?
     addMitigation('rrr', 0.14, [0.10, 0.18], 5 * cs(), 2 * ss(), 'Ruce, Roušky, Rozestupy');
 
     // Taken from https://science.sciencemag.org/content/early/2020/12/15/science.abd9338
@@ -166,7 +167,8 @@ export class Game {
     // effectivityConfidence 2sigma confidence interval (can be asymmetric)
     // isSchool mitigations are effective during school holidays "for free"
     // isBorders controls epidemic drift across borders
-    function addMitigation(id: string, effectivity: number, effectivityConfidence: number[], cost: number, stabilityCost: number, label: string, flags?: any) {
+    function addMitigation(id: string, effectivity: number, effectivityConfidence: [number, number],
+      cost: number, stabilityCost: number, label: string, flags?: any) {
       mitigations.push({
         id,
         label,

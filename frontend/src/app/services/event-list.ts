@@ -10,12 +10,12 @@ export interface Event {
 // TODO use rounded values
 export const eventList: Event[] = [
   {
-    title: '{{deathsToday}} mrtvých za jediný den',
+    title: '{{stats.deaths.today}} mrtvých za jediný den',
     text: 'Vláda podcenila situaci. Nespokojení občané žádají, tvrdší opatření. K situaci se vyjádřil předseda odborného sdružení...',
     condition: (s: DayState) => s.stats.deaths.today >= 10,
   },
   {
-    title: 'Šok: {{deathsToday}} mrtvých za jediný den',
+    title: 'Šok: {{stats.deaths.today}} mrtvých za jediný den',
     text: 'Předseda vlády vydal prohlášení. Předsedkyně občanského sdružení antiCOVID, vyzývá k okamžité akci.',
     condition: (s: DayState) => s.stats.deaths.today >= 100,
   },

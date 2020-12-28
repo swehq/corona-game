@@ -96,7 +96,10 @@ export class GameService {
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
-    this._infectedToday$.next({label: gameUpdate.dayState.date, value: gameUpdate.dayState.stats.detectedInfections.today});
+    this._infectedToday$.next({
+      label: gameUpdate.dayState.date,
+      value: gameUpdate.dayState.stats.detectedInfections.today
+    });
 
     if (event) this.showEvent(event.title, event.text);
   }

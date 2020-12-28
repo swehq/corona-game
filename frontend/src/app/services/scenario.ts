@@ -40,11 +40,23 @@ interface MitigationAction {
 
 
 // Czech Republic at the beginning of March
-const czechiaMarch2020 = new Scenario({rampUpStartDate: '2020-02-25', rampUpEndDate: '2020-03-01', startDate: '2020-03-01', endDate: '2021-07-01'});
+const czechiaMarch2020 = new Scenario({
+  rampUpStartDate: '2020-02-25',
+  rampUpEndDate: '2020-03-01',
+  startDate: '2020-03-01',
+  endDate: '2021-07-01',
+});
 scenarios.CZECHIA_MARCH2020 = czechiaMarch2020;
 
 // Reproduce mitigation actions of Czech Republic up to December 2020
-const czechiaDec2020 = new Scenario({rampUpStartDate: '2020-02-25', rampUpEndDate: '2020-12-18', startDate: '2020-03-01', endDate: '2021-07-01'});
+const czechiaDec2020 = new Scenario(
+  {
+    rampUpStartDate: '2020-02-25',
+    rampUpEndDate: '2020-12-18',
+    startDate: '2020-03-01',
+    endDate: '2021-07-01',
+  }
+);
 
 // First wave
 czechiaDec2020.addMitigationAction('rrr', '2020-03-14', undefined);

@@ -26,7 +26,7 @@ export class MitigationDirective {
     @Optional() @Self() private mitigationToggleComponent: MitigationToggleComponent,
     private mitigationsService: MitigationsService,
   ) {
-    if (!this.mitigationComponent) throw new Error('MitigationDirective can be used only witth MitigationXxxxComponent');
+    if (!this.mitigationComponent) throw new Error('MitigationDirective can be used only with MitigationComponent');
   }
 
   private get mitigationComponent() {

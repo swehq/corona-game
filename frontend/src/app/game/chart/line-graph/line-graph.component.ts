@@ -29,7 +29,7 @@ export class LineGraphComponent implements OnInit {
   readonly colors = {
     ok: '869c66',
     warn: 'ff9502',
-    critical: 'd43501'
+    critical: 'd43501',
   };
 
   readonly defaultDataset: ChartDataSets = {
@@ -41,7 +41,7 @@ export class LineGraphComponent implements OnInit {
     },
     pointBorderColor: `#${this.colors.ok}`,
     pointBorderWidth: context => context.dataIndex && this.eventNodes[context.dataIndex] ? 3 : 1,
-    pointHitRadius: 5
+    pointHitRadius: 5,
   };
 
   @Input()
@@ -89,8 +89,8 @@ export class LineGraphComponent implements OnInit {
       yAxes: [{
         ticks: {
           callback: value => value.toLocaleString(),
-        }
-      }]
+        },
+      }],
     },
     plugins: {
       datalabels: {
@@ -116,8 +116,8 @@ export class LineGraphComponent implements OnInit {
           enabled: true,
           speed: 1,
           mode: 'x',
-        }
-      }
+        },
+      },
     },
   };
 
@@ -130,7 +130,7 @@ export class LineGraphComponent implements OnInit {
     };
 
     this.tick$.pipe(
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe(tick => {
       if (tick.state === this.currentState) {
         this.datasets[this.currentDatasetIndex].data!.push(tick.value);
@@ -146,7 +146,7 @@ export class LineGraphComponent implements OnInit {
           ...this.defaultDataset,
           borderColor: `#${this.colors[tick.state!]}`,
           backgroundColor: `#${this.colors[tick.state!]}33`,
-          data: [...padData, tick.value]
+          data: [...padData, tick.value],
         }];
       }
 
@@ -158,7 +158,7 @@ export class LineGraphComponent implements OnInit {
     });
 
     this.reset$.pipe(
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe(() => this.reset());
   }
 

@@ -10,12 +10,14 @@ interface ScenarioDates {
   endDate: string; // Last playable date
 }
 
+export type MitigationActions = Record<string, Partial<Mitigations>>;
+
 export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];
 }[keyof Mitigations];
 
 export class Scenario {
-  mitigationActions: Record<string, Partial<Mitigations>> = {};
+  mitigationActions: MitigationActions = {};
   dates: ScenarioDates;
 
   constructor(scenarioDates: ScenarioDates) {
@@ -27,7 +29,7 @@ export class Scenario {
   }
 
   /**
-   * Fills the structure date -> new mittigation values
+   * Fills the structure date -> new mitigation values
    * used for daily incremental mitigation update
    * @param mitigation mitigation id and level pair
    * @param begin first date of the mitigation

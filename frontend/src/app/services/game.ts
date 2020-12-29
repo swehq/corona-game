@@ -1,8 +1,8 @@
-import {cloneDeep} from 'lodash';
+import {cloneDeep, differenceWith, isEqual} from 'lodash';
 import {EventHandler} from './events';
 import {MitigationEffect, Simulation} from './simulation';
 import {normalSampler, normalPositiveSampler, nextDay} from './utils';
-import {MitigationPair, Scenario} from './scenario';
+import {MitigationActions, MitigationPair, Scenario} from './scenario';
 import {Mitigations} from '../game/mitigations-control/mitigations.service';
 
 interface MitigationParams {
@@ -35,6 +35,7 @@ export class Game {
   simulation = new Simulation(this.scenario.dates.rampUpStartDate);
   eventHandler = new EventHandler();
   mitigationParams = Game.randomizeMitigations();
+  mitigationHistory: MitigationActions = {};
 
   constructor(public scenario: Scenario) {
     this.scenario = scenario;
@@ -77,6 +78,14 @@ export class Game {
   }
 
   setMitigations(mitigations: Mitigations) {
+    const diff = differenceWith(Object.entries(mitigations), Object.entries(this.mitigations), isEqual);
+    const tomorrow = nextDay(this.simulation.lastDate);
+    if (diff.length) {
+      // TODO remove mitigation changes set back and forth for the tomorrow
+      // e.g. in a paused game
+      this.mitigationHistory[tomorrow] = diff.reduce((prev, cur) =>
+        ({...prev, [cur[0]]: cur[1]}), {...this.mitigationHistory[tomorrow]});
+    }
     this.mitigations = mitigations;
   }
 

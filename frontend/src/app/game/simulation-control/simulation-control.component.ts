@@ -41,7 +41,7 @@ export class SimulationControlComponent implements OnInit {
     element.style.display = 'none';
 
     const source = {
-      mitigations: this.gameService.game.scenario.mitigationActions,
+      mitigations: this.gameService.game.mitigationHistory,
       model: this.gameService.modelStates,
     };
 

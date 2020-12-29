@@ -7,7 +7,7 @@ describe('MitigationsControlComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MitigationsControlComponent]
+      declarations: [MitigationsControlComponent],
     })
       .compileComponents();
   });

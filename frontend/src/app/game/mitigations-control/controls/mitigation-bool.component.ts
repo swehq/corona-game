@@ -18,7 +18,7 @@ export type Labels = {
     :host {
       padding: 0.5rem;
     }
-  `]
+  `],
 })
 export class MitigationBoolComponent {
   @Input() label = '';

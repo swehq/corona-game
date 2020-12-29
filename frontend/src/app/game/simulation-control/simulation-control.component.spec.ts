@@ -7,7 +7,7 @@ describe('SimulationControlComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SimulationControlComponent]
+      declarations: [SimulationControlComponent],
     })
       .compileComponents();
   });

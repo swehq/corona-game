@@ -4,7 +4,7 @@ import {ChartDataSets, ChartOptions} from 'chart.js';
 @Component({
   selector: 'cvd-scatter-graph',
   templateUrl: './scatter-graph.component.html',
-  styleUrls: ['./scatter-graph.component.scss']
+  styleUrls: ['./scatter-graph.component.scss'],
 })
 export class ScatterGraphComponent {
 
@@ -13,26 +13,26 @@ export class ScatterGraphComponent {
     label: 'Scatter Dataset',
     data: [{
       x: -10,
-      y: 0
+      y: 0,
     }, {
       x: 0,
-      y: 10
+      y: 10,
     }, {
       x: 10,
-      y: 5
-    }]
+      y: 5,
+    }],
   }];
 
   options: ChartOptions = {
     scales: {
       xAxes: [{
         type: 'linear',
-        position: 'bottom'
-      }]
+        position: 'bottom',
+      }],
     },
     plugins: {
       datalabels: {
-        display: false
+        display: false,
       },
       zoom: {
         pan: {
@@ -40,7 +40,7 @@ export class ScatterGraphComponent {
           mode: 'x',
           speed: 2,
         },
-      }
+      },
     },
   };
 }

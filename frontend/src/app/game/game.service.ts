@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
 import {Subject} from 'rxjs';
 import {ChartValue} from './chart/chart.component';
+import {scenarios} from '../services/scenario';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
 
@@ -13,7 +14,7 @@ export class GameService {
   readonly FORWARD_SPEED = 150; // ms
   readonly REVERSE_SPEED = 50; // ms
 
-  game = new Game();
+  game!: Game;
   eventMessages: string[] = [];
   tickerId: number | undefined;
 
@@ -27,19 +28,23 @@ export class GameService {
   private _reset$ = new Subject<void>();
   reset$ = this._reset$.asObservable();
 
+  constructor() {
+    this.restartSimulation();
+  }
+
   get lastDate() {
-    return this.game.lastDate;
+    return this.game.simulation.lastDate;
   }
 
   get modelStates() {
     return this.game.simulation.modelStates;
   }
 
-  restartSimulation(speed: Speed = 'play') {
-    this._reset$.next();
+  restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
     this.setSpeed('pause');
+    this.game = new Game(scenarios[scenario]);
+    this._reset$.next();
     this.eventMessages = [];
-    this.game = new Game();
 
     const chartData = this.game.simulation.modelStates.map(s => ({
       label: s.date,
@@ -90,15 +95,12 @@ export class GameService {
       return;
     }
 
-    // TODO reflect form
-    // updateMitigationState();
-
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
     this._infectedToday$.next({
       label: gameUpdate.dayState.date,
-      value: gameUpdate.dayState.stats.detectedInfections.today
+      value: gameUpdate.dayState.stats.detectedInfections.today,
     });
 
     if (event) this.showEvent(event.title, event.text);

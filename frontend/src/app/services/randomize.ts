@@ -13,5 +13,5 @@ export const settings: Settings = {
 };
 
 export function getRandom(variable: keyof typeof settings) {
-  return normalPositiveSampler(settings[variable][0], settings[variable][0]);
+  return normalPositiveSampler(settings[variable][0], settings[variable][1]);
 }

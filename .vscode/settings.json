@@ -3,4 +3,6 @@
   "editor.formatOnSave": true,
   "git.ignoreLimitWarning": true,
   "files.eol": "\n",
+  "javascript.format.enable": false,
+  "typescript.format.enable": false,
 }

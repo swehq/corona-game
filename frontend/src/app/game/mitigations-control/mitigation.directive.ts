@@ -7,7 +7,7 @@ import {Mitigations} from './mitigations.service';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: '[mitigation]'
+  selector: '[mitigation]',
 })
 export class MitigationDirective {
 

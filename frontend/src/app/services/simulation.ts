@@ -1,7 +1,7 @@
 /*
   The epidemics is modeled by compartmental model
   that is a modification of SIR model.
-  There are sx states with nonzero duration:
+  There are 6 states with nonzero duration:
     suspectible
     exposed - infected but not yet infectious
     infectious
@@ -243,6 +243,13 @@ export class Simulation {
     };
   }
 
+  get lastDate() {
+    const lastState = last(this.modelStates);
+    if (!lastState) throw new Error('Absent model state');
+
+    return lastState.date;
+  }
+
   simOneDay(mitigationEffect: MitigationEffect): DayState {
     const date = nextDay(last(this.modelStates)!.date);
     const randomness: Randomness = {
@@ -294,7 +301,6 @@ export class Simulation {
     };
   }
 
-  // TODO consider removal and computation on-the-fly
   calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
     const lastStat = this.getLastStats();
 
@@ -324,10 +330,9 @@ export class Simulation {
 
 function createEmaUpdater(halfLife: number, initialValue: number) {
   const alpha = Math.pow(0.5, 1 / halfLife);
+
   return (old: number | undefined, update: number) => {
     const prev = (old === undefined) ? initialValue : old;
-
     return prev * alpha + update * (1 - alpha);
   };
 }
-

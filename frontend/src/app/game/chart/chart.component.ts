@@ -1,15 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
+
 import {LineNode, NodeState} from './line-graph/line-graph.component';
-import {
-  BusinessesLevel,
-  EventsLevel,
-  mitigationsI18n,
-  MitigationsService,
-  SchoolsLevel
-} from '../mitigations-control/mitigations.service';
+import {MitigationsService} from '../mitigations-control/mitigations.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {filter} from 'rxjs/operators';
 import {GameService} from '../game.service';
 
 export interface Serie {
@@ -27,7 +21,7 @@ export interface ChartValue {
 @Component({
   selector: 'cvd-chart',
   templateUrl: './chart.component.html',
-  styleUrls: ['./chart.component.scss']
+  styleUrls: ['./chart.component.scss'],
 })
 export class ChartComponent implements OnInit {
   @Input()
@@ -44,7 +38,7 @@ export class ChartComponent implements OnInit {
 
   ngOnInit() {
     this.tick$.pipe(
-      untilDestroyed(this)
+      untilDestroyed(this),
     ).subscribe(tick => {
       this.data$.next({
         value: tick.value,
@@ -53,7 +47,7 @@ export class ChartComponent implements OnInit {
         state: this.currentState,
       });
 
-      // TODO focus more on logic of showing mitigations!
+      // TODO focus more on logic of showing mitigations
       if (this.currentEvent) this.currentEvent = undefined;
     });
 
@@ -64,53 +58,14 @@ export class ChartComponent implements OnInit {
       this.currentEvent = undefined;
     });
 
-    // TODO add multiple mitigations at a same time
-    this.mitigationsService.formGroup.get('bordersClosed')?.valueChanges.pipe(
-      filter(value => value),
-      untilDestroyed(this),
-    ).subscribe(() => {
-      // TODO add "canceled restrictions" event
-      this.currentEvent = mitigationsI18n.bordersClosed;
-    });
-
-    this.mitigationsService.formGroup.get('businesses')?.valueChanges.pipe(
-      filter(value => value),
-      untilDestroyed(this),
-    ).subscribe((value: BusinessesLevel) => {
-      // TODO add "canceled restrictions" event
-      this.currentEvent = mitigationsI18n[value!];
-    });
-
-    this.mitigationsService.formGroup.get('events')?.valueChanges.pipe(
-      filter(value => value),
-      untilDestroyed(this),
-    ).subscribe((value: EventsLevel) => {
-      // TODO add "canceled restrictions" event
-      this.currentEvent = mitigationsI18n[value!];
-    });
-
-    this.mitigationsService.formGroup.get('rrr')?.valueChanges.pipe(
-      filter(value => value),
-      untilDestroyed(this),
-    ).subscribe(() => {
-      // TODO add "canceled restrictions" event
-      this.currentEvent = mitigationsI18n.rrr;
-    });
-
-    this.mitigationsService.formGroup.get('schools')?.valueChanges.pipe(
-      filter(value => value),
-      untilDestroyed(this),
-    ).subscribe((value: SchoolsLevel) => {
-      // TODO add "canceled restrictions" event
-      this.currentEvent = mitigationsI18n[value!];
-    });
-
-    this.mitigationsService.formGroup.get('stayHome')?.valueChanges.pipe(
-      filter(value => value),
-      untilDestroyed(this),
-    ).subscribe(() => {
-      // TODO add "canceled restrictions" event
-      this.currentEvent = mitigationsI18n.stayHome;
-    });
+    for (const mitigation of Object.keys(MitigationsService.mitigationsI18n)) {
+      this.mitigationsService.formGroup.get(mitigation)?.valueChanges.pipe(
+        untilDestroyed(this),
+        ).subscribe((value: any) => {
+        // TODO add multiple mitigations at a same time
+        this.currentEvent = this.mitigationsService.getLabel(
+          mitigation as keyof typeof MitigationsService.mitigationsI18n, value);
+      });
+    }
   }
 }

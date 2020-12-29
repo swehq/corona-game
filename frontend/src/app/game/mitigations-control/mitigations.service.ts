@@ -1,25 +1,17 @@
 import {Injectable} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {Observable} from 'rxjs';
 import {map, shareReplay, startWith} from 'rxjs/operators';
+import {Game} from 'src/app/services/game';
+import {MitigationPair} from 'src/app/services/scenario';
+import {GameService} from '../game.service';
 
 export type MitigationsPresetLevel = 'open' | 'level1' | 'level2' | 'lockdown';
 
-export type EventsLevel = null | 'events1000' | 'events100' | 'events10';
-export type BusinessesLevel = null | 'businessesSome' | 'businessesMost';
-export type SchoolsLevel = null | 'universities' | 'schools';
-
-export const mitigationsI18n = {
-  rrr: 'Roušky, ruce, rozestupy',
-  stayHome: 'Zákaz vycházení',
-  bordersClosed: 'Zavřené hranice',
-  events1000: 'Akce - max. 1 000',
-  events100: 'Akce - max. 100',
-  events10: 'Akce - max. 10',
-  businessesSome: 'Služby - zavřené univerzity',
-  businessesMost: 'Služby - všechny zavřené',
-  universities: 'Školy - zavřené univerzity',
-  schools: 'Školy - všechny zavřené'
-};
+export type EventsLevel = false | 1000 | 100 | 10;
+export type BusinessesLevel = false | 'some' | 'most';
+export type SchoolsLevel = false | 'universities' | 'all';
 
 export interface Mitigations {
   rrr: boolean;
@@ -30,66 +22,101 @@ export interface Mitigations {
   schools: SchoolsLevel;
 }
 
+@UntilDestroy()
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MitigationsService {
-
   formGroup = new FormGroup({
-    rrr: new FormControl(),
-    stayHome: new FormControl(),
     bordersClosed: new FormControl(),
-    events: new FormControl(),
     businesses: new FormControl(),
+    events: new FormControl(),
+    rrr: new FormControl(),
     schools: new FormControl(),
+    stayHome: new FormControl(),
   });
 
-  readonly value$ = this.formGroup.valueChanges.pipe(
-    startWith(this.formGroup.value),
-    map(val => val as MitigationsService),
-    shareReplay(1),
-  );
+  static readonly mitigationsI18n: {[key in keyof Mitigations]: Record<string, string>} = {
+    bordersClosed: {
+      true: 'Hranice - zavřené',
+      false: 'Hranice - otevřené',
+    },
+    businesses: {
+      some: 'Služby - zavřené rizikové',
+      most: 'Služby - otevřené jen základní',
+      false: 'Služby - neomezeno',
+    },
+    events: {
+      1000: 'Akce - max. 1 000',
+      100: 'Akce - max. 100',
+      10: 'Akce - max. 10',
+      false: 'Akce - neomezeno',
+    },
+    rrr: {
+      true: '3R - zavedeno',
+      false: '3R - zrušeno',
+    },
+    schools: {
+      universities: 'Školy - zavřené univerzity',
+      all: 'Školy - zavřené všechny',
+      false: 'Školy - neomezeno',
+    },
+    stayHome: {
+      true: 'Zákaz vycházení',
+      false: 'Vycházení neomezeno',
+    },
+  };
+
+  readonly value$: Observable<Mitigations>;
+
+  constructor(gameService: GameService) {
+    this.formGroup.setValue(Game.defaultMitigations);
+    this.value$ = this.formGroup.valueChanges.pipe(
+      startWith(this.formGroup.value),
+      map(val => val as {[key in keyof Mitigations]: any}),
+      shareReplay(1),
+    );
+
+    this.value$
+      .pipe(untilDestroyed(this))
+      .subscribe((m: Mitigations) => gameService.game.setMitigations(m));
+
+    gameService.reset$
+      .pipe(untilDestroyed(this))
+      .subscribe(() => this.formGroup.setValue(gameService.game.mitigations));
+  }
 
   preset(level: MitigationsPresetLevel) {
-    const openned: Mitigations = {
-      events: null,
-      stayHome: false,
-      bordersClosed: false,
-      rrr: false,
-      schools: null,
-      businesses: null,
-    };
-
     switch (level) {
       case 'open':
-        this.set(openned);
+        this.set(Game.defaultMitigations);
         return;
 
       case 'level1':
         this.set({
-          ...openned,
-          events: 'events1000',
+          ...Game.defaultMitigations,
+          events: 1000,
           rrr: true,
         });
         return;
 
       case 'level2':
         this.set({
-          ...openned,
-          events: 'events100',
+          ...Game.defaultMitigations,
+          events: 100,
           rrr: true,
-          businesses: 'businessesSome',
+          businesses: 'some',
           schools: 'universities',
         });
         return;
 
       case 'lockdown':
         this.set({
-          ...openned,
-          events: 'events10',
+          ...Game.defaultMitigations,
+          events: 10,
           rrr: true,
-          businesses: 'businessesMost',
-          schools: 'schools',
+          businesses: 'most',
+          schools: 'all',
           stayHome: true,
         });
         return;
@@ -103,32 +130,36 @@ export class MitigationsService {
     this.formGroup.setValue(mitigations);
   }
 
-  optionsFor(paramName: keyof Mitigations): [value: any, label: string][] {
+  optionsFor<T extends MitigationPair>(paramName: T[0]): [value: T[1], label: string][] {
     switch (paramName) {
       case 'events':
         return [
-          [null, 'Neomezeno'],
-          ['events1000', 'Max. 1 000'],
-          ['events100', 'Max. 100'],
-          ['events10', 'Max. 10'],
+          [false, 'Neomezeno'],
+          [1000, 'Max. 1 000'],
+          [100, 'Max. 100'],
+          [10, 'Max. 10'],
         ];
 
       case 'schools':
         return [
-          [null, 'Neomezeno'],
+          [false, 'Neomezeno'],
           ['universities', 'Zavřít univerzity'],
-          ['schools', 'Zavřít všechny'],
+          ['all', 'Zavřít všechny'],
         ];
 
       case 'businesses':
         return [
-          [null, 'Neomezeno'],
-          ['businessesSome', 'Zavřít univerzity'],
-          ['businessesMost', 'Zavřít všechny'],
+          [false, 'Neomezeno'],
+          ['some', 'Zavřít rizikové'],
+          ['most', 'Otevřené jen základní'],
         ];
 
       default:
         throw new Error(`No options defined for mitigation param ${paramName}`);
     }
+  }
+
+  getLabel(variable: keyof Mitigations, value: any) {
+    return MitigationsService.mitigationsI18n[variable][String(value)];
   }
 }

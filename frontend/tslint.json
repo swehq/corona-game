@@ -33,6 +33,12 @@
       "ignore-same-line"
     ],
     "directive-class-suffix": true,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always"
+      }
+    ],
     "directive-selector": [
       true,
       "attribute",

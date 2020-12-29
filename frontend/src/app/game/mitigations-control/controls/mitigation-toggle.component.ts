@@ -23,7 +23,7 @@ import {FormControl} from '@angular/forms';
     :host ::ng-deep .mat-button-toggle-label-content {
       line-height: 2rem;
     }
-  `]
+  `],
 })
 export class MitigationToggleComponent {
   @Input() options: [value: any, label: string][] = [];

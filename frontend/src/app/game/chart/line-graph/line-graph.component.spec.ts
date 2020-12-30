@@ -8,7 +8,7 @@ describe('LineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LineGraphComponent ]
+      declarations: [ LineGraphComponent ],
     })
     .compileComponents();
   });

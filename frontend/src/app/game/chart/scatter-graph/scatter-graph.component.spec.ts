@@ -8,7 +8,7 @@ describe('ScatterGraphComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScatterGraphComponent ]
+      declarations: [ ScatterGraphComponent ],
     })
     .compileComponents();
   });

@@ -41,7 +41,7 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
   ],
   exports: [
     GameComponent,
-  ]
+  ],
 })
 export class GameModule {
 }

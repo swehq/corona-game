@@ -32,7 +32,7 @@ export class SimulationControlComponent implements OnInit {
       untilDestroyed(this),
     ).subscribe(speed => {
       this.speed = speed;
-      this.cd.markForCheck();
+      this.cd.detectChanges();
     });
   }
 
@@ -40,8 +40,13 @@ export class SimulationControlComponent implements OnInit {
     const element = document.createElement('a');
     element.style.display = 'none';
 
-    const data = JSON.stringify(this.gameService.modelStates, null, 2);
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
+    const source = {
+      mitigations: this.gameService.game.mitigationHistory,
+      model: this.gameService.modelStates,
+    };
+
+    const dataString = JSON.stringify(source, null, 2);
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dataString));
     element.setAttribute('download', 'data.json');
 
     document.body.appendChild(element);

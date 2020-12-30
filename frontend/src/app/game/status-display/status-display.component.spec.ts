@@ -8,7 +8,7 @@ describe('StatusDisplayComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StatusDisplayComponent]
+      declarations: [StatusDisplayComponent],
     })
       .compileComponents();
   });

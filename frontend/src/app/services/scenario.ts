@@ -1,80 +1,90 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
-import {MitigationState} from './game';
-
-export const scenarios: Record<string, Scenario> = {};
+import {Mitigations} from '../game/mitigations-control/mitigations.service';
+import {Game} from './game';
+import {nextDay} from './utils';
 
 interface ScenarioDates {
-  rampUpStartDate: string;  // Date from we start simulation
-  rampUpEndDate: string;    // Last date to which we autoplay simulation
-  startDate: string;        // First playable date
-  endDate: string;          // Last playable date
+  rampUpStartDate: string; // Date from we start simulation
+  rampUpEndDate: string; // Last date to which we autoplay simulation
+  startDate: string; // First playable date
+  endDate: string; // Last playable date
 }
 
+export type MitigationActions = Record<string, Partial<Mitigations>>;
+
+export type MitigationPair = {
+  [P in keyof Mitigations]: [P, Mitigations[P]];
+}[keyof Mitigations];
+
 export class Scenario {
-  mitigationActions: MitigationAction[] = [];
+  mitigationActions: MitigationActions = {};
   dates: ScenarioDates;
 
   constructor(scenarioDates: ScenarioDates) {
     this.dates = scenarioDates;
   }
 
-  applyMitigationActions(mitigationState: MitigationState, date: string) {
-    Object.values(mitigationState).forEach(mitigation => mitigation.active = false);
-
-    this.mitigationActions.forEach(action => {
-      if (date >= action.begin && (!action.end || date <= action.end)) {
-        mitigationState[action.mitigationId].active = true;
-      }
-    });
+  getMitigations(date: string) {
+    return this.mitigationActions[date];
   }
-  addMitigationAction(mitigationId: string, begin: string, end?: string) {
-    this.mitigationActions.push({mitigationId, begin, end});
+
+  /**
+   * Fills the structure date -> new mitigation values
+   * used for daily incremental mitigation update
+   * @param mitigation mitigation id and level pair
+   * @param begin first date of the mitigation
+   * @param end next day sets the mitigation to the default value
+   */
+  addMitigationAction(mitigation: MitigationPair, begin: string, end?: string) {
+    const id = mitigation[0];
+    const level = mitigation[1];
+
+    this.mitigationActions[begin] = {...this.mitigationActions[begin], [id]: level};
+    if (end) {
+      end = nextDay(end);
+      this.mitigationActions[end] = {...this.mitigationActions[end], [id]: Game.defaultMitigations[id]};
+    }
   }
 }
 
-interface MitigationAction {
-  mitigationId: string;
-  begin: string;
-  end: string | undefined;
-}
-
-
-// Czech Republic at the beginning of March
-const czechiaMarch2020 = new Scenario({
+// Czech Republic at the beginning of March, game scenario
+const czechiaGame = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-03-01',
   startDate: '2020-03-01',
   endDate: '2021-07-01',
 });
-scenarios.CZECHIA_MARCH2020 = czechiaMarch2020;
 
-// Reproduce mitigation actions of Czech Republic up to December 2020
-const czechiaDec2020 = new Scenario(
-  {
-    rampUpStartDate: '2020-02-25',
-    rampUpEndDate: '2020-12-18',
-    startDate: '2020-03-01',
-    endDate: '2021-07-01',
-  }
-);
+// reproduce mitigation actions of Czech Republic up to December 2020
+const czechiaReal = new Scenario({
+  rampUpStartDate: '2020-02-25',
+  rampUpEndDate: '2020-12-18',
+  startDate: '2020-03-01',
+  endDate: '2021-07-01',
+});
 
 // First wave
-czechiaDec2020.addMitigationAction('rrr', '2020-03-14', undefined);
-czechiaDec2020.addMitigationAction('events1000', '2020-03-10', undefined);
-czechiaDec2020.addMitigationAction('events100', '2020-03-10', '2020-05-25');
-czechiaDec2020.addMitigationAction('events10', '2020-03-24', '2020-05-11');
-czechiaDec2020.addMitigationAction('businessesSome', '2020-03-14', '2020-07-01');
-czechiaDec2020.addMitigationAction('businessesMost', '2020-03-14', '2020-05-11');
-czechiaDec2020.addMitigationAction('schools', '2020-03-13', '2020-08-31');
-czechiaDec2020.addMitigationAction('universities', '2020-09-21', undefined);
-czechiaDec2020.addMitigationAction('stayHome', '2020-03-16', '2020-04-24');
-czechiaDec2020.addMitigationAction('borders', '2020-03-16', '2020-04-24');  // TODO find end date
+czechiaReal.addMitigationAction(['rrr', true], '2020-03-14');
+czechiaReal.addMitigationAction(['events', 100], '2020-03-10');
+czechiaReal.addMitigationAction(['events', 10], '2020-03-24');
+czechiaReal.addMitigationAction(['events', 100], '2020-05-12');
+czechiaReal.addMitigationAction(['events', 1000], '2020-05-26');
+czechiaReal.addMitigationAction(['businesses', 'most'], '2020-03-14');
+czechiaReal.addMitigationAction(['businesses', 'some'], '2020-05-12', '2020-07-01');
+czechiaReal.addMitigationAction(['schools', 'all'], '2020-03-13', '2020-08-31');
+czechiaReal.addMitigationAction(['stayHome', true], '2020-03-16', '2020-04-24');
+czechiaReal.addMitigationAction(['bordersClosed', true], '2020-03-16', '2020-04-24'); // TODO find end date
 
 // Second wave, TODO find exact dates
-czechiaDec2020.addMitigationAction('events100', '2020-10-13', undefined);
-czechiaDec2020.addMitigationAction('events10', '2020-10-13', '2020-11-30');
-czechiaDec2020.addMitigationAction('businessesSome', '2020-10-05', undefined);
-czechiaDec2020.addMitigationAction('businessesMost', '2020-10-13', '2020-10-30');
-czechiaDec2020.addMitigationAction('schools', '2020-10-12', '2020-11-30');
+czechiaReal.addMitigationAction(['events', 10], '2020-10-13');
+czechiaReal.addMitigationAction(['events', 100], '2020-12-01');
+czechiaReal.addMitigationAction(['businesses', 'some'], '2020-10-05');
+czechiaReal.addMitigationAction(['businesses', 'most'], '2020-10-13');
+czechiaReal.addMitigationAction(['businesses', 'some'], '2020-10-31');
+czechiaReal.addMitigationAction(['schools', 'universities'], '2020-09-21');
+czechiaReal.addMitigationAction(['schools', 'all'], '2020-10-12', '2020-11-30');
 
-scenarios.CZECHIA_DECEMBER2020 = czechiaDec2020;
+export const scenarios = {
+  czechiaGame,
+  czechiaReal,
+};

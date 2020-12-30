@@ -7,7 +7,7 @@ export interface Config {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ConfigService {
 

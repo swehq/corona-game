@@ -22,7 +22,7 @@ export const eventList: Event[] = [
   {
     title: 'Ekonomika: První miliarda v nákladech!',
     // TODO show in billion
-    text: 'Konkrétně {{stats.costTotal}} a to máme za sebou již {{infected}} infikovaných',
+    text: 'Konkrétně {{stats.costTotal}} a to máme za sebou již {{stats.detectedInfections.today}} infikovaných',
     condition: (s: DayState) => s.stats.costTotal > 1_000_000_000,
   },
   {

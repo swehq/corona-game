@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, HostBinding, Input} from '@angular/core';
 
 @Component({
   selector: 'cvd-button',
@@ -6,5 +6,6 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./button.component.scss'],
 })
 export class ButtonComponent {
+  @HostBinding('style.--color')
   @Input() color = '';
 }

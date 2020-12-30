@@ -8,9 +8,4 @@ import {RowComponent} from './row.component';
 })
 export class ColComponent extends RowComponent {
   get isColumn() { return true; }
-
-  constructor() {
-    super();
-    this.spacing = 0;
-  }
 }

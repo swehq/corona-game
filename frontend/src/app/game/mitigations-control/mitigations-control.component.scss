@@ -1,15 +1,5 @@
-@import '~src/material-definitions';
+@import '~src/definitions';
 
 :host {
-  min-width: 10rem;
-  min-height: 10rem;
-  padding: 1rem;
-
-  @include apply-themes {
-    $background: map-get($theme, background);
-    background-color: mat-color($background, card);
-  }
-
-   // TODO add to all panels
-   // clip-path: polygon(15% 0, 85% 0, 100% 10%, 100% 90%, 85% 100%, 15% 100%, 0 90%, 0 10%);
+  @include panel;
 }

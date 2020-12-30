@@ -1,0 +1,40 @@
+@import 'material-definitions';
+
+@mixin grow-no-overflow($grow: 1) {
+  flex: $grow 1 0%;
+  overflow: hidden;
+}
+
+@mixin flex-container($grow: 1) {
+  @include grow-no-overflow($grow);
+  display: flex;
+}
+
+@mixin cut-out-corners() {
+  clip-path:
+    polygon(
+        0% 25px,                 /* top left */
+        25px 0%,                 /* top left */
+        calc(100% - 25px) 0%,    /* top right */
+        100% 25px,               /* top right */
+        100% calc(100% - 25px),  /* bottom right */
+        calc(100% - 25px) 100%,  /* bottom right */
+        25px 100%,               /* bottom left */
+        0 calc(100% - 25px)      /* bottom left */
+    );
+}
+
+@mixin panel() {
+  min-width: 5rem;
+  min-height: 5rem;
+  padding: 3rem;
+
+  justify-content: center;
+
+  @include cut-out-corners;
+
+  @include apply-themes {
+    $background: map-get($theme, background);
+    background-color: mat-color($background, card);
+  }
+}

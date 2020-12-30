@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 
-type Spacing = 0 | 4 | 8 | 16 | 24 | 32 | 64 | 128;
+type Spacing = 0 | 1 | 2 | 3 | 4 | 5;
 export type Orientation = 'row' | 'col';
 
 @Component({
@@ -9,7 +9,7 @@ export type Orientation = 'row' | 'col';
   styleUrls: ['./row.component.scss'],
 })
 export class RowComponent {
-  @Input() spacing: Spacing = 16;
+  @Input() spacing: Spacing = 1;
   @Input() horizontalSpacing: Spacing = 0;
   @Input() verticalSpacing: Spacing = 0;
 

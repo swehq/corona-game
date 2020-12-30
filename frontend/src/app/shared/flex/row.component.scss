@@ -9,14 +9,11 @@
 
 ::ng-deep {
   $spacings: (
-    2: 2px,
-    4: 4px,
-    8: 8px,
-    16: 16px,
-    24: 24px,
-    32: 32px,
-    64: 64px,
-    128: 128px,
+    1: 0.5rem,
+    2: 1rem,
+    3: 2rem,
+    4: 4rem,
+    5: 8rem,
   );
 
   $spacings-incl-0: map-merge((0: 0), $spacings);

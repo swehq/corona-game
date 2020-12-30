@@ -6,7 +6,6 @@ import {SharedModule} from '../shared/shared.module';
 import {ChartComponent} from './chart/chart.component';
 import {LineGraphComponent} from './chart/line-graph/line-graph.component';
 import {ScatterGraphComponent} from './chart/scatter-graph/scatter-graph.component';
-import {ChartsComponent} from './charts/charts.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
 import {MitigationBoolComponent} from './mitigations-control/controls/mitigation-bool.component';
@@ -20,7 +19,6 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
 @NgModule({
   declarations: [
     ChartComponent,
-    ChartsComponent,
     GameComponent,
     LineGraphComponent,
     MitigationBoolComponent,

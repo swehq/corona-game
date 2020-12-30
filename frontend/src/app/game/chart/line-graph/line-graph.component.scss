@@ -1,13 +1,21 @@
-.chart-container {
+@import '~src/definitions';
+
+:host {
+  @include flex-container;
   position: relative;
+}
 
-  .in-chart-button-group {
-    position: absolute;
-    top: 10px;
-    left: 70px;
+.slider {
+  position: absolute;
+  top: 1.75rem;
+  left: 7.0rem;
 
-    label {
-      margin-left: 8px;
-    }
+  label {
+    margin-left: 0.8rem;
   }
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
 }

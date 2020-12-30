@@ -18,7 +18,7 @@ export class RowComponent {
   get wrap() { return this._wrap; }
   private _wrap = false;
 
-  @Input() alignItems: 'start' | 'center' | 'baseline' | 'end' = 'center';
+  @Input() alignItems: 'flex-start' | 'center' | 'stretch' | 'baseline' | 'flex-end' = 'center';
   @Input() justifyContent: 'flex-start' | 'center' | 'space-between' | 'space-around' | 'flex-end' = 'center';
 
   // TODO to fix shown scrollbars -

@@ -1,34 +1,12 @@
-<cvd-col alignItems="start">
+<cvd-col alignItems="stretch" style="padding: 1rem 0" [formGroup]="mitigationsService.formGroup">
 
-  <cvd-row justifyContent="space-between" style="width: 100%">
-    <cvd-button (click)="preset('open')">Povolit vše</cvd-button>
-    <cvd-button (click)="preset('level1')" color="primary">PES1</cvd-button>
-    <cvd-button (click)="preset('level2')" color="accent">PES2</cvd-button>
-    <cvd-button (click)="preset('lockdown')" color="warn">Lockdown</cvd-button>
-  </cvd-row>
+  <cvd-mitigation-bool formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
+  <cvd-mitigation-bool formControlName="bordersClosed">Hranice</cvd-mitigation-bool>
 
-  <cvd-mitigation-bool mitigation="rrr" label="Roušky, ruce, rozestupy">
-    3R
-  </cvd-mitigation-bool>
+  <cvd-mitigation-toggle formControlName="events" labelMinWidth="7rem">Akce</cvd-mitigation-toggle>
+  <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
+  <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
 
-  <cvd-mitigation-bool mitigation="stayHome" label="Zakázat">
-    Vycházení
-  </cvd-mitigation-bool>
-
-  <cvd-mitigation-bool mitigation="bordersClosed" label="Zavřít">
-    Hranice
-  </cvd-mitigation-bool>
-
-  <cvd-mitigation-toggle mitigation="events">
-    Akce
-  </cvd-mitigation-toggle>
-
-  <cvd-mitigation-toggle mitigation="businesses">
-    Služby
-  </cvd-mitigation-toggle>
-
-  <cvd-mitigation-toggle mitigation="schools">
-    Školy
-  </cvd-mitigation-toggle>
+  <cvd-button (click)="preset('lockdown')" style="padding-top: 1rem" color="warn">Lockdown</cvd-button>
 
 </cvd-col>

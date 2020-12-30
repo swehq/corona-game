@@ -10,7 +10,12 @@ export type IconSize = 'tiny' | 'small' | 'default' | 'large';
 })
 export class IconComponent {
   @Input() svgIcon = '';
-  @Input() set color(newColor: string) { this.domSanitizer.sanitize(SecurityContext.STYLE, newColor); }
+
+  @Input()
+  set color(newColor: string | null) { this._color = this.domSanitizer.sanitize(SecurityContext.STYLE, newColor); }
+  get color() { return this._color; }
+  @HostBinding('style.color')
+  private _color: string | null = null;
 
   @Input() size: IconSize = 'default';
   @HostBinding('class.small') get isSmall() { return this.size === 'small'; }

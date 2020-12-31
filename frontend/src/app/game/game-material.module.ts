@@ -1,11 +1,11 @@
 import {NgModule} from '@angular/core';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatSliderModule} from '@angular/material/slider';
 
 @NgModule({
   exports: [
-    MatButtonToggleModule,
     MatSlideToggleModule,
+    MatSliderModule,
   ],
 })
 export class GameMaterialModule {

@@ -1,0 +1,13 @@
+.chart-container {
+  position: relative;
+
+  .in-chart-button-group {
+    position: absolute;
+    top: 10px;
+    left: 70px;
+
+    label {
+      margin-left: 8px;
+    }
+  }
+}

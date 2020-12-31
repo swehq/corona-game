@@ -1,3 +1,12 @@
-<div style="width: 800px; height: 400px">
+<div style="width: 800px; height: 400px" class="chart-container" [formGroup]="formGroup">
+  <div class="in-chart-button-group">
+    <mat-slider
+      formControlName="chartScope"
+      tickInterval="1"
+      min="0"
+      max="2">
+    </mat-slider>
+    <label>{{scopeLabel}}</label>
+  </div>
   <canvas baseChart [datasets]="datasets" [labels]="labels" [options]="options" [chartType]="'line'"></canvas>
 </div>

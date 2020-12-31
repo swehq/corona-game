@@ -1,7 +1,7 @@
-<div style="width: 800px; height: 400px" class="chart-container" [formGroup]="formGroup">
+<div style="width: 800px; height: 400px" class="chart-container">
   <div class="in-chart-button-group">
     <mat-slider
-      formControlName="chartScope"
+      [formControl]="scopeFormControl"
       tickInterval="1"
       min="0"
       max="2">

@@ -1,5 +1,7 @@
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {EMPTY} from 'rxjs';
+import {GameModule} from '../../game.module';
 import {LineGraphComponent} from './line-graph.component';
 
 describe('LineComponent', () => {
@@ -8,14 +10,18 @@ describe('LineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LineGraphComponent ],
+      imports: [
+        HttpClientTestingModule,
+        GameModule,
+      ],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LineGraphComponent);
     component = fixture.componentInstance;
+    component.tick$ = EMPTY;
     fixture.detectChanges();
   });
 

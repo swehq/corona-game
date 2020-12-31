@@ -7,7 +7,8 @@ import {GameService} from '../game.service';
   styleUrls: ['./game.component.scss'],
 })
 export class GameComponent implements AfterViewInit {
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService) {
+  }
 
   ngAfterViewInit() {
     this.gameService.restartSimulation();

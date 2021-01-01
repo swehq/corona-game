@@ -7,19 +7,23 @@ export function nextDay(day: string): string {
 }
 
 // Create a function sampling from a normal distribution
-export function normalSampler(mean: number, variance: number) {
-  return () => randn() * variance + mean;
+export function normalSampler(mean: number, stdev: number) {
+  return () => randn() * stdev + mean;
 }
 
-// Create a function sampling positive values from a normal distribution
-export function normalPositiveSampler(mean: number, variance: number) {
-  const sample = normalSampler(mean, variance);
-  return () => {
-    let x = sample();
-    while (x <= 0) x = sample();
+// Create 3 sigma clipped function sampling from log normal (math checks out for sigma << mode)
+export function clippedLogNormalSampler(mode: number, sigma: number) {
+  return () => mode * Math.exp(clippedRandn() * sigma / mode);
+}
 
-    return x;
-  };
+// 3 sigma clipped normal distribution
+function clippedRandn() {
+  let r = randn();
+  while (Math.abs(r) > 3) {
+    r = randn();
+  }
+
+  return r;
 }
 
 function randn() {

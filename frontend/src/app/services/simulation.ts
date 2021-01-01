@@ -1,25 +1,26 @@
 /*
   The epidemics is modeled by compartmental model
   that is a modification of SIR model.
-  There are 6 states with nonzero duration:
+  There are seven states with nonzero duration:
     suspectible
     exposed - infected but not yet infectious
     infectious
-    hospitalized
+    hospitalized1
+    hospitalized2
     resistant (recovered) - temporary resistant to infections
     dead
 
   The transition diagram looks like:
 
-  suspectible -> exposed -> infectious -+---------------------+-> resistant -> suspectible
-                                         \                   /
-                                          +-> hospitalized -+
-                                                             \
-                                                              +-> dead
+  suspectible -> exposed -> infectious -+-----------------------------------------+-> resistant -> suspectible
+                                         \                                       /
+                                          +-> hospitalized1 -+-> hospitalized2 -+
+                                                              \
+                                                               +-> dead
 */
 
 import {last} from 'lodash';
-import {getRandom, settings} from './randomize';
+import {getRandom, settings as randomizeSettings} from './randomize';
 import {getSeasonality, nextDay} from './utils';
 
 export interface MitigationEffect {
@@ -35,13 +36,16 @@ interface SirState {
   exposed: number;
   infectious: number;
   resistant: number;
-  hospitalized: number;
+  hospitalized1: number;
+  hospitalized2: number;
   dead: number;
   exposedNew: number;
   infectiousNew: number;
   resistantNew: number;
-  hospitalizedNew: number;
+  hospitalized1New: number;
+  hospitalized2New: number;
   deathsNew: number;
+  hospitalsUtilization: number;
 }
 
 interface Randomness {
@@ -73,7 +77,7 @@ export interface Stats {
   activeInfections: number;
   mortality: number;
   costTotal: number;
-  hospitalizationCapacity: number;
+  hospitalsUtilization: number;
   vaccinationRate: number;
 }
 
@@ -86,27 +90,29 @@ export interface DayState {
 }
 
 export class Simulation {
-  readonly R0 = 3.15;
-  readonly RSeasonalityEffect = 0.10;
+  readonly R0 = 3.05;
+  readonly RSeasonalityEffect = 0.08;
   readonly seasonPeak = '2020-01-15';
   readonly initialPopulation = 10_690_000;
   readonly exposedStart = 3;
   readonly vaccinationMaxRate = 0.75;
-  readonly hospitalizationRateMean = settings.hospitalizationRate[0];
+  readonly hospitalizationRateMean = randomizeSettings.hospitalizationRate[0];
   readonly hospitalsOverwhelmedThreshold = 20_000;
   readonly hospitalsOverwhelmedMortalityMultiplier = 2;
-  readonly hospitalsBaselineUtilization = 0.7;
+  readonly hospitalsBaselineUtilization = 0.5;
   readonly infectionsWhenBordersOpen = 5;
   readonly infectionsWhenBordersClosed = 2;
+  readonly initialStability = 50;
+  readonly stabilityRecovery = 0.2;
 
   readonly rEmaUpdater = createEmaUpdater(7, this.R0);
-  readonly stabilityEmaUpdater = createEmaUpdater(100, 1);
 
   // Durations of various model states
-  readonly exposedDuration = 3;          // Duration people spend in exposed state
-  readonly infectiousDuration = 5;       // How long people stay infectious before they isolate or get hospitalized
-  readonly hospitalizationDuration = 7;  // Duration of hospitalization (TODO too short)
-  readonly resistantDuration = 90;       // Immunity duration
+  readonly exposedDuration = 3;        // Duration people spend in exposed state
+  readonly infectiousDuration = 5;     // How long people stay infectious before they isolate or get hospitalized
+  readonly hospitalized1Duration = 7;  // Duration of the hospitalization before the average death
+  readonly hospitalized2Duration = 14; // Duration of the remaining hospitalization for the recovering patients
+  readonly resistantDuration = 90;     // Immunity duration
 
   // These two are used to calculate the number of active cases
   readonly incubationDays = 5;       // Days until infection is detected
@@ -118,13 +124,16 @@ export class Simulation {
     exposed: 0,
     infectious: 0,
     resistant: 0,
-    hospitalized: 0,
+    hospitalized1: 0,
+    hospitalized2: 0,
     dead: 0,
     exposedNew: 0,
     infectiousNew: 0,
     resistantNew: 0,
-    hospitalizedNew: 0,
+    hospitalized1New: 0,
+    hospitalized2New: 0,
     deathsNew: 0,
+    hospitalsUtilization: this.hospitalsBaselineUtilization,
   };
 
   constructor(startDate: string) {
@@ -157,8 +166,9 @@ export class Simulation {
     const prevVaccinationRate = yesterday?.vaccinationRate ? yesterday.vaccinationRate : 0;
     const vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
 
-    const stabilityToday = Math.max(0, 1 - mitigationEffect.stabilityCost);
-    const stability = this.stabilityEmaUpdater(yesterday?.stability, stabilityToday);
+    let stability = (yesterday ? yesterday.stability : this.initialStability);
+    stability += this.stabilityRecovery - mitigationEffect.stabilityCost;
+    stability = Math.min(stability, this.initialStability);
 
     const R = this.rEmaUpdater(yesterday?.R, this.R0 * mitigationEffect.mult * seasonalityMult);
 
@@ -179,17 +189,19 @@ export class Simulation {
     let exposed = yesterday.exposed;
     let infectious = yesterday.infectious;
     let resistant = yesterday.resistant;
-    let hospitalized = yesterday.hospitalized;
+    let hospitalized1 = yesterday.hospitalized1;
+    let hospitalized2 = yesterday.hospitalized2;
     let dead = yesterday.dead;
 
     // Hospitals overwhelmedness logic
-    const hospitalsUtilization = this.hospitalsBaselineUtilization + hospitalized / this.hospitalsOverwhelmedThreshold;
+    const hospitalsUtilization = this.hospitalsBaselineUtilization
+      + (hospitalized1 + hospitalized2) / this.hospitalsOverwhelmedThreshold;
     const hospitalsOverwhelmedMultiplier = (hospitalsUtilization > 1) ?
       this.hospitalsOverwhelmedMortalityMultiplier : 1;
 
     // suspectible -> exposed
     const activePopulation = suspectible + exposed + infectious + resistant;
-    const totalPopulation = activePopulation + hospitalized;
+    const totalPopulation = activePopulation + hospitalized1 + hospitalized2;
     // Simplifying assumption that only people in "suspectible" compartement are vaccinated
     const suspectibleUnvaccinated = Math.max(0, suspectible - totalPopulation * modelInputs.vaccinationRate);
     let exposedNew = infectious * randomness.rNoiseMult * modelInputs.R /
@@ -205,22 +217,28 @@ export class Simulation {
     infectious += infectiousNew;
 
     // infectious -> resistant
-    // infectious -> hospitalized
+    // infectious -> hospitalized1
     const infectiousEnd = this.getSirStateInPast(this.infectiousDuration).infectiousNew;
-    const hospitalizedNew = infectiousEnd * randomness.hospitalizationRate;
-    let resistantNew = infectiousEnd - hospitalizedNew;
+    const hospitalized1New = infectiousEnd * randomness.hospitalizationRate;
+    let resistantNew = infectiousEnd - hospitalized1New;
     infectious -= infectiousEnd;
-    hospitalized += hospitalizedNew;
+    hospitalized1 += hospitalized1New;
     // resistant will be updated in the next block
 
-    // hospitalized -> resistant
-    // hospitalized -> dead
-    const hospitalizedEnd = this.getSirStateInPast(this.hospitalizationDuration).hospitalizedNew;
+    // hospitalized1 -> hospitalized2
+    // hospitalized1 -> dead
+    const hospitalized1End = this.getSirStateInPast(this.hospitalized1Duration).hospitalized1New;
     const mortalityToday = hospitalsOverwhelmedMultiplier * randomness.baseMortality;
-    const deathsNew = hospitalizedEnd * mortalityToday / this.hospitalizationRateMean;
-    resistantNew += hospitalizedEnd - deathsNew;
-    hospitalized -= hospitalizedEnd;
+    const deathsNew = hospitalized1End * mortalityToday / this.hospitalizationRateMean;
+    const hospitalized2New = hospitalized1End - deathsNew;
+    hospitalized1 -= hospitalized1End;
+    hospitalized2 += hospitalized2New;
     dead += deathsNew;
+
+    // hospitalized2 -> resistant
+    const hospitalized2End = this.getSirStateInPast(this.hospitalized2Duration).hospitalized2New;
+    hospitalized2 -= hospitalized2End;
+    resistantNew += hospitalized2End;
     resistant += resistantNew;
 
     // resistant -> suspectible
@@ -233,13 +251,16 @@ export class Simulation {
       exposed,
       infectious,
       resistant,
-      hospitalized,
+      hospitalized1,
+      hospitalized2,
       dead,
       exposedNew,
       infectiousNew,
       resistantNew,
-      hospitalizedNew,
+      hospitalized1New,
+      hospitalized2New,
       deathsNew,
+      hospitalsUtilization,
     };
   }
 
@@ -253,8 +274,8 @@ export class Simulation {
   simOneDay(mitigationEffect: MitigationEffect): DayState {
     const date = nextDay(last(this.modelStates)!.date);
     const randomness: Randomness = {
-      rNoiseMult: getRandom('R')(),
-      baseMortality: getRandom('mortality')(),
+      rNoiseMult: getRandom('rNoiseMult')(),
+      baseMortality: getRandom('baseMortality')(),
       hospitalizationRate: getRandom('hospitalizationRate')(),
     };
     const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
@@ -311,16 +332,16 @@ export class Simulation {
     const deaths = this.calcMetricStats('deaths', state.deathsNew);
 
     const costTotal = (lastStat ? lastStat.costTotal : 0) + (modelInputs ? modelInputs.costToday : 0);
+    const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
     const stats = {
       detectedInfections,
       resolvedInfections,
       deaths,
       activeInfections: detectedInfections.total - resolvedInfections.total,
-      mortality: deaths.total / detectedInfections.total,
+      mortality,
       costTotal,
-      hospitalizationCapacity: this.hospitalsBaselineUtilization + state.hospitalized /
-        this.hospitalsOverwhelmedThreshold,
+      hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
     };
 

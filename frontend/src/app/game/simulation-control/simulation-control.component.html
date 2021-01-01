@@ -5,7 +5,10 @@
     <cvd-button (click)="gameService.restartSimulation('play', 'czechiaReal')">Restart CZ</cvd-button>
     <cvd-button (click)="gameService.togglePause()">{{speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
     <cvd-button (click)="gameService.restartSimulation('max')">Compute</cvd-button>
+  </cvd-row>
+  <cvd-row wrap>
     <cvd-button (click)="download()">Download</cvd-button>
+    <cvd-button (click)="validateGameData()">Validate</cvd-button>
   </cvd-row>
 
   <mat-slide-toggle [checked]="isLightTheme$ | async" (change)="isLightTheme = $event.checked">

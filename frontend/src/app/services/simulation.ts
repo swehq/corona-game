@@ -20,7 +20,7 @@
 */
 
 import {last} from 'lodash';
-import {getRandom, settings as randomizeSettings} from './randomize';
+import {settings as randomizeSettings, getRandomness} from './randomize';
 import {getSeasonality, nextDay} from './utils';
 
 export interface MitigationEffect {
@@ -105,7 +105,7 @@ export class Simulation {
   readonly initialStability = 50;
   readonly stabilityRecovery = 0.2;
 
-  readonly rEmaUpdater = createEmaUpdater(7, this.R0);
+  readonly rEmaUpdater = Simulation.createEmaUpdater(7, this.R0);
 
   // Durations of various model states
   readonly exposedDuration = 3;        // Duration people spend in exposed state
@@ -136,8 +136,13 @@ export class Simulation {
     hospitalsUtilization: this.hospitalsBaselineUtilization,
   };
 
-  constructor(startDate: string) {
-    // pandemic params
+  constructor(initiator: string | DayState[]) {
+    if (Array.isArray(initiator)) {
+      this.modelStates = initiator;
+      return;
+    }
+
+    const startDate = initiator;
     const sirState: SirState = {...this.sirStateBeforeStart};
     sirState.suspectible = this.initialPopulation - this.exposedStart;
     sirState.exposed = this.exposedStart;
@@ -156,7 +161,7 @@ export class Simulation {
     }
   }
 
-  calcModelInputs(date: string, mitigationEffect: MitigationEffect): ModelInputs {
+  private calcModelInputs(date: string, mitigationEffect: MitigationEffect): ModelInputs {
     const yesterday = last(this.modelStates)?.modelInputs;
     const seasonalityMult = 1 + this.getSeasonalityEffect(date);
 
@@ -182,7 +187,7 @@ export class Simulation {
     };
   }
 
-  calcSirState(modelInputs: ModelInputs, randomness: Randomness): SirState {
+  private calcSirState(modelInputs: ModelInputs, randomness: Randomness): SirState {
     const yesterday = this.getSirStateInPast(1);
 
     let suspectible = yesterday.suspectible;
@@ -271,13 +276,8 @@ export class Simulation {
     return lastState.date;
   }
 
-  simOneDay(mitigationEffect: MitigationEffect): DayState {
+  simOneDay(mitigationEffect: MitigationEffect, randomness: ReturnType<typeof getRandomness>): DayState {
     const date = nextDay(last(this.modelStates)!.date);
-    const randomness: Randomness = {
-      rNoiseMult: getRandom('rNoiseMult')(),
-      baseMortality: getRandom('baseMortality')(),
-      hospitalizationRate: getRandom('hospitalizationRate')(),
-    };
     const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
     const sirState: SirState = this.calcSirState(modelInputs, randomness);
     const stats: Stats = this.calcStats(sirState, modelInputs);
@@ -295,7 +295,7 @@ export class Simulation {
     return last(this.modelStates)?.stats;
   }
 
-  getSeasonalityEffect(date: string): number {
+  private getSeasonalityEffect(date: string): number {
     return this.RSeasonalityEffect * Math.cos(2 * Math.PI * getSeasonality(date, this.seasonPeak));
   }
 
@@ -322,7 +322,7 @@ export class Simulation {
     };
   }
 
-  calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
+  private calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
     const lastStat = this.getLastStats();
 
     const detectedInfections = this.calcMetricStats('detectedInfections',
@@ -347,13 +347,13 @@ export class Simulation {
 
     return stats;
   }
-}
 
-function createEmaUpdater(halfLife: number, initialValue: number) {
-  const alpha = Math.pow(0.5, 1 / halfLife);
+  static createEmaUpdater(halfLife: number, initialValue: number) {
+    const alpha = Math.pow(0.5, 1 / halfLife);
 
-  return (old: number | undefined, update: number) => {
-    const prev = (old === undefined) ? initialValue : old;
-    return prev * alpha + update * (1 - alpha);
-  };
+    return (old: number | undefined, update: number) => {
+      const prev = (old === undefined) ? initialValue : old;
+      return prev * alpha + update * (1 - alpha);
+    };
+  }
 }

@@ -1,11 +1,13 @@
-@import '~src/material-definitions';
-
 :host {
   padding: 0.5rem;
+}
 
-  @include apply-themes {
-    cvd-icon {
-      color: mat-color(map-get($theme, foreground), icon);
-    }
+button {
+  &.image {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    box-shadow: unset;
   }
 }

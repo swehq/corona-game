@@ -8,16 +8,16 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
       <div grow>
         <ng-content></ng-content>
       </div>
-      <cvd-icon *ngIf="checked" [svgIcon]="imgOn" size="large">check_circle_outline</cvd-icon>
-      <cvd-icon *ngIf="!checked" [svgIcon]="imgOff" size="large">highlight_off</cvd-icon>
+      <button *ngIf="checked" mat-fab class="image" [style.backgroundImage]="'url(assets/icons/' + imgOn + '.png)'"></button>
+      <button *ngIf="!checked" mat-fab class="image" [style.backgroundImage]="'url(assets/icons/' + imgOff + '.png)'"></button>
     </cvd-row>
   `,
   styleUrls: ['./mitigation-bool.component.scss'],
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationBoolComponent, multi: true}],
 })
 export class MitigationBoolComponent implements ControlValueAccessor {
-  @Input() imgOn = '';
-  @Input() imgOff = '';
+  @Input() imgOn = 'noON';
+  @Input() imgOff = 'noOFF';
 
   checked = false;
 

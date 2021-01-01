@@ -1,3 +1,5 @@
 env: prod
 url: koronahra.cz
 admin_email: admin@koronahra.cz
+
+www_redirection: true

@@ -1,8 +1,3 @@
-- name: Delete tmp directory
-  file:
-    path: "{{ local_tmp_dir }}"
-    state: absent
-
 - name: Create tmp directory
   file:
     path: "{{ local_tmp_dir }}"
@@ -14,16 +9,19 @@
     dest: "{{ local_tmp_dir }}/"
   with_items:
     - shared/templates/docker-compose.be.base.yml
-    - shared/templates/docker-compose.be.deploy.yml
-    - shared/templates/docker-compose.fe.yml
+    - shared/templates/docker-compose.be.develop.yml
 
 - name: Merge docker-compose.yml files
   shell: >-
     docker-compose
     -f docker-compose.be.base.yml
-    -f docker-compose.be.deploy.yml
-    -f docker-compose.fe.yml
+    -f docker-compose.be.develop.yml
     config
     >docker-compose.yml
+  args:
+    chdir: "{{ local_tmp_dir }}"
+
+- name: Compose docker containers
+  shell: docker-compose {{ action }}
   args:
     chdir: "{{ local_tmp_dir }}"

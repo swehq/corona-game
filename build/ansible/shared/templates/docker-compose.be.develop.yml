@@ -1,7 +1,6 @@
 version: "3"
 
 services:
-  # overrides
-  postgres:
+  mongo:
     ports:
-      - 5432:5432
+      - "127.0.0.1:8001:27017"

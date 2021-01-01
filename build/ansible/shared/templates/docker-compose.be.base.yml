@@ -1,20 +1,19 @@
 version: "3"
 
 networks:
-  corona-{{ env }}:
+  "{{ base_name }}-{{ env }}":
 
 volumes:
-  corona-postgres-{{ env }}:
+  "{{ base_name}}-mongo-{{ env }}":
 
 services:
-  postgres:
-    container_name: corona-postgres-{{ env }}
-    image: postgres:9.6.10
+  mongo:
+    image: mongo:4.2.5
+    container_name: "{{ base_name }}-mongo-{{ env }}"
+    restart: unless-stopped
     networks:
-      - corona-{{ env }}
+      - "{{ base_name }}-{{ env }}"
     volumes:
-      - corona-postgres-{{ env }}:/var/lib/postgresql/data
-    environment: # TODO: set correct credentials
-      POSTGRES_PASSWORD: webuser
-      POSTGRES_USER: webuser
-      POSTGRES_DB: corona-game
+      - "{{ base_name}}-mongo-{{ env }}:/data/db"
+    expose:
+      - "27017"

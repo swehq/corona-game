@@ -6,8 +6,8 @@ networks:
 
 services:
   frontend:
-    image: {{ frontend_remote_image_latest }}
-    container_name: {{ frontend_container }}
+    image: "{{ frontend_remote_image_latest }}"
+    container_name: "{{ frontend_container }}"
     restart: unless-stopped
     networks:
       - nginx

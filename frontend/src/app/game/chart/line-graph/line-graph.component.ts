@@ -1,13 +1,12 @@
-
-import {Observable, EMPTY} from 'rxjs';
-import {ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
-import {ChartDataSets, ChartOptions} from 'chart.js';
-import {BaseChartDirective, Label} from 'ng2-charts';
+import {AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-
+import {ChartDataSets, ChartOptions} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
-
+import {BaseChartDirective, Label} from 'ng2-charts';
+import {EMPTY, Observable, Subject} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -18,14 +17,13 @@ export interface LineNode {
   state: NodeState;
 }
 
-
 @UntilDestroy()
 @Component({
   selector: 'cvd-line-graph',
   templateUrl: './line-graph.component.html',
   styleUrls: ['./line-graph.component.scss'],
 })
-export class LineGraphComponent implements OnInit {
+export class LineGraphComponent implements OnInit, AfterViewInit {
   readonly colors = {
     ok: '869c66',
     warn: 'ff9502',
@@ -51,9 +49,11 @@ export class LineGraphComponent implements OnInit {
   @Input() tick$!: Observable<LineNode>;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
+  private panAutoReset$ = new Subject();
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
   private eventNodes: (string | undefined)[] = [];
+
   private seriesLength = 0;
   private lastValue: number | undefined;
   private font = {
@@ -63,6 +63,10 @@ export class LineGraphComponent implements OnInit {
     weight: 600,
   };
 
+  scopeFormControl = new FormControl(0);
+
+  scope = 0;
+  scopeLabel: string | null = null;
   datasets: ChartDataSets[] = [{...this.defaultDataset, data: []}];
   labels: Label[] = [];
   options: ChartOptions = {
@@ -81,7 +85,10 @@ export class LineGraphComponent implements OnInit {
       enabled: true,
       displayColors: false,
       callbacks: {
-        label: tooltipItem => `Počet nakaženýchx: ${tooltipItem?.yLabel?.toLocaleString()}`,
+        label: tooltipItem => {
+          this.panAutoReset$.next();
+          return `Počet nakažených: ${tooltipItem?.yLabel?.toLocaleString()}`;
+        },
         title: tooltipItem => (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '',
       },
     },
@@ -111,19 +118,36 @@ export class LineGraphComponent implements OnInit {
           enabled: true,
           mode: 'x',
           speed: 2,
-        },
-        zoom: {
-          enabled: true,
-          speed: 1,
-          mode: 'x',
+          onPanComplete: () => {
+            this.panAutoReset$.next();
+          },
         },
       },
     },
   };
 
-  constructor(private cd: ChangeDetectorRef) { }
+  constructor(private cd: ChangeDetectorRef) {
+  }
+
+  private setXAxisTicks(options: {
+    min?: Label | null,
+    max?: Label | null,
+  }) {
+    const chart = this.chart?.chart as any;
+    const chartOptions = chart?.scales['x-axis-0']?.options;
+    if (!chartOptions) return;
+    chartOptions.ticks = {...chartOptions.ticks, ...options};
+  }
 
   ngOnInit() {
+    this.panAutoReset$.pipe(
+      debounceTime(3000),
+      untilDestroyed(this),
+    ).subscribe(() => {
+      this.setXAxisTicks({max: null});
+      this.setScope();
+    });
+
     this.options.title = {
       text: this.title,
       display: Boolean(this.title),
@@ -154,12 +178,25 @@ export class LineGraphComponent implements OnInit {
       this.lastValue = tick.value;
       this.labels.push(tick.label);
       this.eventNodes.push(tick.event);
+      this.setScope();
+
       this.cd.detectChanges();
     });
 
     this.reset$.pipe(
       untilDestroyed(this),
     ).subscribe(() => this.reset());
+
+    this.setScopeLabel(this.scopeFormControl.value);
+  }
+
+  ngAfterViewInit() {
+    this.scopeFormControl.valueChanges.pipe(
+      untilDestroyed(this),
+    ).subscribe(level => {
+      this.setScopeLabel(level);
+      this.setScope(level);
+    });
   }
 
   reset() {
@@ -172,7 +209,20 @@ export class LineGraphComponent implements OnInit {
     this.lastValue = undefined;
   }
 
-  resetZoom() {
-    (this.chart.chart as any).resetZoom();
+  private setScope(level?: number) {
+    if (level !== undefined) {
+      this.scope = [0, 90, 30][level];
+    }
+    const index = this.labels.length - this.scope;
+    const min = (this.scope && index > 0) ? this.labels[index] : null;
+    this.setXAxisTicks({min});
+    this.chart.update();
+  }
+
+  setScopeLabel(scopeLevel: number) {
+    if (scopeLevel === 0) this.scopeLabel = 'Celý graf';
+    if (scopeLevel === 1) this.scopeLabel = 'Kvartál';
+    if (scopeLevel === 2) this.scopeLabel = 'Měsíc';
+    this.cd.markForCheck();
   }
 }

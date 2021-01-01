@@ -25,7 +25,7 @@ export interface GameData {
     history: Record<string, Partial<Mitigations>>;
     params: MitigationParams[],
   };
-  model: DayState[];
+  simulation: DayState[];
 }
 
 export class Game {

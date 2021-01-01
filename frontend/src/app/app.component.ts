@@ -1,5 +1,4 @@
 import {DOCUMENT} from '@angular/common';
-import {HttpClient} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, Inject, OnDestroy, Renderer2} from '@angular/core';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
@@ -19,7 +18,6 @@ export class AppComponent implements OnDestroy {
     configService: ConfigService,
     @Inject(DOCUMENT) document: Document,
     renderer: Renderer2,
-    httpClient: HttpClient,
   ) {
     const {body} = document;
 
@@ -37,12 +35,9 @@ export class AppComponent implements OnDestroy {
         }
       },
     );
-
-    // tslint:disable-next-line:no-console
-    httpClient.get('/api/todo').subscribe(value => console.log(value));
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.destroyed.next();
     this.destroyed.complete();
   }

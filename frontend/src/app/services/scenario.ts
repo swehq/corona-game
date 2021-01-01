@@ -6,7 +6,6 @@ import {nextDay} from './utils';
 interface ScenarioDates {
   rampUpStartDate: string; // Date from we start simulation
   rampUpEndDate: string; // Last date to which we autoplay simulation
-  startDate: string; // First playable date
   endDate: string; // Last playable date
 }
 
@@ -17,11 +16,12 @@ export type MitigationPair = {
 }[keyof Mitigations];
 
 export class Scenario {
-  mitigationActions: MitigationActions = {};
+  private mitigationActions: MitigationActions = {};
   dates: ScenarioDates;
 
-  constructor(scenarioDates: ScenarioDates) {
+  constructor(scenarioDates: ScenarioDates, mitigatioActions?: MitigationActions) {
     this.dates = scenarioDates;
+    if (mitigatioActions) this.mitigationActions = mitigatioActions;
   }
 
   getMitigations(date: string) {
@@ -51,7 +51,6 @@ export class Scenario {
 const czechiaGame = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-03-01',
-  startDate: '2020-03-01',
   endDate: '2021-07-01',
 });
 
@@ -59,7 +58,6 @@ const czechiaGame = new Scenario({
 const czechiaReal = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-12-18',
-  startDate: '2020-03-01',
   endDate: '2021-07-01',
 });
 

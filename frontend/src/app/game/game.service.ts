@@ -3,6 +3,7 @@ import {Game} from '../services/game';
 import {Subject} from 'rxjs';
 import {ChartValue} from './chart/chart.component';
 import {scenarios} from '../services/scenario';
+import {last} from 'lodash';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
 
@@ -45,13 +46,23 @@ export class GameService {
     this.game = new Game(scenarios[scenario]);
     this._reset$.next();
     this.eventMessages = [];
+    this.setSpeed(speed);
+    this.updateChart('all');
+  }
 
-    const chartData = this.game.simulation.modelStates.map(s => ({
+  updateChart(mode: 'last' | 'all' = 'last') {
+    // TODO feed all data at once in 'all' mode
+    let data = this.game.simulation.modelStates;
+    if (mode === 'last') {
+      const lastData = last(this.game.simulation.modelStates);
+      data = lastData ? [lastData] : [];
+    }
+
+    const chartData = data.map(s => ({
       label: s.date,
       value: s.stats.detectedInfections.today,
     }));
     chartData.forEach(i => this._infectedToday$.next(i));
-    this.setSpeed(speed);
   }
 
   togglePause() {
@@ -65,8 +76,8 @@ export class GameService {
 
     if (speed === 'max') {
       console.time('Computation');
-      while (!this.game.isFinished()) this.tick();
-      console.timeLog('Computation');
+      while (!this.game.isFinished()) this.tick(false);
+      console.timeEnd('Computation');
     } else if (speed === 'play') {
       this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
     } else if (speed === 'fwd') {
@@ -79,7 +90,7 @@ export class GameService {
     this._speed$.next(speed);
   }
 
-  tick() {
+  tick(updateChart = true) {
     if (this.speed === 'rev') {
       if (this.game.canMoveBackward()) {
         this.game.moveBackward();
@@ -99,11 +110,7 @@ export class GameService {
     const event = gameUpdate.event;
 
     if (event) this.showEvent(event.title, event.text);
-
-    this._infectedToday$.next({
-      label: gameUpdate.dayState.date,
-      value: gameUpdate.dayState.stats.detectedInfections.today,
-    });
+    if (updateChart) this.updateChart();
   }
 
   showEvent(title: string, text: string) {

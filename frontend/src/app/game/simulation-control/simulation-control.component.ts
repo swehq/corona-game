@@ -1,6 +1,8 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
+import {GameData} from 'src/app/services/game';
+import {validateGame} from 'src/app/services/validate';
 import {ConfigService} from '../../services/config.service';
 import {GameService, Speed} from '../game.service';
 
@@ -36,16 +38,21 @@ export class SimulationControlComponent implements OnInit {
     });
   }
 
-  download() {
-    const element = document.createElement('a');
-    element.style.display = 'none';
-
-    const source = {
-      mitigations: this.gameService.game.mitigationHistory,
+  private getGameData(): GameData {
+    return {
+      mitigations: {
+        history: this.gameService.game.mitigationHistory,
+        params: this.gameService.game.mitigationParams,
+      },
       model: this.gameService.modelStates,
     };
+  }
 
-    const dataString = JSON.stringify(source, null, 2);
+  download() {
+    const dataString = JSON.stringify(this.getGameData(), null, 2);
+
+    const element = document.createElement('a');
+    element.style.display = 'none';
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dataString));
     element.setAttribute('download', 'data.json');
 
@@ -53,5 +60,9 @@ export class SimulationControlComponent implements OnInit {
     element.click();
 
     document.body.removeChild(element);
+  }
+
+  validateGameData() {
+    validateGame(this.getGameData());
   }
 }

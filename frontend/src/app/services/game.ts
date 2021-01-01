@@ -1,9 +1,10 @@
 import {cloneDeep, differenceWith, isEqual} from 'lodash';
 import {EventHandler} from './events';
-import {MitigationEffect, Simulation} from './simulation';
+import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, nextDay} from './utils';
 import {MitigationActions, MitigationPair, Scenario} from './scenario';
 import {Mitigations} from '../game/mitigations-control/mitigations.service';
+import {getRandomness} from './randomize';
 
 interface MitigationParams {
   id: MitigationPair[0];
@@ -17,6 +18,14 @@ interface MitigationParams {
 interface MitigationFlags {
   isBorders: boolean;
   isSchool: boolean;
+}
+
+export interface GameData {
+  mitigations: {
+    history: Record<string, Partial<Mitigations>>;
+    params: MitigationParams[],
+  };
+  model: DayState[];
 }
 
 export class Game {
@@ -44,19 +53,15 @@ export class Game {
 
   private rampUpGame() {
     while (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
-      this.setMitigations({
-        ...this.mitigations,
-        ...this.scenario.getMitigations(nextDay(this.simulation.lastDate)),
-      });
+      this.updateMitigationsForScenario();
       this.moveForward();
     }
   }
 
-  moveForward() {
-    // TODO keep current and add changes to the states for each day with new mitigations
+  moveForward(randomness = getRandomness()) {
     const nextDate = nextDay(this.simulation.lastDate);
     const mitigationEffect = this.calcMitigationEffect(this.mitigations, nextDate);
-    const dayState = this.simulation.simOneDay(mitigationEffect);
+    const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
     const event = this.eventHandler.evaluateDay(dayState);
 
     return {dayState, event};
@@ -70,7 +75,7 @@ export class Game {
   }
 
   canMoveBackward() {
-    return this.simulation.lastDate > this.scenario.dates.startDate;
+    return this.simulation.lastDate > this.scenario.dates.rampUpEndDate;
   }
 
   isFinished() {
@@ -87,6 +92,13 @@ export class Game {
         ({...prev, [cur[0]]: cur[1]}), {...this.mitigationHistory[tomorrow]});
     }
     this.mitigations = mitigations;
+  }
+
+  updateMitigationsForScenario() {
+    this.setMitigations({
+      ...this.mitigations,
+      ...this.scenario.getMitigations(nextDay(this.simulation.lastDate)),
+    });
   }
 
   private calcMitigationEffect(mitigations: Mitigations, date: string): MitigationEffect {

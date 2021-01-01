@@ -1,4 +1,6 @@
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {GameModule} from '../game.module';
 import {MitigationsControlComponent} from './mitigations-control.component';
 
 describe('MitigationsControlComponent', () => {
@@ -7,7 +9,10 @@ describe('MitigationsControlComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MitigationsControlComponent],
+      imports: [
+        HttpClientTestingModule,
+        GameModule,
+      ],
     })
       .compileComponents();
   });

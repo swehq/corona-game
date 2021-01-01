@@ -1,4 +1,6 @@
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {GameModule} from '../game.module';
 import {SimulationControlComponent} from './simulation-control.component';
 
 describe('SimulationControlComponent', () => {
@@ -7,7 +9,10 @@ describe('SimulationControlComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SimulationControlComponent],
+      imports: [
+        HttpClientTestingModule,
+        GameModule,
+      ],
     })
       .compileComponents();
   });

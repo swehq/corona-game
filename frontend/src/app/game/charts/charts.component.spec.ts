@@ -1,5 +1,6 @@
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {GameModule} from '../game.module';
 import {ChartsComponent} from './charts.component';
 
 describe('ChartsComponent', () => {
@@ -8,9 +9,12 @@ describe('ChartsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ChartsComponent ],
+      imports: [
+        HttpClientTestingModule,
+        GameModule,
+      ],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

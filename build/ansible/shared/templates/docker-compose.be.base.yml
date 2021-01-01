@@ -1,0 +1,19 @@
+version: "3"
+
+networks:
+  "{{ base_name }}-{{ env }}":
+
+volumes:
+  "{{ base_name}}-mongo-{{ env }}":
+
+services:
+  mongo:
+    image: mongo:4.2.5
+    container_name: "{{ base_name }}-mongo-{{ env }}"
+    restart: unless-stopped
+    networks:
+      - "{{ base_name }}-{{ env }}"
+    volumes:
+      - "{{ base_name}}-mongo-{{ env }}:/data/db"
+    expose:
+      - "27017"

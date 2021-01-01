@@ -1,0 +1,3 @@
+- name: Docker login
+  shell: docker login -u _json_key -p "$(cat shared/files/gcloud-key.json)" https://eu.gcr.io
+

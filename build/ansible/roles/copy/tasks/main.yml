@@ -1,0 +1,11 @@
+- name: Copy docker-compose.yml file
+  copy:
+    src: "{{ local_tmp_dir }}/docker-compose.yml"
+    dest: "{{ deploy_dir }}/"
+
+- name: Copy other files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ deploy_dir }}/"
+  with_items:
+    - shared/files/gcloud-key.json

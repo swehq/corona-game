@@ -1,0 +1,10 @@
+- name: Build frontend
+  hosts: localhost
+
+  vars_files:
+    - "environments/shared-vars.yml"
+    - "{{ inventory_dir }}/group_vars/all.yml"
+
+  roles:
+    - docker-login
+    - fe-build

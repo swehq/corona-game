@@ -1,0 +1,6 @@
+version: "3"
+
+services:
+  mongo:
+    ports:
+      - "127.0.0.1:8001:27017"

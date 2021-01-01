@@ -1,0 +1,22 @@
+base_name: "corona"
+
+base_deploy_dir: "/srv"
+deploy_dir: "{{ base_deploy_dir }}/corona-game-{{ env }}"
+
+registry_url: "eu.gcr.io/corona-game-300009"
+
+frontend_image: "{{ base_name }}-frontend-{{ env }}"
+frontend_container: "{{ frontend_image }}"
+frontend_remote_image: "{{ registry_url }}/{{ frontend_image }}"
+frontend_remote_image_latest: "{{ frontend_remote_image }}:latest"
+
+backend_image: "{{ base_name }}-backend-{{ env }}"
+backend_container: "{{ backend_image }}"
+backend_remote_image: "{{ registry_url }}/{{ backend_image }}"
+backend_remote_image_latest: "{{ backend_remote_image }}:latest"
+
+nginx_file: "nginx.conf"
+nginx_dir: "/srv/nginx"
+nginx_container: "nginx-proxy"
+
+local_tmp_dir: "../../tmp"

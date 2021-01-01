@@ -1,0 +1,12 @@
+- name: Copy nginx config
+  template:
+    src: "{{ nginx_file }}"
+    dest: "{{ nginx_dir }}/conf.d/corona-game-{{ env }}.conf"
+
+- name: Copy vhost config
+  template:
+    src: "vhost"
+    dest: "{{ nginx_dir }}/vhost.d/{{ url }}"
+
+- name: Reload nginx
+  command: docker exec {{ nginx_container }} nginx -s reload

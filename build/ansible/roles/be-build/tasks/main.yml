@@ -1,0 +1,21 @@
+- shell: git rev-parse --short HEAD
+  register: git_output
+
+- set_fact:
+    commit: "{{ git_output.stdout }}"
+
+- set_fact:
+    backend_remote_image_commit: "{{ backend_remote_image }}:{{ commit }}"
+
+- name: Build backend docker image
+  shell: docker build -t {{ backend_image }} .
+  args:
+    chdir: ../../backend
+
+- name: Tag backend docker image
+  shell: |
+    docker tag {{ backend_image }} {{ backend_remote_image_commit }}
+    docker tag {{ backend_image }} {{ backend_remote_image_latest }}
+
+- name: Push backend docker image
+  shell: docker push {{ backend_remote_image }}

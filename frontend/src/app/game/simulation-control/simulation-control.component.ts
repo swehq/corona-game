@@ -1,3 +1,4 @@
+import {HttpClient} from '@angular/common/http';
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
@@ -25,6 +26,7 @@ export class SimulationControlComponent implements OnInit {
 
   constructor(
     private cd: ChangeDetectorRef,
+    private httpClient: HttpClient,
     public gameService: GameService,
     public configService: ConfigService,
   ) { }
@@ -44,7 +46,7 @@ export class SimulationControlComponent implements OnInit {
         history: this.gameService.game.mitigationHistory,
         params: this.gameService.game.mitigationParams,
       },
-      model: this.gameService.modelStates,
+      simulation: this.gameService.modelStates,
     };
   }
 
@@ -63,6 +65,10 @@ export class SimulationControlComponent implements OnInit {
   }
 
   validateGameData() {
-    validateGame(this.getGameData());
+    const gameData = this.getGameData();
+    validateGame(gameData);
+
+    // tslint:disable-next-line:no-console
+    this.httpClient.post('/api/game-data', gameData).subscribe(console.log);
   }
 }

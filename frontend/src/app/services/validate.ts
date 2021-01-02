@@ -3,13 +3,13 @@ import {Game, GameData} from './game';
 import {Scenario} from './scenario';
 
 export function validateGame(data: GameData): boolean {
-  // TODO add test of randomness params (expected distribution)
-  if (!data.model.length) return true;
+  // TODO add test of randomness params (expected distribution or element of interval at least)
+  if (!data.simulation.length) return false;
 
   console.time('Validation');
 
-  const firstDay = data.model[0].date;
-  const lastDay = last(data.model)!.date;
+  const firstDay = data.simulation[0].date;
+  const lastDay = last(data.simulation)!.date;
 
   const scenario = new Scenario({
     rampUpStartDate: firstDay,
@@ -19,8 +19,8 @@ export function validateGame(data: GameData): boolean {
   const game = new Game(scenario);
   game.mitigationParams = data.mitigations.params;
 
-  for (let i = 0; i < data.model.length; i++) {
-    const dayData = data.model[i];
+  for (let i = 0; i < data.simulation.length; i++) {
+    const dayData = data.simulation[i];
     const dayCalculated = last(game.simulation.modelStates);
 
     if (!isEqual(dayData, dayCalculated)) {
@@ -28,9 +28,9 @@ export function validateGame(data: GameData): boolean {
       return false;
     }
 
-    if (i < data.model.length - 1) {
+    if (i < data.simulation.length - 1) {
       game.updateMitigationsForScenario();
-      game.moveForward(data.model[i + 1].randomness);
+      game.moveForward(data.simulation[i + 1].randomness);
     }
   }
 

@@ -1,15 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import {json} from 'body-parser';
-import {todoRouter} from './todo/todo.routes';
+import {router} from './game/routes';
 
 const PORT = process.env.PORT || 8000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:8001/corona';
 
 const app = express();
 app.use(json());
-
-app.use(todoRouter);
+app.use(router);
 
 mongoose.connect(MONGO_URI, {
   useCreateIndex: true,

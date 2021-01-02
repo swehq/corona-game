@@ -3,10 +3,14 @@
     "baseUrl": "../",
     "target": "es6",
     "module": "commonjs",
-    "rootDir": "./src",
+    "rootDirs": [
+      "./src",
+      "../frontend/src"
+    ],
     "outDir": "./dist",
     "esModuleInterop": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "experimentalDecorators": true
   }
 }

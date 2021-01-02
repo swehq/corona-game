@@ -1,9 +1,7 @@
-@import '~src/material-definitions';
+@import '~src/definitions';
 
 :host {
-  min-width: 10rem;
-  min-height: 10rem;
-  padding: 1rem;
+  @include panel;
 
   @include apply-themes {
     background-color: mat-color(map-get($theme, background), card);
@@ -16,4 +14,8 @@
       color: mat-color(map-get($theme, accent));
     }
   }
+}
+
+.item {
+  margin: 0.75rem 0;
 }

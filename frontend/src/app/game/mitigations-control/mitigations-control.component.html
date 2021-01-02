@@ -1,12 +1,15 @@
-<cvd-col alignItems="stretch" style="padding: 1rem 0" [formGroup]="mitigationsService.formGroup">
+<cvd-col alignItems="stretch" [formGroup]="mitigationsService.formGroup">
 
   <cvd-mitigation-bool formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
   <cvd-mitigation-bool formControlName="bordersClosed">Hranice</cvd-mitigation-bool>
 
-  <cvd-mitigation-toggle formControlName="events" labelMinWidth="7rem">Akce</cvd-mitigation-toggle>
+  <cvd-mitigation-toggle formControlName="events" labelMinWidth="14rem">Akce</cvd-mitigation-toggle>
   <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
   <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
 
-  <cvd-button (click)="preset('lockdown')" style="padding-top: 1rem" color="warn">Lockdown</cvd-button>
+  <cvd-row>
+    <cvd-button grow (click)="preset('lockdown')" style="padding-top: 1rem" color="warn">Lockdown</cvd-button>
+    <cvd-button grow (click)="preset('open')" style="padding-top: 1rem" color="info">Otevřít vše</cvd-button>
+  </cvd-row>
 
 </cvd-col>

@@ -1,4 +1,4 @@
-<cvd-col grow>
+<cvd-col grow alignItems="stretch" [spacing]="3">
 
   <cvd-row>
     <li *ngFor="let serie of series" [ngStyle]="{color: serie.color}">
@@ -6,14 +6,13 @@
     </li>
   </cvd-row>
 
-  <div grow class="chart">
-    <cvd-line-graph #lineGraph [reset$]="gameService.reset$" [title]="series[0].label" [tick$]="data$">
-    </cvd-line-graph>
-  </div>
-  <cvd-row>
-    <button style="width: 180px; z-index: 100" (click)="currentState = 'ok'">Change OK!</button>
-    <button style="width: 180px; z-index: 100" (click)="currentState = 'warn'">Change Warn!</button>
-    <button style="width: 180px; z-index: 100" (click)="currentState = 'critical'">Change Critical!</button>
+  <cvd-line-graph #lineGraph grow [reset$]="gameService.reset$" [title]="series[0].label" [tick$]="data$">
+  </cvd-line-graph>
+
+  <cvd-row wrap>
+    <cvd-button (click)="currentState = 'ok'">Change OK!</cvd-button>
+    <cvd-button (click)="currentState = 'warn'">Change Warn!</cvd-button>
+    <cvd-button (click)="currentState = 'critical'">Change Critical!</cvd-button>
   </cvd-row>
 
 </cvd-col>

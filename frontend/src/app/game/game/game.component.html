@@ -1,10 +1,17 @@
-<cvd-col [spacing]="32">
+<cvd-col>
   <cvd-news></cvd-news>
-  <cvd-charts></cvd-charts>
 
-  <cvd-row wrap>
-    <cvd-mitigations-control></cvd-mitigations-control>
-    <cvd-status-display></cvd-status-display>
-    <cvd-simulation-control></cvd-simulation-control>
+  <cvd-row [spacing]="3" wrap alignItems="flex-start">
+
+    <cvd-col grow [spacing]="3" alignItems="stretch">
+      <cvd-mitigations-control></cvd-mitigations-control>
+      <cvd-simulation-control></cvd-simulation-control>
+    </cvd-col>
+
+    <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
+      <cvd-chart [tick$]="gameService.infectedToday$" [series]="[{label: 'nově nakažení', unit: 'tis.'}]"></cvd-chart>
+      <cvd-status-display></cvd-status-display>
+    </cvd-col>
+
   </cvd-row>
 </cvd-col>

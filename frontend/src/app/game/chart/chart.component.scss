@@ -1,13 +1,5 @@
+@import '~src/definitions';
+
 :host {
-  min-width: 20rem;
-  min-height: 20rem;
-  display: flex;
-}
-
-li {
-  padding: 0.5rem;
-}
-
-.chart {
-  width: 100%;
+  @include panel;
 }

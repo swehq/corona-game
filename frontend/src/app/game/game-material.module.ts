@@ -4,8 +4,8 @@ import {MatSliderModule} from '@angular/material/slider';
 
 @NgModule({
   exports: [
-    MatSlideToggleModule,
     MatSliderModule,
+    MatSlideToggleModule,
   ],
 })
 export class GameMaterialModule {

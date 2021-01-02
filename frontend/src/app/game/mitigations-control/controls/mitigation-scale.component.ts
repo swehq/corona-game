@@ -10,9 +10,9 @@ type Level = [value: any, label: string];
     <div>
       <ng-content></ng-content>
     </div>
-    <cvd-row wrap justifyContent="flex-start">
+    <cvd-row justifyContent="flex-start" alignItems="center">
       <mat-slider
-        #slider
+        #slider style="margin-right: 1rem"
         [min]="0" [max]="levels.length - 1" [tickInterval]="1"
         (input)="onUserAction($event.value)"
       ></mat-slider>

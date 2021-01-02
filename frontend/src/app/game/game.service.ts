@@ -47,7 +47,10 @@ export class GameService {
     this._reset$.next();
     this.eventMessages = [];
     this.setSpeed(speed);
-    this.updateChart('all');
+
+    // TODO(pk) this is only hotfix for 'ExpressionChangedAfterItHasBeenCheckedError'
+    // game.component.html: <mat-tab [label]="'Nově nakažení: ' + (gameService?.infectedToday$ | async)?.value">
+    setTimeout(() => this.updateChart('all'));
   }
 
   updateChart(mode: 'last' | 'all' = 'last') {

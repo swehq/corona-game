@@ -10,7 +10,7 @@ import {GameService} from '../game.service';
 })
 export class NewsComponent {
   constructor(public gameService: GameService, cd: ChangeDetectorRef) {
-    this.gameService.infectedToday$
+    this.gameService.gameState$
       .pipe(untilDestroyed(this))
       .subscribe(() => cd.detectChanges());
   }

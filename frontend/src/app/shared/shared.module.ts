@@ -12,9 +12,11 @@ import {RowComponent} from './flex/row.component';
 import {IconComponent} from './icon/icon.component';
 import {initIconRegistry} from './icon/icon.registry';
 import {SharedMaterialModule} from './shared-material.module';
+import {CurrencyCZKPipe} from '../pipes/currency-czk.pipe';
 
 const DECLARATIONS: Declaration[] = [
   ButtonComponent,
+  CurrencyCZKPipe,
   ColComponent,
   FlexItemDirective,
   IconComponent,

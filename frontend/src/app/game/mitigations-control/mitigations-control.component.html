@@ -7,6 +7,9 @@
   <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
   <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
 
-  <cvd-button (click)="preset('lockdown')" style="padding-top: 1rem" color="warn">Lockdown</cvd-button>
+  <cvd-row>
+    <cvd-button grow (click)="preset('lockdown')" style="padding-top: 1rem" color="warn">Lockdown</cvd-button>
+    <cvd-button grow (click)="preset('open')" style="padding-top: 1rem" color="info">Otevřít vše</cvd-button>
+  </cvd-row>
 
 </cvd-col>

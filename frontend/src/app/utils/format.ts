@@ -1,5 +1,16 @@
-export function formatCZK(value: number, currencySymbol = true): string {
-  return value.toLocaleString('cs-CZ', currencySymbol
-    ? {style: 'currency', currency: 'CZK', minimumFractionDigits: 0}
-    : undefined);
+export function formatNumber(value: number, currencySymbol = false, shrink = false): string {
+  if (shrink) {
+    if (value < 1_000_000) {
+      return `${value.toLocaleString()}${currencySymbol ? ' Kč' : ''}`;
+    }
+
+    if (value > 1_000_000 && value < 1_000_000_000) {
+      value = value / 1_000_000;
+      return `${value.toLocaleString()} mil.${currencySymbol ? ' Kč' : ''}`;
+    }
+    value = value / 1_000_000_000;
+    return `${value.toLocaleString()} mild.${currencySymbol ? ' Kč' : ''}`;
+  }
+
+  return `${value.toLocaleString()}${currencySymbol ? ' Kč' : ''}`;
 }

@@ -5,18 +5,28 @@ import {ChartDataSets, ChartOptions} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
 import {BaseChartDirective, Label} from 'ng2-charts';
-import {EMPTY, Observable, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
-import {formatCZK} from '../../../utils/format';
+import {formatNumber} from '../../../utils/format';
+import {GameService} from '../../game.service';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
-export interface LineNode {
+export interface ChartValue {
+  label: string | Date;
   value: number;
-  label: string;
-  event?: string;
-  state: NodeState;
+  tooltipLabel: (value: number) => string;
+  datasetOptions?: ChartDataSets;
+  color?: string;
+  state?: NodeState;
+  currentEvent?: string;
 }
+
+export const colors = {
+  ok: '#869c66',
+  warn: '#ff9502',
+  critical: '#d43501',
+};
 
 @UntilDestroy()
 @Component({
@@ -25,40 +35,20 @@ export interface LineNode {
   styleUrls: ['./line-graph.component.scss'],
 })
 export class LineGraphComponent implements OnInit, AfterViewInit {
-  readonly colors = {
-    ok: '869c66',
-    warn: 'ff9502',
-    critical: 'd43501',
-  };
-
-  readonly defaultDataset: ChartDataSets = {
-    borderColor: `#${this.colors.ok}`,
-    backgroundColor: `#${this.colors.ok}33`,
-    pointRadius: 4,
-    pointBackgroundColor: context => {
-      return context.dataIndex && this.eventNodes[context.dataIndex] ? `#${this.colors.ok}` : `#${this.colors.ok}33`;
-    },
-    pointBorderColor: `#${this.colors.ok}`,
-    pointBorderWidth: context => context.dataIndex && this.eventNodes[context.dataIndex] ? 3 : 1,
-    pointHitRadius: 5,
-  };
-
-  @Input()
-  reset$: Observable<void> = EMPTY;
 
   @Input()
   customOptions: ChartOptions | null = null;
 
-  @Input() title = '';
-  @Input() tooltipLabel: ((value: number) => string) | null = null;
-  @Input() tick$!: Observable<LineNode>;
+  @Input() singleLineTick$: Observable<ChartValue> | null = null;
+  @Input() multiLineTick$: Observable<ChartValue[]> | null = null;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
   private panAutoReset$ = new Subject();
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
   private eventNodes: (string | undefined)[] = [];
-
+  private tooltipLabels: ((value: number) => string)[] = [];
+  private lastMitigation: string | undefined = undefined;
   private seriesLength = 0;
   private lastValue: number | undefined;
   private font = {
@@ -72,7 +62,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
   scope = 0;
   scopeLabel: string | null = null;
-  datasets: ChartDataSets[] = [{...this.defaultDataset, data: []}];
+  datasets: ChartDataSets[] = [{...this.getDefaultDataset(), data: []}];
   labels: Label[] = [];
   options: ChartOptions = {
     title: {
@@ -90,9 +80,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       enabled: true,
       displayColors: false,
       callbacks: {
-        label: tooltipItem => this.tooltipLabel
-          ? this.tooltipLabel(+tooltipItem.yLabel!)
-          : `${this.title}: ${formatCZK(+tooltipItem.yLabel! || 0, false)}`,
+        label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
         title: tooltipItem => {
           this.panAutoReset$.next();
           return (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '';
@@ -102,7 +90,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     scales: {
       yAxes: [{
         ticks: {
-          callback: value => formatCZK(+value, false),
+          callback: value => formatNumber(+value, false, true),
         },
       }],
     },
@@ -116,7 +104,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         backgroundColor: 'white',
         borderColor: 'blue',
         borderRadius: 3,
-        display: context => Boolean(this.eventNodes[context.dataIndex]),
+        display: context => context.datasetIndex === 0 && Boolean(this.eventNodes[context.dataIndex]),
         formatter: (_, context) => this.eventNodes[context.dataIndex],
         font: this.font,
       },
@@ -133,36 +121,14 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(private cd: ChangeDetectorRef) {
-  }
-
-  private setXAxisTicks(options: {
-    min?: Label | null,
-    max?: Label | null,
-  }) {
-    const chart = this.chart?.chart as any;
-    const chartOptions = chart?.scales['x-axis-0']?.options;
-    if (!chartOptions) return;
-    chartOptions.ticks = {...chartOptions.ticks, ...options};
+  constructor(private cd: ChangeDetectorRef, private gameService: GameService) {
   }
 
   ngOnInit() {
-    this.panAutoReset$.pipe(
-      debounceTime(3000),
-      untilDestroyed(this),
-    ).subscribe(() => {
-      this.setXAxisTicks({max: null});
-      this.setScope();
-    });
-
-    this.options.title = {
-      text: this.title,
-      display: Boolean(this.title),
-    };
-
-    this.tick$.pipe(
+    this.singleLineTick$?.pipe(
       untilDestroyed(this),
     ).subscribe(tick => {
+      this.tooltipLabels[0] = tick.tooltipLabel;
       if (tick.state === this.currentState) {
         this.datasets[this.currentDatasetIndex].data!.push(tick.value);
       } else {
@@ -174,23 +140,51 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           [];
 
         this.datasets = [...this.datasets, {
-          ...this.defaultDataset,
-          borderColor: `#${this.colors[tick.state!]}`,
-          backgroundColor: `#${this.colors[tick.state!]}33`,
+          ...this.getDefaultDataset(),
+          borderColor: `${colors[tick.state!]}`,
+          backgroundColor: `${colors[tick.state!]}33`,
           data: [...padData, tick.value],
         }];
       }
 
       this.seriesLength++;
       this.lastValue = tick.value;
-      this.labels.push(tick.label);
-      this.eventNodes.push(tick.event);
+      this.labels.push(typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString());
+      this.addMitigation(tick.currentEvent);
       this.setScope();
 
       this.cd.detectChanges();
     });
 
-    this.reset$.pipe(
+    this.multiLineTick$?.pipe(
+      untilDestroyed(this),
+    ).subscribe(ticks => {
+      ticks.forEach((tick, index) => {
+        if (this.datasets[index]) {
+          this.tooltipLabels[index] = tick.tooltipLabel;
+          this.datasets[index].data!.push(tick.value);
+        } else {
+          this.tooltipLabels.push(tick.tooltipLabel);
+          this.datasets.push({...this.getDefaultDataset(tick.color), data: [tick.value], ...tick.datasetOptions});
+        }
+      });
+
+      this.labels.push((typeof ticks[0].label === 'string'
+        ? ticks[0].label
+        : ticks[0].label.toLocaleDateString()));
+
+      this.addMitigation(ticks[0].currentEvent);
+    });
+
+    this.panAutoReset$.pipe(
+      debounceTime(3000),
+      untilDestroyed(this),
+    ).subscribe(() => {
+      this.setXAxisTicks({max: null});
+      this.setScope();
+    });
+
+    this.gameService.reset$.pipe(
       untilDestroyed(this),
     ).subscribe(() => this.reset());
 
@@ -207,14 +201,15 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     });
   }
 
-  reset() {
-    this.datasets = [{...this.defaultDataset, data: []}];
+  private reset() {
+    this.datasets = [{...this.getDefaultDataset(), data: []}];
     this.labels = [];
     this.eventNodes = [];
     this.currentState = 'ok';
     this.currentDatasetIndex = 0;
     this.seriesLength = 0;
     this.lastValue = undefined;
+    this.tooltipLabels = [];
   }
 
   private setScope(level?: number) {
@@ -227,10 +222,43 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.chart.update();
   }
 
-  setScopeLabel(scopeLevel: number) {
+  private setScopeLabel(scopeLevel: number) {
     if (scopeLevel === 0) this.scopeLabel = 'Celý graf';
     if (scopeLevel === 1) this.scopeLabel = 'Kvartál';
     if (scopeLevel === 2) this.scopeLabel = 'Měsíc';
     this.cd.markForCheck();
+  }
+
+  private addMitigation(mitigation: string | undefined) {
+    if (this.lastMitigation !== mitigation) {
+      this.lastMitigation = mitigation;
+      this.eventNodes.push(mitigation);
+    } else {
+      this.eventNodes.push(undefined);
+    }
+  }
+
+  private setXAxisTicks(options: {
+    min?: Label | null,
+    max?: Label | null,
+  }) {
+    const chart = this.chart?.chart as any;
+    const chartOptions = chart?.scales['x-axis-0']?.options;
+    if (!chartOptions) return;
+    chartOptions.ticks = {...chartOptions.ticks, ...options};
+  }
+
+  private getDefaultDataset(color = colors.ok): ChartDataSets {
+    return {
+      borderColor: `${color}`,
+      backgroundColor: `${color}33`,
+      pointBorderColor: `${color}`,
+      pointBackgroundColor: context => {
+        return context.dataIndex && this.eventNodes[context.dataIndex] ? `${color}` : `${color}33`;
+      },
+      pointRadius: context => context.dataIndex && this.eventNodes[context.dataIndex] ? 4 : 2,
+      pointBorderWidth: 2,
+      pointHitRadius: 5,
+    };
   }
 }

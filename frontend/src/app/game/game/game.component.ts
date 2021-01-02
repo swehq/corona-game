@@ -1,10 +1,12 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {GameService} from '../game.service';
 import {ChartOptions} from 'chart.js';
-import {formatCZK} from '../../utils/format';
-import {Subject} from 'rxjs';
-import {ChartValue} from '../chart/chart.component';
+import {formatNumber} from '../../utils/format';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {ChartValue, colors} from '../graphs/line-graph/line-graph.component';
+import {MitigationsService} from '../mitigations-control/mitigations.service';
 
 @UntilDestroy()
 @Component({
@@ -18,70 +20,79 @@ export class GameComponent implements AfterViewInit {
       yAxes: [{
         ticks: {
           callback(value: number | string) {
-            if (value < 1_000_000) {
-              return formatCZK(+value, false);
-            }
-
-            if (value > 1_000_000 && value < 1_000_000_000) {
-              return `${formatCZK(+value / 1_000_000, false)} mil.`;
-            }
-
-            return`${formatCZK(+value / 1_000_000_000, false)} mild.`;
+            return formatNumber(+value, false, true);
           },
         },
       }],
     },
   };
 
-  private _infectedToday$ = new Subject<ChartValue>();
-  infectedToday$ = this._infectedToday$.asObservable();
+  infectedToday$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
+    label: gameState.date,
+    value: gameState.stats.detectedInfections.today,
+    tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
+    state: 'ok',
+    currentEvent: this.currentEvent,
+  })));
 
-  private _costTotal$ = new Subject<ChartValue>();
-  costTotal$ = this._costTotal$.asObservable();
+  costTotal$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
+    label: gameState.date,
+    value: gameState.stats.costTotal,
+    tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
+    state: 'ok',
+    currentEvent: this.currentEvent,
+  })));
 
-  private _deathToday$ = new Subject<ChartValue>();
-  deathToday$ = this._deathToday$.asObservable();
+  deathToday$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
+    label: gameState.date,
+    value: gameState.stats.deaths.today,
+    tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
+    state: 'ok',
+    currentEvent: this.currentEvent,
+  })));
 
-  private _immunized$ = new Subject<{resistant: ChartValue; vaccinated: ChartValue}>();
-  immunized$ = this._immunized$.asObservable();
+  immunizedChart$: Observable<ChartValue[]> = this.gameService.gameState$.pipe(map(gs => ([
+    {
+      label: gs.date,
+      value: Math.round(gs.sirState.resistant + gs.stats.vaccinationRate * gs.sirState.suspectible),
+      tooltipLabel: (value: number) => `Imunizováni: ${formatNumber(value)}`,
+      currentEvent: this.currentEvent,
+    },
+    {
+      label: gs.date,
+      value: gs.stats.vaccinationRate * Math.round(gs.sirState.suspectible),
+      tooltipLabel: (value: number) => `Vakcinovaní: ${formatNumber(value)}`,
+      datasetOptions: {
+        backgroundColor: `${colors.critical}33`,
+        borderColor: `${colors.warn}`,
+      },
+      color: colors.warn,
+    },
+  ])));
 
-  costTotalTooltip(value: number) {
-    return `Celkové náklady: ${formatCZK(value)}`;
-  }
+  immunized$ = this.gameService.gameState$.pipe(
+    map(gameState => Math.round(gameState.sirState.resistant)
+      + gameState.stats.vaccinationRate * Math.round(gameState.sirState.suspectible)),
+    map(resistant => Math.round(resistant)),
+  );
 
-  constructor(public gameService: GameService) {
+  private currentEvent: string | undefined = undefined;
+
+  constructor(public gameService: GameService, private mitigationsService: MitigationsService) {
   }
 
   ngAfterViewInit() {
     this.gameService.restartSimulation();
-    this.gameService.gameState$.pipe(
-      untilDestroyed(this),
-    ).subscribe(s => {
-      this._immunized$.next({
-        resistant: {
-          label: s.date,
-          value: s.sirState.resistant,
-        },
-        vaccinated: {
-          label: s.date,
-          value: s.stats.vaccinationRate,
-        },
-      });
+    this.gameService.reset$.pipe(untilDestroyed(this)).subscribe(() => this.currentEvent = undefined);
 
-      this._costTotal$.next({
-        label: s.date,
-        value: s.stats.costTotal,
+    for (const mitigation of Object.keys(MitigationsService.mitigationsI18n)) {
+      this.mitigationsService.formGroup.get(mitigation)?.valueChanges.pipe(
+        untilDestroyed(this),
+      ).subscribe((value: any) => {
+        // TODO add multiple mitigations at a same time
+        this.currentEvent = this.mitigationsService.getLabel(
+          mitigation as keyof typeof MitigationsService.mitigationsI18n, value);
       });
-
-      this._infectedToday$.next({
-        label: s.date,
-        value: s.stats.detectedInfections.today,
-      });
-
-      this._deathToday$.next({
-        label: s.date,
-        value: s.stats.deaths.today,
-      });
-    });
+    }
   }
 }

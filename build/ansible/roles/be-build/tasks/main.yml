@@ -8,9 +8,9 @@
     backend_remote_image_commit: "{{ backend_remote_image }}:{{ commit }}"
 
 - name: Build backend docker image
-  shell: docker build -t {{ backend_image }} .
+  shell: docker build -t {{ backend_image }} -f backend/Dockerfile .
   args:
-    chdir: ../../backend
+    chdir: ../..
 
 - name: Tag backend docker image
   shell: |

@@ -5,30 +5,34 @@ orbs:
 
 commands:
   npm:
+    parameters:
+      location:
+        type: string
     steps:
       - restore_cache:
           keys:
-            - npm-cache-v2-{{checksum "frontend/package-lock.json"}}
-            - npm-cache-v2-
+            - npm-cache-<< parameters.location >>-{{checksum "<< parameters.location >>/package-lock.json"}}
+            - npm-cache-<< parameters.location >>-
       - run:
-          name: Install FE dependencies
-          working_directory: frontend
+          name: Install << parameters.location >> dependencies
+          working_directory: << parameters.location >>
           command: npx npm@6.14 ci
       - save_cache:
-          key: npm-cache-v2-{{checksum "frontend/package-lock.json"}}
+          key: npm-cache-<< parameters.location >>-{{checksum "<< parameters.location >>/package-lock.json"}}
           paths:
             - ~/.npm
             - ~/.cache
 
 jobs:
-  test-fe:
+  test:
     working_directory: ~/repo
     docker:
       - image: cimg/node:14.15.2-browsers
     steps:
       - browser-tools/install-chrome
       - checkout
-      - npm
+      - npm:
+          location: frontend
       - run:
           name: Angular lint
           working_directory: frontend
@@ -41,9 +45,15 @@ jobs:
           name: Angular test
           working_directory: frontend
           command: npm test -- --watch=false --browsers=ChromeHeadless --progress=false
+      - npm:
+          location: backend
+      - run:
+          name: BE build
+          working_directory: backend
+          command: npm run build
 
 workflows:
   version: 2
   test:
     jobs:
-      - test-fe
+      - test

@@ -1,13 +1,18 @@
 FROM node:14-alpine
 
-COPY package.json package-lock.json tsconfig.json /app/
+COPY backend/package.json backend/package-lock.json backend/tsconfig.json /app/backend/
+COPY frontend/package.json frontend/package-lock.json frontend/tsconfig.json /app/frontend/
 
-WORKDIR /app
-
+WORKDIR /app/backend
 RUN npm install
 
-COPY src src
+WORKDIR /app/frontend
+RUN npm install
 
+COPY backend/src /app/backend/src
+COPY frontend/src /app/frontend/src
+
+WORKDIR /app/backend
 RUN npm run build
 
 EXPOSE 8000

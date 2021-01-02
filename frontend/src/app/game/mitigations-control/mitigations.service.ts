@@ -3,8 +3,8 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 import {map, shareReplay, startWith} from 'rxjs/operators';
-import {Game} from 'src/app/services/game';
-import {MitigationPair} from 'src/app/services/scenario';
+import {Game} from '../../services/game';
+import {MitigationPair} from '../../services/scenario';
 import {GameService} from '../game.service';
 
 export type MitigationsPresetLevel = 'open' | 'level1' | 'level2' | 'lockdown';

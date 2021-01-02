@@ -25,3 +25,4 @@ Thumbs.db
 *.retry
 
 /tmp
+/node_modules

@@ -1,6 +1,6 @@
+import {json} from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
-import {json} from 'body-parser';
 import {log} from 'shared';
 // import {router} from './game/routes';
 

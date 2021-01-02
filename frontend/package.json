@@ -4,6 +4,7 @@
   "scripts": {
     "analyze": "ng build --prod --statsJson=true && webpack-bundle-analyzer dist/corona-game/stats.json",
     "ng": "ng",
+    "prestart": "cd ../shared && npm run build",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",

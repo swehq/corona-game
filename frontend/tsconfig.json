@@ -20,10 +20,10 @@
     ],
     "paths": {
       "shared": [
-        "../shared/dist"
+        "../shared/dist/esm"
       ],
       "shared/*": [
-        "../shared/dist/*"
+        "../shared/dist/esm/*"
       ]
     },
     "noUnusedLocals": true,

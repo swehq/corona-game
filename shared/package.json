@@ -1,9 +1,12 @@
 {
   "name": "shared",
   "version": "1.0.0",
-  "main": "dist/index",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
   "scripts": {
-    "build": "tsc"
+    "build1": "tsc -p tsconfig.json",
+    "build2": "tsc -p tsconfig-esm.json",
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig-esm.json"
   },
   "dependencies": {},
   "devDependencies": {

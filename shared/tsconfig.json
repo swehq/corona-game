@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2015",
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
     "rootDir": ".",
     "composite": true,
-    "outDir": "./dist"
+    "outDir": "./dist/cjs"
   },
   "references": [],
   "exclude": [

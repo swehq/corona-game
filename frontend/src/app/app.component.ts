@@ -2,7 +2,6 @@ import {DOCUMENT} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Inject, OnDestroy, Renderer2} from '@angular/core';
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
-import {log} from 'shared';
 import {ConfigService} from './services/config.service';
 
 @Component({
@@ -20,7 +19,6 @@ export class AppComponent implements OnDestroy {
     @Inject(DOCUMENT) document: Document,
     renderer: Renderer2,
   ) {
-    log('Hello');
     const {body} = document;
 
     renderer.addClass(body, 'mat-app-background');

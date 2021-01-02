@@ -10,10 +10,10 @@
     "skipLibCheck": true,
     "paths": {
       "shared": [
-        "../shared/dist"
+        "../shared/dist/cjs"
       ],
       "shared/*": [
-        "../shared/dist/*"
+        "../shared/dist/cjs/*"
       ]
     }
   },

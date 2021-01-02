@@ -4,7 +4,7 @@
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
-    "rootDir": ".",
+    "rootDir": "./src",
     "composite": true,
     "outDir": "./dist/cjs"
   },

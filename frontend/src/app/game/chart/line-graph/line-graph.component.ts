@@ -7,6 +7,7 @@ import 'chartjs-plugin-zoom';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {EMPTY, Observable, Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
+import {formatCZK} from '../../../utils/format';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -45,7 +46,11 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   @Input()
   reset$: Observable<void> = EMPTY;
 
+  @Input()
+  customOptions: ChartOptions | null = null;
+
   @Input() title = '';
+  @Input() tooltipLabel: ((value: number) => string) | null = null;
   @Input() tick$!: Observable<LineNode>;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
@@ -85,17 +90,19 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       enabled: true,
       displayColors: false,
       callbacks: {
-        label: tooltipItem => {
+        label: tooltipItem => this.tooltipLabel
+          ? this.tooltipLabel(+tooltipItem.yLabel!)
+          : `${this.title}: ${formatCZK(+tooltipItem.yLabel! || 0, false)}`,
+        title: tooltipItem => {
           this.panAutoReset$.next();
-          return `Počet nakažených: ${tooltipItem?.yLabel?.toLocaleString()}`;
+          return (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '';
         },
-        title: tooltipItem => (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '',
       },
     },
     scales: {
       yAxes: [{
         ticks: {
-          callback: value => value.toLocaleString(),
+          callback: value => formatCZK(+value, false),
         },
       }],
     },
@@ -188,6 +195,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     ).subscribe(() => this.reset());
 
     this.setScopeLabel(this.scopeFormControl.value);
+    this.options = {...this.options, ...this.customOptions};
   }
 
   ngAfterViewInit() {

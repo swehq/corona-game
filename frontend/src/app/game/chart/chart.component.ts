@@ -5,6 +5,7 @@ import {LineNode, NodeState} from './line-graph/line-graph.component';
 import {MitigationsService} from '../mitigations-control/mitigations.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {GameService} from '../game.service';
+import {ChartOptions} from 'chart.js';
 
 export interface Serie {
   label: string;
@@ -29,6 +30,12 @@ export class ChartComponent implements OnInit {
 
   @Input()
   tick$!: Observable<ChartValue>;
+
+  @Input()
+  tooltipLabel: ((value: number) => string) | null = null;
+
+  @Input()
+  customOptions: ChartOptions | null = null;
 
   currentState: NodeState = 'ok';
   currentEvent: string | undefined = undefined;

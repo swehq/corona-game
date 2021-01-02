@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
 import {Subject} from 'rxjs';
-import {ChartValue} from './chart/chart.component';
 import {scenarios} from '../services/scenario';
 import {last} from 'lodash';
+import {DayState} from '../services/simulation';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
 
@@ -23,8 +23,8 @@ export class GameService {
   private _speed$ = new Subject<Speed>();
   speed$ = this._speed$.asObservable();
 
-  private _infectedToday$ = new Subject<ChartValue>();
-  infectedToday$ = this._infectedToday$.asObservable();
+  private _gameState$ = new Subject<DayState>();
+  gameState$ = this._gameState$.asObservable();
 
   private _reset$ = new Subject<void>();
   reset$ = this._reset$.asObservable();
@@ -58,11 +58,7 @@ export class GameService {
       data = lastData ? [lastData] : [];
     }
 
-    const chartData = data.map(s => ({
-      label: s.date,
-      value: s.stats.detectedInfections.today,
-    }));
-    chartData.forEach(i => this._infectedToday$.next(i));
+    data.forEach(item => this._gameState$.next(item));
   }
 
   togglePause() {

@@ -32,5 +32,11 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "references": [
+    {
+      "path": "../shared",
+      "prepend": true
+    }
+  ]
 }

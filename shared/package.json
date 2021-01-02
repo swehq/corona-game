@@ -1,0 +1,11 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
+}

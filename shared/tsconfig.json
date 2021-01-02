@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": ".",
+    "composite": true,
+    "module": "system",
+    "outFile": "dist/dist.js"
+  },
+  "references": [],
+  "exclude": [
+    "./dist/**/*"
+  ]
+}

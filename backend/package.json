@@ -4,7 +4,7 @@
   "scripts": {
     "start": "nodemon src/index.ts",
     "start:prod": "node dist/index.js",
-    "build": "tsc --project ./",
+    "build": "tsc -b",
     "start:docker": "ansible-playbook -i ../build/ansible/environments/local ../build/ansible/develop.yml --extra-vars 'action=\"up -d\"'"
   },
   "dependencies": {

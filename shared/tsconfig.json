@@ -5,8 +5,7 @@
     "declarationMap": true,
     "rootDir": ".",
     "composite": true,
-    "module": "system",
-    "outFile": "dist/dist.js"
+    "outDir": "./dist"
   },
   "references": [],
   "exclude": [

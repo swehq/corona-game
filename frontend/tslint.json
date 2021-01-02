@@ -1,9 +1,9 @@
 {
   "extends": "tslint:recommended",
   "rulesDirectory": [
-    "node_modules/tslint-eslint-rules/dist/rules",
-    "node_modules/codelyzer",
-    "node_modules/rxjs-tslint-rules/dist/rules"
+    "../node_modules/tslint-eslint-rules/dist/rules",
+    "../node_modules/codelyzer",
+    "../node_modules/rxjs-tslint-rules/dist/rules"
   ],
   "rules": {
     "arrow-parens": [

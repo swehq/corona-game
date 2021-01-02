@@ -19,8 +19,11 @@
       "dom"
     ],
     "paths": {
-      "|shared/*": [
-        "app/shared/*"
+      "shared": [
+        "../shared/dist"
+      ],
+      "shared/*": [
+        "../shared/dist/*"
       ]
     },
     "noUnusedLocals": true,
@@ -35,8 +38,7 @@
   },
   "references": [
     {
-      "path": "../shared",
-      "prepend": true
+      "path": "../shared"
     }
   ]
 }

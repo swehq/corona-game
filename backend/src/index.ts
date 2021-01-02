@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import {json} from 'body-parser';
-import {log} from '../../shared';
+import {log} from 'shared';
 // import {router} from './game/routes';
 
 const PORT = process.env.PORT || 8000;

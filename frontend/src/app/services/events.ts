@@ -1,23 +1,78 @@
-import {cloneDeep, get, isNil, shuffle} from 'lodash';
-import {eventList, Event} from './event-list';
-import {DayState} from './simulation';
+import {get, isNil, shuffle, sample} from 'lodash';
+import {eventTriggers} from './event-list';
+import {DayState, MitigationEffect} from './simulation';
 
-interface TriggeredEvents extends Event {
-  triggered: boolean;
+// infinite timeout (1 milion years)
+const infTimeout = 1_000_000 * 365;
+
+export interface EventMitigation extends MitigationEffect {
+  timeout: number;
+  label: string;
+  id?: string;
+}
+
+export interface Event {
+  title: string;
+  text: string;
+  help?: string;
+  mitigations?: EventMitigation[];
+}
+
+interface EventDef {
+  title: string;
+  text: string;
+  help?: string;
+  mitigations?: Partial<EventMitigation>[];
+}
+
+export interface EventTrigger {
+  events: EventDef[];
+  timeout?: number;
+  condition: (stats: DayState) => boolean;
+}
+
+interface TriggerState {
+  trigger: EventTrigger;
+  timeout: number;
 }
 
 export class EventHandler {
-  triggeredEvents: TriggeredEvents[] = cloneDeep(eventList).map(e => ({...e, triggered: false}));
+  readonly defaultMitigation: EventMitigation = {
+    timeout: infTimeout,
+    label: 'OK',
+    rMult: 1,
+    exposedDrift: 0,
+    cost: 0,
+    stabilityCost: 0,
+    vaccinationPerDay: 0,
+  };
+  triggerStateHistory: Record<string, TriggerState[]> = {};
 
-  evaluateDay(dayState: DayState) {
-    const untriggered = shuffle(this.triggeredEvents.filter(e => !e.triggered));
-    const event = untriggered.find(trigger => !trigger.condition || trigger.condition(dayState));
+  evaluateDay(prevDate: string, currentDate: string, dayState: DayState) {
+    let prevState = this.triggerStateHistory[prevDate];
+    if (!prevState) {
+      prevState = eventTriggers.map(et => ({trigger: et, timeout: 0}));
+    }
 
-    if (!event) return;
+    const currentState = prevState.map(et => ({...et, timeout: Math.max(0, et.timeout - 1)}));
+    this.triggerStateHistory[currentDate] = currentState;
 
-    event.triggered = true;
-    event.title = this.interpolate(event.title, dayState);
-    event.text = this.interpolate(event.text, dayState);
+    const active = shuffle(currentState.filter(ts => ts.timeout <= 0));
+    const triggerState = active.find(ts => ts.trigger.condition(dayState));
+
+    if (!triggerState) return;
+
+    const trigger = triggerState.trigger;
+    triggerState.timeout = trigger.timeout ? trigger.timeout : infTimeout;
+    const eventDef = sample(trigger.events);
+    if (!eventDef) return;
+
+    const event: Event = {
+      title: this.interpolate(eventDef.title, dayState),
+      text: this.interpolate(eventDef.text, dayState),
+      help: eventDef.help ? this.interpolate(eventDef.text, dayState) : undefined,
+      mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => this.completeMitigation(m)) : undefined,
+    };
 
     return event;
   }
@@ -28,5 +83,9 @@ export class EventHandler {
       const value = get(data, attr);
       return isNil(value) ? original : value.toLocaleString();
     });
+  }
+
+  private completeMitigation(mitigation: Partial<EventMitigation>): EventMitigation {
+    return {...this.defaultMitigation, ...mitigation};
   }
 }

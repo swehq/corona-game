@@ -12,13 +12,13 @@ describe('GameValidation', () => {
 
   it('should not validate CZ scenario w/ added mitigation', () => {
     const modifiedData = cloneDeep(data);
-    modifiedData.mitigations.history['2020-12-07'] = {schools: 'universities'};
+    modifiedData.mitigations.history['2020-12-07'] = {mitigations: {schools: 'universities'}};
     expect(validateGame(modifiedData)).toBeFalse();
   });
 
   it('should not validate CZ scenario w/ modified dead state', () => {
     const modifiedData = cloneDeep(data);
-    last(modifiedData.simulation)!.sirState.dead = 9739.3862570802; // 9739.3862570801
+    last(modifiedData.simulation)!.sirState.dead = last(data.simulation)!.sirState.dead + 1e-9;
     expect(validateGame(modifiedData)).toBeFalse();
   });
 

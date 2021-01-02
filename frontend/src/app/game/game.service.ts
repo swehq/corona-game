@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
+import {Event} from '../services/events';
 import {Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {last} from 'lodash';
@@ -108,12 +109,21 @@ export class GameService {
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
-    if (event) this.showEvent(event.title, event.text);
+    if (event) this.showEvent(event);
     if (updateChart) this.updateChart();
   }
 
-  showEvent(title: string, text: string) {
+  showEvent(event: Event) {
     this.setSpeed('pause');
-    this.eventMessages.push(`${title}: ${text}`);
+    // TODO temporary to only display events as text
+    let msgText = `${event.title}: ${event.text}`;
+    if (event.help) {
+      msgText += ' ' + event.help;
+    }
+    if (event.mitigations) {
+      event.mitigations.forEach(m => msgText += ` [${m.label}]`);
+    }
+
+    this.eventMessages.push(msgText);
   }
 }

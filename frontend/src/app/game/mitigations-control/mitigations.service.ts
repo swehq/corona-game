@@ -79,7 +79,7 @@ export class MitigationsService {
 
     this.value$
       .pipe(untilDestroyed(this))
-      .subscribe((m: Mitigations) => gameService.game.setMitigations(m));
+      .subscribe((m: Mitigations) => gameService.game.applyMitigationAction({mitigations: m}));
 
     gameService.reset$
       .pipe(untilDestroyed(this))

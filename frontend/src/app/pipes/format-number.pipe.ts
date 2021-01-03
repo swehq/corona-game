@@ -6,8 +6,8 @@ import {formatNumber} from '../utils/format';
 })
 export class FormatNumberPipe implements PipeTransform {
 
-  transform(value: number | null | undefined, currencySymbol = false, shrink = false) {
+  transform(value: number | null | undefined, showCurrencySymbol = false, shrink = false) {
     value = value || 0;
-    return formatNumber(value, currencySymbol, shrink);
+    return formatNumber(value, showCurrencySymbol, shrink);
   }
 }

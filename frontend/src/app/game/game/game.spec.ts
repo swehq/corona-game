@@ -28,4 +28,35 @@ describe('GameValidation', () => {
     randomnessToModify!.baseMortality += 1e-10;
     expect(validateGame(modifiedData)).toBeFalse();
   });
-});
+
+  it('should validate CZ scenario w/ added trivial event mitigation', () => {
+    const modifiedData = cloneDeep(data);
+    const eventMitigation = {
+      timeout: 10,
+      label: 'OK',
+      rMult: 1,
+      exposedDrift: 0,
+      cost: 0,
+      stabilityCost: 0,
+      vaccinationPerDay: 0,
+    };
+    modifiedData.mitigations.history['2020-11-01'] = {eventMitigations: [eventMitigation]};
+    expect(validateGame(modifiedData)).toBeTrue();
+  });
+
+  it('should not validate CZ scenario w/ added event mitigation', () => {
+    const modifiedData = cloneDeep(data);
+    const eventMitigation = {
+      timeout: 10,
+      label: 'rMult',
+      rMult: 0.9,
+      exposedDrift: 0,
+      cost: 0,
+      stabilityCost: 0,
+      vaccinationPerDay: 0,
+    };
+    modifiedData.mitigations.history['2020-11-01'] = {eventMitigations: [eventMitigation]};
+    expect(validateGame(modifiedData)).toBeFalse();
+  });
+
+ });

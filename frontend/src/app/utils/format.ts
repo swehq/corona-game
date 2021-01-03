@@ -1,16 +1,18 @@
-export function formatNumber(value: number, currencySymbol = false, shrink = false): string {
-  if (shrink) {
-    if (value < 1_000_000) {
-      return `${value.toLocaleString()}${currencySymbol ? ' Kč' : ''}`;
-    }
+export function formatNumber(value: number, showCurrencySymbol = false, shrink = false): string {
+  let affix = '';
 
-    if (value > 1_000_000 && value < 1_000_000_000) {
-      value = value / 1_000_000;
-      return `${value.toLocaleString()} mil.${currencySymbol ? ' Kč' : ''}`;
+  if (shrink) {
+    if (value >= 1_000_000_000) {
+      value /= 1_000_000_000;
+      affix = ' mld.';
     }
-    value = value / 1_000_000_000;
-    return `${value.toLocaleString()} mild.${currencySymbol ? ' Kč' : ''}`;
+    else if (value >= 1_000_000) {
+      value /= 1_000_000;
+      affix = ' mil.';
+    }
   }
 
-  return `${value.toLocaleString()}${currencySymbol ? ' Kč' : ''}`;
+  affix += showCurrencySymbol ? ' Kč' : '';
+
+  return `${value.toLocaleString()}${affix}`;
 }

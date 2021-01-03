@@ -19,7 +19,7 @@ export interface ChartValue {
   datasetOptions?: ChartDataSets;
   color?: string;
   state?: NodeState;
-  currentEvent?: string;
+  currentMitigation?: string;
 }
 
 export const colors = {
@@ -46,7 +46,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private panAutoReset$ = new Subject();
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
-  private eventNodes: (string | undefined)[] = [];
+  private mitigationNodes: (string | undefined)[] = [];
   private tooltipLabels: ((value: number) => string)[] = [];
   private lastMitigation: string | undefined = undefined;
   private seriesLength = 0;
@@ -80,10 +80,10 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       enabled: true,
       displayColors: false,
       callbacks: {
-        label: tooltipItem => this.tooltipLabels[0](+tooltipItem.yLabel!),
+        label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
         title: tooltipItem => {
           this.panAutoReset$.next();
-          return (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '';
+          return (tooltipItem[0].index && this.mitigationNodes[tooltipItem[0].index]) || '';
         },
       },
     },
@@ -104,8 +104,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         backgroundColor: 'white',
         borderColor: 'blue',
         borderRadius: 3,
-        display: context => Boolean(this.eventNodes[context.dataIndex]),
-        formatter: (_, context) => this.eventNodes[context.dataIndex],
+        display: context => Boolean(this.mitigationNodes[context.dataIndex]),
+        formatter: (_, context) => this.mitigationNodes[context.dataIndex],
         font: this.font,
       },
       zoom: {
@@ -132,7 +132,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.singleLineTick$?.pipe(
       untilDestroyed(this),
     ).subscribe(tick => {
-      this.tooltipLabels[0] = tick.tooltipLabel;
+      this.tooltipLabels[this.currentDatasetIndex] = tick.tooltipLabel;
       if (tick.state === this.currentState) {
         this.datasets[this.currentDatasetIndex].data!.push(tick.value);
       } else {
@@ -154,7 +154,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       this.seriesLength++;
       this.lastValue = tick.value;
       this.labels.push(typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString());
-      this.addMitigation(tick.currentEvent);
+      this.addMitigation(tick.currentMitigation);
       this.setScope();
 
       this.cd.detectChanges();
@@ -177,7 +177,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         ? ticks[0].label
         : ticks[0].label.toLocaleDateString()));
 
-      this.addMitigation(ticks[0].currentEvent);
+      this.addMitigation(ticks[0].currentMitigation);
     });
 
     this.panAutoReset$.pipe(
@@ -212,7 +212,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private reset() {
     this.datasets = [{...this.getDefaultDataset(), data: []}];
     this.labels = [];
-    this.eventNodes = [];
+    this.mitigationNodes = [];
     this.currentState = 'ok';
     this.currentDatasetIndex = 0;
     this.seriesLength = 0;
@@ -242,9 +242,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private addMitigation(mitigation: string | undefined) {
     if (this.lastMitigation !== mitigation) {
       this.lastMitigation = mitigation;
-      this.eventNodes.push(mitigation);
+      this.mitigationNodes.push(mitigation);
     } else {
-      this.eventNodes.push(undefined);
+      this.mitigationNodes.push(undefined);
     }
   }
 
@@ -264,9 +264,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       backgroundColor: `${color}33`,
       pointBorderColor: `${color}`,
       pointBackgroundColor: context => {
-        return context.dataIndex && this.eventNodes[context.dataIndex] ? `${color}` : `${color}33`;
+        return context.dataIndex && this.mitigationNodes[context.dataIndex] ? `${color}` : `${color}33`;
       },
-      pointRadius: context => context.dataIndex && this.eventNodes[context.dataIndex] ? 4 : 2,
+      pointRadius: context => context.dataIndex && this.mitigationNodes[context.dataIndex] ? 4 : 2,
       pointBorderWidth: 2,
       pointHitRadius: 5,
     };

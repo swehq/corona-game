@@ -34,7 +34,7 @@ export class GraphsComponent implements AfterViewInit {
     value: gameState.stats.detectedInfections.today,
     tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
     state: this.infectedThresholds(gameState.stats.detectedInfections.today),
-    currentEvent: this.currentEvent,
+    currentMitigation: this.currentMitigation,
   })));
 
   costTotal$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
@@ -42,7 +42,7 @@ export class GraphsComponent implements AfterViewInit {
     value: gameState.stats.costs.total,
     tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
     state: this.costTotalThresholds(gameState.stats.costs.total),
-    currentEvent: this.currentEvent,
+    currentMitigation: this.currentMitigation,
   })));
 
   deathToday$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
@@ -50,7 +50,7 @@ export class GraphsComponent implements AfterViewInit {
     value: gameState.stats.deaths.today,
     tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
     state: this.deathThresholds(gameState.stats.deaths.today),
-    currentEvent: this.currentEvent,
+    currentMitigation: this.currentMitigation,
   })));
 
   immunizedChart$: Observable<ChartValue[]> = this.gameService.gameState$.pipe(map(gs => ([
@@ -76,7 +76,7 @@ export class GraphsComponent implements AfterViewInit {
       + gameState.stats.vaccinationRate * gameState.sirState.suspectible)),
   );
 
-  private currentEvent: string | undefined = undefined;
+  private currentMitigation: string | undefined = undefined;
 
 // TODO Add hysteresis maybe?
   private costTotalThresholds(value: number): NodeState {
@@ -104,14 +104,14 @@ export class GraphsComponent implements AfterViewInit {
     setTimeout(() => this.initialized = true);
 
     this.gameService.restartSimulation();
-    this.gameService.reset$.pipe(untilDestroyed(this)).subscribe(() => this.currentEvent = undefined);
+    this.gameService.reset$.pipe(untilDestroyed(this)).subscribe(() => this.currentMitigation = undefined);
 
     for (const mitigation of Object.keys(MitigationsService.mitigationsI18n)) {
       this.mitigationsService.formGroup.get(mitigation)?.valueChanges.pipe(
         untilDestroyed(this),
       ).subscribe((value: any) => {
         // TODO add multiple mitigations at a same time
-        this.currentEvent = this.mitigationsService.getLabel(
+        this.currentMitigation = this.mitigationsService.getLabel(
           mitigation as keyof typeof MitigationsService.mitigationsI18n, value);
       });
     }

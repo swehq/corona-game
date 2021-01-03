@@ -73,7 +73,9 @@ describe('EventInterpolationTests', () => {
       et.events.forEach(ed => {
         const event = EventHandler.eventFromDef(ed, dayStats);
         expect(event.title.indexOf('{{')).toBeLessThan(0);
-        expect(event.text.indexOf('{{')).toBeLessThan(0);
+        if (event.text) {
+          expect(event.text.indexOf('{{')).toBeLessThan(0);
+        }
         if (event.help) {
           expect(event.help.indexOf('{{')).toBeLessThan(0);
         }

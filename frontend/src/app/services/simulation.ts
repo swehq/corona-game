@@ -79,6 +79,7 @@ export interface Stats {
   mortality: number;
   hospitalsUtilization: number;
   vaccinationRate: number;
+  stability: number;
 }
 
 export interface DayState {
@@ -336,6 +337,7 @@ export class Simulation {
       costs,
       hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
+      stability: modelInputs ? modelInputs.stability : this.initialStability,
     };
 
     return stats;

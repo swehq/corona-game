@@ -116,7 +116,11 @@ export class GameService {
   showEvent(event: Event) {
     this.setSpeed('pause');
     // TODO temporary to only display events as text
-    let msgText = `${event.title}: ${event.text}`;
+    let msgText = `${event.title}`;
+
+    if (event.text) {
+      msgText += `: ${event.text}`;
+    }
     if (event.help) {
       msgText += ' ' + event.help;
     }

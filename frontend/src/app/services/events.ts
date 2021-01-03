@@ -13,14 +13,14 @@ export interface EventMitigation extends MitigationEffect {
 
 export interface Event {
   title: string;
-  text: string;
+  text?: string;
   help?: string;
   mitigations?: EventMitigation[];
 }
 
 interface EventDef {
   title: string;
-  text: string;
+  text?: string;
   help?: string;
   mitigations?: Partial<EventMitigation>[];
 }
@@ -73,8 +73,8 @@ export class EventHandler {
   static eventFromDef(eventDef: EventDef, data: any): Event {
     return {
       title: EventHandler.interpolate(eventDef.title, data),
-      text: EventHandler.interpolate(eventDef.text, data),
-      help: eventDef.help ? EventHandler.interpolate(eventDef.text, data) : undefined,
+      text: eventDef.text ? EventHandler.interpolate(eventDef.text, data) : undefined,
+      help: eventDef.help ? EventHandler.interpolate(eventDef.help, data) : undefined,
       mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => EventHandler.completeMitigation(m)) : undefined,
     };
   }

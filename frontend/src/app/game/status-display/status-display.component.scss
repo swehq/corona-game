@@ -4,8 +4,6 @@
   @include panel;
 
   @include apply-themes {
-    background-color: mat-color(map-get($theme, background), card);
-
     .color-virus {
       color: mat-color(map-get($theme, warn));
     }

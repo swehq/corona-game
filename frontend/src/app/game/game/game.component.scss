@@ -1,11 +1,20 @@
 @import '~src/definitions';
 
-mat-tab-group {
+.mat-tab-group.mat-tab-group.mat-tab-group.mat-tab-group {
   @include panel;
 
   ::ng-deep {
     .mat-tab-body-content {
       overflow: hidden;
+    }
+
+    .mat-tab-labels {
+      flex-wrap: wrap;
+    }
+
+    .mat-tab-label {
+      height: 3.5rem;
+      padding: 0 2rem;
     }
   }
 }

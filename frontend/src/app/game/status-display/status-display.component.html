@@ -25,7 +25,7 @@
 
     <cvd-row class="item color-death">
       <cvd-icon svgIcon="money"></cvd-icon>
-      Náklady: {{stat$('costTotal') | async | formatNumber:true:true}}
+      Náklady: {{stat$('costs', 'total') | async | formatNumber:true:true}}
     </cvd-row>
 
     <cvd-row class="item color-death">

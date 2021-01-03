@@ -39,9 +39,9 @@ export class GraphsComponent implements AfterViewInit {
 
   costTotal$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
     label: gameState.date,
-    value: gameState.stats.costTotal,
+    value: gameState.stats.costs.total,
     tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
-    state: this.costTotalThresholds(gameState.stats.costTotal),
+    state: this.costTotalThresholds(gameState.stats.costs.total),
     currentEvent: this.currentEvent,
   })));
 

@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
+import {Event} from '../services/events';
 import {Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {last} from 'lodash';
@@ -16,7 +17,7 @@ export class GameService {
   readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
-  eventMessages: string[] = [];
+  event: Event | undefined;
   tickerId: number | undefined;
 
   private speed: Speed | undefined;
@@ -45,7 +46,7 @@ export class GameService {
     this.setSpeed('pause');
     this.game = new Game(scenarios[scenario]);
     this._reset$.next();
-    this.eventMessages = [];
+    this.event = undefined;
     this.setSpeed(speed);
 
     // TODO(pk) this is only hotfix for 'ExpressionChangedAfterItHasBeenCheckedError'
@@ -108,12 +109,12 @@ export class GameService {
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
 
-    if (event) this.showEvent(event.title, event.text);
+    if (event) this.showEvent(event);
     if (updateChart) this.updateChart();
   }
 
-  showEvent(title: string, text: string) {
+  showEvent(event: Event) {
     this.setSpeed('pause');
-    this.eventMessages.push(`${title}: ${text}`);
+    this.event = event;
   }
 }

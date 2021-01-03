@@ -24,11 +24,11 @@ import {settings as randomizeSettings, getRandomness} from './randomize';
 import {getSeasonality, nextDay} from './utils';
 
 export interface MitigationEffect {
-  mult: number;
+  rMult: number;
+  exposedDrift: number;
   cost: number;
   stabilityCost: number;
   vaccinationPerDay: number;
-  bordersClosed: boolean;
 }
 
 interface SirState {
@@ -55,7 +55,7 @@ interface Randomness {
 }
 
 interface ModelInputs {
-  bordersDrift: number;
+  exposedDrift: number;
   seasonalityMult: number;
   R: number;
   stability: number;
@@ -74,11 +74,12 @@ export interface Stats {
   detectedInfections: MetricStats;
   resolvedInfections: MetricStats;
   deaths: MetricStats;
+  costs: MetricStats;
   activeInfections: number;
   mortality: number;
-  costTotal: number;
   hospitalsUtilization: number;
   vaccinationRate: number;
+  stability: number;
 }
 
 export interface DayState {
@@ -100,8 +101,6 @@ export class Simulation {
   readonly hospitalsOverwhelmedThreshold = 20_000;
   readonly hospitalsOverwhelmedMortalityMultiplier = 2;
   readonly hospitalsBaselineUtilization = 0.5;
-  readonly infectionsWhenBordersOpen = 5;
-  readonly infectionsWhenBordersClosed = 2;
   readonly initialStability = 50;
   readonly stabilityRecovery = 0.2;
 
@@ -165,9 +164,6 @@ export class Simulation {
     const yesterday = last(this.modelStates)?.modelInputs;
     const seasonalityMult = 1 + this.getSeasonalityEffect(date);
 
-    const bordersDrift = mitigationEffect.bordersClosed ?
-      this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
-
     const prevVaccinationRate = yesterday?.vaccinationRate ? yesterday.vaccinationRate : 0;
     const vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
 
@@ -175,12 +171,12 @@ export class Simulation {
     stability += this.stabilityRecovery - mitigationEffect.stabilityCost;
     stability = Math.min(stability, this.initialStability);
 
-    const R = this.rEmaUpdater(yesterday?.R, this.R0 * mitigationEffect.mult * seasonalityMult);
+    const R = this.rEmaUpdater(yesterday?.R, this.R0 * mitigationEffect.rMult * seasonalityMult);
 
     return {
       stability,
       seasonalityMult,
-      bordersDrift,
+      exposedDrift: mitigationEffect.exposedDrift,
       vaccinationRate,
       R,
       costToday: mitigationEffect.cost,
@@ -211,7 +207,7 @@ export class Simulation {
     const suspectibleUnvaccinated = Math.max(0, suspectible - totalPopulation * modelInputs.vaccinationRate);
     let exposedNew = infectious * randomness.rNoiseMult * modelInputs.R /
       this.infectiousDuration * suspectibleUnvaccinated / activePopulation;
-    exposedNew += modelInputs.bordersDrift;
+    exposedNew += modelInputs.exposedDrift;
     exposedNew = Math.min(exposedNew, suspectible);
     suspectible -= exposedNew;
     exposed += exposedNew;
@@ -323,15 +319,13 @@ export class Simulation {
   }
 
   private calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
-    const lastStat = this.getLastStats();
-
     const detectedInfections = this.calcMetricStats('detectedInfections',
       this.getSirStateInPast(this.incubationDays).exposedNew);
     const resolvedInfections = this.calcMetricStats('resolvedInfections',
       this.getSirStateInPast(this.recoveryDuration).resistantNew + state.deathsNew);
     const deaths = this.calcMetricStats('deaths', state.deathsNew);
+    const costs = this.calcMetricStats('costs', modelInputs ? modelInputs.costToday : 0);
 
-    const costTotal = (lastStat ? lastStat.costTotal : 0) + (modelInputs ? modelInputs.costToday : 0);
     const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
     const stats = {
@@ -340,9 +334,10 @@ export class Simulation {
       deaths,
       activeInfections: detectedInfections.total - resolvedInfections.total,
       mortality,
-      costTotal,
+      costs,
       hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
+      stability: modelInputs ? modelInputs.stability : this.initialStability,
     };
 
     return stats;

@@ -1,5 +1,6 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
 import {Mitigations} from '../game/mitigations-control/mitigations.service';
+import {EventMitigation} from './events';
 import {Game} from './game';
 import {nextDay} from './utils';
 
@@ -9,23 +10,28 @@ interface ScenarioDates {
   endDate: string; // Last playable date
 }
 
-export type MitigationActions = Record<string, Partial<Mitigations>>;
+export interface MitigationActions {
+  mitigations?: Partial<Mitigations>;
+  eventMitigations?: EventMitigation[];
+}
+
+export type MitigationActionHistory = Record<string, MitigationActions>;
 
 export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];
 }[keyof Mitigations];
 
 export class Scenario {
-  private mitigationActions: MitigationActions = {};
+  private mitigationActionHistory: MitigationActionHistory = {};
   dates: ScenarioDates;
 
-  constructor(scenarioDates: ScenarioDates, mitigatioActions?: MitigationActions) {
+  constructor(scenarioDates: ScenarioDates, mitigationActionHistory?: MitigationActionHistory) {
     this.dates = scenarioDates;
-    if (mitigatioActions) this.mitigationActions = mitigatioActions;
+    if (mitigationActionHistory) this.mitigationActionHistory = mitigationActionHistory;
   }
 
-  getMitigations(date: string) {
-    return this.mitigationActions[date];
+  getMitigationActions(date: string) {
+    return this.mitigationActionHistory[date];
   }
 
   /**
@@ -39,10 +45,20 @@ export class Scenario {
     const id = mitigation[0];
     const level = mitigation[1];
 
-    this.mitigationActions[begin] = {...this.mitigationActions[begin], [id]: level};
+    this.mitigationActionHistory[begin] = {
+      mitigations: {...this.mitigationActionHistory[begin]?.mitigations, [id]: level},
+      eventMitigations: this.mitigationActionHistory[begin]?.eventMitigations,
+    };
     if (end) {
       end = nextDay(end);
-      this.mitigationActions[end] = {...this.mitigationActions[end], [id]: Game.defaultMitigations[id]};
+      const oldAction = this.mitigationActionHistory[end];
+      // Do not overwrite preexisting actions
+      if (oldAction?.mitigations === undefined || !(id in oldAction.mitigations)) {
+        this.mitigationActionHistory[end] = {
+          mitigations: {...oldAction?.mitigations, [id]: Game.defaultMitigations[id]},
+          eventMitigations: oldAction?.eventMitigations,
+        };
+      }
     }
   }
 }

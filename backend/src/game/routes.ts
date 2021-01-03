@@ -24,7 +24,7 @@ router.post('/api/game-data', async (req, res) => {
 
   const lastDayData = last(inputData.simulation)!;
   const dead = lastDayData.stats.deaths.total;
-  const cost = lastDayData.stats.costTotal;
+  const cost = lastDayData.stats.costs.total;
 
   const saveData = new GameDataModel({...inputData, results: {dead, cost}});
   const saveResult = await saveData.save();

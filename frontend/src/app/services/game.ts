@@ -1,17 +1,14 @@
 import {cloneDeep, differenceWith, isEqual} from 'lodash';
-import {EventHandler} from './events';
+import {EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, nextDay} from './utils';
-import {MitigationActions, MitigationPair, Scenario} from './scenario';
+import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario} from './scenario';
 import {Mitigations} from '../game/mitigations-control/mitigations.service';
 import {getRandomness} from './randomize';
 
-interface MitigationParams {
+export interface MitigationParams extends MitigationEffect {
   id: MitigationPair[0];
   level: MitigationPair[1];
-  rMult: number;
-  cost: number; // million per day
-  stabilityCost: number;
   flags: MitigationFlags;
 }
 
@@ -22,7 +19,7 @@ interface MitigationFlags {
 
 export interface GameData {
   mitigations: {
-    history: Record<string, Partial<Mitigations>>;
+    history: MitigationActionHistory;
     params: MitigationParams[],
   };
   simulation: DayState[];
@@ -30,7 +27,10 @@ export interface GameData {
 
 export class Game {
   readonly vaccinationStartDate = '2021-03-01';
-  readonly vaccinationPerDay = 0.01;
+  readonly vaccinationPerDay = 0.01; // TODO move to vaccination event
+  readonly infectionsWhenBordersOpen = 5;
+  readonly infectionsWhenBordersClosed = 2;
+
   static readonly defaultMitigations: Mitigations = {
     events: false,
     stayHome: false,
@@ -40,11 +40,14 @@ export class Game {
     businesses: false,
   };
   mitigations = cloneDeep(Game.defaultMitigations);
+  eventMitigations: EventMitigation[] = [];
+  newEventMitigations: EventMitigation[] = [];
 
   simulation = new Simulation(this.scenario.dates.rampUpStartDate);
   eventHandler = new EventHandler();
   mitigationParams = Game.randomizeMitigations();
-  mitigationHistory: MitigationActions = {};
+  mitigationHistory: MitigationActionHistory = {};
+  mitigationCache: MitigationActionHistory = {};
 
   constructor(public scenario: Scenario) {
     this.scenario = scenario;
@@ -59,17 +62,77 @@ export class Game {
   }
 
   moveForward(randomness = getRandomness()) {
-    const nextDate = nextDay(this.simulation.lastDate);
-    const mitigationEffect = this.calcMitigationEffect(this.mitigations, nextDate);
+    const lastDate = this.simulation.lastDate;
+    const nextDate = nextDay(lastDate);
+    this.moveForwardMitigations();
+    const mitigationEffect = this.calcMitigationEffect(this.mitigations, this.eventMitigations, nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
-    const event = this.eventHandler.evaluateDay(dayState);
+    const event = this.eventHandler.evaluateDay(lastDate, nextDate, dayState);
 
     return {dayState, event};
+  }
+
+
+  private moveForwardMitigations() {
+    const nextDate = nextDay(this.simulation.lastDate);
+
+    // Calculate migitation actions this day
+    let prevMitigations = this.mitigationCache[this.simulation.lastDate]?.mitigations;
+    if (!prevMitigations) {
+      prevMitigations = Game.defaultMitigations;
+    }
+
+    const diff = differenceWith(Object.entries(this.mitigations), Object.entries(prevMitigations), isEqual);
+    if (diff.length > 0 || this.newEventMitigations.length > 0) {
+      this.mitigationHistory[nextDate] = {};
+      if (diff.length > 0) {
+        this.mitigationHistory[nextDate].mitigations =
+          diff.reduce((prev, cur) => ({...prev, [cur[0]]: cur[1]}), {});
+      }
+
+      if (this.newEventMitigations.length > 0) {
+        this.mitigationHistory[nextDate].eventMitigations = this.newEventMitigations;
+      }
+    } else if (this.mitigationHistory[nextDate]) {
+      // this can happen only after rewind
+      delete this.mitigationHistory[nextDate];
+    }
+
+    // Update event mitigation timeouts
+    this.eventMitigations = this.eventMitigations.map(em => {
+      const emc = cloneDeep(em);
+      emc.timeout--;
+      return emc;
+    }).filter(em => em.timeout > 0);
+
+    // apply new mitigations
+    this.newEventMitigations.forEach(eventMitigation => {
+      // Mitigations with ID are unique
+      if (eventMitigation.id) {
+        const differentMitigations = this.eventMitigations.filter(em => em.id !== eventMitigation.id);
+        if (this.eventMitigations.length > differentMitigations.length) {
+          this.eventMitigations = differentMitigations;
+        }
+      }
+      if (eventMitigation.timeout > 0) {
+        this.eventMitigations.push(eventMitigation);
+      }
+    });
+
+    this.mitigationCache[nextDate] = {
+      mitigations: cloneDeep(this.mitigations),
+      eventMitigations: this.eventMitigations,
+    };
+    this.newEventMitigations = [];
   }
 
   moveBackward() {
     if (!this.canMoveBackward()) return;
 
+    this.mitigations = {...Game.defaultMitigations, ...this.mitigationCache[this.simulation.lastDate]!.mitigations};
+    const prevEventMitigations = this.mitigationCache[this.simulation.lastDate]!.eventMitigations;
+    this.eventMitigations = prevEventMitigations ? prevEventMitigations : [];
+    this.newEventMitigations = [];
     this.simulation.rewindOneDay();
     return this.simulation.getLastStats();
   }
@@ -82,31 +145,35 @@ export class Game {
     return this.simulation.lastDate >= this.scenario.dates.endDate;
   }
 
-  setMitigations(mitigations: Mitigations) {
-    const diff = differenceWith(Object.entries(mitigations), Object.entries(this.mitigations), isEqual);
-    const tomorrow = nextDay(this.simulation.lastDate);
-    if (diff.length) {
-      // TODO remove mitigation changes set back and forth for the tomorrow
-      // e.g. in a paused game
-      this.mitigationHistory[tomorrow] = diff.reduce((prev, cur) =>
-        ({...prev, [cur[0]]: cur[1]}), {...this.mitigationHistory[tomorrow]});
-    }
-    this.mitigations = mitigations;
-  }
-
   updateMitigationsForScenario() {
-    this.setMitigations({
-      ...this.mitigations,
-      ...this.scenario.getMitigations(nextDay(this.simulation.lastDate)),
-    });
+    const mitigationActions = this.scenario.getMitigationActions(nextDay(this.simulation.lastDate));
+    if (!mitigationActions) return;
+
+    this.applyMitigationActions(mitigationActions);
   }
 
-  private calcMitigationEffect(mitigations: Mitigations, date: string): MitigationEffect {
-    let mult = 1.0;
-    let cost = 0;
-    let stabilityCost = 0;
+  applyMitigationActions(mitigationActions: MitigationActions) {
+    this.mitigations = {
+      ...this.mitigations,
+      ...mitigationActions.mitigations,
+    };
+
+    if (mitigationActions.eventMitigations) {
+      mitigationActions.eventMitigations.forEach(em => this.newEventMitigations.push(cloneDeep(em)));
+    }
+  }
+
+  private calcMitigationEffect(mitigations: Mitigations,
+    eventMitigations: EventMitigation[], date: string): MitigationEffect
+  {
+    const ret: MitigationEffect = {
+      rMult: 1.0,
+      exposedDrift: 0,
+      cost: 0,
+      stabilityCost: 0,
+      vaccinationPerDay: this.vaccinationStartDate <= date ? this.vaccinationPerDay : 0,
+    };
     let bordersClosed = false;
-    const vaccinationPerDay = this.vaccinationStartDate <= date ? this.vaccinationPerDay : 0;
     const monthAsString = date.slice(5, 7);
     const isSchoolBreak = monthAsString === '07' || monthAsString === '08';
 
@@ -114,7 +181,7 @@ export class Game {
       // Special treatment of school break
       if (mitigationParam.flags.isSchool && isSchoolBreak) {
         if (mitigationParam.id === 'schools' && mitigationParam.level === 'all') {
-          mult *= mitigationParam.rMult;
+          ret.rMult *= mitigationParam.rMult;
         }
         return;
       }
@@ -122,13 +189,23 @@ export class Game {
       // mitigation not set for the level
       if (mitigations[mitigationParam.id] !== mitigationParam.level) return;
 
+      this.applyMitigationEffect(ret, mitigationParam);
       bordersClosed ||= mitigationParam.flags.isBorders;
-      mult *= mitigationParam.rMult;
-      cost += mitigationParam.cost;
-      stabilityCost += mitigationParam.stabilityCost;
     });
 
-    return {mult, cost, stabilityCost, vaccinationPerDay, bordersClosed};
+    ret.exposedDrift += bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
+
+    eventMitigations.forEach(em => this.applyMitigationEffect(ret, em));
+
+    return ret;
+  }
+
+  private applyMitigationEffect(affected: MitigationEffect, applied: MitigationEffect) {
+      affected.rMult *= applied.rMult;
+      affected.exposedDrift += applied.exposedDrift;
+      affected.cost += applied.cost;
+      affected.stabilityCost += applied.stabilityCost;
+      affected.vaccinationPerDay += applied.vaccinationPerDay;
   }
 
   static randomizeMitigations() {
@@ -174,8 +251,10 @@ export class Game {
         id,
         level,
         rMult: clippedLogNormalSampler(1 - effectivity, effectivitySigma)(),
+        exposedDrift: 0,
         cost,
         stabilityCost,
+        vaccinationPerDay: 0,
         flags,
       });
     }

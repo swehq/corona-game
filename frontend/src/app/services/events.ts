@@ -1,32 +1,102 @@
-import {cloneDeep, get, isNil, shuffle} from 'lodash';
-import {eventList, Event} from './event-list';
-import {DayState} from './simulation';
+import {get, isNil, shuffle, sample} from 'lodash';
+import {formatNumber} from '../utils/format';
+import {eventTriggers} from './event-list';
+import {DayState, MitigationEffect} from './simulation';
 
-interface TriggeredEvents extends Event {
-  triggered: boolean;
+// infinite timeout (1 million years)
+const infTimeout = 1_000_000 * 365;
+
+export interface EventMitigation extends MitigationEffect {
+  timeout: number;
+  label: string;
+  id?: string;
+}
+
+export interface Event {
+  title: string;
+  text?: string;
+  help?: string;
+  mitigations?: EventMitigation[];
+}
+
+type EventText = ((stats: DayState) => string) | string;
+
+interface EventDef {
+  title: EventText;
+  text?: EventText;
+  help?: EventText;
+  mitigations?: Partial<EventMitigation>[];
+}
+
+export interface EventTrigger {
+  events: EventDef[];
+  timeout?: number;
+  condition: (stats: DayState) => boolean;
+}
+
+interface TriggerState {
+  trigger: EventTrigger;
+  timeout: number;
 }
 
 export class EventHandler {
-  triggeredEvents: TriggeredEvents[] = cloneDeep(eventList).map(e => ({...e, triggered: false}));
+  static readonly defaultMitigation: EventMitigation = {
+    timeout: infTimeout,
+    label: 'OK',
+    rMult: 1,
+    exposedDrift: 0,
+    cost: 0,
+    stabilityCost: 0,
+    vaccinationPerDay: 0,
+  };
+  triggerStateHistory: Record<string, TriggerState[]> = {};
 
-  evaluateDay(dayState: DayState) {
-    const untriggered = shuffle(this.triggeredEvents.filter(e => !e.triggered));
-    const event = untriggered.find(trigger => !trigger.condition || trigger.condition(dayState));
+  evaluateDay(prevDate: string, currentDate: string, dayState: DayState) {
+    let prevState = this.triggerStateHistory[prevDate];
+    if (!prevState) {
+      prevState = eventTriggers.map(et => ({trigger: et, timeout: 0}));
+    }
 
-    if (!event) return;
+    const currentState = prevState.map(et => ({...et, timeout: Math.max(0, et.timeout - 1)}));
+    this.triggerStateHistory[currentDate] = currentState;
 
-    event.triggered = true;
-    event.title = this.interpolate(event.title, dayState);
-    event.text = this.interpolate(event.text, dayState);
+    const active = shuffle(currentState.filter(ts => ts.timeout <= 0));
+    const triggerState = active.find(ts => ts.trigger.condition(dayState));
 
-    return event;
+    if (!triggerState) return;
+
+    const trigger = triggerState.trigger;
+    triggerState.timeout = trigger.timeout ? trigger.timeout : infTimeout;
+    const eventDef = sample(trigger.events);
+    if (!eventDef) return;
+
+    return EventHandler.eventFromDef(eventDef, dayState);
   }
 
-  private interpolate(text: string, data: any) {
-    // TODO add number formatting
+  static eventFromDef(eventDef: EventDef, data: any): Event {
+    return {
+      title: EventHandler.interpolate(eventDef.title, data),
+      text: eventDef.text ? EventHandler.interpolate(eventDef.text, data) : undefined,
+      help: eventDef.help ? EventHandler.interpolate(eventDef.help, data) : undefined,
+      mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => EventHandler.completeMitigation(m)) : undefined,
+    };
+  }
+
+  private static interpolate(text: EventText, data: any) {
+    if (typeof text === 'function') return text(data);
+
     return text.replace(/\{\{([^}]+)}}/g, (original, attr) => {
       const value = get(data, attr);
-      return isNil(value) ? original : value.toLocaleString();
+      let valueToInsert: string;
+
+      if (typeof value === 'number') valueToInsert = formatNumber(value);
+      else valueToInsert = value.toLocaleString();
+
+      return isNil(value) ? original : valueToInsert;
     });
+  }
+
+  private static completeMitigation(mitigation: Partial<EventMitigation>): EventMitigation {
+    return {...EventHandler.defaultMitigation, ...mitigation};
   }
 }

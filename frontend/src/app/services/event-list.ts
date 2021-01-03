@@ -1,6 +1,7 @@
 import {DayState} from './simulation';
 import {EventTrigger} from './events';
 import {dateDiff} from './utils';
+import {formatNumber} from '../utils/format';
 
 function seasonalDateDiff(date: string, mmdd: string) {
   const date2 = date.slice(0, 5) + mmdd;
@@ -29,8 +30,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Ekonomika: První miliarda v nákladech!',
-        // TODO show in billion
-        text: 'Konkrétně {{stats.costs.total}} a to máme za sebou již {{stats.detectedInfections.total}} infikovaných',
+        text: s => `Konkrétně ${formatNumber(s.stats.costs.total)} a to máme za sebou již ${formatNumber(s.stats.detectedInfections.total)} infikovaných`,
       },
     ],
     condition: (s: DayState) => s.stats.costs.total > 1_000_000_000,
@@ -73,7 +73,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Opozice vyzývá k rezignaci!',
-        help: 'Společenská stabilita dosahuje kritických čísel. Pokud dosáhne hodnoty -50, vaše hra končí.',
+        help: 'Společenská stabilita dosahuje kritických čísel. Pokud dosáhne hodnoty -50, Vaše hra končí.',
       },
     ],
     condition: (s: DayState) => s.stats.stability <= -30,

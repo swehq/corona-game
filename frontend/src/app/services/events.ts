@@ -1,8 +1,9 @@
 import {get, isNil, shuffle, sample} from 'lodash';
+import {formatNumber} from '../utils/format';
 import {eventTriggers} from './event-list';
 import {DayState, MitigationEffect} from './simulation';
 
-// infinite timeout (1 milion years)
+// infinite timeout (1 million years)
 const infTimeout = 1_000_000 * 365;
 
 export interface EventMitigation extends MitigationEffect {
@@ -18,10 +19,12 @@ export interface Event {
   mitigations?: EventMitigation[];
 }
 
+type EventText = ((stats: DayState) => string) | string;
+
 interface EventDef {
-  title: string;
-  text?: string;
-  help?: string;
+  title: EventText;
+  text?: EventText;
+  help?: EventText;
   mitigations?: Partial<EventMitigation>[];
 }
 
@@ -79,11 +82,17 @@ export class EventHandler {
     };
   }
 
-  private static interpolate(text: string, data: any) {
-    // TODO add number formatting
+  private static interpolate(text: EventText, data: any) {
+    if (typeof text === 'function') return text(data);
+
     return text.replace(/\{\{([^}]+)}}/g, (original, attr) => {
       const value = get(data, attr);
-      return isNil(value) ? original : value.toLocaleString();
+      let valueToInsert: string;
+
+      if (typeof value === 'number') valueToInsert = formatNumber(value);
+      else valueToInsert = value.toLocaleString();
+
+      return isNil(value) ? original : valueToInsert;
     });
   }
 

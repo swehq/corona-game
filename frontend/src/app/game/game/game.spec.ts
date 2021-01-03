@@ -21,14 +21,14 @@ describe('GameValidation', () => {
 
   it('should not validate CZ scenario w/ modified dead state', () => {
     const modifiedData = cloneDeep(data);
-    last(modifiedData.simulation)!.sirState.dead = last(data.simulation)!.sirState.dead + 1e-9;
+    last(modifiedData.simulation)!.sirState.dead += 1e-9;
     expect(validateGame(modifiedData)).toBeFalse();
   });
 
   it('should not validate CZ scenario w/ modified mortality randomness', () => {
     const modifiedData = cloneDeep(data);
     const randomnessToModify = modifiedData.simulation.find(s => s.date === '2020-10-10')!.randomness;
-    randomnessToModify!.baseMortality += 1e-10;
+    randomnessToModify!.baseMortality += 1e-9;
     expect(validateGame(modifiedData)).toBeFalse();
   });
 
@@ -65,7 +65,7 @@ describe('GameValidation', () => {
  });
 
 describe('EventInterpolationTests', () => {
-  it('All event strings should interpolate', () => {
+  it('all event strings should interpolate', () => {
     const dayStats = data.simulation.find(s => s.date === '2020-12-01');
     expect(dayStats).toBeDefined();
 
@@ -85,7 +85,7 @@ describe('EventInterpolationTests', () => {
 });
 
 describe('MitigationsTests', () => {
-  it('Should handle a sequence of event mitigations', () => {
+  it('should handle a sequence of event mitigations', () => {
     const game = new Game(scenarios.czechiaGame);
     expect(game.eventMitigations.length).toEqual(0);
 
@@ -96,9 +96,7 @@ describe('MitigationsTests', () => {
 
     // Add mitigation with timeout 5
     game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, timeout: 5}]});
-    for (let i = 0; i < 5; ++i) {
-      game.moveForward();
-    }
+    for (let i = 0; i < 5; i++) game.moveForward();
     expect(game.eventMitigations.length).toEqual(2);
 
     game.moveForward();

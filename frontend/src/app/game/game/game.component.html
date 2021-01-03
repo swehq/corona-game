@@ -4,23 +4,7 @@
   <cvd-row [spacing]="3" wrap alignItems="flex-start">
 
     <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
-      <mat-tab-group animationDuration="0ms">
-        <mat-tab [label]="'Nově nakažení: ' + ((infectedToday$ | async)?.value | formatNumber)">
-          <cvd-line-graph *ngIf="initialized" [singleLineTick$]="infectedToday$"></cvd-line-graph>
-        </mat-tab>
-
-        <mat-tab [label]="'Nově zemřelí: ' + ((deathToday$ | async)?.value | formatNumber)">
-          <cvd-line-graph [singleLineTick$]="deathToday$"></cvd-line-graph>
-        </mat-tab>
-
-        <mat-tab [label]="'Celkové náklady: ' + ((costTotal$ | async)?.value | formatNumber:true:true)">
-          <cvd-line-graph [customOptions]="costTotalCustomOptions" [singleLineTick$]="costTotal$"></cvd-line-graph>
-        </mat-tab>
-
-        <mat-tab [label]="'Imunizováni: ' + (immunized$ | async | formatNumber)">
-          <cvd-line-graph [multiLineTick$]="immunizedChart$"></cvd-line-graph>
-        </mat-tab>
-      </mat-tab-group>
+      <cvd-graphs></cvd-graphs>
       <cvd-status-display></cvd-status-display>
     </cvd-col>
 

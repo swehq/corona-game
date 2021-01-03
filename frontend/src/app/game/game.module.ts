@@ -3,10 +3,11 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ChartsModule} from 'ng2-charts';
 import {SharedModule} from '../shared/shared.module';
-import {LineGraphComponent} from './graphs/line-graph/line-graph.component';
-import {ScatterGraphComponent} from './graphs/scatter-graph/scatter-graph.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
+import {GraphsComponent} from './graphs/graphs.component';
+import {LineGraphComponent} from './graphs/line-graph/line-graph.component';
+import {ScatterGraphComponent} from './graphs/scatter-graph/scatter-graph.component';
 import {MitigationBoolComponent} from './mitigations-control/controls/mitigation-bool.component';
 import {MitigationScaleComponent} from './mitigations-control/controls/mitigation-scale.component';
 import {MitigationSlideComponent} from './mitigations-control/controls/mitigation-slide.component';
@@ -20,12 +21,13 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
 @NgModule({
   declarations: [
     GameComponent,
+    GraphsComponent,
     LineGraphComponent,
     MitigationBoolComponent,
     MitigationConfigDirective,
     MitigationScaleComponent,
-    MitigationSlideComponent,
     MitigationsControlComponent,
+    MitigationSlideComponent,
     MitigationToggleComponent,
     NewsComponent,
     ScatterGraphComponent,

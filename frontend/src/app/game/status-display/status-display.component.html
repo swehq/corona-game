@@ -15,7 +15,7 @@
 
     <cvd-row class="item">
       <cvd-icon>thumbs_up_down</cvd-icon>
-      Společenská stabilita: {{stat$('stability') | async | formatNumber}}
+      Společenská stabilita: {{stat$('stability') | async | formatNumber:false:false:1}}
     </cvd-row>
 
   </cvd-col>

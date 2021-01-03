@@ -9,6 +9,6 @@ export class FormatPercentagePipe implements PipeTransform {
   transform(value: number | null | undefined): any {
     value = value || 0;
     value = Math.round(100 * value);
-    return formatNumber(value, false, false) + ' %';
+    return formatNumber(value, false, false, 1) + ' %';
   }
 }

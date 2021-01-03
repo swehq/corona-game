@@ -114,7 +114,9 @@ export class Game {
           this.eventMitigations = differentMitigations;
         }
       }
-      this.eventMitigations.push(eventMitigation);
+      if (eventMitigation.timeout > 0) {
+        this.eventMitigations.push(eventMitigation);
+      }
     });
 
     this.mitigationCache[nextDate] = {
@@ -147,10 +149,10 @@ export class Game {
     const mitigationActions = this.scenario.getMitigationActions(nextDay(this.simulation.lastDate));
     if (!mitigationActions) return;
 
-    this.applyMitigationAction(mitigationActions);
+    this.applyMitigationActions(mitigationActions);
   }
 
-  applyMitigationAction(mitigationActions: MitigationActions) {
+  applyMitigationActions(mitigationActions: MitigationActions) {
     this.mitigations = {
       ...this.mitigations,
       ...mitigationActions.mitigations,

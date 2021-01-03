@@ -1,8 +1,9 @@
 import {cloneDeep, last} from 'lodash';
 import {EventHandler} from 'src/app/services/events';
 import {eventTriggers} from 'src/app/services/event-list';
-import {GameData} from 'src/app/services/game';
+import {Game, GameData} from 'src/app/services/game';
 import {validateGame} from 'src/app/services/validate';
+import {scenarios} from 'src/app/services/scenario';
 import realData from './data-czechia-real.json';
 
 const data = realData as GameData;
@@ -65,7 +66,7 @@ describe('GameValidation', () => {
 
 describe('EventInterpolationTests', () => {
   it('All event strings should interpolate', () => {
-    const dayStats = data.simulation.find(s => s['date'] == '2020-12-01');
+    const dayStats = data.simulation.find(s => s.date === '2020-12-01');
     expect(dayStats).toBeDefined();
 
     eventTriggers.forEach(et => {
@@ -79,5 +80,38 @@ describe('EventInterpolationTests', () => {
       });
     });
   });
+});
 
+describe('MitigationsTests', () => {
+  it('Should handle a sequence of event mitigations', () => {
+    const game = new Game(scenarios.czechiaGame);
+    expect(game.eventMitigations.length).toEqual(0);
+
+    // Add one event mitigation with infinite timeout
+    game.applyMitigationActions({eventMitigations: [EventHandler.defaultMitigation]});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(1);
+
+    // Add mitigation with timeout 5
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, timeout: 5}]});
+    for (let i = 0; i < 5; ++i) {
+      game.moveForward();
+    }
+    expect(game.eventMitigations.length).toEqual(2);
+
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(1);
+
+    // test mitigations with ID
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test'}]});
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test'}]});
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test'}]});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(2);
+
+    // Cancel mitigation with ID
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test', timeout: 0}]});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(1);
+  });
 });

@@ -2,7 +2,7 @@ import {addDays, differenceInDays, format} from 'date-fns';
 
 export function nextDay(day: string): string {
   // works internally with local time (TZ-resistant)
-  const date = addDays(new Date(`${day} 00:00`), 1);
+  const date = addDays(new Date(`${day}T00:00`), 1);
   return format(date, 'yyyy-MM-dd');
 }
 
@@ -35,7 +35,7 @@ function randn() {
  */
 export function getSeasonality(date: string, peak: string) {
   const tropicalYearLength = 365.2422;
-  const daysDistance = Math.abs(differenceInDays(new Date(`${date} 00:00`), new Date(`${peak} 00:00`)));
+  const daysDistance = Math.abs(differenceInDays(new Date(`${date}T00:00`), new Date(`${peak}T00:00`)));
   const seasonalityPhase = (daysDistance / tropicalYearLength) % 1;
 
   return seasonalityPhase > .5 ? 1 - seasonalityPhase : seasonalityPhase;

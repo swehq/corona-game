@@ -5,7 +5,7 @@ import {formatNumber} from '../../utils/format';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-import {ChartValue, colors} from '../graphs/line-graph/line-graph.component';
+import {ChartValue, colors, NodeState} from '../graphs/line-graph/line-graph.component';
 import {MitigationsService} from '../mitigations-control/mitigations.service';
 
 @UntilDestroy()
@@ -33,7 +33,7 @@ export class GameComponent implements AfterViewInit {
     label: gameState.date,
     value: gameState.stats.detectedInfections.today,
     tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
-    state: 'ok',
+    state: this.infectedThresholds(gameState.stats.detectedInfections.today),
     currentEvent: this.currentEvent,
   })));
 
@@ -41,7 +41,7 @@ export class GameComponent implements AfterViewInit {
     label: gameState.date,
     value: gameState.stats.costTotal,
     tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
-    state: 'ok',
+    state: this.costTotalThresholds(gameState.stats.costTotal),
     currentEvent: this.currentEvent,
   })));
 
@@ -49,7 +49,7 @@ export class GameComponent implements AfterViewInit {
     label: gameState.date,
     value: gameState.stats.deaths.today,
     tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
-    state: 'ok',
+    state: this.deathThresholds(gameState.stats.deaths.today),
     currentEvent: this.currentEvent,
   })));
 
@@ -58,7 +58,6 @@ export class GameComponent implements AfterViewInit {
       label: gs.date,
       value: Math.round(gs.sirState.resistant + gs.stats.vaccinationRate * gs.sirState.suspectible),
       tooltipLabel: (value: number) => `Imunizováni: ${formatNumber(value)}`,
-      currentEvent: this.currentEvent,
     },
     {
       label: gs.date,
@@ -73,12 +72,30 @@ export class GameComponent implements AfterViewInit {
   ])));
 
   immunized$ = this.gameService.gameState$.pipe(
-    map(gameState => Math.round(gameState.sirState.resistant)
-      + gameState.stats.vaccinationRate * Math.round(gameState.sirState.suspectible)),
-    map(resistant => Math.round(resistant)),
+    map(gameState => Math.round(gameState.sirState.resistant
+      + gameState.stats.vaccinationRate * gameState.sirState.suspectible)),
   );
 
   private currentEvent: string | undefined = undefined;
+
+  // TODO Add hysteresis maybe?
+  private costTotalThresholds(value: number): NodeState {
+    if (value < 10_000_000_000) return 'ok';
+    if (value >= 10_000_000_000 && value < 50_000_000_000) return 'warn';
+    if (value >= 50_000_000_000) return 'critical';
+  }
+
+  private deathThresholds(value: number): NodeState {
+    if (value < 50) return 'ok';
+    if (value >= 50 && value < 150) return 'warn';
+    if (value >= 150) return 'critical';
+  }
+
+  private infectedThresholds(value: number): NodeState {
+    if (value < 5_000) return 'ok';
+    if (value >= 5_000 && value < 15_000) return 'warn';
+    if (value >= 15_000) return 'critical';
+  }
 
   constructor(public gameService: GameService, private mitigationsService: MitigationsService) {
   }

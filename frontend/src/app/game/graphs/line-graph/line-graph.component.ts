@@ -6,7 +6,7 @@ import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {Observable, Subject} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
+import {debounceTime, withLatestFrom} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 
@@ -80,7 +80,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       enabled: true,
       displayColors: false,
       callbacks: {
-        label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
+        label: tooltipItem => this.tooltipLabels[0](+tooltipItem.yLabel!),
         title: tooltipItem => {
           this.panAutoReset$.next();
           return (tooltipItem[0].index && this.eventNodes[tooltipItem[0].index]) || '';
@@ -104,7 +104,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         backgroundColor: 'white',
         borderColor: 'blue',
         borderRadius: 3,
-        display: context => context.datasetIndex === 0 && Boolean(this.eventNodes[context.dataIndex]),
+        display: context => Boolean(this.eventNodes[context.dataIndex]),
         formatter: (_, context) => this.eventNodes[context.dataIndex],
         font: this.font,
       },
@@ -113,6 +113,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           enabled: true,
           mode: 'x',
           speed: 2,
+          onPan: () => {
+            this.panActive = true;
+          },
           onPanComplete: () => {
             this.panAutoReset$.next();
           },
@@ -121,6 +124,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     },
   };
 
+  panActive = false;
   constructor(private cd: ChangeDetectorRef, private gameService: GameService) {
   }
 
@@ -178,8 +182,11 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
     this.panAutoReset$.pipe(
       debounceTime(3000),
+      withLatestFrom(this.gameService.speed$),
       untilDestroyed(this),
-    ).subscribe(() => {
+    ).subscribe(([_, speed]) => {
+      if (speed === 'pause') return;
+      this.panActive = false;
       this.setXAxisTicks({max: null});
       this.setScope();
     });
@@ -196,6 +203,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
     ).subscribe(level => {
+      this.panActive = false;
       this.setScopeLabel(level);
       this.setScope(level);
     });
@@ -213,12 +221,14 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   }
 
   private setScope(level?: number) {
+    if (this.panActive) return;
+
     if (level !== undefined) {
       this.scope = [0, 90, 30][level];
     }
     const index = this.labels.length - this.scope;
     const min = (this.scope && index > 0) ? this.labels[index] : null;
-    this.setXAxisTicks({min});
+    this.setXAxisTicks({min, max: null});
     this.chart.update();
   }
 

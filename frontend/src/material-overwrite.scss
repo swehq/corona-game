@@ -217,15 +217,9 @@ html {
     transform: translateX(2.6rem) scale(0.01) rotate(-45deg)
   }
 
-
   .mat-slide-toggle {
-    display: inline-block;
     height: 2.4rem;
-    max-width: 100%;
     line-height: 2.4rem;
-    white-space: nowrap;
-    outline: none;
-    -webkit-tap-highlight-color: transparent
   }
 
   .mat-slide-toggle.mat-checked .mat-slide-toggle-thumb-container {
@@ -283,6 +277,37 @@ html {
   .cdk-high-contrast-active .mat-slide-toggle.cdk-keyboard-focused .mat-slide-toggle-bar {
     outline: .2rem dotted;
     outline-offset: .5rem
+  }
+
+
+  .mat-button-toggle-standalone, .mat-button-toggle-group {
+    border-radius: .2rem;
+  }
+
+  .cdk-high-contrast-active .mat-button-toggle-standalone, .cdk-high-contrast-active .mat-button-toggle-group {
+    outline: solid .1rem
+  }
+
+  .mat-button-toggle-standalone.mat-button-toggle-appearance-standard, .mat-button-toggle-group-appearance-standard {
+    border-radius: .4rem
+  }
+
+  .mat-button-toggle-label-content {
+    line-height: 3.4rem;
+    padding: 0 1.6rem;
+  }
+
+  .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    padding: 0 1.2rem;
+    line-height: 3.4rem
+  }
+
+  .mat-button-toggle-checked .mat-button-toggle-focus-overlay {
+    border-bottom: solid 3.6rem
+  }
+
+  .cdk-high-contrast-active .mat-button-toggle-checked.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
+    border-bottom: solid 50.0rem
   }
 
 }

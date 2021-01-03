@@ -5,7 +5,7 @@ import {MatSlider} from '@angular/material/slider';
 type Level = [value: any, label: string];
 
 @Component({
-  selector: 'cvd-mitigation-toggle',
+  selector: 'cvd-mitigation-scale',
   template: `
     <div>
       <ng-content></ng-content>

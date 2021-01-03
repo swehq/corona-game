@@ -18,6 +18,7 @@ import {MitigationsControlComponent} from './mitigations-control/mitigations-con
 import {NewsComponent} from './news/news.component';
 import {SimulationControlComponent} from './simulation-control/simulation-control.component';
 import {StatusDisplayComponent} from './status-display/status-display.component';
+import {EventsLayoutComponent} from './events-layout/events-layout.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
     ScatterGraphComponent,
     SimulationControlComponent,
     StatusDisplayComponent,
+    EventsLayoutComponent,
   ],
   imports: [
     ChartsModule,

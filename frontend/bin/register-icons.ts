@@ -14,8 +14,8 @@ const registerIcons = (path = './', fileName = 'icons.ts', maxSize = 1_024) => {
     icons[name] = (source.length > maxSize) ? null : source;
   });
 
-  const code = `/* tslint:disable:object-literal-key-quotes */
-/* tslint:disable:quotemark */
+  const code = `/* tslint:disable:object-literal-key-quotes trailing-comma quotemark */
+
 export const ICONS = ` + JSON.stringify(icons, null, 2) + ';\n';
 
   writeFileSync(fileName, code, 'utf8');

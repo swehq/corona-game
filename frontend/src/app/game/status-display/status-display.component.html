@@ -1,13 +1,38 @@
-<cvd-col alignItems="flex-start">
+<cvd-row wrap alignItems="flex-start">
 
-  <cvd-row class="item color-virus">
-    <cvd-icon svgIcon="virus"></cvd-icon>
-    Počet nakažených dnes: 3
-  </cvd-row>
+  <cvd-col grow class="chapter" alignItems="flex-start">
+    <h2>Aktuálně</h2>
 
-  <cvd-row class="item color-medicine">
-    <cvd-icon svgIcon="vaccine"></cvd-icon>
-    Vakcinace: 0 %
-  </cvd-row>
+    <cvd-row class="item color-virus">
+      <cvd-icon svgIcon="virus"></cvd-icon>
+      Nově nakažených: {{stat$('detectedInfections', 'today') | async | formatNumber}}
+    </cvd-row>
 
-</cvd-col>
+    <cvd-row class="item color-medicine">
+      <cvd-icon svgIcon="vaccine"></cvd-icon>
+      Obsazenost nemocnic: {{stat$('hospitalsUtilization') | async | formatPercentage}}
+    </cvd-row>
+
+  </cvd-col>
+
+  <cvd-col grow class="chapter" alignItems="flex-start">
+    <h2>Celkem</h2>
+
+    <cvd-row class="item color-medicine">
+      <cvd-icon svgIcon="hospital"></cvd-icon>
+      Imunizovaných: {{immunized$ | async | formatNumber}}
+    </cvd-row>
+
+    <cvd-row class="item color-death">
+      <cvd-icon svgIcon="money"></cvd-icon>
+      Náklady: {{stat$('costTotal') | async | formatNumber:true:true}}
+    </cvd-row>
+
+    <cvd-row class="item color-death">
+      <cvd-icon svgIcon="skull"></cvd-icon>
+      Zemřelých: {{stat$('deaths', 'total') | async | formatNumber}}
+    </cvd-row>
+
+  </cvd-col>
+
+</cvd-row>

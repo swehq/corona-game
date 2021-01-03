@@ -4,6 +4,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
+import {FormatPercentagePipe} from '../pipes/format-percentage.pipe';
 import {Declaration} from '../utils/ng.model';
 import {ButtonComponent} from './button/button.component';
 import {ColComponent} from './flex/col.component';
@@ -17,6 +18,7 @@ import {FormatNumberPipe} from '../pipes/format-number.pipe';
 const DECLARATIONS: Declaration[] = [
   ButtonComponent,
   FormatNumberPipe,
+  FormatPercentagePipe,
   ColComponent,
   FlexItemDirective,
   IconComponent,

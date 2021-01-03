@@ -1,7 +1,9 @@
 <cvd-col alignItems="stretch" [formGroup]="mitigationsService.formGroup">
 
-  <cvd-mitigation-bool formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
-  <cvd-mitigation-bool formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+  <cvd-col style="align-self: center" alignItems="stretch">
+    <cvd-mitigation-slide formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-slide>
+    <cvd-mitigation-slide formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-slide>
+  </cvd-col>
 
   <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
   <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>

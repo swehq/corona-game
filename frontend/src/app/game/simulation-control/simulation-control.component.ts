@@ -1,7 +1,8 @@
 import {HttpClient} from '@angular/common/http';
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {map} from 'rxjs/operators';
+import {merge} from 'rxjs';
+import {concatMap, map, tap} from 'rxjs/operators';
 import {GameData} from 'src/app/services/game';
 import {validateGame} from 'src/app/services/validate';
 import {ConfigService} from '../../services/config.service';
@@ -66,9 +67,21 @@ export class SimulationControlComponent implements OnInit {
 
   validateGameData() {
     const gameData = this.getGameData();
+
+    // TODO remove, just a testing call
     validateGame(gameData);
 
-    // tslint:disable-next-line:no-console
-    this.httpClient.post('/api/game-data', gameData).subscribe(console.log);
+    // save game data
+    this.httpClient.post('/api/game-data', gameData)
+      .pipe(
+        concatMap((i: any) => merge(
+          // get results for scatter chart
+          // tslint:disable-next-line:no-console
+          this.httpClient.get('/api/game-data').pipe(tap(console.log)),
+          // TODO remove, just a demonstration of how to get saved game data
+          this.httpClient.get(`/api/game-data/${i.id}`),
+        )),
+      )
+      .subscribe();
   }
 }

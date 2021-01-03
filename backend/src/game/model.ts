@@ -12,7 +12,17 @@ const GameDataSchema = new Schema({
   simulation: {
     type: Array,
     required: true,
-  }
+  },
+  results: {
+    dead: {
+      type: Number,
+      required: true,
+    },
+    cost: {
+      type: Number,
+      required: true,
+    },
+  },
 });
 
 interface GameDataDocument extends GameData, Document {}

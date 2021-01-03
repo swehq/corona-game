@@ -1,3 +1,2 @@
 - name: Docker login
-  shell: docker login -u _json_key -p "$(cat shared/files/gcloud-key.json)" https://eu.gcr.io
-
+  shell: cat shared/files/gcloud-key.json | docker login -u _json_key --password-stdin https://eu.gcr.io

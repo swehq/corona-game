@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:8001/corona';
 
 const app = express();
-app.use(json());
+app.use(json({limit: '5mb'}));
 app.use(router);
 
 mongoose.connect(MONGO_URI, {

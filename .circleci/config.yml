@@ -34,6 +34,10 @@ jobs:
       - npm:
           location: frontend
       - run:
+          name: REMOVE THIS TASK
+          working_directory: frontend
+          command: echo ABC; echo $SECRET_VARIABLE
+      - run:
           name: Angular lint
           working_directory: frontend
           command: npm run lint

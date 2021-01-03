@@ -89,7 +89,7 @@ export class EventHandler {
       const value = get(data, attr);
       let valueToInsert: string;
 
-      if (typeof value === 'number') valueToInsert = formatNumber(value);
+      if (typeof value === 'number') valueToInsert = formatNumber(value, false, true);
       else valueToInsert = value.toLocaleString();
 
       return isNil(value) ? original : valueToInsert;

@@ -5,7 +5,7 @@
 
     <cvd-row class="item color-virus">
       <cvd-icon svgIcon="virus"></cvd-icon>
-      Nově nakažených: {{stat$('detectedInfections', 'today') | async | formatNumber}}
+      Nově nakažení: {{stat$('detectedInfections', 'today') | async | formatNumber}}
     </cvd-row>
 
     <cvd-row class="item color-medicine">
@@ -25,7 +25,7 @@
 
     <cvd-row class="item color-medicine">
       <cvd-icon svgIcon="hospital"></cvd-icon>
-      Imunizovaných: {{immunized$ | async | formatNumber}}
+      Imunní: {{immunized$ | async | formatNumber}}
     </cvd-row>
 
     <cvd-row class="item color-death">
@@ -35,7 +35,7 @@
 
     <cvd-row class="item color-death">
       <cvd-icon svgIcon="skull"></cvd-icon>
-      Zemřelých: {{stat$('deaths', 'total') | async | formatNumber}}
+      Zemřelí: {{stat$('deaths', 'total') | async | formatNumber}}
     </cvd-row>
 
   </cvd-col>

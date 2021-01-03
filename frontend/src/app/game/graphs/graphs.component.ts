@@ -15,8 +15,6 @@ import {ChartValue, colors, NodeState} from './line-graph/line-graph.component';
   styleUrls: ['./graphs.component.scss'],
 })
 export class GraphsComponent implements AfterViewInit {
-  initialized = false;
-
   costTotalCustomOptions: ChartOptions = {
     scales: {
       yAxes: [{
@@ -101,9 +99,6 @@ export class GraphsComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    setTimeout(() => this.initialized = true);
-
-    this.gameService.restartSimulation();
     this.gameService.reset$.pipe(untilDestroyed(this)).subscribe(() => this.currentMitigation = undefined);
 
     for (const mitigation of Object.keys(MitigationsService.mitigationsI18n)) {

@@ -4,6 +4,7 @@ import {Scenario} from './scenario';
 
 export function validateGame(data: GameData): boolean {
   // TODO add test of randomness params (expected distribution or element of interval at least)
+  // TODO validate game length, end date
   if (!data.simulation.length) return false;
 
   console.time('Validation');

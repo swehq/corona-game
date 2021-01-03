@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Game} from '../services/game';
 import {Event} from '../services/events';
-import {Subject} from 'rxjs';
+import {ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {last} from 'lodash';
 import {DayState} from '../services/simulation';
@@ -24,7 +24,7 @@ export class GameService {
   private _speed$ = new Subject<Speed>();
   speed$ = this._speed$.asObservable();
 
-  private _gameState$ = new Subject<DayState>();
+  private _gameState$ = new ReplaySubject<DayState>();
   gameState$ = this._gameState$.asObservable();
 
   private _reset$ = new Subject<void>();
@@ -45,13 +45,11 @@ export class GameService {
   restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
     this.setSpeed('pause');
     this.game = new Game(scenarios[scenario]);
-    this._reset$.next();
     this.event = undefined;
+    this._reset$.next();
     this.setSpeed(speed);
-
-    // TODO(pk) this is only hotfix for 'ExpressionChangedAfterItHasBeenCheckedError'
-    // game.component.html: <mat-tab [label]="'Nově nakažení: ' + (gameService?.infectedToday$ | async)?.value">
-    setTimeout(() => this.updateChart('all'));
+    this.showEvent(this.game.rampUpEvent);
+    this.updateChart('all');
   }
 
   updateChart(mode: 'last' | 'all' = 'last') {
@@ -74,6 +72,9 @@ export class GameService {
     if (this.speed === speed) return;
     if (this.tickerId) clearInterval(this.tickerId);
 
+    this.speed = speed;
+    this._speed$.next(speed);
+
     if (speed === 'max') {
       console.time('Computation');
       while (!this.game.isFinished()) this.tick(false);
@@ -85,9 +86,6 @@ export class GameService {
     } else if (speed === 'rev') {
       this.tickerId = window.setInterval(() => this.tick(), this.REVERSE_SPEED);
     }
-
-    this.speed = speed;
-    this._speed$.next(speed);
   }
 
   tick(updateChart = true) {
@@ -108,13 +106,16 @@ export class GameService {
 
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
+    this.showEvent(event);
 
-    if (event) this.showEvent(event);
     if (updateChart) this.updateChart();
   }
 
-  showEvent(event: Event) {
-    this.setSpeed('pause');
+  showEvent(event: Event | undefined) {
+    if (!event) return;
+    if (this.speed === 'max') return;
+
     this.event = event;
+    this.setSpeed('pause');
   }
 }

@@ -36,6 +36,21 @@ function probability(probabilityRate: number){
 export const eventTriggers: EventTrigger[] = [
   /****************************************************************************
    *
+   * Tutorial events
+   *
+   ****************************************************************************/
+  {
+    events: [
+      {
+        title: 'Hra začíná',
+        text: 'Nacházíte se v prvním dni hry, je {{date}}, první nakažení SARS-CoV-19 se blíží.',
+        help: 'Stisknete OK a hra začíná',
+      },
+    ],
+    condition: (s: DayState) => s.date === '2020-03-01',
+  },
+  /****************************************************************************
+   *
    * Economic events
    *
    ****************************************************************************/

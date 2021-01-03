@@ -13,7 +13,7 @@ export class NewsComponent {
   constructor(public gameService: GameService, cd: ChangeDetectorRef) {
     this.gameService.gameState$
       .pipe(untilDestroyed(this))
-      .subscribe(() => cd.detectChanges());
+      .subscribe(() => cd.markForCheck());
   }
 
   resumeEvent(eventMitigation: EventMitigation) {

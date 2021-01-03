@@ -1,5 +1,7 @@
 <cvd-row wrap alignItems="flex-start" [spacing]="4">
 
+  <pre>{{stats$ | async | json}}</pre>
+
   <cvd-col grow class="chapter" alignItems="flex-start">
     <h2>Aktuálně</h2>
 
@@ -11,6 +13,11 @@
     <cvd-row class="item color-medicine">
       <cvd-icon svgIcon="vaccine"></cvd-icon>
       Obsazenost nemocnic: {{stat$('hospitalsUtilization') | async | formatPercentage}}
+    </cvd-row>
+
+    <cvd-row class="item">
+      <cvd-icon>thumbs_up_down</cvd-icon>
+      Společenská stabilita: {{stat$('stability') | async | formatNumber:false:false:1}}
     </cvd-row>
 
   </cvd-col>

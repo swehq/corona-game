@@ -13,6 +13,11 @@
       Obsazenost nemocnic: {{stat$('hospitalsUtilization') | async | formatPercentage}}
     </cvd-row>
 
+    <cvd-row class="item">
+      <cvd-icon>thumbs_up_down</cvd-icon>
+      Společenská stabilita: {{stat$('stability') | async | formatNumber}}
+    </cvd-row>
+
   </cvd-col>
 
   <cvd-col grow class="chapter" alignItems="flex-start">

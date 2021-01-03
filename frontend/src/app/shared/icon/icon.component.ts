@@ -1,5 +1,6 @@
 import {Component, HostBinding, Input, SecurityContext} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
+import {SvgIconName} from './icon.registry';
 
 export type IconSize = 'tiny' | 'small' | 'default' | 'large';
 
@@ -9,7 +10,7 @@ export type IconSize = 'tiny' | 'small' | 'default' | 'large';
   styleUrls: ['./icon.component.scss'],
 })
 export class IconComponent {
-  @Input() svgIcon = '';
+  @Input() svgIcon: SvgIconName | undefined;
 
   @Input()
   set color(newColor: string | null) { this._color = this.domSanitizer.sanitize(SecurityContext.STYLE, newColor); }

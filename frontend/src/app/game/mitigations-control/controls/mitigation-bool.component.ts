@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {SvgIconName} from '../../../shared/icon/icon.registry';
 
 @Component({
   selector: 'cvd-mitigation-bool',
@@ -16,8 +17,8 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationBoolComponent, multi: true}],
 })
 export class MitigationBoolComponent implements ControlValueAccessor {
-  @Input() imgOn = '';
-  @Input() imgOff = '';
+  @Input() imgOn: SvgIconName | undefined;
+  @Input() imgOff: SvgIconName | undefined;
 
   checked = false;
 

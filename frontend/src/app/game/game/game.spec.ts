@@ -1,4 +1,6 @@
 import {cloneDeep, last} from 'lodash';
+import {EventHandler} from 'src/app/services/events';
+import {eventTriggers} from 'src/app/services/event-list';
 import {GameData} from 'src/app/services/game';
 import {validateGame} from 'src/app/services/validate';
 import realData from './data-czechia-real.json';
@@ -60,3 +62,22 @@ describe('GameValidation', () => {
   });
 
  });
+
+describe('EventInterpolationTests', () => {
+  it('All event strings should interpolate', () => {
+    const dayStats = data.simulation.find(s => s['date'] == '2020-12-01');
+    expect(dayStats).toBeDefined();
+
+    eventTriggers.forEach(et => {
+      et.events.forEach(ed => {
+        const event = EventHandler.eventFromDef(ed, dayStats);
+        expect(event.title.indexOf('{{')).toBeLessThan(0);
+        expect(event.text.indexOf('{{')).toBeLessThan(0);
+        if (event.help) {
+          expect(event.help.indexOf('{{')).toBeLessThan(0);
+        }
+      });
+    });
+  });
+
+});

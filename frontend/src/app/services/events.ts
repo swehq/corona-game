@@ -37,7 +37,7 @@ interface TriggerState {
 }
 
 export class EventHandler {
-  readonly defaultMitigation: EventMitigation = {
+  static readonly defaultMitigation: EventMitigation = {
     timeout: infTimeout,
     label: 'OK',
     rMult: 1,
@@ -67,17 +67,19 @@ export class EventHandler {
     const eventDef = sample(trigger.events);
     if (!eventDef) return;
 
-    const event: Event = {
-      title: this.interpolate(eventDef.title, dayState),
-      text: this.interpolate(eventDef.text, dayState),
-      help: eventDef.help ? this.interpolate(eventDef.text, dayState) : undefined,
-      mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => this.completeMitigation(m)) : undefined,
-    };
-
-    return event;
+    return EventHandler.eventFromDef(eventDef, dayState);
   }
 
-  private interpolate(text: string, data: any) {
+  static eventFromDef(eventDef: EventDef, data: any): Event {
+    return {
+      title: EventHandler.interpolate(eventDef.title, data),
+      text: EventHandler.interpolate(eventDef.text, data),
+      help: eventDef.help ? EventHandler.interpolate(eventDef.text, data) : undefined,
+      mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => EventHandler.completeMitigation(m)) : undefined,
+    };
+  }
+
+  private static interpolate(text: string, data: any) {
     // TODO add number formatting
     return text.replace(/\{\{([^}]+)}}/g, (original, attr) => {
       const value = get(data, attr);
@@ -85,7 +87,7 @@ export class EventHandler {
     });
   }
 
-  private completeMitigation(mitigation: Partial<EventMitigation>): EventMitigation {
-    return {...this.defaultMitigation, ...mitigation};
+  private static completeMitigation(mitigation: Partial<EventMitigation>): EventMitigation {
+    return {...EventHandler.defaultMitigation, ...mitigation};
   }
 }

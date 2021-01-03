@@ -2,6 +2,7 @@
 
 :host {
   @include panel;
+  position: relative;
 }
 
 cvd-line-graph {
@@ -25,4 +26,3 @@ cvd-line-graph {
     }
   }
 }
-

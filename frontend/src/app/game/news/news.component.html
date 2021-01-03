@@ -1,10 +1,23 @@
 <cvd-col>
-
   <p>Last date: {{gameService.lastDate}}</p>
 
-  <div *ngIf="gameService.eventMessages.length">
-    <h3>Events</h3>
-    <p *ngFor="let m of gameService.eventMessages">{{m}}</p>
+  <div *ngIf="gameService.game.eventMitigations.length">
+    <h3>Ad hoc opatření</h3>
+    <h4 *ngFor="let m of gameService.game.eventMitigations">
+      {{m.label}} do konce {{m.timeout}} dní
+    </h4>
   </div>
 
+  <div *ngIf="gameService.event">
+    <h3>{{gameService.event.title}}</h3>
+    <h4 *ngIf="gameService.event.text">{{gameService.event.text}}</h4>
+    <h4 *ngIf="gameService.event.help">
+      <i>{{gameService.event.help}}</i>
+    </h4>
+    <div *ngIf="gameService.event.mitigations">
+      <button mat-stroked-button *ngFor="let m of gameService.event.mitigations" (click)="resumeEvent(m)">
+        {{m.label}}
+      </button>
+    </div>
+  </div>
 </cvd-col>

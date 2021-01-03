@@ -17,7 +17,7 @@ export class GameService {
   readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
-  eventMessages: string[] = [];
+  event: Event | undefined;
   tickerId: number | undefined;
 
   private speed: Speed | undefined;
@@ -46,7 +46,7 @@ export class GameService {
     this.setSpeed('pause');
     this.game = new Game(scenarios[scenario]);
     this._reset$.next();
-    this.eventMessages = [];
+    this.event = undefined;
     this.setSpeed(speed);
 
     // TODO(pk) this is only hotfix for 'ExpressionChangedAfterItHasBeenCheckedError'
@@ -115,19 +115,6 @@ export class GameService {
 
   showEvent(event: Event) {
     this.setSpeed('pause');
-    // TODO temporary to only display events as text
-    let msgText = `${event.title}`;
-
-    if (event.text) {
-      msgText += `: ${event.text}`;
-    }
-    if (event.help) {
-      msgText += ' ' + event.help;
-    }
-    if (event.mitigations) {
-      event.mitigations.forEach(m => msgText += ` [${m.label}]`);
-    }
-
-    this.eventMessages.push(msgText);
+    this.event = event;
   }
 }

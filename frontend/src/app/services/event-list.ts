@@ -21,7 +21,8 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'První mrtvý',
         text: 'Co se vláda rozhodne udělat?',
-        mitigations: [{label: 'Nic', timeout: 0}, {label: 'Letáková kampaň', timeout: 14, rMult: 0.9, cost: 0.001}],
+        mitigations: [{label: 'Nic', timeout: 0}, {label: 'Letáková kampaň', timeout: 14, rMult: 0.9,
+          cost: 101_000_000}],
       },
     ],
     condition: (s: DayState) => s.stats.deaths.today >= 1,

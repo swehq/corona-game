@@ -1,20 +1,25 @@
-import {Directive, Input, Self} from '@angular/core';
+import {Directive, Input, Optional, Self} from '@angular/core';
 import {MitigationScaleComponent} from './controls/mitigation-scale.component';
+import {MitigationToggleComponent} from './controls/mitigation-toggle.component';
 import {Mitigations, MitigationsService} from './mitigations.service';
 
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: 'cvd-mitigation-toggle[formControlName]',
+  selector: 'cvd-mitigation-scale[formControlName],cvd-mitigation-toggle[formControlName]',
 })
 export class MitigationConfigDirective {
 
   @Input() set formControlName(paramName: keyof Mitigations) {
-    this.mitigationToggleComponent.levels = this.mitigationsService.optionsFor(paramName);
+    this.levelsComponent.levels = this.mitigationsService.optionsFor(paramName);
   }
 
+  private levelsComponent: MitigationToggleComponent | MitigationScaleComponent;
+
   constructor(
-    @Self() private mitigationToggleComponent: MitigationScaleComponent,
+    @Optional() @Self() mitigationScaleComponent: MitigationScaleComponent,
+    @Optional() @Self() mitigationToggleComponent: MitigationToggleComponent,
     private mitigationsService: MitigationsService,
   ) {
+    this.levelsComponent = mitigationScaleComponent || mitigationToggleComponent;
   }
 }

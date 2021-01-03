@@ -15,6 +15,8 @@ import {MitigationsService} from '../mitigations-control/mitigations.service';
   styleUrls: ['./game.component.scss'],
 })
 export class GameComponent implements AfterViewInit {
+  initialized = false;
+
   costTotalCustomOptions: ChartOptions = {
     scales: {
       yAxes: [{
@@ -82,6 +84,8 @@ export class GameComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
+    setTimeout(() => this.initialized = true);
+
     this.gameService.restartSimulation();
     this.gameService.reset$.pipe(untilDestroyed(this)).subscribe(() => this.currentEvent = undefined);
 

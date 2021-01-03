@@ -6,7 +6,7 @@
     <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
       <mat-tab-group animationDuration="0ms">
         <mat-tab [label]="'Nově nakažení: ' + ((infectedToday$ | async)?.value || '0' | formatNumber)">
-          <cvd-line-graph [singleLineTick$]="infectedToday$"></cvd-line-graph>
+          <cvd-line-graph *ngIf="initialized" [singleLineTick$]="infectedToday$"></cvd-line-graph>
         </mat-tab>
 
         <mat-tab [label]="'Nově zemřelí: ' + ((deathToday$ | async)?.value || '0' | formatNumber)">

@@ -10,22 +10,20 @@
 
     <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
       <mat-tab-group animationDuration="0ms">
-        <mat-tab [label]="'Nově nakažení: ' + (infectedToday$ | async)?.value || '0'">
-          <cvd-chart [tick$]="infectedToday$"
-                     [series]="[{label: 'Nově nakažení', unit: 'tis.'}]"></cvd-chart>
-        </mat-tab>
-        <mat-tab [label]="'Nově zemřelí: ' + (deathToday$ | async)?.value || '0'">
-          <cvd-chart [tick$]="deathToday$"
-                     [series]="[{label: 'Nově zemřelí', unit: 'tis.'}]"></cvd-chart>
+        <mat-tab [label]="'Nově nakažení: ' + ((infectedToday$ | async)?.value || '0' | formatNumber)">
+          <cvd-line-graph [singleLineTick$]="infectedToday$"></cvd-line-graph>
         </mat-tab>
 
-        <mat-tab [label]="'Celkové náklady: ' + (((costTotal$ | async)?.value || 0) | currencyCZK)">
-          <cvd-chart [customOptions]="costTotalCustomOptions" [tick$]="costTotal$" [tooltipLabel]="costTotalTooltip"
-                     [series]="[{label: 'Celkové náklady', unit: 'tis.'}]"></cvd-chart>
+        <mat-tab [label]="'Nově zemřelí: ' + ((deathToday$ | async)?.value || '0' | formatNumber)">
+          <cvd-line-graph [singleLineTick$]="deathToday$"></cvd-line-graph>
         </mat-tab>
 
-        <mat-tab [label]="'Nově imunizovaný: 0'">
-          TBD!!
+        <mat-tab [label]="'Celkové náklady: ' + (((costTotal$ | async)?.value || 0) | formatNumber:true:true)">
+          <cvd-line-graph [customOptions]="costTotalCustomOptions" [singleLineTick$]="costTotal$"></cvd-line-graph>
+        </mat-tab>
+
+        <mat-tab [label]="'Imunizováni: ' + (((immunized$ | async) || 0) | formatNumber)">
+          <cvd-line-graph [multiLineTick$]="immunizedChart$"></cvd-line-graph>
         </mat-tab>
       </mat-tab-group>
       <cvd-status-display></cvd-status-display>

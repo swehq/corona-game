@@ -21,7 +21,8 @@ describe('LineComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LineGraphComponent);
     component = fixture.componentInstance;
-    component.tick$ = EMPTY;
+    component.singleLineTick$ = EMPTY;
+    component.multiLineTick$ = EMPTY;
     fixture.detectChanges();
   });
 

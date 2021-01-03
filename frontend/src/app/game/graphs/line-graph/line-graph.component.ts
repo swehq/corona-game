@@ -9,6 +9,7 @@ import {Observable, Subject} from 'rxjs';
 import {debounceTime, withLatestFrom} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
+import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -43,6 +44,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   @Input() multiLineTick$: Observable<ChartValue[]> | null = null;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
+  scaleLevels: Level[] = [
+    [0, 'Celý graf'],
+    [90, 'Kvartál'],
+    [30, 'Měsíc'],
+  ];
+
   private panAutoReset$ = new Subject();
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
@@ -52,10 +59,10 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private seriesLength = 0;
   private lastValue: number | undefined;
 
+  @Input()
   scopeFormControl = new FormControl(0);
 
   scope = 0;
-  scopeLabel: string | null = null;
   datasets: ChartDataSets[] = [{...this.getDefaultDataset(), data: []}];
   labels: Label[] = [];
   options: ChartOptions = {
@@ -205,8 +212,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       untilDestroyed(this),
     ).subscribe(() => this.reset());
 
-    this.setScopeLabel(this.scopeFormControl.value);
     this.options = {...this.options, ...this.customOptions};
+    this.cd.markForCheck();
   }
 
   ngAfterViewInit() {
@@ -214,8 +221,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       untilDestroyed(this),
     ).subscribe(level => {
       this.panActive = false;
-      this.setScopeLabel(level);
       this.setScope(level);
+      this.cd.markForCheck();
     });
   }
 
@@ -230,23 +237,16 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.tooltipLabels = [];
   }
 
-  private setScope(level?: number) {
+  private setScope(scope?: number) {
     if (this.panActive) return;
 
-    if (level !== undefined) {
-      this.scope = [0, 90, 30][level];
+    if (scope !== undefined) {
+      this.scope = scope;
     }
     const index = this.labels.length - this.scope;
     const min = (this.scope && index > 0) ? this.labels[index] : null;
     this.setXAxisTicks({min, max: null});
     this.chart?.update();
-  }
-
-  private setScopeLabel(scopeLevel: number) {
-    if (scopeLevel === 0) this.scopeLabel = 'Celý graf';
-    if (scopeLevel === 1) this.scopeLabel = 'Kvartál';
-    if (scopeLevel === 2) this.scopeLabel = 'Měsíc';
-    this.cd.markForCheck();
   }
 
   private addMitigation(mitigation: string | undefined) {

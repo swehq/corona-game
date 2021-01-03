@@ -1,11 +1,5 @@
 <div class="slider">
-  <mat-slider
-    [formControl]="scopeFormControl"
-    tickInterval="1"
-    min="0"
-    max="2">
-  </mat-slider>
-  <label>{{scopeLabel}}</label>
+  <cvd-mitigation-scale [formControl]="scopeFormControl" [levels]="scaleLevels"></cvd-mitigation-scale>
 </div>
 
 <div class="chart">

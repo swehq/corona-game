@@ -1,12 +1,14 @@
-import express, { IRouterMatcher } from 'express';
+import express from 'express';
 import {GameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
+import {GameData} from '../../../frontend/src/app/services/game';
+import {last} from 'lodash';
 
 export const router = express.Router();
 
 router.get('/api/game-data', async (req, res) => {
-  const data = await GameDataModel.find().exec();
-  res.send(data);
+  const data = await GameDataModel.find()
+  res.send(data.map((i: any) => i.results));
 });
 
 router.get('/api/game-data/:id', async (req, res) => {
@@ -17,14 +19,19 @@ router.get('/api/game-data/:id', async (req, res) => {
 });
 
 router.post('/api/game-data', async (req, res) => {
-  if (!validate(req.body)) return res.status(400).send(genericError());
+  const inputData: GameData = req.body;
+  if (!validate(inputData)) return res.status(400).send(genericError());
 
-  const data = new GameDataModel(req.body);
-  const saveResult = await data.save();
+  const lastDayData = last(inputData.simulation)!;
+  const dead = lastDayData.stats.deaths.total;
+  const cost = lastDayData.stats.costTotal;
+
+  const saveData = new GameDataModel({...inputData, results: {dead, cost}});
+  const saveResult = await saveData.save();
 
   if (saveResult.errors) return res.status(400).send(genericError());
 
-  res.send({id: data._id});
+  res.send({id: saveData._id});
 });
 
 // TODO implement and use on FE or remove
@@ -39,7 +46,8 @@ function genericError() {
 }
 
 function validate(data: any): boolean {
-  if (!data.simulation && !data.simulation.length) return false;
+  if (!data.mitigations) return false;
+  if (!data.simulation || !data.simulation.length) return false;
 
   try {
     if (!validateGame(data)) return false;

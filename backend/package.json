@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "start:prod": "node dist/backend/src/index.js",
+    "start:prod": "NODE_ENV=production node dist/backend/src/index.js",
     "build": "tsc --project ./",
     "start:docker": "ansible-playbook -i ../build/ansible/environments/local ../build/ansible/develop.yml --extra-vars 'action=\"up -d\"'"
   },

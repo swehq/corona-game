@@ -1,16 +1,17 @@
 <cvd-col>
   <cvd-news></cvd-news>
 
-  <cvd-row [spacing]="3" wrap alignItems="flex-start">
+  <cvd-row [spacing]="!debugModeService.getDebugMode() ? 2 : 3" wrap alignItems="flex-start">
 
-    <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
+    <cvd-col [grow]="2" [spacing]="!debugModeService.getDebugMode() ? 2 : 3" alignItems="stretch"
+      justifyContent="flex-start">
       <cvd-graphs></cvd-graphs>
       <cvd-status-display></cvd-status-display>
     </cvd-col>
 
     <cvd-col grow [spacing]="3" alignItems="stretch">
       <cvd-mitigations-control></cvd-mitigations-control>
-      <cvd-simulation-control></cvd-simulation-control>
+      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
     </cvd-col>
 
   </cvd-row>

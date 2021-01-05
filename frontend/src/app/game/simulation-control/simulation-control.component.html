@@ -7,14 +7,16 @@
     </cvd-row>
 
     <cvd-row wrap>
-      <cvd-button (click)="gameService.togglePause()" [color]="speed === 'pause' ? 'red' : 'blue'">{{speed === 'pause' ? 'Resume' : 'Pause'}}</cvd-button>
+      <cvd-button (click)="gameService.togglePause()" [color]="speed === 'pause' ? 'red' : 'blue'">{{speed === 'pause' ?
+        'Resume' : 'Pause'}}</cvd-button>
       <cvd-button (click)="gameService.restartSimulation('max')">Compute</cvd-button>
       <cvd-button (click)="download()">Download</cvd-button>
       <cvd-button (click)="validateGameData()">Validate</cvd-button>
     </cvd-row>
   </cvd-row>
 
-  <mat-slide-toggle style="margin-top: 1.5rem" [checked]="isLightTheme$ | async" (change)="isLightTheme = $event.checked">
+  <mat-slide-toggle style="margin-top: 1.5rem" [checked]="isLightTheme$ | async"
+    (change)="isLightTheme = $event.checked">
     Světlý režim
   </mat-slide-toggle>
 

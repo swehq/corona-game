@@ -7,8 +7,9 @@
 
 .slider {
   position: absolute;
-  top: 1.75rem;
-  left: 7.0rem;
+  left: 6rem;
+  top: -0.5rem;
+  z-index: 100;
 
   label {
     margin-left: 0.8rem;

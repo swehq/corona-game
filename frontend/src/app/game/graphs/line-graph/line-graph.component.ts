@@ -51,12 +51,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private lastMitigation: string | undefined = undefined;
   private seriesLength = 0;
   private lastValue: number | undefined;
-  private font = {
-    // TODO ensure this is correct
-    family: '"worksans", "Helvetica Neue", arial',
-    size: 11,
-    weight: 600,
-  };
 
   scopeFormControl = new FormControl(0);
 
@@ -98,15 +92,30 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       datalabels: {
         anchor: 'center',
         clamp: true,
-        align: 'end',
+        align: -45,
         offset: 5,
         textAlign: 'center',
+        rotation: -45,
         backgroundColor: 'white',
         borderColor: 'blue',
         borderRadius: 3,
-        display: context => Boolean(this.mitigationNodes[context.dataIndex]),
+        padding: {
+          top: 2,
+          bottom: 2,
+          right: 4,
+          left: 4,
+        },
+        display: context => Boolean(this.mitigationNodes[context.dataIndex]) ? 'auto' : false,
         formatter: (_, context) => this.mitigationNodes[context.dataIndex],
-        font: this.font,
+        font: context => {
+          const width = context.chart.width;
+          const size = Math.round(width! / 64);
+          return {
+            family: '"worksans", "Helvetica Neue", arial',
+            size: size > 16 ? 16 : size,
+            weight: 600,
+          };
+        },
       },
       zoom: {
         pan: {
@@ -125,6 +134,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   };
 
   panActive = false;
+
   constructor(private cd: ChangeDetectorRef, private gameService: GameService) {
   }
 
@@ -266,8 +276,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       pointBackgroundColor: context => {
         return context.dataIndex && this.mitigationNodes[context.dataIndex] ? `${color}` : `${color}33`;
       },
-      pointRadius: context => context.dataIndex && this.mitigationNodes[context.dataIndex] ? 4 : 2,
-      pointBorderWidth: 2,
+      pointRadius: context => context.dataIndex && this.mitigationNodes[context.dataIndex] ? 4 : 1,
+      pointBorderWidth: 1,
       pointHitRadius: 5,
     };
   }

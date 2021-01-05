@@ -7,7 +7,7 @@ import {debounceTime, map, startWith} from 'rxjs/operators';
 @UntilDestroy()
 @Directive({
   // tslint:disable-next-line:directive-selector
-  selector: 'canvas[baseChart]',
+  selector: '___canvas[baseChart]',
 })
 export class GraphSizeDirective {
 

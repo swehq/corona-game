@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import { DebugModeService } from 'src/app/services/debug-mode.service';
+import {DebugModeService} from 'src/app/services/debug-mode.service';
 
 @Component({
   selector: 'cvd-game',

@@ -3,7 +3,6 @@ import {ChangeDetectionStrategy, Component, Inject, OnDestroy, Renderer2} from '
 import {Subject} from 'rxjs';
 import {map, takeUntil} from 'rxjs/operators';
 import {ConfigService} from './services/config.service';
-import {DebugModeService} from './services/debug-mode.service';
 
 @Component({
   selector: 'cvd-app',
@@ -17,7 +16,6 @@ export class AppComponent implements OnDestroy {
 
   constructor(
     configService: ConfigService,
-    debugService: DebugModeService,
     @Inject(DOCUMENT) document: Document,
     renderer: Renderer2,
   ) {
@@ -25,7 +23,6 @@ export class AppComponent implements OnDestroy {
 
     renderer.addClass(body, 'mat-app-background');
 
-    debugService.init();
     configService.config$.pipe(
       map(config => config.themeIsLight),
       takeUntil(this.destroyed),

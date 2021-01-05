@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-
-const LOCAL_STORAGE_KEY = 'debugMode';
+import {LocalStorageKey} from 'src/environments/defaults';
 
 @Injectable({
   providedIn: 'root',
@@ -8,19 +7,19 @@ const LOCAL_STORAGE_KEY = 'debugMode';
 export class DebugModeService {
   private _debugMode = false;
 
-  init() {
-    const key = localStorage.getItem(LOCAL_STORAGE_KEY);
+  constructor() {
+    const key = localStorage.getItem(LocalStorageKey.DEBUG_MODE);
     if (!key) return;
 
     try {
-      this._debugMode = key ? JSON.parse(key) : false;
+      this._debugMode = JSON.parse(key);
     } catch (e) {
       console.error('debugMode can be set only to true / false');
     }
   }
 
   setDebugMode(value: boolean) {
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(value));
+    localStorage.setItem(LocalStorageKey.DEBUG_MODE, JSON.stringify(value));
     this._debugMode = value;
   }
 

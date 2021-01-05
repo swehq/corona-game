@@ -1,5 +1,6 @@
 export enum LocalStorageKey {
   CONFIG = 'config',
+  DEBUG_MODE = 'debugMode',
 }
 
 export interface Environment {

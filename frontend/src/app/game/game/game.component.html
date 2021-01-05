@@ -10,7 +10,7 @@
 
     <cvd-col grow [spacing]="3" alignItems="stretch">
       <cvd-mitigations-control></cvd-mitigations-control>
-      <cvd-simulation-control></cvd-simulation-control>
+      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
     </cvd-col>
 
   </cvd-row>

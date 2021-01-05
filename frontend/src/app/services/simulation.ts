@@ -1,20 +1,21 @@
 /*
   The epidemics is modeled by compartmental model
   that is a modification of SIR model.
-  There are seven states with nonzero duration:
+  There are eight states with nonzero duration:
     suspectible
     exposed - infected but not yet infectious
     infectious
     hospitalized1
     hospitalized2
-    resistant (recovered) - temporary resistant to infections
+    recovering (counted as active in statistics)
+    resistant - temporary resistant to infections
     dead
 
   The transition diagram looks like:
 
-  suspectible -> exposed -> infectious -+-----------------------------------------+-> resistant -> suspectible
-                                         \                                       /
-                                          +-> hospitalized1 -+-> hospitalized2 -+
+  suspectible -> exposed -> infectious -+-----------------------------------------+-> recovering -> resistant --+
+                                         \                                       /                              |
+                                          +-> hospitalized1 -+-> hospitalized2 -+                suspectible <--+
                                                               \
                                                                +-> dead
 */
@@ -35,12 +36,14 @@ interface SirState {
   suspectible: number;
   exposed: number;
   infectious: number;
+  recovering: number;
   resistant: number;
   hospitalized1: number;
   hospitalized2: number;
   dead: number;
   exposedNew: number;
   infectiousNew: number;
+  recoveringNew: number;
   resistantNew: number;
   hospitalized1New: number;
   hospitalized2New: number;
@@ -111,23 +114,25 @@ export class Simulation {
   readonly infectiousDuration = 5;     // How long people stay infectious before they isolate or get hospitalized
   readonly hospitalized1Duration = 7;  // Duration of the hospitalization before the average death
   readonly hospitalized2Duration = 14; // Duration of the remaining hospitalization for the recovering patients
-  readonly resistantDuration = 90;     // Immunity duration
+  readonly recoveringDuration = 14;    // How long is the infection considered active in statistics
+  readonly immunityEndRate = 1 / 180;   // Rate of R -> S transition
 
   // These two are used to calculate the number of active cases
   readonly incubationDays = 5;       // Days until infection is detected
-  readonly recoveryDuration = 14;    // How long is the infection considered active after entering the resistant state
 
   modelStates: DayState[] = [];
   sirStateBeforeStart: SirState = {
     suspectible: this.initialPopulation,
     exposed: 0,
     infectious: 0,
+    recovering: 0,
     resistant: 0,
     hospitalized1: 0,
     hospitalized2: 0,
     dead: 0,
     exposedNew: 0,
     infectiousNew: 0,
+    recoveringNew: 0,
     resistantNew: 0,
     hospitalized1New: 0,
     hospitalized2New: 0,
@@ -189,6 +194,7 @@ export class Simulation {
     let suspectible = yesterday.suspectible;
     let exposed = yesterday.exposed;
     let infectious = yesterday.infectious;
+    let recovering = yesterday.recovering;
     let resistant = yesterday.resistant;
     let hospitalized1 = yesterday.hospitalized1;
     let hospitalized2 = yesterday.hospitalized2;
@@ -201,7 +207,7 @@ export class Simulation {
       this.hospitalsOverwhelmedMortalityMultiplier : 1;
 
     // suspectible -> exposed
-    const activePopulation = suspectible + exposed + infectious + resistant;
+    const activePopulation = suspectible + exposed + infectious + recovering + resistant;
     const totalPopulation = activePopulation + hospitalized1 + hospitalized2;
     // Simplifying assumption that only people in "suspectible" compartement are vaccinated
     const suspectibleUnvaccinated = Math.max(0, suspectible - totalPopulation * modelInputs.vaccinationRate);
@@ -217,11 +223,11 @@ export class Simulation {
     exposed -= infectiousNew;
     infectious += infectiousNew;
 
-    // infectious -> resistant
+    // infectious -> recovering
     // infectious -> hospitalized1
     const infectiousEnd = this.getSirStateInPast(this.infectiousDuration).infectiousNew;
     const hospitalized1New = infectiousEnd * randomness.hospitalizationRate;
-    let resistantNew = infectiousEnd - hospitalized1New;
+    let recoveringNew = infectiousEnd - hospitalized1New;
     infectious -= infectiousEnd;
     hospitalized1 += hospitalized1New;
     // resistant will be updated in the next block
@@ -236,14 +242,19 @@ export class Simulation {
     hospitalized2 += hospitalized2New;
     dead += deathsNew;
 
-    // hospitalized2 -> resistant
+    // hospitalized2 -> recovering
     const hospitalized2End = this.getSirStateInPast(this.hospitalized2Duration).hospitalized2New;
     hospitalized2 -= hospitalized2End;
-    resistantNew += hospitalized2End;
+    recoveringNew += hospitalized2End;
+    recovering += recoveringNew;
+
+    // recovering -> resistant
+    const resistantNew = this.getSirStateInPast(this.recoveringDuration).recoveringNew;
+    recovering -= resistantNew;
     resistant += resistantNew;
 
     // resistant -> suspectible
-    const resistantEnd = this.getSirStateInPast(this.resistantDuration).resistantNew;
+    const resistantEnd = yesterday.resistant * this.immunityEndRate;
     resistant -= resistantEnd;
     suspectible += resistantEnd;
 
@@ -251,12 +262,14 @@ export class Simulation {
       suspectible,
       exposed,
       infectious,
+      recovering,
       resistant,
       hospitalized1,
       hospitalized2,
       dead,
       exposedNew,
       infectiousNew,
+      recoveringNew,
       resistantNew,
       hospitalized1New,
       hospitalized2New,
@@ -321,8 +334,7 @@ export class Simulation {
   private calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
     const detectedInfections = this.calcMetricStats('detectedInfections',
       this.getSirStateInPast(this.incubationDays).exposedNew);
-    const resolvedInfections = this.calcMetricStats('resolvedInfections',
-      this.getSirStateInPast(this.recoveryDuration).resistantNew + state.deathsNew);
+    const resolvedInfections = this.calcMetricStats('resolvedInfections', state.resistantNew + state.deathsNew);
     const deaths = this.calcMetricStats('deaths', state.deathsNew);
     const costs = this.calcMetricStats('costs', modelInputs ? modelInputs.costToday : 0);
 

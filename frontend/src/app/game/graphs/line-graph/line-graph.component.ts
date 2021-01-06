@@ -24,9 +24,9 @@ export interface ChartValue {
 }
 
 export const colors = {
-  ok: '#869c66',
-  warn: '#ff9502',
-  critical: '#d43501',
+  ok: '#9fe348',
+  warn: '#b57648',
+  critical: '#ff4851',
 };
 
 @UntilDestroy()

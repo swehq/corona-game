@@ -12,7 +12,7 @@ export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
   providedIn: 'root',
 })
 export class GameService {
-  readonly PLAY_SPEED = 350; // ms
+  readonly PLAY_SPEED = 400; // ms
   readonly FORWARD_SPEED = 150; // ms
   readonly REVERSE_SPEED = 50; // ms
 

@@ -9,7 +9,7 @@
 
   <cvd-row [spacing]="3" wrap alignItems="flex-start">
 
-    <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
+    <cvd-col class="graph" [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
       <cvd-graphs></cvd-graphs>
       <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
     </cvd-col>

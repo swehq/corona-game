@@ -1,18 +1,85 @@
 <mat-tab-group animationDuration="0ms">
-  <mat-tab [label]="'Nově nakažení: ' + ((infectedToday$ | async)?.value | formatNumber)">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <ng-container
+        [ngTemplateOutlet]="tabIconTemplate"
+        [ngTemplateOutletContext]="{
+          label: 'Nově nakažení',
+          icon: 'virus',
+          data: ((infectedToday$ | async)?.value | formatNumber)
+        }">
+      </ng-container>
+    </ng-template>
+
+    <h3>Nově nakažení</h3>
+
     <cvd-line-graph [singleLineTick$]="infectedToday$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
   </mat-tab>
 
-  <mat-tab [label]="'Nově zemřelí: ' + ((deathToday$ | async)?.value | formatNumber)">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <ng-container
+        [ngTemplateOutlet]="tabIconTemplate"
+        [ngTemplateOutletContext]="{
+          label: 'Nově zemřelých',
+          icon: 'skull',
+          data: ((deathToday$ | async)?.value | formatNumber)
+        }">
+      </ng-container>
+    </ng-template>
+
+    <h3>Nově zemřelých</h3>
+
     <cvd-line-graph [singleLineTick$]="deathToday$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
   </mat-tab>
 
-  <mat-tab [label]="'Celkové náklady: ' + ((costTotal$ | async)?.value | formatNumber:true:true)">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <ng-container
+        [ngTemplateOutlet]="tabIconTemplate"
+        [ngTemplateOutletContext]="{
+          label: 'Celkové náklady',
+          icon: 'money',
+          data: ((costTotal$ | async)?.value | formatNumber:true:true)
+        }">
+      </ng-container>
+    </ng-template>
+
+    <h3>Celkové náklady</h3>
+
     <cvd-line-graph [customOptions]="costTotalCustomOptions" [singleLineTick$]="costTotal$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
   </mat-tab>
 
-  <mat-tab [label]="'Imunní: ' + (immunized$ | async | formatNumber)">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <ng-container
+        [ngTemplateOutlet]="tabIconTemplate"
+        [ngTemplateOutletContext]="{
+          label: 'Imunní',
+          icon: 'hospital',
+          data: (immunized$ | async | formatNumber)
+        }">
+      </ng-container>
+    </ng-template>
+
+    <h3>Imunní</h3>
+
     <cvd-line-graph [multiLineTick$]="immunizedChart$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
   </mat-tab>
 </mat-tab-group>
+
 <cvd-events-layout></cvd-events-layout>
+
+<ng-template
+  #tabIconTemplate
+  let-label="label"
+  let-icon="icon"
+  let-data="data">
+
+  <span class="tab-icon" [matTooltip]="label">
+    <cvd-icon [svgIcon]="icon"></cvd-icon>
+    <span>
+      {{ data }}
+    </span>
+  </span>
+</ng-template>

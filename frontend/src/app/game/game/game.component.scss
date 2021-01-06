@@ -1,0 +1,26 @@
+:host {
+
+  ::ng-deep {
+    cvd-line-graph,
+    cvd-status-display,
+    cvd-mitigations-control {
+      transition: opacity 300ms;
+    }
+  }
+
+  &.is-event-active {
+    ::ng-deep {
+      cvd-line-graph,
+      cvd-status-display,
+      cvd-mitigations-control {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    cvd-row .graph {
+      flex: 1 1 100% !important ;
+    }
+  }
+}

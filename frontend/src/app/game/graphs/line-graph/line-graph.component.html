@@ -1,10 +1,18 @@
 <div class="slider">
-  <cvd-mitigation-scale [formControl]="scopeFormControl" [levels]="scaleLevels"></cvd-mitigation-scale>
+  <cvd-mitigation-scale
+    [formControl]="scopeFormControl"
+    [levels]="scaleLevels">
+  </cvd-mitigation-scale>
 </div>
 
 <div class="chart">
   <div class="chart-inner">
-    <canvas baseChart [datasets]="datasets" [labels]="labels" [options]="options" [chartType]="'line'">
+    <canvas
+      baseChart
+      [datasets]="datasets"
+      [labels]="labels"
+      [options]="options"
+      [chartType]="'line'">
     </canvas>
   </div>
 </div>

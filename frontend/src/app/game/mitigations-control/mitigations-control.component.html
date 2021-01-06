@@ -5,12 +5,22 @@
     <cvd-mitigation-slide formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-slide>
   </cvd-col>
 
-  <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
-  <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
-  <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+  <cvd-row>
+    <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
+    <cvd-mitigation-slide formControlName="eventsCompensation">Kompenzuj</cvd-mitigation-slide>
+  </cvd-row>
+  <cvd-row>
+    <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
+    <cvd-mitigation-slide formControlName="businessesCompensation">Kompenzuj</cvd-mitigation-slide>
+  </cvd-row>
+  <cvd-row>
+    <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+    <cvd-mitigation-slide formControlName="schoolsCompensation">Kompenzuj</cvd-mitigation-slide>
+  </cvd-row>
 
   <cvd-row>
-    <cvd-button grow (click)="preset('lockdown')" style="padding-top: 1rem" color="warn">Lockdown</cvd-button>
+    <cvd-mitigation-slide formControlName="stayHome">Lockdown</cvd-mitigation-slide>
+    <cvd-button grow (click)="oneTimeCompensation()" style="padding-top: 1rem" color="info">5,000 na ruku</cvd-button>
     <cvd-button grow (click)="preset('open')" style="padding-top: 1rem" color="info">Otevřít vše</cvd-button>
   </cvd-row>
 

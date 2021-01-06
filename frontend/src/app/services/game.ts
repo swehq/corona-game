@@ -3,7 +3,6 @@ import {Event, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario} from './scenario';
-import {Mitigations} from '../game/mitigations-control/mitigations.service';
 import {getRandomness} from './randomize';
 
 export interface MitigationParams extends MitigationEffect {
@@ -16,6 +15,45 @@ interface MitigationFlags {
   isBorders: boolean;
   isSchool: boolean;
 }
+
+export type MitigationsPresetLevel = 'open' | 'level1' | 'level2' | 'lockdown';
+
+export type EventsLevel = false | 1000 | 100 | 10;
+export type BusinessesLevel = false | 'some' | 'most';
+export type SchoolsLevel = false | 'universities' | 'all';
+
+export interface Mitigations {
+  rrr: boolean;
+  stayHome: boolean;
+  bordersClosed: boolean;
+  events: EventsLevel;
+  businesses: BusinessesLevel;
+  schools: SchoolsLevel;
+  eventsCompensation: boolean;
+  businessesCompensation: boolean;
+  schoolsCompensation: boolean;
+}
+
+export const mitigationPresets: Record<MitigationsPresetLevel, Partial<Mitigations>> = {
+  open: {},
+  level1: {
+    events: 1000,
+    rrr: true,
+  },
+  level2: {
+    events: 100,
+    rrr: true,
+    businesses: 'some',
+    schools: 'universities',
+  },
+  lockdown: {
+    events: 10,
+    rrr: true,
+    businesses: 'most',
+    schools: 'all',
+    stayHome: true,
+  },
+};
 
 export interface GameData {
   mitigations: {
@@ -38,6 +76,9 @@ export class Game {
     rrr: false,
     schools: false,
     businesses: false,
+    eventsCompensation: false,
+    businessesCompensation: false,
+    schoolsCompensation: false,
   };
   mitigations = cloneDeep(Game.defaultMitigations);
   eventMitigations: EventMitigation[] = [];
@@ -154,10 +195,30 @@ export class Game {
   }
 
   applyMitigationActions(mitigationActions: MitigationActions) {
-    this.mitigations = {
-      ...this.mitigations,
-      ...mitigationActions.mitigations,
-    };
+    // turning on lockdown (stay at home order)
+    if (mitigationActions.mitigations?.stayHome === true && !this.mitigations.stayHome) {
+      this.mitigations = {
+        ...this.mitigations,
+        ...mitigationActions.mitigations,
+        ...mitigationPresets.lockdown,
+      };
+    } else {
+      this.mitigations = {
+        ...this.mitigations,
+        ...mitigationActions.mitigations,
+      };
+
+      // Disable compensation effects if needed
+      if (this.mitigations.events === false) this.mitigations.eventsCompensation = false;
+      if (this.mitigations.businesses === false) this.mitigations.businessesCompensation = false;
+      if (this.mitigations.schools === false) this.mitigations.schoolsCompensation = false;
+
+      const diff =
+        differenceWith(Object.entries(mitigationPresets.lockdown), Object.entries(this.mitigations), isEqual);
+      if (diff.length > 0) {
+        this.mitigations.stayHome = false;
+      }
+    }
 
     if (mitigationActions.eventMitigations) {
       mitigationActions.eventMitigations.forEach(em => this.newEventMitigations.push(cloneDeep(em)));
@@ -213,7 +274,7 @@ export class Game {
     const res: MitigationParams[] = [];
 
     const effectivitySigmaScaling = 0; // TODO enable effectivity randomness, turned off during testing
-    const cs = clippedLogNormalSampler(4_000_000_000, 0); // Cost scaler; TODO this should eventually be only 1e9
+    const cs = clippedLogNormalSampler(1_000_000_000, 0);
     const ss = clippedLogNormalSampler(1, 0.1); // Stability
 
     // Special mitigation: controls drift across borders
@@ -235,6 +296,11 @@ export class Game {
     addMitigation(['schools', 'all'], 0.38, [0.16, 0.54], 0.06 * cs(), 0.05 * ss(), {isSchool: true});
     // Marginal effect of lockdowns on the top of the other measures
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 0.35 * cs(), 0.15 * ss());
+
+    // Compensations
+    addMitigation(['schoolsCompensation', true], 0, [0, 0], 0.1 * cs(), 0.03 * ss());
+    addMitigation(['businessesCompensation', true], 0, [0, 0], 0.3 * cs(), 0.05 * ss());
+    addMitigation(['eventsCompensation', true], 0, [0, 0], 0.4 * cs(), 0.05 * ss());
 
     // effectivityConfidence 2sigma confidence interval (can be asymmetric)
     // isSchool mitigations are effective during school holidays "for free"

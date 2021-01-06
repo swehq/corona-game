@@ -1,7 +1,6 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
-import {Mitigations} from '../game/mitigations-control/mitigations.service';
 import {EventMitigation} from './events';
-import {Game} from './game';
+import {Game, Mitigations} from './game';
 import {nextDay} from './utils';
 
 interface ScenarioDates {

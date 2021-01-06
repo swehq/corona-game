@@ -1,7 +1,8 @@
 import {Directive, Input, Optional, Self} from '@angular/core';
 import {MitigationScaleComponent} from './controls/mitigation-scale.component';
 import {MitigationToggleComponent} from './controls/mitigation-toggle.component';
-import {Mitigations, MitigationsService} from './mitigations.service';
+import {MitigationsService} from './mitigations.service';
+import {Mitigations} from '../../services/game';
 
 @Directive({
   // tslint:disable-next-line:directive-selector

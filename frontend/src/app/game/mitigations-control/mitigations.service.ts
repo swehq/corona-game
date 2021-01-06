@@ -3,24 +3,11 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 import {map, shareReplay, startWith} from 'rxjs/operators';
-import {Game} from '../../services/game';
+import {EventHandler} from '../../services/events';
+import {Game, Mitigations, MitigationsPresetLevel, mitigationPresets} from '../../services/game';
 import {MitigationPair} from '../../services/scenario';
 import {GameService} from '../game.service';
-
-export type MitigationsPresetLevel = 'open' | 'level1' | 'level2' | 'lockdown';
-
-export type EventsLevel = false | 1000 | 100 | 10;
-export type BusinessesLevel = false | 'some' | 'most';
-export type SchoolsLevel = false | 'universities' | 'all';
-
-export interface Mitigations {
-  rrr: boolean;
-  stayHome: boolean;
-  bordersClosed: boolean;
-  events: EventsLevel;
-  businesses: BusinessesLevel;
-  schools: SchoolsLevel;
-}
+import {isEqual} from 'lodash';
 
 @UntilDestroy()
 @Injectable({
@@ -34,7 +21,12 @@ export class MitigationsService {
     rrr: new FormControl(),
     schools: new FormControl(),
     stayHome: new FormControl(),
+    eventsCompensation: new FormControl(),
+    businessesCompensation: new FormControl(),
+    schoolsCompensation: new FormControl(),
   });
+
+  gameService: GameService;
 
   static readonly mitigationsI18n: {[key in keyof Mitigations]: Record<string, string>} = {
     bordersClosed: {
@@ -65,11 +57,24 @@ export class MitigationsService {
       true: 'Zákaz vycházení',
       false: 'Vycházení neomezeno',
     },
+    eventsCompensation: {
+      true: 'Nekompenzovat pohostinství',
+      false: 'Kompenzace pohostinství',
+    },
+    businessesCompensation: {
+      true: 'Nekompenzovat živnostníky',
+      false: 'Kompenzace živnostníkům',
+    },
+    schoolsCompensation: {
+      true: 'Nezavést ošetřovné',
+      false: 'Zavést ošetřovné',
+    },
   };
 
   readonly value$: Observable<Mitigations>;
 
   constructor(gameService: GameService) {
+    this.gameService = gameService;
     this.formGroup.setValue(Game.defaultMitigations);
     this.value$ = this.formGroup.valueChanges.pipe(
       startWith(this.formGroup.value),
@@ -79,7 +84,13 @@ export class MitigationsService {
 
     this.value$
       .pipe(untilDestroyed(this))
-      .subscribe((m: Mitigations) => gameService.game.applyMitigationActions({mitigations: m}));
+      .subscribe((m: Mitigations) => {
+        gameService.game.applyMitigationActions({mitigations: m});
+        // Change the form state to match game state asychronously
+        if (!isEqual(m, gameService.game.mitigations)) {
+          window.setTimeout(() => this.formGroup.setValue(gameService.game.mitigations), 1);
+        }
+      });
 
     gameService.reset$
       .pipe(untilDestroyed(this))
@@ -87,43 +98,21 @@ export class MitigationsService {
   }
 
   preset(level: MitigationsPresetLevel) {
-    switch (level) {
-      case 'open':
-        this.set(Game.defaultMitigations);
-        return;
+    this.set({
+      ...Game.defaultMitigations,
+      ...mitigationPresets[level],
+    });
+  }
 
-      case 'level1':
-        this.set({
-          ...Game.defaultMitigations,
-          events: 1000,
-          rrr: true,
-        });
-        return;
-
-      case 'level2':
-        this.set({
-          ...Game.defaultMitigations,
-          events: 100,
-          rrr: true,
-          businesses: 'some',
-          schools: 'universities',
-        });
-        return;
-
-      case 'lockdown':
-        this.set({
-          ...Game.defaultMitigations,
-          events: 10,
-          rrr: true,
-          businesses: 'most',
-          schools: 'all',
-          stayHome: true,
-        });
-        return;
-
-      default:
-        throw new Error(`Undefined MitigationsLevel ${level}`);
-    }
+  oneTimeCompensation() {
+    const mitigation = {
+      ...EventHandler.defaultMitigation,
+      id: 'one-time-compensation',
+      timeout: 1,
+      cost: 50_000_000_000,
+      stabilityCost: -5,
+    };
+    this.gameService.game.applyMitigationActions({eventMitigations: [mitigation]});
   }
 
   set(mitigations: Mitigations) {

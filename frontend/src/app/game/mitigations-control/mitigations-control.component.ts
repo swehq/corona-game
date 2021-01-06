@@ -1,6 +1,7 @@
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChangeDetectorRef, Component} from '@angular/core';
-import {MitigationsPresetLevel, MitigationsService, Mitigations} from './mitigations.service';
+import {MitigationsService} from './mitigations.service';
+import {MitigationsPresetLevel, Mitigations} from '../../services/game';
 
 @UntilDestroy()
 @Component({
@@ -17,6 +18,10 @@ export class MitigationsControlComponent {
 
   preset(level: MitigationsPresetLevel) {
     this.mitigationsService.preset(level);
+  }
+
+  oneTimeCompensation() {
+    this.mitigationsService.oneTimeCompensation();
   }
 
   optionsFor(paramName: keyof Mitigations) {

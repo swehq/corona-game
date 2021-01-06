@@ -7,14 +7,14 @@
 <cvd-col *ngIf="state === 'game'">
   <cvd-news></cvd-news>
 
-  <cvd-row [spacing]="3" wrap alignItems="flex-start">
+  <cvd-row class="content" [spacing]="3" wrap  alignItems="flex-start">
 
-    <cvd-col class="graph" [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
+    <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
       <cvd-graphs></cvd-graphs>
       <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
     </cvd-col>
 
-    <cvd-col grow [spacing]="3" alignItems="stretch">
+    <cvd-col grow alignItems="stretch" [spacing]="3">
       <cvd-status-display></cvd-status-display>
       <cvd-mitigations-control></cvd-mitigations-control>
     </cvd-col>

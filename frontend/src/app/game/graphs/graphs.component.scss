@@ -1,4 +1,5 @@
 @import '~src/definitions';
+@import '~src/material-definitions';
 
 :host {
   @include panel;
@@ -15,28 +16,24 @@ h3 {
   text-align: center;
 }
 
-.mat-tab-group {
-  ::ng-deep {
-    .mat-tab-body-content {
-      overflow: hidden;
-    }
+.tabs {
+  width: 100%;
+}
 
-    cvd-icon {
-      margin-right: 1rem;
-    }
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid $dark-bg-lighter-10;
+}
 
-    .mat-tab-label {
-      width: 25%;
-      height: 3.5rem;
-      padding: 0;
-    }
+.tabs-header-item {
+  width: 25%;
+  padding: 1rem;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 300ms;
 
-    .mat-tab-label-content {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      justify-content: center;
-    }
+  &.is-active {
+    border-color: mat-color(map-get($theme, primary))
   }
 }
 
@@ -45,4 +42,8 @@ h3 {
   width: 100%;
   align-items: center;
   justify-content: center;
+
+  cvd-icon {
+    margin-right: 1rem;
+  }
 }

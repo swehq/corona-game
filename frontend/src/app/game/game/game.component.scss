@@ -1,4 +1,7 @@
 :host {
+  max-width: 110rem;
+  width: 100%;
+  display: block;
 
   ::ng-deep {
     cvd-line-graph,
@@ -17,10 +20,8 @@
       }
     }
   }
+}
 
-  @media screen and (max-width: 767px) {
-    cvd-row .graph {
-      flex: 1 1 100% !important ;
-    }
-  }
+.content {
+  width: 100%;
 }

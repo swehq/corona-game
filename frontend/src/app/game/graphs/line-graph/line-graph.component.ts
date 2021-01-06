@@ -167,7 +167,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       this.addMitigation(tick.currentMitigation);
       this.setScope();
 
-      this.cd.detectChanges();
+      this.cd.markForCheck();
     });
 
     this.multiLineTick$?.pipe(
@@ -239,7 +239,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     const index = this.labels.length - this.scope;
     const min = (this.scope && index > 0) ? this.labels[index] : null;
     this.setXAxisTicks({min, max: null});
-    this.chart.update();
+    this.chart?.update();
   }
 
   private setScopeLabel(scopeLevel: number) {

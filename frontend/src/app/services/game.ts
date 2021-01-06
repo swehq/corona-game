@@ -1,5 +1,5 @@
 import {cloneDeep, differenceWith, isEqual} from 'lodash';
-import {EventHandler, EventMitigation} from './events';
+import {Event, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario} from './scenario';
@@ -48,6 +48,7 @@ export class Game {
   mitigationParams = Game.randomizeMitigations();
   mitigationHistory: MitigationActionHistory = {};
   mitigationCache: MitigationActionHistory = {};
+  rampUpEvent: Event | undefined;
 
   constructor(public scenario: Scenario) {
     this.scenario = scenario;
@@ -57,7 +58,7 @@ export class Game {
   private rampUpGame() {
     while (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
       this.updateMitigationsForScenario();
-      this.moveForward();
+      this.rampUpEvent = this.moveForward().event;
     }
   }
 

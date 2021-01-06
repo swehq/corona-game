@@ -7,6 +7,6 @@ import {DebugModeService} from 'src/app/services/debug-mode.service';
   styleUrls: ['./game.component.scss'],
 })
 export class GameComponent {
-
-  constructor(public debugModeService: DebugModeService) {}
+  constructor(public debugModeService: DebugModeService) {
+  }
 }

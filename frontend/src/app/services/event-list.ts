@@ -14,12 +14,12 @@ function dateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
   if (dateDiff(date, dateFrom) < 0) {
     // before given interval
     return false;
-  } else if (dateDiff(date, dateTo) < 0) {
+  } else if (dateDiff(date, dateTo) <= 0) {
     // in between interval
-    return (1 / (-dateDiff(date, dateTo))) > Math.random();
+    return (1 / (1 - dateDiff(date, dateTo))) > Math.random();
   } else {
     // after given interval
-    return true;
+    return false;
   }
 }
 
@@ -28,7 +28,7 @@ function dateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
  * @param probabilityRate - probability between 0..1 (e.g 0.05 means probability 5%)
  */
 function probability(probabilityRate: number){
-  return (probabilityRate) > Math.random();
+  return probabilityRate > Math.random();
 }
 
 // no type check below for interpolated attributes

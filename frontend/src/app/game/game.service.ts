@@ -6,7 +6,7 @@ import {scenarios} from '../services/scenario';
 import {last} from 'lodash';
 import {DayState} from '../services/simulation';
 
-export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max';
+export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 
 @Injectable({
   providedIn: 'root',
@@ -99,14 +99,14 @@ export class GameService {
       return;
     }
 
-    if (this.game.isFinished()) {
-      this.setSpeed('pause');
-      return;
-    }
-
     const gameUpdate = this.game.moveForward();
     const event = gameUpdate.event;
     this.showEvent(event);
+
+    if (this.game.isFinished()) {
+      this.setSpeed('finished');
+      return;
+    }
 
     if (updateChart) this.updateChart();
   }

@@ -1,4 +1,10 @@
-<cvd-col>
+<cvd-col *ngIf="state === 'intro'">
+  <cvd-intro>
+    <cvd-button grow (click)="state = 'game'" color="warn">Hrát</cvd-button>
+  </cvd-intro>
+</cvd-col>
+
+<cvd-col *ngIf="state === 'game'">
   <cvd-news></cvd-news>
 
   <cvd-row [spacing]="3" wrap alignItems="flex-start">
@@ -14,4 +20,8 @@
     </cvd-col>
 
   </cvd-row>
+</cvd-col>
+
+<cvd-col *ngIf="state === 'outro'">
+  <cvd-outro></cvd-outro>
 </cvd-col>

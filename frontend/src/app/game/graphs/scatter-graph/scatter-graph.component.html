@@ -1,6 +1,9 @@
-<div style="width: 50rem; height: 30rem">
-  <canvas baseChart
-          [datasets]="datasets"
-          [options]="options"
-          [chartType]="'scatter'"></canvas>
+<div class="chart">
+  <canvas
+    *ngIf="datasets"
+    baseChart
+    [datasets]="datasets"
+    [options]="options"
+    [chartType]="'scatter'"
+  ></canvas>
 </div>

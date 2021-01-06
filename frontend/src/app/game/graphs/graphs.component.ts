@@ -1,4 +1,5 @@
 import {AfterViewInit, Component} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
 import {Observable} from 'rxjs';
@@ -15,6 +16,9 @@ import {ChartValue, colors, NodeState} from './line-graph/line-graph.component';
   styleUrls: ['./graphs.component.scss'],
 })
 export class GraphsComponent implements AfterViewInit {
+
+  scopeFormControl = new FormControl(0);
+
   costTotalCustomOptions: ChartOptions = {
     scales: {
       yAxes: [{
@@ -96,6 +100,11 @@ export class GraphsComponent implements AfterViewInit {
   }
 
   constructor(public gameService: GameService, private mitigationsService: MitigationsService) {
+    this.scopeFormControl.valueChanges.pipe(
+      untilDestroyed(this),
+    ).subscribe(
+      newVal => this.scopeFormControl.setValue(newVal, {emitEvent: false}),
+    );
   }
 
   ngAfterViewInit() {

@@ -2,7 +2,7 @@ import {Component, Input, OnChanges, SimpleChanges, ViewChild} from '@angular/co
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatSlider} from '@angular/material/slider';
 
-type Level = [value: any, label: string];
+export type Level = [value: any, label: string];
 
 @Component({
   selector: 'cvd-mitigation-scale',
@@ -33,12 +33,12 @@ export class MitigationScaleComponent implements OnChanges, ControlValueAccessor
 
   @ViewChild('slider') slider: MatSlider | null = null;
 
-  value: any = null;
+  value: any;
   label = '';
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.levels) {
-      this.writeValue(this.value);
+      if (this.value !== undefined) this.writeValue(this.value);
     }
   }
 

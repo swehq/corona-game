@@ -1,7 +1,7 @@
 import {DayState} from './simulation';
 import {EventTrigger} from './events';
 import {dateDiff} from './utils';
-import _ from 'lodash';
+import {random} from 'lodash';
 
 /**
  * Generate first true randomly between given dates
@@ -14,12 +14,12 @@ function dateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
   if (dateDiff(date, dateFrom) < 0) {
     // before given interval
     return false;
-  } else if (dateDiff(date, dateTo) < 0) {
+  } else if (dateDiff(date, dateTo) <= 0) {
     // in between interval
-    return (1 / (-dateDiff(date, dateTo))) > Math.random();
+    return (1 / (1 - dateDiff(date, dateTo))) > Math.random();
   } else {
     // after given interval
-    return true;
+    return false;
   }
 }
 
@@ -28,7 +28,7 @@ function dateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
  * @param probabilityRate - probability between 0..1 (e.g 0.05 means probability 5%)
  */
 function probability(probabilityRate: number){
-  return (probabilityRate) > Math.random();
+  return probabilityRate > Math.random();
 }
 
 // no type check below for interpolated attributes
@@ -203,7 +203,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'V centru Prahy dnes demonstrovali odpůrci koronavirových opatření. Neměli roušky, nedodržovali rozestupy',
         help: 'Zatknutí odpůrců může pobouřit část obyvatel a snížit tak společenskou stabilitu. Pokud však protesty proběhnou bez zásahu, přibude velké množství nakažených.',
         mitigations: [
-          {label: 'Nechat protesty proběhnout', exposedDrift: _.random(1000, 2000), timeout: 1},
+          {label: 'Nechat protesty proběhnout', exposedDrift: random(1000, 2000), timeout: 1},
           {label: 'Pozatýkat', stabilityCost: 2, timeout: 1},
         ],
       },
@@ -283,7 +283,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Významný politik veřejně odsuzuje nošení roušek a byl bez ní několikrát vyfocen v obchodě',
         help: 'Pokud významná politická osobnost nebude potrestána může to vést k menší disciplíně obyvatelstva při dodržování opatření, což může přinést, jak nové nakažené, tak negativně ovlivnit hodnotu R. Jeho potrestání však může pobouřit jeho příznivce a negativně tak ovlivnit společenskou stabilitu.',
         mitigations: [
-          {label: 'Neřešit prohřešek', rMult: 1.02, exposedDrift: _.random(1000, 2000), timeout: 1},
+          {label: 'Neřešit prohřešek', rMult: 1.02, exposedDrift: random(1000, 2000), timeout: 1},
           {label: 'Potrestat politika jako ostatní', stabilityCost: 2, timeout: 1},
         ],
       },
@@ -291,8 +291,8 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Zažije Česko první volby ve znamení koronaviru?',
         help: 'Odložení voleb obyvatelstvo popudí a negativně se odrazí ve společenské stabilitě. Pokud volby proběhnou, přibude nakažených.',
         mitigations: [
-          {label: 'Odložit volby', stabilityCost: _.random(4, 8, true), timeout: 1},
-          {label: 'Nechat volby proběhnout', exposedDrift: _.random(2000, 5000), timeout: 1},
+          {label: 'Odložit volby', stabilityCost: random(4, 8, true), timeout: 1},
+          {label: 'Nechat volby proběhnout', exposedDrift: random(2000, 5000), timeout: 1},
         ],
       },
     ],
@@ -309,7 +309,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Vláda se zabývá otevřením skiaeálů. Situace komplikuje rozhodnutí.',
         help: 'Otevření skiareálů zvýší počet nakažených v řádu tisíců. Jejich zavření na druhou stranu negativně ovlivní společenskou stabilitu.',
         mitigations: [
-          {label: 'Otevřít skiareály', exposedDrift: _.random(2000, 5000), timeout: 1},
+          {label: 'Otevřít skiareály', exposedDrift: random(2000, 5000), timeout: 1},
           {label: 'Neotevřít', stabilityCost: 5, timeout: 1},
         ],
       },
@@ -320,10 +320,10 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Lze očekávat, že udělení výjimek pro období svátků obyvatelé ocení a pozitivně se tak promítne do společenské stability, ale zato přinese větší počet nových nakažených. Přísná opatření se zase naopak setkají s nevolí obyvatel a poklesem společenské stability.',
         mitigations: [
           {label: 'Povolit půlnoční mše', stabilityCost: -2,
-            exposedDrift: _.random(500, 1500), timeout: 1},
+            exposedDrift: random(500, 1500), timeout: 1},
           {label: 'Udělit výjimku pro rodinná setkání nad 6 lidí', stabilityCost: -2,
-            exposedDrift: _.random(1000, 2000), timeout: 1},
-          {label: 'Povolit obojí', stabilityCost: -5, exposedDrift: _.random(1500, 4000), timeout: 1},
+            exposedDrift: random(1000, 2000), timeout: 1},
+          {label: 'Povolit obojí', stabilityCost: -5, exposedDrift: random(1500, 4000), timeout: 1},
           {label: 'Zakázat půlnoční mše i rodinná setkání nad 6 lidí', stabilityCost: 5, timeout: 1},
         ],
       },
@@ -334,7 +334,7 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Pokud budou opatření zpřísněna, lze očekávat vlnu nevole obyvatel a snížení společenské stability. Výjimky z opatření sice společenskou stabilitu lehce zvýší, ale povedou ke zvýšení počtu nemocných.',
         mitigations: [
           {label: 'Povolit večerní vycházení na Silvestra', stabilityCost: -2,
-            exposedDrift: _.random(10000, 20000), timeout: 1},
+            exposedDrift: random(10000, 20000), timeout: 1},
           {label: 'Nepovolovat večerní vycházení na Silvestra', stabilityCost: 5, timeout: 1},
         ],
       },

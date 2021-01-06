@@ -1,7 +1,6 @@
-import {DayState} from './simulation';
-import {EventTrigger} from './events';
+import {EventInput, EventTrigger} from './events';
 import {dateDiff} from './utils';
-import {random} from 'lodash';
+import {isNil, random} from 'lodash';
 
 /**
  * Generate first true randomly between given dates
@@ -31,6 +30,38 @@ function probability(probabilityRate: number){
   return probabilityRate > Math.random();
 }
 
+/**
+ * Returns true if EventMitigation is active
+ * @param eventInput - EventInput
+ * @param id - Id of the EventMitigation
+ */
+function isEventMitigationActive(eventInput: EventInput, id: string) {
+  const mitigation = eventInput.eventMitigations.find(em => em.id === id);
+  return !isNil(mitigation);
+}
+
+export interface EventData {
+  tooManyDeathsDays: number;
+}
+
+export const initialEventData: EventData = {
+  tooManyDeathsDays: 0,
+};
+
+/**
+ * Callback that is called every day before trigger conditions are evaluated
+ * @param eventInput - EventInput
+ */
+export function updateEventData(eventInput: EventInput) {
+  const eventData = eventInput.eventData;
+
+  if (eventInput.stats.deaths.avg7Day >= (2500 / 7)) {
+    eventData.tooManyDeathsDays++;
+  } else {
+    eventData.tooManyDeathsDays = 0;
+  }
+}
+
 // no type check below for interpolated attributes
 // TODO use rounded values
 export const eventTriggers: EventTrigger[] = [
@@ -54,7 +85,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (s: DayState) => s.date === '2020-03-01',
+    condition: (ei: EventInput) => ei.date === '2020-03-01',
   },
   /****************************************************************************
    *
@@ -68,7 +99,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Náklady na zvládnutí koronavirové krize již dosáhly sta miliard.',
       },
     ],
-    condition: (s: DayState) => s.stats.costs.total > 100_000_000_000,
+    condition: (ei: EventInput) => ei.stats.costs.total > 100_000_000_000,
   },
   {
     events: [
@@ -77,7 +108,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Náklady na zvládnutí koronavirové krize již dosáhly pěti set miliard korun.',
       },
     ],
-    condition: (s: DayState) => s.stats.costs.total > 500_000_000_000,
+    condition: (ei: EventInput) => ei.stats.costs.total > 500_000_000_000,
   },
   {
     events: [
@@ -87,7 +118,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', timeout: 1, stabilityCost: 6}],
       },
     ],
-    condition: (s: DayState) => s.stats.costs.total > 1_000_000_000_000,
+    condition: (ei: EventInput) => ei.stats.costs.total > 1_000_000_000_000,
   },
 
   /****************************************************************************
@@ -103,7 +134,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Důvěra ve vládu klesá',
       },
     ],
-    condition: (s: DayState) => s.stats.stability <= 25,
+    condition: (ei: EventInput) => ei.stats.stability <= 25,
   },
   {
     events: [
@@ -112,7 +143,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Nálada je stále horší, tvrdí terapeut.',
       },
     ],
-    condition: (s: DayState) => s.stats.stability <= 0,
+    condition: (ei: EventInput) => ei.stats.stability <= 0,
   },
   {
     events: [
@@ -121,7 +152,7 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Společenská stabilita dosahuje kritických čísel. Pokud dosáhne hodnoty -50, Vaše hra končí.',
       },
     ],
-    condition: (s: DayState) => s.stats.stability <= -30,
+    condition: (ei: EventInput) => ei.stats.stability <= -30,
     timeout: 30, // repeat every 30 days
   },
   /****************************************************************************
@@ -143,7 +174,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Předseda vlády vydal prohlášení. Předsedkyně občanského sdružení antiCOVID, vyzývá k okamžité akci.',
       },
     ],
-    condition: (s: DayState) => s.stats.deaths.today >= 10,
+    condition: (ei: EventInput) => ei.stats.deaths.today >= 10,
   },
   // pocet mrtvych za den: 100+
   {
@@ -154,7 +185,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', stabilityCost: 2, timeout: 1}],  // Important to set timeout: 1 for one time events
       },
     ],
-    condition: (s: DayState) => s.stats.deaths.today >= 100,
+    condition: (ei: EventInput) => ei.stats.deaths.today >= 100,
   },
   // pocet mrtvych za den: 500+
   {
@@ -165,7 +196,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', stabilityCost: 6, timeout: 1}],
       },
     ],
-    condition: (s: DayState) => s.stats.deaths.today >= 500,
+    condition: (ei: EventInput) => ei.stats.deaths.today >= 500,
   },
   // pocet mrtvych za den: 1000+
   {
@@ -176,7 +207,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', stabilityCost: 30, timeout: 1}],
       },
     ],
-    condition: (s: DayState) => s.stats.deaths.today >= 1000,
+    condition: (ei: EventInput) => ei.stats.deaths.today >= 1000,
   },
   // pocet mrtvych celkem: 10000+
   {
@@ -187,7 +218,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', stabilityCost: 5, timeout: 1}],
       },
     ],
-    condition: (s: DayState) => s.stats.deaths.total >= 10000,
+    condition: (ei: EventInput) => ei.stats.deaths.total >= 10000,
   },
   // pocet mrtvych celkem: 100000+
   {
@@ -198,7 +229,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', stabilityCost: 10, timeout: 1}],
       },
     ],
-    condition: (s: DayState) => s.stats.deaths.total >= 100000,
+    condition: (ei: EventInput) => ei.stats.deaths.total >= 100000,
   },
   // Panika
   {
@@ -210,13 +241,27 @@ export const eventTriggers: EventTrigger[] = [
         // cost = 1.5*cost of lockdown (values taken from game.ts)
         // rMult is applied everyDay!
         mitigations: [{
-          label: 'OK', timeout: 14, rMult: 0.985, cost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
+          label: 'OK', id: 'panic', rMult: 0.985, cost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
           stabilityCost: (0.15 + 0.05 + 0.15) * 1.5,
         }],
       },
     ],
-    condition: (s: DayState) => (s.stats.deaths.avg7Day >= (2500 / 7) && probability(0.05)),
-    timeout: 14, // May occur repeatedly
+    condition: (ei: EventInput) =>
+      (!isEventMitigationActive(ei, 'panic') && probability(ei.eventData.tooManyDeathsDays * 0.05)),
+    timeout: 1,
+  },
+  {
+    events: [
+      {
+        title: 'Život v zemi se vrací do normálu.',
+        help: 'Izolace obyvatel skončila.',
+        // cost = 1.5*cost of lockdown (values taken from game.ts)
+        // rMult is applied everyDay!
+        mitigations: [{label: 'OK', id: 'panic', timeout: 0}],
+      },
+    ],
+    condition: (ei: EventInput) => (isEventMitigationActive(ei, 'panic') && ei.stats.deaths.avg7Day <= 500),
+    timeout: 1,
   },
   // malo mrtvych / demostrance
   {
@@ -230,7 +275,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (s: DayState) => s.stats.stability <= -10 && s.stats.deaths.avg7Day < (500 / 7),
+    condition: (ei: EventInput) => ei.stats.stability <= -10 && ei.stats.deaths.avg7Day < (500 / 7),
   },
   /****************************************************************************
    *
@@ -245,7 +290,7 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Opatření “uzavření škol” bylo aktivováno bez dalších nákladů.',
       },
     ],
-    condition: (s: DayState) => s.date === '2020-06-31',
+    condition: (ei: EventInput) => ei.date === '2020-06-31',
   },
   {
     events: [
@@ -255,7 +300,7 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Opatření “uzavření škol” opět vyžaduje další náklady a snižuje společenskou stabilitu.',
       },
     ],
-    condition: (s: DayState) => s.date === '2020-09-01',
+    condition: (ei: EventInput) => ei.date === '2020-09-01',
   },
   {
     events: [
@@ -263,7 +308,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Virus se v teplém podnebí hůř šíří. Vědci předpokládají zpomalení pandemie.',
       },
     ],
-    condition: (s: DayState) => dateBetweenTrigger(s.date, '2020-05-20', '2020-06-14'),
+    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-05-20', '2020-06-14'),
   },
   {
     events: [
@@ -272,7 +317,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Jak teplota ovlivňuje šíření koronaviru? Chladné počasí počasí pomáhá šíření, tvrdí epidemiologové.',
       },
     ],
-    condition: (s: DayState) => dateBetweenTrigger(s.date, '2020-09-10', '2020-10-09'),
+    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-09-10', '2020-10-09'),
   },
   /****************************************************************************
    *
@@ -318,7 +363,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (s: DayState) => dateBetweenTrigger(s.date, '2020-10-15', '2020-12-01'),
+    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-10-15', '2020-12-01'),
   },
   /****************************************************************************
    *
@@ -361,7 +406,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (s: DayState) => dateBetweenTrigger(s.date, '2020-12-02', '2020-12-20'),
+    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-12-02', '2020-12-20'),
   },
   /****************************************************************************
    *
@@ -377,7 +422,7 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [{label: 'OK', stabilityCost: -10, timeout: 1}], // One time event
       },
     ],
-    condition: (s: DayState) => dateBetweenTrigger(s.date, '2020-10-25', '2020-11-25'),
+    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-10-25', '2020-11-25'),
   },
   {
     events: [
@@ -394,7 +439,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     // todo: first occurance in a month after vaxcination is researched
     // todo: repeat once every 3 months
-    condition: (s: DayState) => dateBetweenTrigger(s.date, '2021-01-01', '2021-01-10'),
+    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2021-01-01', '2021-01-10'),
   },
   {
     events: [
@@ -407,7 +452,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (s: DayState) => (dateDiff(s.date, '2021-01-10') > 0 && probability(0.02)),
+    condition: (ei: EventInput) => (dateDiff(ei.date, '2021-01-10') > 0 && probability(0.02)),
     timeout: 7, // cannot occur more often than once every 7 days
   },
   {
@@ -423,8 +468,8 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (s: DayState) => (dateBetweenTrigger(s.date, '2021-06-15', '2021-06-30')
-      && s.stats.vaccinationRate < .75),
+    condition: (ei: EventInput) => (dateBetweenTrigger(ei.date, '2021-06-15', '2021-06-30')
+      && ei.stats.vaccinationRate < .75),
   },
   {
     events: [
@@ -433,6 +478,6 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Polovina populace již byla očkována.',
       },
     ],
-    condition: (s: DayState) => s.stats.vaccinationRate > .5,
+    condition: (ei: EventInput) => ei.stats.vaccinationRate > .5,
   },
 ];

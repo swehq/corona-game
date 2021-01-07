@@ -7,7 +7,7 @@ import {last} from 'lodash';
 export const router = new Router();
 
 router.get('/api/game-data', async (ctx) => {
-  const data = await GameDataModel.find();
+  const data = await GameDataModel.find({}, {results: 1});
   ctx.body = data.map((i: any) => i.results);
 });
 

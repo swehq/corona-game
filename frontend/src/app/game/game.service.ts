@@ -3,7 +3,6 @@ import {Game, GameData} from '../services/game';
 import {Event} from '../services/events';
 import {ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
-import {last} from 'lodash';
 import {DayState} from '../services/simulation';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
@@ -61,15 +60,20 @@ export class GameService {
     this.updateChart('all');
   }
 
-  updateChart(mode: 'last' | 'all' = 'last') {
+  /**
+   * Update charts according to part of model data
+   * @param which what part of the data to take
+   *    'last' takes last item
+   *    'all' takes all items
+   *    number takes right slice of the array beginning with defined index
+   */
+  private updateChart(which: 'last' | 'all' | number = 'last') {
     // TODO feed all data at once in 'all' mode
-    let data = this.game.simulation.modelStates;
-    if (mode === 'last') {
-      const lastData = last(this.game.simulation.modelStates);
-      data = lastData ? [lastData] : [];
-    }
+    if (which === 'last') which = -1;
+    else if (which === 'all') which = 0;
 
-    data.forEach(item => this._gameState$.next(item));
+    this.game.simulation.modelStates.slice(which)
+      .forEach(item => this._gameState$.next(item));
   }
 
   togglePause() {
@@ -85,8 +89,9 @@ export class GameService {
     this._speed$.next(speed);
 
     if (speed === 'max') {
+      const start = this.game.simulation.modelStates.length;
       while (!this.game.isFinished()) this.tick(false);
-      this.updateChart('all');
+      this.updateChart(start);
       this.setSpeed('pause');
     } else if (speed === 'play') {
       this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
@@ -97,7 +102,7 @@ export class GameService {
     }
   }
 
-  tick(updateChart = true) {
+  private tick(updateChart = true) {
     if (this.speed === 'rev') {
       if (this.game.canMoveBackward()) {
         this.game.moveBackward();
@@ -120,7 +125,7 @@ export class GameService {
     if (updateChart) this.updateChart();
   }
 
-  showEvent(event: Event | undefined) {
+  private showEvent(event: Event | undefined) {
     if (!event) return;
     if (this.speed === 'max') return;
 

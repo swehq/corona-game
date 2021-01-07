@@ -149,7 +149,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [false, false],
       },
       {
-        label: 'Nově zemřelých',
+        label: 'Nově zemřelí',
         icon: 'skull' as SvgIconName,
         headerData$: this.deathToday$.pipe(map(gs => gs.value)),
         data$: this.deathToday$ as unknown as Observable<ChartValue>,

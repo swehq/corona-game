@@ -5,6 +5,12 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GameResult, OutroService} from './outro.service';
 
+const convert: (result: GameResult) => ChartPoint =
+  result => ({
+    x: result.dead,
+    y: result.cost,
+  });
+
 @UntilDestroy()
 @Component({
   selector: 'cvd-outro',
@@ -14,22 +20,20 @@ import {GameResult, OutroService} from './outro.service';
 export class OutroComponent {
 
   datasets$: Observable<ChartDataSets[]> = combineLatest([
-    this.outroService.myResult$,
-    this.outroService.allResults$,
+    this.outroService.myResult$.pipe(
+      map(result => result ? [convert(result)] : null),
+    ),
+    this.outroService.allResults$.pipe(
+      map(results => results ? results.map(convert) : null),
+    ),
   ]).pipe(
-    map(([myResult, allResults]) => {
+    map(([myPoints, allPoints]) => {
       const datasets: ChartDataSets[] = [];
 
-      const convert: (result: GameResult) => ChartPoint =
-        result => ({
-          x: result.dead,
-          y: result.cost,
-        });
-
-      if (myResult) {
+      if (myPoints) {
         datasets.push({
           label: 'Můj výsledek',
-          data: [convert(myResult)],
+          data: myPoints,
           backgroundColor: 'red',
           pointBorderColor: 'red',
           pointBackgroundColor: 'red',
@@ -37,10 +41,10 @@ export class OutroComponent {
         });
       }
 
-      if (allResults) {
+      if (allPoints) {
         datasets.push({
           label: 'Výsledky ostatních her',
-          data: allResults.map(convert),
+          data: allPoints,
           backgroundColor: 'blue',
           pointBorderColor: 'blue',
           pointBackgroundColor: 'blue',

@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter, map} from 'rxjs/operators';
-import {DebugModeService} from 'src/app/services/debug-mode.service';
 import {GameService} from '../game.service';
 import {OutroService} from '../outro/outro.service';
+import {Component, HostBinding} from '@angular/core';
+import {DebugModeService} from 'src/app/services/debug-mode.service';
 
 type GameState = 'intro' | 'game' | 'outro';
 
@@ -20,7 +20,7 @@ export class GameComponent {
   constructor(
     public debugModeService: DebugModeService,
     outroService: OutroService,
-    gameService: GameService,
+    private gameService: GameService,
   ) {
     // fetch historical game results from BE
     window.setTimeout(() => outroService.fetchAllResults(), 10_000);
@@ -44,5 +44,10 @@ export class GameComponent {
     ).subscribe(
       () => this.state = 'outro',
     );
+  }
+
+  @HostBinding('class.is-event-active')
+  get isEventActiveClass() {
+    return this.gameService.event;
   }
 }

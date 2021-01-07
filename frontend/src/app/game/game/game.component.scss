@@ -1,0 +1,27 @@
+:host {
+  max-width: 110rem;
+  width: 100%;
+  display: block;
+
+  ::ng-deep {
+    cvd-line-graph,
+    cvd-status-display,
+    cvd-mitigations-control {
+      transition: opacity 300ms;
+    }
+  }
+
+  &.is-event-active {
+    ::ng-deep {
+      cvd-line-graph,
+      cvd-status-display,
+      cvd-mitigations-control {
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+.content {
+  width: 100%;
+}

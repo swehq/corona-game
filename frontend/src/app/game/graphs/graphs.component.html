@@ -1,18 +1,42 @@
-<mat-tab-group animationDuration="0ms">
-  <mat-tab [label]="'Nově nakažení: ' + ((infectedToday$ | async)?.value | formatNumber)">
-    <cvd-line-graph [singleLineTick$]="infectedToday$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
-  </mat-tab>
+<div class="tabs">
+  <div class="tabs-header">
+    <div
+      class="tabs-header-item"
+      [class.is-active]="activeTab === index"
+      [matTooltip]="tab.label"
+      matRipple
+      (click)="activeTab = index"
+      *ngFor="let tab of templateData; let index = index">
+      <span class="tab-icon">
+        <cvd-icon [svgIcon]="tab.icon"></cvd-icon>
+        <span>
+          {{ (tab.headerData$ | async | formatNumber:tab.pipe[0]:tab.pipe[1]) }}
+        </span>
+      </span>
+    </div>
+  </div>
 
-  <mat-tab [label]="'Nově zemřelí: ' + ((deathToday$ | async)?.value | formatNumber)">
-    <cvd-line-graph [singleLineTick$]="deathToday$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
-  </mat-tab>
+  <ng-container *ngFor="let content of templateData; let index = index">
+    <div *ngIf="activeTab === index">
+      <h3>
+        {{ content.label }}
+      </h3>
 
-  <mat-tab [label]="'Celkové náklady: ' + ((costTotal$ | async)?.value | formatNumber:true:true)">
-    <cvd-line-graph [customOptions]="costTotalCustomOptions" [singleLineTick$]="costTotal$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
-  </mat-tab>
+      <cvd-line-graph
+        *ngIf="!content.multiLineData$"
+        [singleLineTick$]="content.data$"
+        [scopeFormControl]="scopeFormControl"
+        [customOptions]="content.customOptions">
+      </cvd-line-graph>
 
-  <mat-tab [label]="'Imunní: ' + (immunized$ | async | formatNumber)">
-    <cvd-line-graph [multiLineTick$]="immunizedChart$" [scopeFormControl]="scopeFormControl"></cvd-line-graph>
-  </mat-tab>
-</mat-tab-group>
+      <cvd-line-graph
+        *ngIf="content.multiLineData$"
+        [multiLineTick$]="content.multiLineData$"
+        [scopeFormControl]="scopeFormControl">
+      </cvd-line-graph>
+    </div>
+  </ng-container>
+
+</div>
+
 <cvd-events-layout></cvd-events-layout>

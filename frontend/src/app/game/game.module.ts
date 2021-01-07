@@ -6,7 +6,6 @@ import {SharedModule} from '../shared/shared.module';
 import {EventsLayoutComponent} from './events-layout/events-layout.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
-import {GraphSizeDirective} from './graphs/graph-size.directive';
 import {GraphsComponent} from './graphs/graphs.component';
 import {LineGraphComponent} from './graphs/line-graph/line-graph.component';
 import {ScatterGraphComponent} from './graphs/scatter-graph/scatter-graph.component';
@@ -27,7 +26,6 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
     EventsLayoutComponent,
     GameComponent,
     GraphsComponent,
-    GraphSizeDirective,
     IntroComponent,
     LineGraphComponent,
     MitigationBoolComponent,

@@ -4,6 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {SvgIconName} from 'src/app/shared/icon/icon.registry';
 import {formatNumber} from '../../utils/format';
 import {GameService} from '../game.service';
 import {MitigationsService} from '../mitigations-control/mitigations.service';
@@ -77,6 +78,43 @@ export class GraphsComponent implements AfterViewInit {
     map(gameState => Math.round(gameState.sirState.resistant
       + gameState.stats.vaccinationRate * gameState.sirState.suspectible)),
   );
+
+  activeTab = 0;
+
+  templateData = [
+    {
+      label: 'Nově nakažení',
+      icon: 'virus' as SvgIconName,
+      headerData$: this.infectedToday$.pipe(map(gs => gs.value)),
+      data$: this.infectedToday$ as unknown as Observable<ChartValue>,
+      customOptions: null,
+      pipe: [false, false],
+    },
+    {
+      label: 'Nově zemřelých',
+      icon: 'skull' as SvgIconName,
+      headerData$: this.deathToday$.pipe(map(gs => gs.value)),
+      data$: this.deathToday$ as unknown as Observable<ChartValue>,
+      customOptions: null,
+      pipe: [false, false],
+    },
+    {
+      label: 'Celkové náklady',
+      icon: 'money' as SvgIconName,
+      headerData$: this.costTotal$.pipe(map(gs => gs.value)),
+      data$: this.costTotal$ as unknown as Observable<ChartValue>,
+      customOptions: this.costTotalCustomOptions,
+      pipe: [false, false],
+    },
+    {
+      label: 'Imunní',
+      icon: 'hospital' as SvgIconName,
+      headerData$: this.immunized$,
+      multiLineData$: this.immunizedChart$ as Observable<ChartValue[]>,
+      customOptions: null,
+      pipe: [false, false],
+    },
+  ];
 
   private currentMitigation: string | undefined = undefined;
 

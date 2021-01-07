@@ -4,6 +4,7 @@ import {GameService} from '../game.service';
 import {OutroService} from '../outro/outro.service';
 import {Component, HostBinding} from '@angular/core';
 import {DebugModeService} from 'src/app/services/debug-mode.service';
+import {inOutAnimation} from 'src/app/utils/animations';
 
 type GameState = 'intro' | 'game' | 'outro';
 
@@ -12,6 +13,7 @@ type GameState = 'intro' | 'game' | 'outro';
   selector: 'cvd-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss'],
+  animations: [inOutAnimation],
 })
 export class GameComponent {
 

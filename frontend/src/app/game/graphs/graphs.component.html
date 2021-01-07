@@ -24,6 +24,7 @@
 
       <cvd-line-graph
         *ngIf="!content.multiLineData$"
+        [mitigationNodes]="mitigationNodes"
         [singleLineTick$]="content.data$"
         [scopeFormControl]="scopeFormControl"
         [customOptions]="content.customOptions">
@@ -31,6 +32,7 @@
 
       <cvd-line-graph
         *ngIf="content.multiLineData$"
+        [mitigationNodes]="mitigationNodes"
         [multiLineTick$]="content.multiLineData$"
         [scopeFormControl]="scopeFormControl">
       </cvd-line-graph>

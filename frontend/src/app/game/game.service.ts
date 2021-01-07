@@ -30,6 +30,9 @@ export class GameService {
   private _reset$ = new Subject<void>();
   reset$ = this._reset$.asObservable();
 
+  private _resetSubjects$ = new Subject<void>();
+  resetSubjects$ = this._resetSubjects$.asObservable();
+
   constructor() {
     this.restartSimulation();
   }
@@ -49,6 +52,12 @@ export class GameService {
     this._reset$.next();
     this.setSpeed(speed);
     this.showEvent(this.game.rampUpEvent);
+
+    this._gameState$.complete();
+    this._gameState$ = new ReplaySubject<DayState>();
+    this.gameState$ = this._gameState$.asObservable();
+    this._resetSubjects$.next();
+
     this.updateChart('all');
   }
 

@@ -20,7 +20,6 @@ export interface ChartValue {
   datasetOptions?: ChartDataSets;
   color?: string;
   state?: NodeState;
-  currentMitigation?: string;
 }
 
 export const colors = {
@@ -40,6 +39,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   @Input()
   customOptions: ChartOptions | null = null;
 
+  @Input()
+  mitigationNodes: (string | undefined)[] = [];
+
   @Input() singleLineTick$: Observable<ChartValue> | null = null;
   @Input() multiLineTick$: Observable<ChartValue[]> | null = null;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
@@ -53,9 +55,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private panAutoReset$ = new Subject();
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
-  private mitigationNodes: (string | undefined)[] = [];
   private tooltipLabels: ((value: number) => string)[] = [];
-  private lastMitigation: string | undefined = undefined;
   private seriesLength = 0;
   private lastValue: number | undefined;
 
@@ -171,7 +171,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       this.seriesLength++;
       this.lastValue = tick.value;
       this.labels.push(typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString());
-      this.addMitigation(tick.currentMitigation);
       this.setScope();
 
       this.cd.markForCheck();
@@ -192,9 +191,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
       this.labels.push((typeof ticks[0].label === 'string'
         ? ticks[0].label
-        : ticks[0].label.toLocaleDateString()));
-
-      this.addMitigation(ticks[0].currentMitigation);
+        : ticks[0].label.toLocaleDateString()),
+      );
     });
 
     this.panAutoReset$.pipe(
@@ -217,6 +215,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    this.setScope(this.scopeFormControl.value);
+
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
     ).subscribe(level => {
@@ -224,6 +224,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       this.setScope(level);
       this.cd.markForCheck();
     });
+
+    this.scopeFormControl.updateValueAndValidity();
   }
 
   private reset() {
@@ -247,15 +249,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     const min = (this.scope && index > 0) ? this.labels[index] : null;
     this.setXAxisTicks({min, max: null});
     this.chart?.update();
-  }
-
-  private addMitigation(mitigation: string | undefined) {
-    if (this.lastMitigation !== mitigation) {
-      this.lastMitigation = mitigation;
-      this.mitigationNodes.push(mitigation);
-    } else {
-      this.mitigationNodes.push(undefined);
-    }
   }
 
   private setXAxisTicks(options: {

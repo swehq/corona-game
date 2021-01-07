@@ -2,7 +2,7 @@ import {AfterViewInit, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {SvgIconName} from 'src/app/shared/icon/icon.registry';
 import {formatNumber} from '../../utils/format';
@@ -32,89 +32,16 @@ export class GraphsComponent implements AfterViewInit {
     },
   };
 
-  infectedToday$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
-    label: gameState.date,
-    value: gameState.stats.detectedInfections.today,
-    tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
-    state: this.infectedThresholds(gameState.stats.detectedInfections.today),
-    currentMitigation: this.currentMitigation,
-  })));
+  infectedToday$: Observable<ChartValue> | undefined;
+  costTotal$: Observable<ChartValue> | undefined;
+  deathToday$: Observable<ChartValue> | undefined;
+  immunizedChart$: Observable<ChartValue[]> | undefined;
+  immunized$: Observable<number> | undefined;
 
-  costTotal$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
-    label: gameState.date,
-    value: gameState.stats.costs.total,
-    tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
-    state: this.costTotalThresholds(gameState.stats.costs.total),
-    currentMitigation: this.currentMitigation,
-  })));
-
-  deathToday$: Observable<ChartValue> = this.gameService.gameState$.pipe(map(gameState => ({
-    label: gameState.date,
-    value: gameState.stats.deaths.today,
-    tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
-    state: this.deathThresholds(gameState.stats.deaths.today),
-    currentMitigation: this.currentMitigation,
-  })));
-
-  immunizedChart$: Observable<ChartValue[]> = this.gameService.gameState$.pipe(map(gs => ([
-    {
-      label: gs.date,
-      value: Math.round(gs.sirState.resistant + gs.stats.vaccinationRate * gs.sirState.suspectible),
-      tooltipLabel: (value: number) => `Imunizováni: ${formatNumber(value)}`,
-    },
-    {
-      label: gs.date,
-      value: gs.stats.vaccinationRate * Math.round(gs.sirState.suspectible),
-      tooltipLabel: (value: number) => `Vakcinovaní: ${formatNumber(value)}`,
-      datasetOptions: {
-        backgroundColor: `${colors.critical}33`,
-        borderColor: `${colors.warn}`,
-      },
-      color: colors.warn,
-    },
-  ])));
-
-  immunized$ = this.gameService.gameState$.pipe(
-    map(gameState => Math.round(gameState.sirState.resistant
-      + gameState.stats.vaccinationRate * gameState.sirState.suspectible)),
-  );
-
+  mitigations$: Subscription | undefined;
+  mitigationNodes: (string | undefined)[] = [];
+  templateData: any | undefined;
   activeTab = 0;
-
-  templateData = [
-    {
-      label: 'Nově nakažení',
-      icon: 'virus' as SvgIconName,
-      headerData$: this.infectedToday$.pipe(map(gs => gs.value)),
-      data$: this.infectedToday$ as unknown as Observable<ChartValue>,
-      customOptions: null,
-      pipe: [false, false],
-    },
-    {
-      label: 'Nově zemřelých',
-      icon: 'skull' as SvgIconName,
-      headerData$: this.deathToday$.pipe(map(gs => gs.value)),
-      data$: this.deathToday$ as unknown as Observable<ChartValue>,
-      customOptions: null,
-      pipe: [false, false],
-    },
-    {
-      label: 'Celkové náklady',
-      icon: 'money' as SvgIconName,
-      headerData$: this.costTotal$.pipe(map(gs => gs.value)),
-      data$: this.costTotal$ as unknown as Observable<ChartValue>,
-      customOptions: this.costTotalCustomOptions,
-      pipe: [false, false],
-    },
-    {
-      label: 'Imunní',
-      icon: 'hospital' as SvgIconName,
-      headerData$: this.immunized$,
-      multiLineData$: this.immunizedChart$ as Observable<ChartValue[]>,
-      customOptions: null,
-      pipe: [false, false],
-    },
-  ];
 
   private currentMitigation: string | undefined = undefined;
 
@@ -137,12 +64,115 @@ export class GraphsComponent implements AfterViewInit {
     if (value >= 15_000) return 'critical';
   }
 
-  constructor(public gameService: GameService, private mitigationsService: MitigationsService) {
+  constructor(
+    public gameService: GameService,
+    private mitigationsService: MitigationsService,
+  ) {
+    this.resetGraphsData();
+
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
     ).subscribe(
       newVal => this.scopeFormControl.setValue(newVal, {emitEvent: false}),
     );
+
+    this.gameService.resetSubjects$.pipe(
+      untilDestroyed(this),
+    ).subscribe(_ => this.resetGraphsData());
+  }
+
+  resetGraphsData() {
+    if (this.mitigations$) this.mitigations$?.unsubscribe();
+
+    this.mitigations$ = this.gameService.gameState$.subscribe(_ => {
+      this.mitigationNodes.push(
+        this.currentMitigation ? this.currentMitigation : undefined,
+      );
+
+      if (this.currentMitigation) this.currentMitigation = undefined;
+    });
+
+    this.infectedToday$ = this.gameService.gameState$.pipe(map(gameState => ({
+      label: gameState.date,
+      value: gameState.stats.detectedInfections.today,
+      tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
+      state: this.infectedThresholds(gameState.stats.detectedInfections.today),
+    })));
+
+    this.costTotal$ = this.gameService.gameState$.pipe(map(gameState => ({
+      label: gameState.date,
+      value: gameState.stats.costs.total,
+      tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
+      state: this.costTotalThresholds(gameState.stats.costs.total),
+    })));
+
+    this.deathToday$ = this.gameService.gameState$.pipe(map(gameState => ({
+      label: gameState.date,
+      value: gameState.stats.deaths.today,
+      tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
+      state: this.deathThresholds(gameState.stats.deaths.today),
+    })));
+
+    this.immunizedChart$ = this.gameService.gameState$.pipe(map(gs => ([
+      {
+        label: gs.date,
+        value: Math.round(gs.sirState.resistant + gs.stats.vaccinationRate * gs.sirState.suspectible),
+        tooltipLabel: (value: number) => `Imunizováni: ${formatNumber(value)}`,
+      },
+      {
+        label: gs.date,
+        value: gs.stats.vaccinationRate * Math.round(gs.sirState.suspectible),
+        tooltipLabel: (value: number) => `Vakcinovaní: ${formatNumber(value)}`,
+        datasetOptions: {
+          backgroundColor: `${colors.critical}33`,
+          borderColor: `${colors.warn}`,
+        },
+        color: colors.warn,
+      },
+    ])));
+
+    this.immunized$ = this.gameService.gameState$.pipe(
+      map(gameState => Math.round(gameState.sirState.resistant
+        + gameState.stats.vaccinationRate * gameState.sirState.suspectible),
+      ),
+    );
+
+    this.activeTab = 0;
+
+    this.templateData = [
+      {
+        label: 'Nově nakažení',
+        icon: 'virus' as SvgIconName,
+        headerData$: this.infectedToday$.pipe(map(gs => gs.value)),
+        data$: this.infectedToday$ as unknown as Observable<ChartValue>,
+        customOptions: null,
+        pipe: [false, false],
+      },
+      {
+        label: 'Nově zemřelých',
+        icon: 'skull' as SvgIconName,
+        headerData$: this.deathToday$.pipe(map(gs => gs.value)),
+        data$: this.deathToday$ as unknown as Observable<ChartValue>,
+        customOptions: null,
+        pipe: [false, false],
+      },
+      {
+        label: 'Celkové náklady',
+        icon: 'money' as SvgIconName,
+        headerData$: this.costTotal$.pipe(map(gs => gs.value)),
+        data$: this.costTotal$ as unknown as Observable<ChartValue>,
+        customOptions: this.costTotalCustomOptions,
+        pipe: [true, true],
+      },
+      {
+        label: 'Imunní',
+        icon: 'hospital' as SvgIconName,
+        headerData$: this.immunized$,
+        multiLineData$: this.immunizedChart$ as Observable<ChartValue[]>,
+        customOptions: null,
+        pipe: [false, false],
+      },
+    ];
   }
 
   ngAfterViewInit() {

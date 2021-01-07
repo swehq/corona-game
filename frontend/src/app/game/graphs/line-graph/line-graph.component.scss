@@ -1,24 +1,25 @@
 @import '../../../../definitions';
 
+$pan-arrows-margin-right: 1rem;
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes indicator-animation {
+  0%   {width: 2rem; height: 2px;}
+  100% {width: 0; height: 2px;}
+}
+
 :host {
   @include flex-container;
   position: relative;
 }
 
-.slider {
-  position: absolute;
-  left: 6rem;
-  top: -0.5rem;
-  z-index: 100;
-
-  label {
-    margin-left: 0.8rem;
-  }
-}
-
 .chart {
   position: relative;
-
   width: 100%;
   min-height: unset;
   padding-bottom: 46.6%;
@@ -30,9 +31,46 @@
 
   canvas {
     position: absolute;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
 
     width: 100% !important;
     height: 100% !important;
   }
+}
+
+.blinking {
+  animation: blinker 0.5s linear infinite;
+}
+
+.pan-arrows {
+  margin-left: 24px;
+
+  button {
+    padding: unset;
+    min-width: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    line-height: 2.5rem;
+  }
+
+  .left-pan-arrow {
+    margin-right: 24px;
+  }
+
+  .right-pan-arrow {
+    margin-right: $pan-arrows-margin-right;
+  }
+
+  .indicator {
+    position: absolute;
+    right: $pan-arrows-margin-right;
+    background: $light-text;
+    height: 0;
+    animation-name: indicator-animation;
+
+    // If change, change also `autoPanResetTimer` in pan-component.ts
+    animation-duration: 3.5s;
+  }
+
 }

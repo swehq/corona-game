@@ -1,12 +1,7 @@
 <div class="tabs">
   <div class="tabs-header">
-    <div
-      class="tabs-header-item"
-      [class.is-active]="activeTab === index"
-      [matTooltip]="tab.label"
-      matRipple
-      (click)="activeTab = index"
-      *ngFor="let tab of templateData; let index = index">
+    <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label" matRipple
+         (click)="activeTab = index" *ngFor="let tab of templateData; let index = index">
       <span class="tab-icon">
         <cvd-icon [svgIcon]="tab.icon"></cvd-icon>
         <span>

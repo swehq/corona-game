@@ -5,11 +5,11 @@ import {ChartDataSets, ChartOptions} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
 import {BaseChartDirective, Label} from 'ng2-charts';
-import {Observable, Subject} from 'rxjs';
-import {debounceTime, withLatestFrom} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
+import {Pan} from './pan';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -35,7 +35,6 @@ export const colors = {
   styleUrls: ['./line-graph.component.scss'],
 })
 export class LineGraphComponent implements OnInit, AfterViewInit {
-
   @Input()
   customOptions: ChartOptions | null = null;
 
@@ -46,13 +45,14 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   @Input() multiLineTick$: Observable<ChartValue[]> | null = null;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
+  pan: Pan;
+
   scaleLevels: Level[] = [
     [0, 'Celý graf'],
     [90, 'Kvartál'],
     [30, 'Měsíc'],
   ];
 
-  private panAutoReset$ = new Subject();
   private currentState: NodeState = 'ok';
   private currentDatasetIndex = 0;
   private tooltipLabels: ((value: number) => string)[] = [];
@@ -83,7 +83,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       callbacks: {
         label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
         title: tooltipItem => {
-          this.panAutoReset$.next();
+          this.pan.panAutoReset$.next();
           return (tooltipItem[0].index && this.mitigationNodes[tooltipItem[0].index]) || '';
         },
       },
@@ -130,19 +130,19 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           mode: 'x',
           speed: 2,
           onPan: () => {
-            this.panActive = true;
+            this.pan.panActive = true;
           },
           onPanComplete: () => {
-            this.panAutoReset$.next();
+            this.pan.panAutoReset$.next();
+            this.cd.detectChanges();
           },
         },
       },
     },
   };
 
-  panActive = false;
-
-  constructor(private cd: ChangeDetectorRef, private gameService: GameService) {
+  constructor(public cd: ChangeDetectorRef, public gameService: GameService) {
+    this.pan = new Pan(this);
   }
 
   ngOnInit() {
@@ -156,9 +156,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.currentState = tick.state;
         this.currentDatasetIndex++;
 
-        const padData = this.seriesLength ?
-          [...Array(this.seriesLength - 1).fill(NaN), this.lastValue] :
-          [];
+        const padData = this.seriesLength
+          ? [...Array(this.seriesLength - 1).fill(NaN), this.lastValue]
+          : [];
 
         this.datasets = [...this.datasets, {
           ...this.getDefaultDataset(),
@@ -176,16 +176,18 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       this.cd.markForCheck();
     });
 
-    this.multiLineTick$?.pipe(
-      untilDestroyed(this),
-    ).subscribe(ticks => {
+    this.multiLineTick$?.pipe(untilDestroyed(this)).subscribe(ticks => {
       ticks.forEach((tick, index) => {
         if (this.datasets[index]) {
           this.tooltipLabels[index] = tick.tooltipLabel;
           this.datasets[index].data!.push(tick.value);
         } else {
           this.tooltipLabels.push(tick.tooltipLabel);
-          this.datasets.push({...this.getDefaultDataset(tick.color), data: [tick.value], ...tick.datasetOptions});
+          this.datasets.push({
+            ...this.getDefaultDataset(tick.color),
+            data: [tick.value],
+            ...tick.datasetOptions,
+          });
         }
       });
 
@@ -195,37 +197,50 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       );
     });
 
-    this.panAutoReset$.pipe(
-      debounceTime(3000),
-      withLatestFrom(this.gameService.speed$),
-      untilDestroyed(this),
-    ).subscribe(([_, speed]) => {
-      if (speed === 'pause') return;
-      this.panActive = false;
-      this.setXAxisTicks({max: null});
-      this.setScope();
-    });
-
-    this.gameService.reset$.pipe(
-      untilDestroyed(this),
-    ).subscribe(() => this.reset());
+    this.gameService.reset$
+      .pipe(untilDestroyed(this))
+      .subscribe(() => this.reset());
 
     this.options = {...this.options, ...this.customOptions};
     this.cd.markForCheck();
   }
 
   ngAfterViewInit() {
+    this.pan.init(this.chart);
     this.setScope(this.scopeFormControl.value);
 
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
     ).subscribe(level => {
-      this.panActive = false;
+      this.pan.panActive = false;
+      this.pan.minIndex = 0;
       this.setScope(level);
       this.cd.markForCheck();
     });
 
     this.scopeFormControl.updateValueAndValidity();
+  }
+
+  setScope(scope?: number) {
+    if (this.pan.panActive) return;
+
+    if (scope !== undefined) {
+      this.scope = scope;
+    }
+    const index = this.labels.length - this.scope;
+    const min = this.scope && index > 0 ? this.labels[index] : null;
+    this.setXAxisTicks({min, max: null});
+    this.chart?.update();
+  }
+
+  setXAxisTicks(options: {
+    min?: Label | null,
+    max?: Label | null,
+  }) {
+    const chart = this.chart?.chart as any;
+    const chartOptions = chart?.scales['x-axis-0']?.options;
+    if (!chartOptions) return;
+    chartOptions.ticks = {...chartOptions.ticks, ...options};
   }
 
   private reset() {
@@ -239,37 +254,18 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.tooltipLabels = [];
   }
 
-  private setScope(scope?: number) {
-    if (this.panActive) return;
-
-    if (scope !== undefined) {
-      this.scope = scope;
-    }
-    const index = this.labels.length - this.scope;
-    const min = (this.scope && index > 0) ? this.labels[index] : null;
-    this.setXAxisTicks({min, max: null});
-    this.chart?.update();
-  }
-
-  private setXAxisTicks(options: {
-    min?: Label | null,
-    max?: Label | null,
-  }) {
-    const chart = this.chart?.chart as any;
-    const chartOptions = chart?.scales['x-axis-0']?.options;
-    if (!chartOptions) return;
-    chartOptions.ticks = {...chartOptions.ticks, ...options};
-  }
-
   private getDefaultDataset(color = colors.ok): ChartDataSets {
     return {
       borderColor: `${color}`,
       backgroundColor: `${color}33`,
       pointBorderColor: `${color}`,
       pointBackgroundColor: context => {
-        return context.dataIndex && this.mitigationNodes[context.dataIndex] ? `${color}` : `${color}33`;
+        return context.dataIndex && this.mitigationNodes[context.dataIndex]
+          ? `${color}`
+          : `${color}33`;
       },
-      pointRadius: context => context.dataIndex && this.mitigationNodes[context.dataIndex] ? 4 : 1,
+      pointRadius: context =>
+        context.dataIndex && this.mitigationNodes[context.dataIndex] ? 4 : 0,
       pointBorderWidth: 1,
       pointHitRadius: 5,
     };

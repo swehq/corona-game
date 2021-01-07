@@ -3,3 +3,9 @@
 :host {
   @include panel;
 }
+
+.mobile-control-panel {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100vw;
+}

@@ -25,3 +25,11 @@
 .content {
   width: 100%;
 }
+
+.mobile-mitigation-panel {
+  position: fixed;
+  width: 100vw;
+  max-height: fit-content;
+  bottom: -0.5%;
+  background-color: #222222;
+}

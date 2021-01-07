@@ -1,4 +1,5 @@
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {HostListener} from '@angular/core';
 import {filter, map} from 'rxjs/operators';
 import {GameService} from '../game.service';
 import {OutroService} from '../outro/outro.service';
@@ -18,6 +19,9 @@ type GameState = 'intro' | 'game' | 'outro';
 export class GameComponent {
 
   state: GameState = 'intro';
+  isSmallDevice: boolean = false;
+  winWidth: number = window.innerWidth;
+  maxMobileWidth: number = 894;
 
   constructor(
     public debugModeService: DebugModeService,
@@ -27,6 +31,11 @@ export class GameComponent {
   ) {
     // fetch historical game results from BE
     window.setTimeout(() => outroService.fetchAllResults(), 10_000);
+
+    // detect device type
+    if (this.winWidth <= this.maxMobileWidth) {
+      this.isSmallDevice = true;
+    }
 
     // send current game result into outro
     gameService.gameState$.pipe(
@@ -51,9 +60,16 @@ export class GameComponent {
     });
   }
 
+
   @HostBinding('class.is-event-active')
   get isEventActiveClass() {
     return this.gameService.event;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.winWidth = event.target.innerWidth;
+    this.isSmallDevice = this.winWidth <= this.maxMobileWidth;
   }
 
   newGame() {

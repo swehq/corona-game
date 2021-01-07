@@ -9,14 +9,23 @@
     <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
       <cvd-graphs></cvd-graphs>
       <cvd-status-display></cvd-status-display>
+      <cvd-simulation-control *ngIf="isSmallDevice && debugModeService.getDebugMode()"></cvd-simulation-control>
+      <cvd-news *ngIf="isSmallDevice"></cvd-news>
+      <cvd-row *ngIf="isSmallDevice" style="height: 50vh;"></cvd-row>
     </cvd-col>
 
-    <cvd-col grow alignItems="stretch" [spacing]="3">
+    <cvd-col *ngIf="!isSmallDevice" grow alignItems="stretch" [spacing]="3">
       <cvd-mitigations-control></cvd-mitigations-control>
       <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
       <cvd-news></cvd-news>
     </cvd-col>
   </cvd-row>
+
+  <cvd-row *ngIf="isSmallDevice" grow class="mobile-mitigation-panel">
+    <cvd-mitigations-control [isSmallDevice]="isSmallDevice" style="background-color: #222222; padding-left: 0px;">
+    </cvd-mitigations-control>
+  </cvd-row>
+
 </cvd-col>
 
 <cvd-col *ngIf="state === 'outro'">

@@ -1,29 +1,55 @@
-<cvd-col [spacing]="3" alignItems="stretch" [formGroup]="mitigationsService.formGroup">
+<cvd-col *ngIf="!isSmallDevice" [spacing]="3" alignItems="stretch" [formGroup]="mitigationsService.formGroup">
+    <cvd-row [spacing]="3">
+      <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+    </cvd-row>
 
-  <cvd-row [spacing]="3">
-    <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
-    <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
-  </cvd-row>
+    <cvd-col [spacing]="3" alignItems="stretch">
+      <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
+      <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
+      <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
 
-  <cvd-col [spacing]="3" alignItems="stretch">
-    <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
-    <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
-    <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+      <div>Kompenzovat</div>
 
-    <div>Kompenzovat</div>
+      <cvd-row [spacing]="3">
+        <cvd-mitigation-bool grow formControlName="eventsCompensation">Akce</cvd-mitigation-bool>
+        <cvd-mitigation-bool grow formControlName="businessesCompensation">Služby</cvd-mitigation-bool>
+        <cvd-mitigation-bool grow formControlName="schoolsCompensation">Školy</cvd-mitigation-bool>
+      </cvd-row>
+    </cvd-col>
 
     <cvd-row [spacing]="3">
-      <cvd-mitigation-bool grow formControlName="eventsCompensation">Akce</cvd-mitigation-bool>
-      <cvd-mitigation-bool grow formControlName="businessesCompensation">Služby</cvd-mitigation-bool>
-      <cvd-mitigation-bool grow formControlName="schoolsCompensation">Školy</cvd-mitigation-bool>
+      <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
+      <cvd-mitigation-bool grow formControlName="stayHome">Lockdown</cvd-mitigation-bool>
     </cvd-row>
-  </cvd-col>
+</cvd-col>
 
-  <cvd-row [spacing]="3">
-    <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
-    <cvd-mitigation-bool grow formControlName="stayHome">Lockdown</cvd-mitigation-bool>
+<cvd-col *ngIf="isSmallDevice" alignItems="stretch" [formGroup]="mitigationsService.formGroup"
+  class="mobile-control-panel">
+  <cvd-row grow [spacing]="3">
+
+    <cvd-col [spacing]="3" alignItems="stretch" style="padding-left: 16px;">
+      <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+    </cvd-col>
+
+    <cvd-col [spacing]="3" alignItems="stretch">
+      <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
+      <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
+      <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+    </cvd-col>
+
+    <cvd-col [spacing]="3" alignItems="stretch">      
+      <cvd-mitigation-bool grow formControlName="eventsCompensation">Kompenzovat Akce</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="businessesCompensation">Kompenzovat Služby</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="schoolsCompensation">Kompenzovat Školy</cvd-mitigation-bool>
+    </cvd-col>
+
+    <cvd-col [spacing]="3">
+      <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
+      <cvd-mitigation-bool grow formControlName="stayHome">Lockdown</cvd-mitigation-bool>
+    </cvd-col>
   </cvd-row>
-
 </cvd-col>
 
 <cvd-help-tooltip>

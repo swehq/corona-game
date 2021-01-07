@@ -23,6 +23,11 @@ const GameDataSchema = new Schema({
       required: true,
     },
   },
+  created: {
+    type: Date,
+    reqired: true,
+    default: Date.now,
+  },
 });
 
 interface GameDataDocument extends GameData, Document {}

@@ -44,7 +44,7 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'Hra začíná',
         text: 'Nacházíte se v prvním dni hry, je {{date}}, první nakažení SARS-CoV-19 se blíží.',
-        help: 'Stisknete OK a hra začíná',
+        help: 'Stiskněte OK a hra začne',
       },
     ],
     condition: (s: DayState) => s.date === '2020-03-01',

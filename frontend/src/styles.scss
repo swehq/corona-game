@@ -1,30 +1,41 @@
 html, body {
   height: 100%;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
   font-size: 8px;
 }
 
 body {
-  margin: 1rem;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 @media only screen and (min-width: 600px) {
   html {
     font-size: 10px;
-    margin: 1rem;
+
+    cvd-app {
+      padding: 2rem 1rem;
+    }
   }
 }
 
 @media only screen and (min-width: 768px) {
   html {
     font-size: 11px;
-    margin: 1.2rem;
+
+    cvd-app {
+      padding: 2rem 1.2rem;
+    }
   }
 }
 
 @media only screen and (min-width: 1384px) {
   html {
     font-size: 12px;
-    margin: 1.5rem;
+
+    cvd-app {
+      padding: 2rem 1.5rem;
+    }
   }
 }

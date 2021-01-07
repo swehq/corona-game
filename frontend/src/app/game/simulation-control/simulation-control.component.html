@@ -9,9 +9,13 @@
     <cvd-row wrap>
       <cvd-button (click)="gameService.togglePause()" [color]="speed === 'pause' ? 'red' : 'blue'">{{speed === 'pause' ?
         'Resume' : 'Pause'}}</cvd-button>
-      <cvd-button (click)="gameService.setSpeed('max')">Compute</cvd-button>
+      <cvd-button (click)="gameService.setSpeed('fwd')">Fast</cvd-button>
+      <cvd-button (click)="gameService.setSpeed('max')">Skip to end</cvd-button>
+    </cvd-row>
+    <cvd-row wrap>
+      <cvd-button (click)="gameService.setSpeed('finished')">Results</cvd-button>
       <cvd-button (click)="download()">Download</cvd-button>
-      <cvd-button (click)="validateGameData()">Validate</cvd-button>
+      <cvd-button (click)="save()">Save</cvd-button>
     </cvd-row>
   </cvd-row>
 

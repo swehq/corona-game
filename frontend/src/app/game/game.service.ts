@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Game} from '../services/game';
+import {Game, GameData} from '../services/game';
 import {Event} from '../services/events';
 import {ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
@@ -13,7 +13,7 @@ export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 })
 export class GameService {
   readonly PLAY_SPEED = 400; // ms
-  readonly FORWARD_SPEED = 150; // ms
+  readonly FORWARD_SPEED = 0; // ms
   readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
@@ -85,9 +85,9 @@ export class GameService {
     this._speed$.next(speed);
 
     if (speed === 'max') {
-      console.time('Computation');
       while (!this.game.isFinished()) this.tick(false);
-      console.timeEnd('Computation');
+      this.updateChart('all');
+      this.setSpeed('pause');
     } else if (speed === 'play') {
       this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
     } else if (speed === 'fwd') {
@@ -108,14 +108,14 @@ export class GameService {
       return;
     }
 
-    const gameUpdate = this.game.moveForward();
-    const event = gameUpdate.event;
-    this.showEvent(event);
-
     if (this.game.isFinished()) {
       this.setSpeed('finished');
       return;
     }
+
+    const gameUpdate = this.game.moveForward();
+    const event = gameUpdate.event;
+    this.showEvent(event);
 
     if (updateChart) this.updateChart();
   }
@@ -126,5 +126,15 @@ export class GameService {
 
     this.event = event;
     this.setSpeed('pause');
+  }
+
+  getGameData(): GameData {
+    return {
+      mitigations: {
+        history: this.game.mitigationHistory,
+        params: this.game.mitigationParams,
+      },
+      simulation: this.modelStates,
+    };
   }
 }

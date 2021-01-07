@@ -45,6 +45,13 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Hra začíná',
         text: 'Nacházíte se v prvním dni hry, je {{date}}, první nakažení SARS-CoV-19 se blíží.',
         help: 'Stiskněte OK a hra začne',
+        // TODO just a demonstration
+        mitigations: [
+          // use optinal .name to display event mitigation in the list
+          {label: 'A', name: 'Ad hoc opatření A', timeout: 60},
+          {label: 'B', name: 'Ad hoc opatření B', timeout: 60},
+          {label: 'C', name: 'Ad hoc opatření C', timeout: 60},
+        ],
       },
     ],
     condition: (s: DayState) => s.date === '2020-03-01',

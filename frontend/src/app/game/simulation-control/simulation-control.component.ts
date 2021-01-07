@@ -1,10 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {merge} from 'rxjs';
-import {concatMap, map, tap} from 'rxjs/operators';
-import {GameData} from 'src/app/services/game';
-import {validateGame} from 'src/app/services/validate';
+import {map} from 'rxjs/operators';
 import {ConfigService} from '../../services/config.service';
 import {GameService, Speed} from '../game.service';
 
@@ -41,18 +38,8 @@ export class SimulationControlComponent implements OnInit {
     });
   }
 
-  private getGameData(): GameData {
-    return {
-      mitigations: {
-        history: this.gameService.game.mitigationHistory,
-        params: this.gameService.game.mitigationParams,
-      },
-      simulation: this.gameService.modelStates,
-    };
-  }
-
   download() {
-    const dataString = JSON.stringify(this.getGameData(), null, 2);
+    const dataString = JSON.stringify(this.gameService.getGameData(), null, 2);
 
     const element = document.createElement('a');
     element.style.display = 'none';
@@ -65,23 +52,8 @@ export class SimulationControlComponent implements OnInit {
     document.body.removeChild(element);
   }
 
-  validateGameData() {
-    const gameData = this.getGameData();
-
-    // TODO remove, just a testing call
-    validateGame(gameData);
-
-    // save game data
-    this.httpClient.post('/api/game-data', gameData)
-      .pipe(
-        concatMap((i: any) => merge(
-          // get results for scatter chart
-          // tslint:disable-next-line:no-console
-          this.httpClient.get('/api/game-data').pipe(tap(console.log)),
-          // TODO remove, just a demonstration of how to get saved game data
-          this.httpClient.get(`/api/game-data/${i.id}`),
-        )),
-      )
-      .subscribe();
+  save() {
+    const gameData = this.gameService.getGameData();
+    this.httpClient.post('/api/game-data', gameData).subscribe();
   }
 }

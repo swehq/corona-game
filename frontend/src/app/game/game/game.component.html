@@ -5,20 +5,17 @@
 </cvd-col>
 
 <cvd-col *ngIf="state === 'game'">
-  <cvd-news></cvd-news>
-
-  <cvd-row class="content" [spacing]="3" wrap  alignItems="flex-start" [@inOutAnimation]>
-
+  <cvd-row class="content" [spacing]="3" wrap alignItems="flex-start" [@inOutAnimation]>
     <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
       <cvd-graphs></cvd-graphs>
-      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
+      <cvd-status-display></cvd-status-display>
     </cvd-col>
 
     <cvd-col grow alignItems="stretch" [spacing]="3">
-      <cvd-status-display></cvd-status-display>
       <cvd-mitigations-control></cvd-mitigations-control>
+      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
+      <cvd-news></cvd-news>
     </cvd-col>
-
   </cvd-row>
 </cvd-col>
 

@@ -10,6 +10,7 @@ export interface EventMitigation extends MitigationEffect {
   timeout: number;
   label: string;
   id?: string;
+  name?: string; // if filled, the mitigation is displayed to the user
 }
 
 export interface Event {

@@ -21,4 +21,8 @@ export class NewsComponent {
     this.gameService.event = undefined;
     this.gameService.setSpeed('play');
   }
+
+  get today() {
+    return new Date(this.gameService.lastDate).toLocaleDateString();
+  }
 }

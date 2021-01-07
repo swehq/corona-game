@@ -1,18 +1,27 @@
-<div class="slider">
-  <cvd-mitigation-scale
-    [formControl]="scopeFormControl"
-    [levels]="scaleLevels">
-  </cvd-mitigation-scale>
-</div>
-
-<div class="chart">
-  <div class="chart-inner">
-    <canvas
-      baseChart
-      [datasets]="datasets"
-      [labels]="labels"
-      [options]="options"
-      [chartType]="'line'">
-    </canvas>
-  </div>
-</div>
+<cvd-col grow>
+  <cvd-row grow justifyContent="flex-end" alignItems="center" style="width: 100%">
+    <cvd-mitigation-scale [formControl]="scopeFormControl" [levels]="scaleLevels"></cvd-mitigation-scale>
+    <div class="pan-arrows">
+      <button mat-icon-button (click)="pan.panLeft()" [disabled]="pan.getDisability('left')"
+              class="left-pan-arrow">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-icon-button (click)="pan.panRight()" [disabled]="pan.getDisability('right')">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button [ngClass]="{'blinking': pan.autoResetIndicator}" mat-icon-button
+              (click)="pan.reset()" [disabled]="pan.getDisability('right')"
+              class="right-pan-arrow">
+        <mat-icon>last_page</mat-icon>
+      </button>
+      <div *ngIf="pan.autoResetIndicator" class="indicator"></div>
+    </div>
+  </cvd-row>
+  <cvd-row style="width: 100%">
+    <div class="chart">
+      <div class="chart-inner">
+        <canvas baseChart [datasets]="datasets" [labels]="labels" [options]="options" [chartType]="'line'"></canvas>
+      </div>
+    </div>
+  </cvd-row>
+</cvd-col>

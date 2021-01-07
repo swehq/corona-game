@@ -3,12 +3,14 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ChartsModule} from 'ng2-charts';
 import {SharedModule} from '../shared/shared.module';
+import {EventsLayoutComponent} from './events-layout/events-layout.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
 import {GraphSizeDirective} from './graphs/graph-size.directive';
 import {GraphsComponent} from './graphs/graphs.component';
 import {LineGraphComponent} from './graphs/line-graph/line-graph.component';
 import {ScatterGraphComponent} from './graphs/scatter-graph/scatter-graph.component';
+import {IntroComponent} from './intro/intro.component';
 import {MitigationBoolComponent} from './mitigations-control/controls/mitigation-bool.component';
 import {MitigationScaleComponent} from './mitigations-control/controls/mitigation-scale.component';
 import {MitigationSlideComponent} from './mitigations-control/controls/mitigation-slide.component';
@@ -16,15 +18,17 @@ import {MitigationToggleComponent} from './mitigations-control/controls/mitigati
 import {MitigationConfigDirective} from './mitigations-control/mitigation-config.directive';
 import {MitigationsControlComponent} from './mitigations-control/mitigations-control.component';
 import {NewsComponent} from './news/news.component';
+import {OutroComponent} from './outro/outro.component';
 import {SimulationControlComponent} from './simulation-control/simulation-control.component';
 import {StatusDisplayComponent} from './status-display/status-display.component';
-import {EventsLayoutComponent} from './events-layout/events-layout.component';
 
 @NgModule({
   declarations: [
+    EventsLayoutComponent,
     GameComponent,
     GraphsComponent,
     GraphSizeDirective,
+    IntroComponent,
     LineGraphComponent,
     MitigationBoolComponent,
     MitigationConfigDirective,
@@ -33,10 +37,10 @@ import {EventsLayoutComponent} from './events-layout/events-layout.component';
     MitigationSlideComponent,
     MitigationToggleComponent,
     NewsComponent,
+    OutroComponent,
     ScatterGraphComponent,
     SimulationControlComponent,
     StatusDisplayComponent,
-    EventsLayoutComponent,
   ],
   imports: [
     ChartsModule,

@@ -1,4 +1,3 @@
-import {HttpClient} from '@angular/common/http';
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
@@ -24,7 +23,6 @@ export class SimulationControlComponent implements OnInit {
 
   constructor(
     private cd: ChangeDetectorRef,
-    private httpClient: HttpClient,
     public gameService: GameService,
     public configService: ConfigService,
   ) { }
@@ -53,7 +51,6 @@ export class SimulationControlComponent implements OnInit {
   }
 
   save() {
-    const gameData = this.gameService.getGameData();
-    this.httpClient.post('/api/game-data', gameData).subscribe();
+    this.gameService.save();
   }
 }

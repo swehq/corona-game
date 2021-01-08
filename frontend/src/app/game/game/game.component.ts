@@ -2,7 +2,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter, map} from 'rxjs/operators';
 import {GameService} from '../game.service';
 import {OutroService} from '../outro/outro.service';
-import {Component, HostBinding} from '@angular/core';
+import {ChangeDetectorRef, Component, HostBinding} from '@angular/core';
 import {DebugModeService} from 'src/app/services/debug-mode.service';
 import {inOutAnimation} from 'src/app/utils/animations';
 
@@ -23,6 +23,7 @@ export class GameComponent {
     public debugModeService: DebugModeService,
     outroService: OutroService,
     private gameService: GameService,
+    cd: ChangeDetectorRef,
   ) {
     // fetch historical game results from BE
     window.setTimeout(() => outroService.fetchAllResults(), 10_000);
@@ -43,9 +44,10 @@ export class GameComponent {
     gameService.speed$.pipe(
       filter(speed => speed === 'finished'),
       untilDestroyed(this),
-    ).subscribe(
-      () => this.state = 'outro',
-    );
+    ).subscribe(() => {
+      this.state = 'outro';
+      cd.markForCheck();
+    });
   }
 
   @HostBinding('class.is-event-active')

@@ -1,9 +1,11 @@
 <cvd-col>
   <h2>Dnes je {{today}}</h2>
-  <div *ngIf="gameService.game.eventMitigations.length">
+  <div *ngIf="hasNamedEventMitigation()">
     <div>Zvláštní opatření</div>
-    <small *ngFor="let m of gameService.game.eventMitigations">
-      {{m.name}}, do konce {{m.timeout}} dní
-    </small>
+    <ng-container *ngFor="let m of gameService.game.eventMitigations">
+      <small *ngIf="m.name">
+        {{m.name}}, do konce {{m.timeout}} dní
+      </small>
+    </ng-container>
   </div>
 </cvd-col>

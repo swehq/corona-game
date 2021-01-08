@@ -7,7 +7,7 @@ type Level = [value: any, label: string];
 @Component({
   selector: 'cvd-mitigation-toggle',
   template: `
-    <cvd-row wrap justifyContent="flex-start">
+    <cvd-row justifyContent="flex-start">
       <div class="mitigation-label" [ngStyle]="{'min-width': labelMinWidth}">
         <ng-content></ng-content>
       </div>
@@ -16,7 +16,7 @@ type Level = [value: any, label: string];
         [value]="value"
         (change)="onUserAction($event.value)"
       >
-        <mat-button-toggle grow
+        <mat-button-toggle grow style="overflow: visible"
           *ngFor="let level of levels"
           [value]="level[0]"
         >

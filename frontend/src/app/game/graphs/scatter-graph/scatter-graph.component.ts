@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
+import {formatNumber} from '../../../utils/format';
 
 @Component({
   selector: 'cvd-scatter-graph',
@@ -28,6 +29,18 @@ export class ScatterGraphComponent {
       xAxes: [{
         type: 'linear',
         position: 'bottom',
+        ticks: {
+          callback(value: number | string) {
+            return formatNumber(+value, false, true);
+          },
+        },
+      }],
+      yAxes: [{
+        ticks: {
+          callback(value: number | string) {
+            return formatNumber(+value, false, true);
+          },
+        },
       }],
     },
     plugins: {

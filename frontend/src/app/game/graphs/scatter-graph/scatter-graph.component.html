@@ -1,9 +1,11 @@
 <div class="chart">
-  <canvas
-    *ngIf="datasets"
-    baseChart
-    [datasets]="datasets"
-    [options]="options"
-    [chartType]="'scatter'"
-  ></canvas>
+  <div class="chart-inner">
+    <canvas
+      *ngIf="datasets"
+      baseChart
+      [datasets]="datasets"
+      [options]="options"
+      [chartType]="'scatter'"
+    ></canvas>
+  </div>
 </div>

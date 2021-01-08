@@ -54,4 +54,9 @@ export class GameComponent {
   get isEventActiveClass() {
     return this.gameService.event;
   }
+
+  newGame() {
+    this.gameService.restartSimulation();
+    this.state = 'game';
+  }
 }

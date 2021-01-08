@@ -20,5 +20,7 @@
 </cvd-col>
 
 <cvd-col *ngIf="state === 'outro'">
-  <cvd-outro [@inOutAnimation]></cvd-outro>
+  <cvd-outro [@inOutAnimation]>
+    <cvd-button grow (click)="newGame()" color="warn">Nová hra</cvd-button>
+  </cvd-outro>
 </cvd-col>

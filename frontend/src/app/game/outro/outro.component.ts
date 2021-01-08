@@ -5,6 +5,9 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GameResult, OutroService} from './outro.service';
 
+const MY_RESULT_COLOR = '#9fe348';
+const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.5)';
+
 const convert: (result: GameResult) => ChartPoint =
   result => ({
     x: result.dead,
@@ -34,9 +37,9 @@ export class OutroComponent {
         datasets.push({
           label: 'Můj výsledek',
           data: myPoints,
-          backgroundColor: 'red',
-          pointBorderColor: 'red',
-          pointBackgroundColor: 'red',
+          backgroundColor: MY_RESULT_COLOR,
+          pointBorderColor: MY_RESULT_COLOR,
+          pointBackgroundColor: MY_RESULT_COLOR,
           pointRadius: 10,
         });
       }
@@ -45,9 +48,9 @@ export class OutroComponent {
         datasets.push({
           label: 'Výsledky ostatních her',
           data: allPoints,
-          backgroundColor: 'blue',
-          pointBorderColor: 'blue',
-          pointBackgroundColor: 'blue',
+          backgroundColor: ALL_RESULTS_COLOR,
+          pointBorderColor: ALL_RESULTS_COLOR,
+          pointBackgroundColor: ALL_RESULTS_COLOR,
         });
       }
 

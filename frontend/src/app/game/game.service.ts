@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Game, GameData} from '../services/game';
 import {Event} from '../services/events';
 import {ReplaySubject, Subject} from 'rxjs';
@@ -32,7 +33,7 @@ export class GameService {
   private _resetSubjects$ = new Subject<void>();
   resetSubjects$ = this._resetSubjects$.asObservable();
 
-  constructor() {
+  constructor(private httpClient: HttpClient) {
     this.restartSimulation();
   }
 
@@ -114,6 +115,7 @@ export class GameService {
     }
 
     if (this.game.isFinished()) {
+      this.save();
       this.setSpeed('finished');
       return;
     }
@@ -141,5 +143,10 @@ export class GameService {
       },
       simulation: this.modelStates,
     };
+  }
+
+  save() {
+    const gameData = this.getGameData();
+    this.httpClient.post('/api/game-data', gameData).subscribe();
   }
 }

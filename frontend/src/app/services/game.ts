@@ -173,6 +173,7 @@ export class Game {
       economicCost: 0,
       compensationCost: 0,
       stabilityCost: 0,
+      schoolDaysLost: 0,
       vaccinationPerDay: this.vaccinationStartDate <= date ? this.vaccinationPerDay : 0,
     };
     let bordersClosed = false;
@@ -191,18 +192,18 @@ export class Game {
       // mitigation not set for the level
       if (mitigations[mitigationParam.id] !== mitigationParam.level) return;
 
-      this.applyMitigationEffect(ret, mitigationParam);
+      Game.applyMitigationEffect(ret, mitigationParam);
       bordersClosed ||= mitigationParam.flags.isBorders;
     });
 
     ret.exposedDrift += bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
 
-    eventMitigations.forEach(em => this.applyMitigationEffect(ret, em));
+    eventMitigations.forEach(em => Game.applyMitigationEffect(ret, em));
 
     return ret;
   }
 
-  private applyMitigationEffect(affected: MitigationEffect, applied: Partial<MitigationEffect>) {
+  private static applyMitigationEffect(affected: MitigationEffect, applied: Partial<MitigationEffect>) {
     for (const key in applied) {
       if (key === 'rMult') {
         (affected as any)[key] *= (applied as any)[key];
@@ -234,24 +235,26 @@ export class Game {
     addMitigation(['businesses', 'some'], 0.18, [-0.08, 0.40], 0.12 * cs(), 0.07 * ss());
     addMitigation(['businesses', 'most'], 0.27, [-0.03, 0.49], 0.32 * cs(), 0.15 * ss());
     // The universities are hard to separate from all schools, set the effect ~1/2
-    addMitigation(['schools', 'universities'], 0.17, [0.03, 0.31], 0 * cs(), 0.02 * ss(), {isSchool: true});
-    addMitigation(['schools', 'all'], 0.38, [0.16, 0.54], 0.06 * cs(), 0.05 * ss(), {isSchool: true});
+    addMitigation(['schools', 'universities'], 0.17, [0.03, 0.31], 0 * cs(), 0.02 * ss(),
+      {isSchool: true}, {schoolDaysLost: 155_000});
+    addMitigation(['schools', 'all'], 0.38, [0.16, 0.54], 0.06 * cs(), 0.05 * ss(),
+      {isSchool: true}, {schoolDaysLost: 2_055_551});
     // Marginal effect of lockdowns on the top of the other measures
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 0.35 * cs(), 0.15 * ss());
 
     // effectivityConfidence 2sigma confidence interval (can be asymmetric)
     // isSchool mitigations are effective during school holidays "for free"
     // isBorders controls epidemic drift across borders
-    function addMitigation(mitigation: MitigationPair, effectivity: number,
+    function addMitigation(mitigationPair: MitigationPair, effectivity: number,
       effectivityConfidence: [number, number], economicCost: number, stabilityCost: number,
-      flagsParam: Partial<MitigationFlags> = {}) {
+      flagsParam: Partial<MitigationFlags> = {}, additionalEffect?: Partial<MitigationEffect>) {
 
       const flags: MitigationFlags = {isBorders: false, isSchool: false, ...flagsParam};
-      const id = mitigation[0];
-      const level = mitigation[1];
+      const id = mitigationPair[0];
+      const level = mitigationPair[1];
       const effectivitySigma = effectivitySigmaScaling * (effectivityConfidence[1] - effectivityConfidence[0]) / 4;
 
-      res.push({
+      const mitigation = {
         id,
         level,
         rMult: clippedLogNormalSampler(1 - effectivity, effectivitySigma)(),
@@ -260,8 +263,13 @@ export class Game {
         compensationCost: 0,
         stabilityCost,
         vaccinationPerDay: 0,
+        schoolDaysLost: 0,
         flags,
-      });
+      };
+
+      if (additionalEffect) Game.applyMitigationEffect(mitigation, additionalEffect);
+
+      res.push(mitigation);
     }
 
     return res;

@@ -31,6 +31,7 @@ export interface MitigationEffect {
   compensationCost: number;
   stabilityCost: number;
   vaccinationPerDay: number;
+  schoolDaysLost: number;
 }
 
 interface SirState {
@@ -80,6 +81,7 @@ export interface Stats {
   economicCosts: MetricStats;
   compensationCosts: MetricStats;
   costs: MetricStats;
+  schoolDaysLost: MetricStats;
   activeInfections: number;
   mortality: number;
   hospitalsUtilization: number;
@@ -344,6 +346,8 @@ export class Simulation {
       mitigationEffect ? mitigationEffect.compensationCost : 0);
     const costs = this.calcMetricStats('costs',
       economicCosts.today * this.economicCostMultiplier + compensationCosts.today);
+    const schoolDaysLost = this.calcMetricStats('schoolDaysLost',
+      mitigationEffect ? mitigationEffect.schoolDaysLost : 0);
 
     const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
@@ -356,6 +360,7 @@ export class Simulation {
       economicCosts,
       compensationCosts,
       costs,
+      schoolDaysLost,
       hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
       stability: modelInputs ? modelInputs.stability : this.initialStability,

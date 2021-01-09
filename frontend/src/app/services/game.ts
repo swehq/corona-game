@@ -170,7 +170,8 @@ export class Game {
     const ret: MitigationEffect = {
       rMult: 1.0,
       exposedDrift: 0,
-      cost: 0,
+      economicCost: 0,
+      compensationCost: 0,
       stabilityCost: 0,
       vaccinationPerDay: this.vaccinationStartDate <= date ? this.vaccinationPerDay : 0,
     };
@@ -201,19 +202,21 @@ export class Game {
     return ret;
   }
 
-  private applyMitigationEffect(affected: MitigationEffect, applied: MitigationEffect) {
-      affected.rMult *= applied.rMult;
-      affected.exposedDrift += applied.exposedDrift;
-      affected.cost += applied.cost;
-      affected.stabilityCost += applied.stabilityCost;
-      affected.vaccinationPerDay += applied.vaccinationPerDay;
+  private applyMitigationEffect(affected: MitigationEffect, applied: Partial<MitigationEffect>) {
+    for (const key in applied) {
+      if (key === 'rMult') {
+        (affected as any)[key] *= (applied as any)[key];
+      } else {
+        (affected as any)[key] += (applied as any)[key];
+      }
+    }
   }
 
   static randomizeMitigations() {
     const res: MitigationParams[] = [];
 
     const effectivitySigmaScaling = 0; // TODO enable effectivity randomness, turned off during testing
-    const cs = clippedLogNormalSampler(4_000_000_000, 0); // Cost scaler; TODO this should eventually be only 1e9
+    const cs = clippedLogNormalSampler(1_000_000_000, 0);
     const ss = clippedLogNormalSampler(1, 0.1); // Stability
 
     // Special mitigation: controls drift across borders
@@ -240,7 +243,7 @@ export class Game {
     // isSchool mitigations are effective during school holidays "for free"
     // isBorders controls epidemic drift across borders
     function addMitigation(mitigation: MitigationPair, effectivity: number,
-      effectivityConfidence: [number, number], cost: number, stabilityCost: number,
+      effectivityConfidence: [number, number], economicCost: number, stabilityCost: number,
       flagsParam: Partial<MitigationFlags> = {}) {
 
       const flags: MitigationFlags = {isBorders: false, isSchool: false, ...flagsParam};
@@ -253,7 +256,8 @@ export class Game {
         level,
         rMult: clippedLogNormalSampler(1 - effectivity, effectivitySigma)(),
         exposedDrift: 0,
-        cost,
+        economicCost,
+        compensationCost: 0,
         stabilityCost,
         vaccinationPerDay: 0,
         flags,

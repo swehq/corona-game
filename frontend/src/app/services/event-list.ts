@@ -241,7 +241,7 @@ export const eventTriggers: EventTrigger[] = [
         // cost = 1.5*cost of lockdown (values taken from game.ts)
         // rMult is applied everyDay!
         mitigations: [{
-          label: 'OK', id: 'panic', rMult: 0.985, cost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
+          label: 'OK', id: 'panic', rMult: 0.985, economicCost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
           stabilityCost: (0.15 + 0.05 + 0.15) * 1.5,
         }],
       },
@@ -255,8 +255,7 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'Život v zemi se vrací do normálu.',
         help: 'Izolace obyvatel skončila.',
-        // cost = 1.5*cost of lockdown (values taken from game.ts)
-        // rMult is applied everyDay!
+        // end panic
         mitigations: [{label: 'OK', id: 'panic', timeout: 0}],
       },
     ],
@@ -341,7 +340,7 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Jeden z našich dodavatelů trasování si účtuje mnohem víc peněz než je v branži zvykem, ale zároveň jsme na jeho dodávkách závislí.',
         help: 'Pokud budeme nadále setrvávat s dosavadním dodavatelem, ztratíme na nevýhodných zakázkách více peněz. Bez těchto dodávek se ale zvýší hodnota R.',
         mitigations: [
-          {label: 'Zůstat s dodavatelem', cost: 5_000_000_000, timeout: 1},
+          {label: 'Zůstat s dodavatelem', economicCost: 5_000_000_000, timeout: 1},
           {label: 'Změnit dodavatele', rMult: 1.05, timeout: 1},
         ],
       },
@@ -432,7 +431,7 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Investice do kampaně pro očkování zvýší zájem o vakcinaci a tím pádem její rychlost. Je na ni však třeba vydat další náklady a zároveň se při možném neúspěchu kampaně  negativně ovlivní společenskou stabilitu. Odmítnutí proma vakcinaci zpomalí.',
         mitigations: [
           // todo: should desintegrate one next Antivax event
-          {label: 'Investovat do propagace vakcín', vaccinationPerDay: 0.0001, cost: 1_000_000_000, timeout: 1},
+          {label: 'Investovat do propagace vakcín', vaccinationPerDay: 0.0001, economicCost: 1_000_000_000, timeout: 1},
           {label: 'Neinvestovat', vaccinationPerDay: -0.0001, timeout: 1},
         ],
       },

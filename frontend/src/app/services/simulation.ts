@@ -27,7 +27,8 @@ import {getSeasonality, nextDay} from './utils';
 export interface MitigationEffect {
   rMult: number;
   exposedDrift: number;
-  cost: number;
+  economicCost: number;
+  compensationCost: number;
   stabilityCost: number;
   vaccinationPerDay: number;
 }
@@ -62,7 +63,6 @@ interface ModelInputs {
   seasonalityMult: number;
   R: number;
   stability: number;
-  costToday: number;
   vaccinationRate: number;
 }
 
@@ -77,6 +77,8 @@ export interface Stats {
   detectedInfections: MetricStats;
   resolvedInfections: MetricStats;
   deaths: MetricStats;
+  economicCosts: MetricStats;
+  compensationCosts: MetricStats;
   costs: MetricStats;
   activeInfections: number;
   mortality: number;
@@ -117,8 +119,10 @@ export class Simulation {
   readonly recoveringDuration = 14;    // How long is the infection considered active in statistics
   readonly immunityEndRate = 1 / 180;   // Rate of R -> S transition
 
-  // These two are used to calculate the number of active cases
+  // This is used to calculate the number of active cases
   readonly incubationDays = 5;       // Days until infection is detected
+
+  readonly economicCostMultiplier = 2;
 
   modelStates: DayState[] = [];
   sirStateBeforeStart: SirState = {
@@ -151,7 +155,7 @@ export class Simulation {
     sirState.suspectible = this.initialPopulation - this.exposedStart;
     sirState.exposed = this.exposedStart;
     sirState.exposedNew = this.exposedStart;
-    this.modelStates.push({date: startDate, sirState, stats: this.calcStats(sirState, undefined)});
+    this.modelStates.push({date: startDate, sirState, stats: this.calcStats(sirState, undefined, undefined)});
   }
 
   private getSirStateInPast(n: number) {
@@ -184,7 +188,6 @@ export class Simulation {
       exposedDrift: mitigationEffect.exposedDrift,
       vaccinationRate,
       R,
-      costToday: mitigationEffect.cost,
     };
   }
 
@@ -289,7 +292,7 @@ export class Simulation {
     const date = nextDay(last(this.modelStates)!.date);
     const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
     const sirState: SirState = this.calcSirState(modelInputs, randomness);
-    const stats: Stats = this.calcStats(sirState, modelInputs);
+    const stats: Stats = this.calcStats(sirState, mitigationEffect, modelInputs);
     const state: DayState = {date, sirState, randomness, modelInputs, stats};
     this.modelStates.push(state);
 
@@ -331,12 +334,16 @@ export class Simulation {
     };
   }
 
-  private calcStats(state: SirState, modelInputs?: ModelInputs): Stats {
+  private calcStats(state: SirState, mitigationEffect?: MitigationEffect, modelInputs?: ModelInputs): Stats {
     const detectedInfections = this.calcMetricStats('detectedInfections',
       this.getSirStateInPast(this.incubationDays).exposedNew);
     const resolvedInfections = this.calcMetricStats('resolvedInfections', state.resistantNew + state.deathsNew);
     const deaths = this.calcMetricStats('deaths', state.deathsNew);
-    const costs = this.calcMetricStats('costs', modelInputs ? modelInputs.costToday : 0);
+    const economicCosts = this.calcMetricStats('economicCosts', mitigationEffect ? mitigationEffect.economicCost : 0);
+    const compensationCosts = this.calcMetricStats('compensationCosts',
+      mitigationEffect ? mitigationEffect.compensationCost : 0);
+    const costs = this.calcMetricStats('costs',
+      economicCosts.today * this.economicCostMultiplier + compensationCosts.today);
 
     const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
@@ -346,6 +353,8 @@ export class Simulation {
       deaths,
       activeInfections: detectedInfections.total - resolvedInfections.total,
       mortality,
+      economicCosts,
+      compensationCosts,
       costs,
       hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,

@@ -2,6 +2,14 @@ import {EventInput, EventTrigger} from './events';
 import {dateDiff} from './utils';
 import {isNil, random} from 'lodash';
 
+// Event mitigation IDs
+const PANIC_ID = 'panic';
+const VACCINATION_CAMPAIGN_ID = 'vaccinationCampaign';
+
+// Event trigger IDs
+const ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER = 'antivaxWithoutCampaignTrigger';
+const ANTIVAX_WITH_CAMPAIGN_TRIGGER = 'antivaxWithCampaignTrigger';
+
 /**
  * Generate first true randomly between given dates
  * TODO: unit test
@@ -40,12 +48,24 @@ function isEventMitigationActive(eventInput: EventInput, id: string) {
   return !isNil(mitigation);
 }
 
+/**
+ * Returns true if EventTrigger is active
+ * @param eventInput - EventInput
+ * @param id - Id of the EventTrigger
+ */
+function isEventTriggerActive(eventInput: EventInput, id: string) {
+  const triggerState = eventInput.triggerStates.find(ts => ts.trigger.id === id);
+  return !isNil(triggerState) && triggerState.timeout <= 0;
+}
+
 export interface EventData {
   tooManyDeathsDays: number;
+  showAntivaxEvent: boolean;
 }
 
 export const initialEventData: EventData = {
   tooManyDeathsDays: 0,
+  showAntivaxEvent: false,
 };
 
 /**
@@ -60,7 +80,32 @@ export function updateEventData(eventInput: EventInput) {
   } else {
     eventData.tooManyDeathsDays = 0;
   }
+
+  eventData.showAntivaxEvent = eventInput.date > '2020-01-10'
+    && isEventTriggerActive(eventInput, ANTIVAX_WITH_CAMPAIGN_TRIGGER)
+    && isEventTriggerActive(eventInput, ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER)
+    && probability(0.02);
 }
+
+const antivaxEvents = [
+  {
+    title: 'Toto jsou fakta: vakcína proti koronaviru je tvořena fragmenty tkání z potracených lidských plodů!',
+    text: 'Ve společnosti se šíří hoax o tom, že vakcína obsahuje látky z nenarozených dětí.',
+    help: 'Rychlost vakcinace se snižuje.',
+    mitigations: [
+      {label: 'Ok', vaccinationPerDay: -0.0002, timeout: 1},
+    ],
+  },
+];
+
+const antivaxEventsWithCampaign = antivaxEvents.map(e => ({
+  ...e,
+  help: 'Očkovací kampaň přestala fungovat.',
+  mitigations: [
+    {label: 'Ok', id: VACCINATION_CAMPAIGN_ID, timeout: 0},
+  ],
+}));
+
 
 // no type check below for interpolated attributes
 // TODO use rounded values
@@ -256,10 +301,10 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Život v zemi se vrací do normálu.',
         help: 'Izolace obyvatel skončila.',
         // end panic
-        mitigations: [{label: 'OK', id: 'panic', timeout: 0}],
+        mitigations: [{label: 'OK', id: PANIC_ID, timeout: 0}],
       },
     ],
-    condition: (ei: EventInput) => (isEventMitigationActive(ei, 'panic') && ei.stats.deaths.avg7Day <= 500),
+    condition: (ei: EventInput) => (isEventMitigationActive(ei, PANIC_ID) && ei.stats.deaths.avg7Day <= 500),
     timeout: 1,
   },
   // malo mrtvych / demostrance
@@ -430,28 +475,28 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Je třeba se rozhodnout, zda budou investovány peníze do propagace očkování proti koronaviru.',
         help: 'Investice do kampaně pro očkování zvýší zájem o vakcinaci a tím pádem její rychlost. Je na ni však třeba vydat další náklady a zároveň se při možném neúspěchu kampaně  negativně ovlivní společenskou stabilitu. Odmítnutí proma vakcinaci zpomalí.',
         mitigations: [
-          // todo: should desintegrate one next Antivax event
-          {label: 'Investovat do propagace vakcín', vaccinationPerDay: 0.0001, economicCost: 1_000_000_000, timeout: 1},
+          {label: 'Investovat do propagace vakcín', id: VACCINATION_CAMPAIGN_ID, vaccinationPerDay: 0.0001,
+            oneTimeEffect: {economicCost: 1_000_000_000}},
           {label: 'Neinvestovat', vaccinationPerDay: -0.0001, timeout: 1},
         ],
       },
     ],
-    // todo: first occurance in a month after vaxcination is researched
-    // todo: repeat once every 3 months
-    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2021-01-01', '2021-01-10'),
+    // TODO timing randomization
+    condition: (ei: EventInput) => ei.date >= '2021-01-01',
+    timeout: 90,
   },
   {
-    events: [
-      {
-        title: 'Toto jsou fakta: vakcína proti koronaviru je tvořena fragmenty tkání z potracených lidských plodů!',
-        text: 'Ve společnosti se šíří hoax o tom, že vakcína obsahuje látky z nenarozených dětí.',
-        help: 'Rychlost vakcinace se snižuje.',
-        mitigations: [
-          {label: 'Ok', vaccinationPerDay: -0.0002, timeout: 1},
-        ],
-      },
-    ],
-    condition: (ei: EventInput) => (dateDiff(ei.date, '2021-01-10') > 0 && probability(0.02)),
+    events: antivaxEvents,
+    id: ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER,
+    condition: (ei: EventInput) =>
+      (ei.eventData.showAntivaxEvent && !isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID)),
+    timeout: 7, // cannot occur more often than once every 7 days
+  },
+  {
+    events: antivaxEventsWithCampaign,
+    id: ANTIVAX_WITH_CAMPAIGN_TRIGGER,
+    condition: (ei: EventInput) =>
+      (ei.eventData.showAntivaxEvent && isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID)),
     timeout: 7, // cannot occur more often than once every 7 days
   },
   {

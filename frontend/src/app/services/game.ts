@@ -66,7 +66,7 @@ export class Game {
     const lastDate = this.simulation.lastDate;
     const nextDate = nextDay(lastDate);
     this.moveForwardMitigations();
-    const mitigationEffect = this.calcMitigationEffect(this.mitigations, this.eventMitigations, nextDate);
+    const mitigationEffect = this.calcMitigationEffect(nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
     const event = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.eventMitigations);
 
@@ -115,6 +115,7 @@ export class Game {
           this.eventMitigations = differentMitigations;
         }
       }
+
       if (eventMitigation.timeout > 0) {
         this.eventMitigations.push(eventMitigation);
       }
@@ -164,8 +165,7 @@ export class Game {
     }
   }
 
-  private calcMitigationEffect(mitigations: Mitigations,
-    eventMitigations: EventMitigation[], date: string): MitigationEffect
+  private calcMitigationEffect(date: string): MitigationEffect
   {
     const ret: MitigationEffect = {
       rMult: 1.0,
@@ -190,7 +190,7 @@ export class Game {
       }
 
       // mitigation not set for the level
-      if (mitigations[mitigationParam.id] !== mitigationParam.level) return;
+      if (this.mitigations[mitigationParam.id] !== mitigationParam.level) return;
 
       Game.applyMitigationEffect(ret, mitigationParam);
       bordersClosed ||= mitigationParam.flags.isBorders;
@@ -198,7 +198,15 @@ export class Game {
 
     ret.exposedDrift += bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
 
-    eventMitigations.forEach(em => Game.applyMitigationEffect(ret, em));
+    this.eventMitigations.forEach(em => Game.applyMitigationEffect(ret, em));
+
+    // All new mitigations applied this day are stored in mitigation history
+    const newEventMitigations = this.mitigationHistory[date]?.eventMitigations;
+    if (newEventMitigations) {
+      newEventMitigations
+        .filter(e => e.oneTimeEffect !== undefined)
+        .forEach(e => Game.applyMitigationEffect(ret, e));
+    }
 
     return ret;
   }

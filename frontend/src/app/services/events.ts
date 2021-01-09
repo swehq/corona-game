@@ -11,6 +11,7 @@ export interface EventMitigation extends Partial<MitigationEffect> {
   label: string;
   id?: string;
   name?: string; // if filled, the mitigation is displayed to the user
+  oneTimeEffect?: Partial<MitigationEffect>;
 }
 
 export interface Event {

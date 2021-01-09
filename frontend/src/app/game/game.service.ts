@@ -24,14 +24,11 @@ export class GameService {
   private _speed$ = new Subject<Speed>();
   speed$ = this._speed$.asObservable();
 
-  private _gameState$ = new ReplaySubject<DayState>();
+  private _gameState$ = new ReplaySubject<DayState[]>(1);
   gameState$ = this._gameState$.asObservable();
 
   private _reset$ = new Subject<void>();
   reset$ = this._reset$.asObservable();
-
-  private _resetSubjects$ = new Subject<void>();
-  resetSubjects$ = this._resetSubjects$.asObservable();
 
   constructor(private httpClient: HttpClient) {
     this.restartSimulation();
@@ -52,13 +49,7 @@ export class GameService {
     this._reset$.next();
     this.setSpeed(speed);
     this.showEvent(this.game.rampUpEvent);
-
-    this._gameState$.complete();
-    this._gameState$ = new ReplaySubject<DayState>();
-    this.gameState$ = this._gameState$.asObservable();
-    this._resetSubjects$.next();
-
-    this.updateChart('all');
+    this.updateChart();
   }
 
   /**
@@ -68,13 +59,8 @@ export class GameService {
    *    'all' takes all items
    *    number takes right slice of the array beginning with defined index
    */
-  private updateChart(which: 'last' | 'all' | number = 'last') {
-    // TODO feed all data at once in 'all' mode
-    if (which === 'last') which = -1;
-    else if (which === 'all') which = 0;
-
-    this.game.simulation.modelStates.slice(which)
-      .forEach(item => this._gameState$.next(item));
+  private updateChart() {
+    this._gameState$.next(this.game.simulation.modelStates);
   }
 
   togglePause() {
@@ -90,9 +76,8 @@ export class GameService {
     this._speed$.next(speed);
 
     if (speed === 'max') {
-      const start = this.game.simulation.modelStates.length;
       while (!this.game.isFinished()) this.tick(false);
-      this.updateChart(start);
+      this.updateChart();
       this.setSpeed('pause');
     } else if (speed === 'play') {
       this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);

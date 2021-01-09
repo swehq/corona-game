@@ -4,8 +4,10 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
+import {merge} from 'lodash';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
@@ -36,13 +38,13 @@ export const colors = {
 })
 export class LineGraphComponent implements OnInit, AfterViewInit {
   @Input()
-  customOptions: ChartOptions | null = null;
+  customOptions: ChartOptions | undefined;
 
   @Input()
   mitigationNodes: (string | undefined)[] = [];
 
-  @Input() singleLineTick$: Observable<ChartValue> | null = null;
-  @Input() multiLineTick$: Observable<ChartValue[]> | null = null;
+  @Input() singleLineTick$: Observable<ChartValue[]> | undefined;
+  @Input() multiLineTick$: Observable<ChartValue[][]> | undefined;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
   pan: Pan;
@@ -54,7 +56,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   ];
 
   private currentState: NodeState = 'ok';
-  private currentDatasetIndex = 0;
   private tooltipLabels: ((value: number) => string)[] = [];
   private seriesLength = 0;
   private lastValue: number | undefined;
@@ -63,7 +64,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   scopeFormControl = new FormControl(0);
 
   scope = 0;
-  datasets: ChartDataSets[] = [{...this.getDefaultDataset(), data: []}];
+  datasets: ChartDataSets[] = [];
   labels: Label[] = [];
   options: ChartOptions = {
     title: {
@@ -124,6 +125,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           };
         },
       },
+      filler: {
+        propagate: true,
+      },
       zoom: {
         pan: {
           enabled: true,
@@ -147,61 +151,77 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.singleLineTick$?.pipe(
+      map(data => data.slice(this.seriesLength)), // just new data
       untilDestroyed(this),
-    ).subscribe(tick => {
-      this.tooltipLabels[this.currentDatasetIndex] = tick.tooltipLabel;
-      if (tick.state === this.currentState) {
-        this.datasets[this.currentDatasetIndex].data!.push(tick.value);
-      } else {
-        this.currentState = tick.state;
-        this.currentDatasetIndex++;
-
-        const padData = this.seriesLength
-          ? [...Array(this.seriesLength - 1).fill(NaN), this.lastValue]
-          : [];
-
-        this.datasets = [...this.datasets, {
-          ...this.getDefaultDataset(),
-          borderColor: `${colors[tick.state!]}`,
-          backgroundColor: `${colors[tick.state!]}33`,
-          data: [...padData, tick.value],
-        }];
+    ).subscribe(data => {
+      if (!data.length) {
+        this.reset();
+        return;
       }
 
-      this.seriesLength++;
-      this.lastValue = tick.value;
-      this.labels.push(typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString());
-      this.setScope();
-
-      this.cd.markForCheck();
-    });
-
-    this.multiLineTick$?.pipe(untilDestroyed(this)).subscribe(ticks => {
-      ticks.forEach((tick, index) => {
-        if (this.datasets[index]) {
-          this.tooltipLabels[index] = tick.tooltipLabel;
-          this.datasets[index].data!.push(tick.value);
+      data.forEach(tick => {
+        if (tick.state === this.currentState && this.datasets.length) {
+          this.datasets[this.datasets.length - 1].data!.push(tick.value);
         } else {
-          this.tooltipLabels.push(tick.tooltipLabel);
+          this.currentState = tick.state;
+          const padData = this.seriesLength
+            ? [...Array(this.seriesLength - 1).fill(NaN), this.lastValue]
+            : [];
+
           this.datasets.push({
-            ...this.getDefaultDataset(tick.color),
-            data: [tick.value],
+            ...this.getDefaultDataset(),
+            borderColor: `${colors[tick.state!]}`,
+            backgroundColor: `${colors[tick.state!]}33`,
+            data: [...padData, tick.value],
             ...tick.datasetOptions,
           });
         }
-      });
 
-      this.labels.push((typeof ticks[0].label === 'string'
+        this.tooltipLabels[this.datasets.length - 1] = tick.tooltipLabel;
+        this.seriesLength++;
+        this.lastValue = tick.value;
+        this.labels.push(typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString());
+        this.setScope();
+      });
+    });
+
+    this.multiLineTick$?.pipe(
+      map(data => data.slice(this.seriesLength)), // just new data
+      untilDestroyed(this),
+    ).subscribe(data => {
+      if (!data.length) {
+        this.reset();
+        return;
+      }
+
+      data.forEach(ticks => {
+        ticks.forEach((line, index) => {
+          if (this.datasets[index]) {
+            this.tooltipLabels[index] = line.tooltipLabel;
+            this.datasets[index].data!.push(line.value);
+          } else {
+            this.tooltipLabels.push(line.tooltipLabel);
+            this.datasets.push({
+              ...this.getDefaultDataset(line.color),
+              data: [line.value],
+              ...line.datasetOptions,
+            });
+          }
+        });
+
+        this.seriesLength++;
+        this.labels.push((typeof ticks[0].label === 'string'
         ? ticks[0].label
         : ticks[0].label.toLocaleDateString()),
-      );
+        );
+      });
     });
 
     this.gameService.reset$
       .pipe(untilDestroyed(this))
       .subscribe(() => this.reset());
 
-    this.options = {...this.options, ...this.customOptions};
+    merge(this.options, this.customOptions);
     this.cd.markForCheck();
   }
 
@@ -227,6 +247,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     if (scope !== undefined) {
       this.scope = scope;
     }
+
     const index = this.labels.length - this.scope;
     const min = this.scope && index > 0 ? this.labels[index] : null;
     this.setXAxisTicks({min, max: null});
@@ -244,11 +265,10 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   }
 
   private reset() {
-    this.datasets = [{...this.getDefaultDataset(), data: []}];
+    this.datasets = [];
     this.labels = [];
     this.mitigationNodes = [];
     this.currentState = 'ok';
-    this.currentDatasetIndex = 0;
     this.seriesLength = 0;
     this.lastValue = undefined;
     this.tooltipLabels = [];

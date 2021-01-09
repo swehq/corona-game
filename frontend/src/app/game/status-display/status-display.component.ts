@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {get, PropertyPath} from 'lodash';
 import {combineLatest} from 'rxjs';
-import {distinctUntilChanged, map, shareReplay} from 'rxjs/operators';
+import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
 import {Stats} from '../../services/simulation';
 import {GameService} from '../game.service';
 
@@ -11,14 +11,18 @@ import {GameService} from '../game.service';
   styleUrls: ['./status-display.component.scss'],
 })
 export class StatusDisplayComponent {
+  lastState$ = this.gameService.gameState$.pipe(
+    filter(states => states.length > 0),
+    map(states => states[states.length - 1]),
+  );
 
-  private stats$ = this.gameService.gameState$.pipe(
+  private stats$ = this.lastState$.pipe(
     map(state => state.stats),
     distinctUntilChanged(),
     shareReplay(1),
   );
 
-  private sirState$ = this.gameService.gameState$.pipe(
+  private sirState$ = this.lastState$.pipe(
     map(state => state.sirState),
     distinctUntilChanged(),
     shareReplay(1),

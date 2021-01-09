@@ -1,7 +1,7 @@
-import {get, isNil, shuffle, sample} from 'lodash';
+import {cloneDeep, get, isNil, shuffle, sample} from 'lodash';
 import {formatNumber} from '../utils/format';
-import {eventTriggers} from './event-list';
-import {DayState, MitigationEffect} from './simulation';
+import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
+import {DayState, MitigationEffect, Stats} from './simulation';
 
 // infinite timeout (1 million years)
 const infTimeout = 1_000_000 * 365;
@@ -20,7 +20,7 @@ export interface Event {
   mitigations?: EventMitigation[];
 }
 
-type EventText = ((stats: DayState) => string) | string;
+type EventText = ((stats: EventInput) => string) | string;
 
 interface EventDef {
   title: EventText;
@@ -30,14 +30,26 @@ interface EventDef {
 }
 
 export interface EventTrigger {
+  id?: string;
   events: EventDef[];
   timeout?: number;
-  condition: (stats: DayState) => boolean;
+  condition: (stats: EventInput) => boolean;
 }
 
 interface TriggerState {
   trigger: EventTrigger;
   timeout: number;
+}
+
+export interface EventState {
+  triggerStates: TriggerState[];
+  eventData: EventData;
+}
+
+export interface EventInput extends EventState {
+  date: string;
+  eventMitigations: EventMitigation[];
+  stats: Stats;
 }
 
 export class EventHandler {
@@ -50,19 +62,31 @@ export class EventHandler {
     stabilityCost: 0,
     vaccinationPerDay: 0,
   };
-  triggerStateHistory: Record<string, TriggerState[]> = {};
+  eventStateHistory: Record<string, EventState> = {};
 
-  evaluateDay(prevDate: string, currentDate: string, dayState: DayState) {
-    let prevState = this.triggerStateHistory[prevDate];
+  evaluateDay(prevDate: string, currentDate: string, dayState: DayState, eventMitigations: EventMitigation[]) {
+    let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
-      prevState = eventTriggers.map(et => ({trigger: et, timeout: 0}));
+      const initialTriggerStates = eventTriggers.map(et => ({trigger: et, timeout: 0}));
+      prevState = {triggerStates: initialTriggerStates, eventData: initialEventData};
     }
 
-    const currentState = prevState.map(et => ({...et, timeout: Math.max(0, et.timeout - 1)}));
-    this.triggerStateHistory[currentDate] = currentState;
+    const triggerStates = prevState.triggerStates.map(ts => ({...ts, timeout: Math.max(0, ts.timeout - 1)}));
+    const currentState: EventState = {triggerStates, eventData: cloneDeep(prevState.eventData)};
 
-    const active = shuffle(currentState.filter(ts => ts.timeout <= 0));
-    const triggerState = active.find(ts => ts.trigger.condition(dayState));
+    const eventInput: EventInput = {
+      ...currentState,
+      date: dayState.date,
+      stats: dayState.stats,
+      eventMitigations,
+    };
+
+    updateEventData(eventInput);
+
+    this.eventStateHistory[currentDate] = currentState;
+
+    const active = shuffle(currentState.triggerStates.filter(ts => ts.timeout <= 0));
+    const triggerState = active.find(ts => ts.trigger.condition(eventInput));
 
     if (!triggerState) return;
 

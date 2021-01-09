@@ -68,7 +68,7 @@ export class Game {
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(this.mitigations, this.eventMitigations, nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
-    const event = this.eventHandler.evaluateDay(lastDate, nextDate, dayState);
+    const event = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.eventMitigations);
 
     return {dayState, event};
   }

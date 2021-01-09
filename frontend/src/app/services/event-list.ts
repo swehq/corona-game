@@ -119,7 +119,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Hra začíná',
-        text: 'Nacházíte se v prvním dni hry, je {{date}}, první nakažení SARS-CoV-19 se blíží.',
+        text: s => `Nacházíte se v prvním dni hry, je ${new Date(s.date).toLocaleDateString()}, první nakažení SARS-CoV-19 se blíží.`,
         help: 'Stiskněte OK a hra začne',
         // TODO just a demonstration
         mitigations: [

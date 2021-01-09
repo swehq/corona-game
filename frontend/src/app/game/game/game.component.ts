@@ -30,10 +30,11 @@ export class GameComponent {
 
     // send current game result into outro
     gameService.gameState$.pipe(
-      map(state => state.stats),
-      map(stats => ({
-        dead: stats.deaths.total,
-        cost: stats.costs.total,
+      filter(states => states.length > 0),
+      map(states => states[states.length - 1]),
+      map(state => ({
+        dead: state.stats.deaths.total,
+        cost: state.stats.costs.total,
       })),
       untilDestroyed(this),
     ).subscribe(

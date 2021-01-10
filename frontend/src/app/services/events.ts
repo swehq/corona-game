@@ -6,11 +6,12 @@ import {DayState, MitigationEffect, Stats} from './simulation';
 // infinite timeout (1 million years)
 const infTimeout = 1_000_000 * 365;
 
-export interface EventMitigation extends MitigationEffect {
+export interface EventMitigation extends Partial<MitigationEffect> {
   timeout: number;
   label: string;
   id?: string;
   name?: string; // if filled, the mitigation is displayed to the user
+  oneTimeEffect?: Partial<MitigationEffect>;
 }
 
 export interface Event {
@@ -56,11 +57,6 @@ export class EventHandler {
   static readonly defaultMitigation: EventMitigation = {
     timeout: infTimeout,
     label: 'OK',
-    rMult: 1,
-    exposedDrift: 0,
-    cost: 0,
-    stabilityCost: 0,
-    vaccinationPerDay: 0,
   };
   eventStateHistory: Record<string, EventState> = {};
 

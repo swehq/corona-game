@@ -176,7 +176,8 @@ export class Simulation {
     const seasonalityMult = 1 + this.getSeasonalityEffect(date);
 
     const prevVaccinationRate = yesterday?.vaccinationRate ? yesterday.vaccinationRate : 0;
-    const vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
+    let vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
+    vaccinationRate = Math.max(vaccinationRate, 0);
 
     let stability = (yesterday ? yesterday.stability : this.initialStability);
     stability += this.stabilityRecovery - mitigationEffect.stabilityCost;

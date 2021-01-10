@@ -165,8 +165,7 @@ export class Game {
     }
   }
 
-  private calcMitigationEffect(date: string): MitigationEffect
-  {
+  private calcMitigationEffect(date: string): MitigationEffect {
     const ret: MitigationEffect = {
       rMult: 1.0,
       exposedDrift: 0,

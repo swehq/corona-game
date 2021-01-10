@@ -123,10 +123,10 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Stiskněte OK a hra začne',
         // TODO just a demonstration
         mitigations: [
-          // use optinal .name to display event mitigation in the list
-          {label: 'A', name: 'Ad hoc opatření A', timeout: 60},
-          {label: 'B', name: 'Ad hoc opatření B', timeout: 60},
-          {label: 'C', name: 'Ad hoc opatření C', timeout: 60},
+          // use optional .name to display event mitigation in the list
+          {label: 'A (-1 bil.)', name: 'Ad hoc opatření A', timeout: 0, compensationCost: -1_000_000_000_000},
+          {label: 'B (-2 bil.)', name: 'Ad hoc opatření B', timeout: 1, compensationCost: -2_000_000_000_000},
+          {label: 'C (nic)', name: 'Ad hoc opatření C', timeout: 60},
         ],
       },
     ],
@@ -287,6 +287,9 @@ export const eventTriggers: EventTrigger[] = [
         // rMult is applied everyDay!
         mitigations: [{
           label: 'OK', id: 'panic', rMult: 0.985, economicCost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
+          // TODO timeout=0 (formerly undefined) effectively disables the mitigation
+          // needs to be reworked or documented
+          timeout: 0,
           stabilityCost: (0.15 + 0.05 + 0.15) * 1.5,
         }],
       },
@@ -475,8 +478,11 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Je třeba se rozhodnout, zda budou investovány peníze do propagace očkování proti koronaviru.',
         help: 'Investice do kampaně pro očkování zvýší zájem o vakcinaci a tím pádem její rychlost. Je na ni však třeba vydat další náklady a zároveň se při možném neúspěchu kampaně  negativně ovlivní společenskou stabilitu. Odmítnutí proma vakcinaci zpomalí.',
         mitigations: [
-          {label: 'Investovat do propagace vakcín', id: VACCINATION_CAMPAIGN_ID, vaccinationPerDay: 0.0001,
-            oneTimeEffect: {economicCost: 1_000_000_000}},
+          {
+            label: 'Investovat do propagace vakcín', id: VACCINATION_CAMPAIGN_ID, vaccinationPerDay: 0.0001,
+            timeout: 1,
+            oneTimeEffect: {economicCost: 1_000_000_000},
+          },
           {label: 'Neinvestovat', vaccinationPerDay: -0.0001, timeout: 1},
         ],
       },

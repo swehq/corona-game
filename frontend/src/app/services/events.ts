@@ -4,7 +4,7 @@ import {EventData, eventTriggers, initialEventData, updateEventData} from './eve
 import {DayState, MitigationEffect, Stats} from './simulation';
 
 // infinite timeout (1 million years)
-const infTimeout = 1_000_000 * 365;
+const infTimeout = Infinity;
 
 export interface EventMitigation extends Partial<MitigationEffect> {
   timeout: number;
@@ -27,7 +27,7 @@ interface EventDef {
   title: EventText;
   text?: EventText;
   help?: EventText;
-  mitigations?: Partial<EventMitigation>[];
+  mitigations?: EventMitigation[];
 }
 
 export interface EventTrigger {

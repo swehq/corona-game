@@ -3,11 +3,21 @@ html, body {
   min-height: 100%;
   padding: 0;
   margin: 0;
-  font-size: 8px;
+  font-size: 6px;
 }
 
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+@media only screen and (min-width: 375px) {
+  html {
+    font-size: 8px;
+
+    cvd-app {
+      padding: 2rem 1rem;
+    }
+  }
 }
 
 @media only screen and (min-width: 600px) {

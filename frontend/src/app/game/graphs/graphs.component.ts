@@ -95,7 +95,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.infectedToday$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: gs.date,
+        label: new Date(gs.date),
         value: gs.stats.detectedInfections.today,
         tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
         state: this.infectedThresholds(gs.stats.detectedInfections.today),
@@ -104,7 +104,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.costTotal$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: gs.date,
+        label: new Date(gs.date),
         value: gs.stats.costs.total,
         tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
         state: this.costDailyThresholds(gs.stats.costs.today),
@@ -113,7 +113,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.deathToday$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: gs.date,
+        label: new Date(gs.date),
         value: gs.stats.deaths.today,
         tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
         state: this.deathThresholds(gs.stats.deaths.today),
@@ -123,7 +123,7 @@ export class GraphsComponent implements AfterViewInit {
     this.immunizedChart$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ([
         {
-          label: gs.date,
+          label: new Date(gs.date),
           value: Math.round(gs.stats.vaccinationRate * gs.sirState.suspectible),
           tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
           datasetOptions: {
@@ -135,7 +135,7 @@ export class GraphsComponent implements AfterViewInit {
           color: colors.warn,
         },
         {
-          label: gs.date,
+          label: new Date(gs.date),
           value: Math.round(gs.sirState.resistant),
           tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
           datasetOptions: {

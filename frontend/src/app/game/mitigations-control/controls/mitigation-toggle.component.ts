@@ -25,12 +25,6 @@ type Level = [value: any, label: string];
       </mat-button-toggle-group>
     </cvd-row>
   `,
-  styles: [`
-    :host {
-      padding: 0.5rem;
-    }
-
-  `],
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationToggleComponent, multi: true}],
 })
 export class MitigationToggleComponent implements OnChanges, ControlValueAccessor {

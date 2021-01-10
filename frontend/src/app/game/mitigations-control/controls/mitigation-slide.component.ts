@@ -14,11 +14,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
       ></mat-slide-toggle>
     </cvd-row>
   `,
-  styles: [`
-    :host {
-      padding: 0.5rem;
-    }
-  `], providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationSlideComponent, multi: true}],
+  providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationSlideComponent, multi: true}],
 })
 export class MitigationSlideComponent implements ControlValueAccessor {
 

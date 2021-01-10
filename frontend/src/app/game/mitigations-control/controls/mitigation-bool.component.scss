@@ -1,11 +1,12 @@
+@import '~src/definitions';
 @import '~src/material-definitions';
 
 :host {
-  padding: 0.5rem;
+  @include flex-container;
 
   @include apply-themes {
-    cvd-icon {
-      color: mat-color(map-get($theme, foreground), icon);
+    .mat-button-toggle-checked {
+      background-color: mat-color(map-get($theme, background), selected-button);
     }
   }
 }

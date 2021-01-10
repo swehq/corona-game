@@ -5,13 +5,13 @@ import {SvgIconName} from '../../../shared/icon/icon.registry';
 @Component({
   selector: 'cvd-mitigation-bool',
   template: `
-    <cvd-row wrap (click)="onUserAction()">
-      <div grow>
-        <ng-content></ng-content>
-      </div>
-      <cvd-icon *ngIf="checked" [svgIcon]="imgOn" size="large">check_circle_outline</cvd-icon>
-      <cvd-icon *ngIf="!checked" [svgIcon]="imgOff" size="large">highlight_off</cvd-icon>
-    </cvd-row>
+    <mat-button-toggle
+      grow style="overflow: visible"
+      (click)="onUserAction()"
+      [checked]="checked"
+    >
+      <ng-content></ng-content>
+    </mat-button-toggle>
   `,
   styleUrls: ['./mitigation-bool.component.scss'],
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationBoolComponent, multi: true}],

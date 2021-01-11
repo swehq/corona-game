@@ -73,30 +73,36 @@ const czechiaGame = new Scenario({
 // reproduce mitigation actions of Czech Republic up to December 2020
 const czechiaReal = new Scenario({
   rampUpStartDate: '2020-02-25',
-  rampUpEndDate: '2020-12-18',
+  rampUpEndDate: '2021-01-09',
   endDate: '2021-07-01',
 });
 
 // First wave
-czechiaReal.addMitigationAction(['rrr', true], '2020-03-14');
+czechiaReal.addMitigationAction(['rrr', true], '2020-03-14', '2020-06-01');
 czechiaReal.addMitigationAction(['events', 100], '2020-03-10');
 czechiaReal.addMitigationAction(['events', 10], '2020-03-24');
-czechiaReal.addMitigationAction(['events', 100], '2020-05-12');
-czechiaReal.addMitigationAction(['events', 1000], '2020-05-26');
+czechiaReal.addMitigationAction(['events', 100], '2020-05-11');
+czechiaReal.addMitigationAction(['events', 1000], '2020-05-25');
 czechiaReal.addMitigationAction(['businesses', 'most'], '2020-03-14');
-czechiaReal.addMitigationAction(['businesses', 'some'], '2020-05-12', '2020-07-01');
+czechiaReal.addMitigationAction(['businesses', 'some'], '2020-05-11', '2020-07-01');
 czechiaReal.addMitigationAction(['schools', 'all'], '2020-03-13', '2020-08-31');
-czechiaReal.addMitigationAction(['stayHome', true], '2020-03-16', '2020-04-24');
-czechiaReal.addMitigationAction(['bordersClosed', true], '2020-03-16', '2020-04-24'); // TODO find end date
+czechiaReal.addMitigationAction(['stayHome', true], '2020-03-16', '2020-04-25');
+czechiaReal.addMitigationAction(['bordersClosed', true], '2020-03-16', '2020-04-25');
 
-// Second wave, TODO find exact dates
-czechiaReal.addMitigationAction(['events', 10], '2020-10-13');
-czechiaReal.addMitigationAction(['events', 100], '2020-12-01');
-czechiaReal.addMitigationAction(['businesses', 'some'], '2020-10-05');
-czechiaReal.addMitigationAction(['businesses', 'most'], '2020-10-13');
-czechiaReal.addMitigationAction(['businesses', 'some'], '2020-10-31');
+// Second wave
+// https://zpravy.aktualne.cz/domaci/casova-osa-covid/r~fd4c3f7e0ec511eb9d470cc47ab5f122/
+// https://cs.wikipedia.org/wiki/Pandemie_covidu-19_v_%C4%8Cesku
+czechiaReal.addMitigationAction(['rrr', true], '2020-09-10');
 czechiaReal.addMitigationAction(['schools', 'universities'], '2020-09-21');
-czechiaReal.addMitigationAction(['schools', 'all'], '2020-10-12', '2020-11-30');
+czechiaReal.addMitigationAction(['businesses', 'some'], '2020-10-09');
+czechiaReal.addMitigationAction(['events', 10], '2020-10-14');
+czechiaReal.addMitigationAction(['schools', 'all'], '2020-10-14');
+czechiaReal.addMitigationAction(['businesses', 'most'], '2020-10-21', '2020-11-30');
+czechiaReal.addMitigationAction(['schools', 'universities'], '2020-11-30');
+czechiaReal.addMitigationAction(['events', 100], '2020-11-30');
+czechiaReal.addMitigationAction(['businesses', 'most'], '2020-12-27', '2021-01-23');
+czechiaReal.addMitigationAction(['events', 10], '2020-12-27');
+czechiaReal.addMitigationAction(['schools', 'all'], '2020-12-27');
 
 export const scenarios = {
   czechiaGame,

@@ -28,8 +28,8 @@ export interface GameData {
 export class Game {
   readonly vaccinationStartDate = '2021-03-01';
   readonly vaccinationPerDay = 0.01; // TODO move to vaccination event
-  readonly infectionsWhenBordersOpen = 5;
-  readonly infectionsWhenBordersClosed = 2;
+  readonly infectionsWhenBordersOpen = 30;
+  readonly infectionsWhenBordersClosed = 10;
 
   static readonly defaultMitigations: Mitigations = {
     bordersClosed: false,
@@ -226,15 +226,15 @@ export class Game {
   static randomizeMitigations() {
     const res: MitigationParams[] = [];
 
-    const effectivitySigmaScaling = 0; // TODO enable effectivity randomness, turned off during testing
-    const cs = clippedLogNormalSampler(1_000_000_000, 0);
-    const ss = clippedLogNormalSampler(1, 0.1); // Stability
+    // Randomization of mitigation effect is turned off
+    const effectivitySigmaScaling = 0;
+    const cs = clippedLogNormalSampler(1_000_000_000, 0); // Cost scaler (unit)
+    const ss = clippedLogNormalSampler(1, 0);             // Stability scaler
 
     // Special mitigation: controls drift across borders
     addMitigation(['bordersClosed', true], 0.00, [0.00, 0.00], 0.06 * cs(), 0.05 * ss(), {isBorders: true});
 
-    // TODO Find reference?
-    // maybe? https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)31142-9/fulltext
+    // https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)31142-9/fulltext
     // cites 14.3 % for face masks ?
     addMitigation(['rrr', true], 0.14, [0.10, 0.18], 0 * cs(), 0.001 * ss());
 

@@ -4,12 +4,14 @@ interface Settings {
   rNoiseMult: [number, number];
   baseMortality: [number, number];
   hospitalizationRate: [number, number];
+  detectionRate: [number, number];
 }
 
 export const settings: Settings = {
-  rNoiseMult: [1.0, 0.15],
-  baseMortality: [0.02, 0.001],
-  hospitalizationRate: [0.05, 0.01],
+  rNoiseMult: [1.0, 0.05],
+  baseMortality: [0.005, 0.00025],
+  hospitalizationRate: [0.0125, 0.0025],
+  detectionRate: [0.25, 0.05],
 };
 
 function getRandom(variable: keyof typeof settings) {
@@ -21,5 +23,6 @@ export function getRandomness() {
     rNoiseMult: getRandom('rNoiseMult')(),
     baseMortality: getRandom('baseMortality')(),
     hospitalizationRate: getRandom('hospitalizationRate')(),
+    detectionRate: getRandom('detectionRate')(),
   };
 }

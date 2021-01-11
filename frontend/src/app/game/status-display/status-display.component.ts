@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {get, PropertyPath} from 'lodash';
-import {combineLatest} from 'rxjs';
 import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
 import {Stats} from '../../services/simulation';
 import {GameService} from '../game.service';
@@ -22,17 +21,8 @@ export class StatusDisplayComponent {
     shareReplay(1),
   );
 
-  private sirState$ = this.lastState$.pipe(
-    map(state => state.sirState),
-    distinctUntilChanged(),
-    shareReplay(1),
-  );
-
-  immunized$ = combineLatest([
-    this.stats$,
-    this.sirState$,
-  ]).pipe(
-    map(([stats, sirState]) => Math.round(sirState.resistant + stats.vaccinationRate * sirState.suspectible)),
+  immunized$ = this.stats$.pipe(
+    map(stats => stats.estimatedResistant + stats.vaccinated),
   );
 
   constructor(

@@ -2,11 +2,11 @@
   <cvd-row grow justifyContent="flex-end" alignItems="center" style="width: 100%">
     <cvd-mitigation-scale [formControl]="scopeFormControl" [levels]="scaleLevels"></cvd-mitigation-scale>
     <div class="pan-arrows">
-      <button mat-icon-button (click)="pan.panLeft()" [disabled]="pan.getDisability('left')"
+      <button mat-icon-button (click)="pan.applyPan('left')" [disabled]="pan.getDisability('left')"
               class="left-pan-arrow">
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <button mat-icon-button (click)="pan.panRight()" [disabled]="pan.getDisability('right')">
+      <button mat-icon-button (click)="pan.applyPan('right')" [disabled]="pan.getDisability('right')">
         <mat-icon>chevron_right</mat-icon>
       </button>
       <button [ngClass]="{'blinking': pan.autoResetIndicator}" mat-icon-button

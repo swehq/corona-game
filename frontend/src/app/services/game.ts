@@ -32,12 +32,15 @@ export class Game {
   readonly infectionsWhenBordersClosed = 2;
 
   static readonly defaultMitigations: Mitigations = {
-    events: false,
-    stayHome: false,
     bordersClosed: false,
+    businesses: false,
+    businessesCompensation: false,
+    events: false,
+    eventsCompensation: false,
     rrr: false,
     schools: false,
-    businesses: false,
+    schoolsCompensation: false,
+    stayHome: false,
   };
   mitigations = cloneDeep(Game.defaultMitigations);
   eventMitigations: EventMitigation[] = [];
@@ -248,6 +251,11 @@ export class Game {
       {isSchool: true}, {schoolDaysLost: 2_055_551});
     // Marginal effect of lockdowns on the top of the other measures
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 0.35 * cs(), 0.15 * ss());
+
+    // Compensations
+    addMitigation(['schoolsCompensation', true], 0, [0, 0], 0.1 * cs(), 0.03 * ss());
+    addMitigation(['businessesCompensation', true], 0, [0, 0], 0.3 * cs(), 0.05 * ss());
+    addMitigation(['eventsCompensation', true], 0, [0, 0], 0.4 * cs(), 0.05 * ss());
 
     // effectivityConfidence 2sigma confidence interval (can be asymmetric)
     // isSchool mitigations are effective during school holidays "for free"

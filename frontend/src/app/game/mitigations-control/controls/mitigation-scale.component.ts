@@ -19,11 +19,6 @@ export type Level = [value: any, label: string];
       <div [ngStyle]="{'min-width': labelMinWidth}">{{label}}</div>
     </cvd-row>
   `,
-  styles: [`
-    :host {
-      padding: 0.5rem;
-    }
-  `],
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationScaleComponent, multi: true}],
 })
 export class MitigationScaleComponent implements OnChanges, ControlValueAccessor {

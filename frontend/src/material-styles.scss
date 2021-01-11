@@ -57,20 +57,7 @@ body {
   }
 }
 
-@mixin apply-themes() {
-  // use definitions with default $theme
-  @content;
-
-  // alter $theme variable
-  $old: $theme;
-  $theme: $altTheme !global;
-
-  // prefix with theme-alternate class
-  @at-root .theme-alternate #{&} {
-    // use definitions with alternate $theme
-    @content;
-  }
-
-  // restore default $theme variable
-  $theme: $old !global;
+.mat-button-toggle-checked.mat-button-toggle-checked {
+  background-color: mat-color($mat-accent, main);
+  color: mat-color($mat-dark-theme-foreground, elevation);
 }

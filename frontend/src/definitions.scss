@@ -13,15 +13,29 @@
 @mixin cut-out-corners() {
   clip-path:
     polygon(
-        0% 25px,                 /* top left */
-        25px 0%,                 /* top left */
-        calc(100% - 25px) 0%,    /* top right */
-        100% 25px,               /* top right */
-        100% calc(100% - 25px),  /* bottom right */
-        calc(100% - 25px) 100%,  /* bottom right */
-        25px 100%,               /* bottom left */
-        0 calc(100% - 25px)      /* bottom left */
+        0% 15px,                 /* top left */
+        15px 0%,                 /* top left */
+        calc(100% - 15px) 0%,    /* top right */
+        100% 15px,               /* top right */
+        100% calc(100% - 15px),  /* bottom right */
+        calc(100% - 15px) 100%,  /* bottom right */
+        15px 100%,               /* bottom left */
+        0 calc(100% - 15px)      /* bottom left */
     );
+
+  @media only screen and (min-width: 600px) {
+    clip-path:
+      polygon(
+          0% 25px,                 /* top left */
+          25px 0%,                 /* top left */
+          calc(100% - 25px) 0%,    /* top right */
+          100% 25px,               /* top right */
+          100% calc(100% - 25px),  /* bottom right */
+          calc(100% - 25px) 100%,  /* bottom right */
+          25px 100%,               /* bottom left */
+          0 calc(100% - 25px)      /* bottom left */
+      );
+  }
 }
 
 @mixin panel() {

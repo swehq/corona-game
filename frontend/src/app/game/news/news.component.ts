@@ -1,6 +1,5 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {EventMitigation} from 'src/app/services/events';
 import {GameService} from '../game.service';
 
 @UntilDestroy()
@@ -14,12 +13,6 @@ export class NewsComponent {
     this.gameService.gameState$
       .pipe(untilDestroyed(this))
       .subscribe(() => cd.markForCheck());
-  }
-
-  resumeEvent(eventMitigation: EventMitigation) {
-    this.gameService.game.applyMitigationActions({eventMitigations: [eventMitigation]});
-    this.gameService.event = undefined;
-    this.gameService.setSpeed('play');
   }
 
   get today() {

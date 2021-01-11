@@ -1,19 +1,17 @@
 import {DOCUMENT} from '@angular/common';
-import {ChangeDetectionStrategy, Component, Inject, OnDestroy, Renderer2} from '@angular/core';
-import {Subject} from 'rxjs';
-import {map, takeUntil} from 'rxjs/operators';
+import {ChangeDetectionStrategy, Component, Inject, Renderer2} from '@angular/core';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {map} from 'rxjs/operators';
 import {ConfigService} from './services/config.service';
 
+@UntilDestroy()
 @Component({
   selector: 'cvd-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent implements OnDestroy {
-
-  private destroyed = new Subject();
-
+export class AppComponent {
   constructor(
     configService: ConfigService,
     @Inject(DOCUMENT) document: Document,
@@ -25,7 +23,7 @@ export class AppComponent implements OnDestroy {
 
     configService.config$.pipe(
       map(config => config.themeIsLight),
-      takeUntil(this.destroyed),
+      untilDestroyed(this),
     ).subscribe(
       isLightTheme => {
         if (isLightTheme) {
@@ -35,10 +33,5 @@ export class AppComponent implements OnDestroy {
         }
       },
     );
-  }
-
-  ngOnDestroy() {
-    this.destroyed.next();
-    this.destroyed.complete();
   }
 }

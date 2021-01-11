@@ -81,7 +81,7 @@ export function updateEventData(eventInput: EventInput) {
     eventData.tooManyDeathsDays = 0;
   }
 
-  eventData.showAntivaxEvent = eventInput.date > '2020-01-10'
+  eventData.showAntivaxEvent = eventInput.date > '2021-01-10'
     && isEventTriggerActive(eventInput, ANTIVAX_WITH_CAMPAIGN_TRIGGER)
     && isEventTriggerActive(eventInput, ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER)
     && probability(0.02);
@@ -93,7 +93,7 @@ const antivaxEvents = [
     text: 'Ve společnosti se šíří hoax o tom, že vakcína obsahuje látky z nenarozených dětí.',
     help: 'Rychlost vakcinace se snižuje.',
     mitigations: [
-      {label: 'Ok', vaccinationPerDay: -0.0002, timeout: 1},
+      {label: 'Ok', vaccinationPerDay: -0.0002, timeout: Infinity},
     ],
   },
 ];
@@ -286,16 +286,14 @@ export const eventTriggers: EventTrigger[] = [
         // cost = 1.5*cost of lockdown (values taken from game.ts)
         // rMult is applied everyDay!
         mitigations: [{
-          label: 'OK', id: 'panic', rMult: 0.985, economicCost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
-          // TODO timeout=0 (formerly undefined) effectively disables the mitigation
-          // needs to be reworked or documented
-          timeout: 0,
+          label: 'OK', id: PANIC_ID, rMult: 0.985, economicCost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
+          timeout: Infinity,
           stabilityCost: (0.15 + 0.05 + 0.15) * 1.5,
         }],
       },
     ],
     condition: (ei: EventInput) =>
-      (!isEventMitigationActive(ei, 'panic') && probability(ei.eventData.tooManyDeathsDays * 0.05)),
+      (!isEventMitigationActive(ei, PANIC_ID) && probability(ei.eventData.tooManyDeathsDays * 0.05)),
     timeout: 1,
   },
   {
@@ -304,6 +302,8 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Život v zemi se vrací do normálu.',
         help: 'Izolace obyvatel skončila.',
         // end panic
+        // TODO timeout=0 (formerly undefined) effectively disables the mitigation
+        // needs to be reworked or documented
         mitigations: [{label: 'OK', id: PANIC_ID, timeout: 0}],
       },
     ],
@@ -379,7 +379,7 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Pokud ministr po porušení vlastních nařízení setrvá na místě, mohou se obyvatelé bouřit, což znamená pokles společenské stability. Vyhození ministra, který je ve své práci již zaběhlý, může výrazně posunout začátek očkování.',
         mitigations: [
           // todo: fire -> postpone vaxination start
-          {label: 'Vyhodit ministra', vaccinationPerDay: -0.0001, timeout: 1},
+          {label: 'Vyhodit ministra', vaccinationPerDay: -0.0001, timeout: Infinity},
           {label: 'Neřešit prohřešek', stabilityCost: 5, timeout: 1},
         ],
       },
@@ -480,10 +480,10 @@ export const eventTriggers: EventTrigger[] = [
         mitigations: [
           {
             label: 'Investovat do propagace vakcín', id: VACCINATION_CAMPAIGN_ID, vaccinationPerDay: 0.0001,
-            timeout: 1,
+            timeout: Infinity,
             oneTimeEffect: {economicCost: 1_000_000_000},
           },
-          {label: 'Neinvestovat', vaccinationPerDay: -0.0001, timeout: 1},
+          {label: 'Neinvestovat', vaccinationPerDay: -0.0001, timeout: Infinity},
         ],
       },
     ],
@@ -512,8 +512,8 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Sousední země mají proočkováno a nabízejí pomoc s očkováním v ČR.',
         help: 'Přijetí zahraniční pomoci urychlí vakcinaci a zvedne o několik procent proočkovanost ČR. Její odmítnutí se může negativně ovlivnit společenskou stabilitu.',
         mitigations: [
-          // todo: should not change vaccinationPerDay but increase totalVaccinated (by 5%)
-          {label: 'Přijmout zahraniční pomoc', vaccinationPerDay: -0.0005, timeout: 1},
+          // total impact 5% vaccinated over 25 days
+          {label: 'Přijmout zahraniční pomoc', vaccinationPerDay: 0.002, timeout: 25},
           {label: 'Nepřijmout zahraniční pomoc', stabilityCost: 5, timeout: 1},
         ],
       },

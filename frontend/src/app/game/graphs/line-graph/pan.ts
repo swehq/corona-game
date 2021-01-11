@@ -64,17 +64,17 @@ export class Pan {
       });
   }
 
-  panLeft() {
-    this.minIndex = this.minIndex + this.parent.scope * 0.5;
+  applyPan(direction: 'left' | 'right') {
+    const addition = this.parent.scope * 0.5;
     let max;
     let min;
 
-    if (this.parent.labels.length < this.parent.scope + this.minIndex) {
-      min = null;
-      max = this.parent.labels[this.parent.scope];
+    if (direction === 'left') {
+      this.minIndex += addition;
+      [min, max] = this.panLeft();
     } else {
-      min = this.parent.labels[this.parent.labels.length - (this.parent.scope + this.minIndex)];
-      max = this.parent.labels[this.parent.labels.length - this.minIndex];
+      this.minIndex -= addition;
+      [min, max] = this.panRight();
     }
 
     this.parent.setXAxisTicks({min, max});
@@ -84,7 +84,6 @@ export class Pan {
   }
 
   panRight() {
-    this.minIndex = this.minIndex - this.parent.scope * 0.5;
     let max;
     let min;
 
@@ -96,10 +95,22 @@ export class Pan {
       max = this.parent.labels[this.parent.labels.length - this.minIndex];
     }
 
-    this.parent.setXAxisTicks({min, max});
-    this.chart?.update();
-    this.panAutoReset$.next();
-    this.panActive = true;
+    return [min, max];
+  }
+
+  panLeft() {
+    let max;
+    let min;
+
+    if (this.parent.labels.length < this.parent.scope + this.minIndex) {
+      min = null;
+      max = this.parent.labels[this.parent.scope];
+    } else {
+      min = this.parent.labels[this.parent.labels.length - (this.parent.scope + this.minIndex)];
+      max = this.parent.labels[this.parent.labels.length - this.minIndex];
+    }
+
+    return [min, max];
   }
 
   reset() {

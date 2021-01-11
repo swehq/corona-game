@@ -136,7 +136,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           onPan: () => {
             this.pan.panActive = true;
           },
-          onPanComplete: () => {
+          onPanComplete: (context: any) => {
+            const max = context.chart.scales['x-axis-0'].options.ticks.max;
+            this.pan.minIndex = this.labels.length - this.labels.indexOf(max);
             this.pan.panAutoReset$.next();
             this.cd.detectChanges();
           },
@@ -211,8 +213,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
         this.seriesLength++;
         this.labels.push((typeof ticks[0].label === 'string'
-        ? ticks[0].label
-        : ticks[0].label.toLocaleDateString()),
+          ? ticks[0].label
+          : ticks[0].label.toLocaleDateString()),
         );
       });
     });
@@ -233,7 +235,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       untilDestroyed(this),
     ).subscribe(level => {
       this.pan.panActive = false;
-      this.pan.minIndex = 0;
       this.setScope(level);
       this.cd.markForCheck();
     });
@@ -248,9 +249,18 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       this.scope = scope;
     }
 
-    const index = this.labels.length - this.scope;
-    const min = this.scope && index > 0 ? this.labels[index] : null;
-    this.setXAxisTicks({min, max: null});
+    let min;
+    let max = null;
+
+    if (this.pan.minIndex > 0 && this.scope > 0) {
+      [min, max] = this.pan.panLeft();
+    } else {
+      const index = this.labels.length - this.scope;
+      min = this.scope && index > 0 ? this.labels[index] : null;
+    }
+
+
+    this.setXAxisTicks({min, max});
     this.chart?.update();
   }
 

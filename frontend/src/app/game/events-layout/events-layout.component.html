@@ -1,4 +1,5 @@
 <div
+  cdkTrapFocus [cdkTrapFocusAutoCapture]="true"
   class="chart-overlay"
   [@inOutAnimation]
   *ngIf="gameService.event">
@@ -23,6 +24,7 @@
 
     <cvd-button
       *ngIf="!gameService.event.mitigations?.length"
+      cdkFocusInitial
       (click)="resumeEvent()">
       Ok
     </cvd-button>

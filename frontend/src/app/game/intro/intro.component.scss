@@ -3,3 +3,16 @@
 :host {
   @include panel;
 }
+
+p {
+  margin-bottom: 2em;
+  text-align: justify;
+}
+
+.content {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}

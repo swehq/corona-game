@@ -124,7 +124,7 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ([
         {
           label: new Date(gs.date),
-          value: gs.stats.vaccinated,
+          value: gs.stats.vaccinated.total,
           tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
           datasetOptions: {
             backgroundColor: `${colors.critical}33`,
@@ -136,7 +136,7 @@ export class GraphsComponent implements AfterViewInit {
         },
         {
           label: new Date(gs.date),
-          value: gs.stats.estimatedResistant,
+          value: gs.stats.estimatedResistant.total,
           tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
           datasetOptions: {
             label: 'Imunní po nemoci',
@@ -157,23 +157,25 @@ export class GraphsComponent implements AfterViewInit {
     this.templateData = [
       {
         label: 'Nově nakažení',
-        icon: 'virus',
+        icon: 'coronavirus',
         headerData$: this.infectedToday$.pipe(map(gs => last(gs)?.value)),
+        prefix: '+',
         data$: this.infectedToday$,
         customOptions: null,
         pipe: [false, false],
       },
       {
         label: 'Nově zemřelí',
-        icon: 'skull',
+        svgIcon: 'skull',
         headerData$: this.deathToday$.pipe(map(gs => last(gs)?.value)),
+        prefix: '+',
         data$: this.deathToday$,
         customOptions: null,
         pipe: [false, false],
       },
       {
         label: 'Celkové náklady',
-        icon: 'money',
+        svgIcon: 'money',
         headerData$: this.costTotal$.pipe(map(gs => last(gs)?.value)),
         data$: this.costTotal$,
         customOptions: this.costTotalCustomOptions,
@@ -181,7 +183,7 @@ export class GraphsComponent implements AfterViewInit {
       },
       {
         label: 'Imunní',
-        icon: 'hospital',
+        svgIcon: 'vaccine',
         headerData$: this.immunized$,
         multiLineData$: this.immunizedChart$,
         customOptions: this.immunizedCustomOptions,

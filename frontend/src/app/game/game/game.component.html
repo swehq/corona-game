@@ -1,6 +1,8 @@
-<cvd-col *ngIf="state === 'intro'">
+<cvd-col *ngIf="state === 'intro'" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
   <cvd-intro [@inOutAnimation]>
-    <cvd-button grow (click)="state = 'game'" color="warn">Hrát</cvd-button>
+    <button
+      mat-stroked-button (click)="state = 'game'"
+      cdkFocusInitial color="accent">Hrát</button>
   </cvd-intro>
 </cvd-col>
 

@@ -21,3 +21,12 @@
     padding-right: 1rem;
   }
 }
+
+small {
+  color: $light-accent-text;
+  font-size: 75%;
+}
+
+mat-divider {
+  margin: 1em 0;
+}

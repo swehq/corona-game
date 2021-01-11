@@ -3,10 +3,4 @@
 
 :host {
   @include flex-container;
-
-  @include apply-themes {
-    .mat-button-toggle-checked {
-      background-color: mat-color(map-get($theme, background), selected-button);
-    }
-  }
 }

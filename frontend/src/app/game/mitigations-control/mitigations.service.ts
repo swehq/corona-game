@@ -3,7 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {isEqual} from 'lodash';
 import {Observable} from 'rxjs';
-import {debounceTime, map, pairwise, shareReplay, startWith, tap} from 'rxjs/operators';
+import {debounceTime, map, pairwise, shareReplay, startWith} from 'rxjs/operators';
 import {Game} from '../../services/game';
 import {MitigationPair} from '../../services/scenario';
 import {GameService} from '../game.service';
@@ -93,7 +93,7 @@ export class MitigationsService {
 
     const _value$ = this.formGroup.valueChanges.pipe(
       startWith(this.formGroup.value),
-      map(val => val as {[key in keyof Mitigations]: any}),
+      map(val => val as { [key in keyof Mitigations]: any }),
     );
 
     this.value$ = _value$.pipe(

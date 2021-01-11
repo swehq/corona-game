@@ -3,8 +3,9 @@ import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
 
-// infinite timeout (1 million years)
-const infTimeout = Infinity;
+// infinite event timeout
+// TODO remove
+export const infTimeout = Infinity;
 
 export interface EventMitigation extends Partial<MitigationEffect> {
   timeout: number;
@@ -54,6 +55,7 @@ export interface EventInput extends EventState {
 }
 
 export class EventHandler {
+  // TODO not used anymore, mitigation definition needs to be explicit now
   static readonly defaultMitigation: EventMitigation = {
     timeout: infTimeout,
     label: 'OK',
@@ -87,7 +89,7 @@ export class EventHandler {
     if (!triggerState) return;
 
     const trigger = triggerState.trigger;
-    triggerState.timeout = trigger.timeout ? trigger.timeout : infTimeout;
+    triggerState.timeout = (trigger.timeout !== undefined) ? trigger.timeout : infTimeout;
     const eventDef = sample(trigger.events);
     if (!eventDef) return;
 

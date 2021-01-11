@@ -214,13 +214,14 @@ export class Game {
   }
 
   private static applyMitigationEffect(affected: MitigationEffect, applied: Partial<MitigationEffect>) {
-    for (const key in applied) {
-      if (key === 'rMult') {
-        (affected as any)[key] *= (applied as any)[key];
-      } else {
-        (affected as any)[key] += (applied as any)[key];
-      }
-    }
+    if (applied.rMult !== undefined) affected.rMult *= applied.rMult;
+
+    if (applied.exposedDrift !== undefined) affected.exposedDrift += applied.exposedDrift;
+    if (applied.economicCost !== undefined) affected.economicCost += applied.economicCost;
+    if (applied.compensationCost !== undefined) affected.compensationCost += applied.compensationCost;
+    if (applied.stabilityCost !== undefined) affected.stabilityCost += applied.stabilityCost;
+    if (applied.vaccinationPerDay !== undefined) affected.vaccinationPerDay += applied.vaccinationPerDay;
+    if (applied.schoolDaysLost !== undefined) affected.schoolDaysLost += applied.schoolDaysLost;
   }
 
   static randomizeMitigations() {

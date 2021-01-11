@@ -124,7 +124,7 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ([
         {
           label: new Date(gs.date),
-          value: Math.round(gs.stats.vaccinationRate * gs.sirState.suspectible),
+          value: gs.stats.vaccinated,
           tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
           datasetOptions: {
             backgroundColor: `${colors.critical}33`,
@@ -136,7 +136,7 @@ export class GraphsComponent implements AfterViewInit {
         },
         {
           label: new Date(gs.date),
-          value: Math.round(gs.sirState.resistant),
+          value: gs.stats.estimatedResistant,
           tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
           datasetOptions: {
             label: 'Imunní po nemoci',

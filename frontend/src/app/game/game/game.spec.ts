@@ -15,7 +15,7 @@ describe('GameValidation', () => {
 
   it('should not validate CZ scenario w/ added mitigation', () => {
     const modifiedData = cloneDeep(data);
-    modifiedData.mitigations.history['2020-12-07'] = {mitigations: {schools: 'universities'}};
+    modifiedData.mitigations.history['2020-12-07'] = {mitigations: {schools: 'all'}};
     expect(validateGame(modifiedData)).toBeFalse();
   });
 

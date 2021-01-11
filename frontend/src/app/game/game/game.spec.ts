@@ -95,7 +95,7 @@ describe('MitigationsTests', () => {
     expect(game.eventMitigations.length).toEqual(1);
 
     // Add mitigation with timeout 5
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, timeout: 5}]});
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, duration: 5}]});
     for (let i = 0; i < 5; i++) game.moveForward();
     expect(game.eventMitigations.length).toEqual(2);
 
@@ -110,7 +110,7 @@ describe('MitigationsTests', () => {
     expect(game.eventMitigations.length).toEqual(2);
 
     // Cancel mitigation with ID
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test', timeout: 0}]});
+    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test', duration: 0}]});
     game.moveForward();
     expect(game.eventMitigations.length).toEqual(1);
   });

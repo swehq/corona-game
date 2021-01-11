@@ -7,12 +7,18 @@ import {DayState, MitigationEffect, Stats} from './simulation';
 // TODO remove
 export const infTimeout = Infinity;
 
-export interface EventMitigation extends Partial<MitigationEffect> {
-  timeout: number;
+export interface NamedMitigationEffect extends Partial<MitigationEffect> {
+  name: string;
+  duration: number; // number of days the effect is valid for (0 - affects 0 days)
+}
+
+export interface EventMitigation {
   label: string;
   id?: string;
   name?: string; // if filled, the mitigation is displayed to the user
-  oneTimeEffect?: Partial<MitigationEffect>;
+  removeMitigationIds?: string[]; // removes mitigation events with listed ids
+  oneTimeEffect?: Partial<MitigationEffect>; // effect applied immediately and just once
+  runningEffect?: NamedMitigationEffect;
 }
 
 export interface Event {
@@ -28,7 +34,7 @@ interface EventDef {
   title: EventText;
   text?: EventText;
   help?: EventText;
-  mitigations?: EventMitigation[];
+  choices?: EventMitigation[];
 }
 
 export interface EventTrigger {
@@ -57,7 +63,7 @@ export interface EventInput extends EventState {
 export class EventHandler {
   // TODO not used anymore, mitigation definition needs to be explicit now
   static readonly defaultMitigation: EventMitigation = {
-    timeout: infTimeout,
+    duration: infTimeout,
     label: 'OK',
   };
   eventStateHistory: Record<string, EventState> = {};
@@ -101,7 +107,7 @@ export class EventHandler {
       title: EventHandler.interpolate(eventDef.title, data),
       text: eventDef.text ? EventHandler.interpolate(eventDef.text, data) : undefined,
       help: eventDef.help ? EventHandler.interpolate(eventDef.help, data) : undefined,
-      mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => EventHandler.completeMitigation(m)) : undefined,
+      mitigations: eventDef.choices ? eventDef.choices.map(m => EventHandler.completeMitigation(m)) : undefined,
     };
   }
 

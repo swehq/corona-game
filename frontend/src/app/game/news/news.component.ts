@@ -22,4 +22,8 @@ export class NewsComponent {
   hasNamedEventMitigation() {
     return this.gameService.game.eventMitigations.find(m => m.name);
   }
+
+  isFinite(value: number) {
+    return value < Infinity;
+  }
 }

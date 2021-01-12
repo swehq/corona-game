@@ -3,29 +3,26 @@ import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
 
-// infinite event timeout
-// TODO remove
-export const infTimeout = Infinity;
-
-export interface NamedMitigationEffect extends Partial<MitigationEffect> {
-  name: string;
+export interface EventMitigation extends Partial<MitigationEffect> {
+  id?: string;
+  name?: string;
   duration: number; // number of days the effect is valid for (0 - affects 0 days)
 }
 
-export interface EventMitigation {
+interface EventChoiceGeneric<T> {
   label: string;
-  id?: string;
-  name?: string; // if filled, the mitigation is displayed to the user
+  mitigations?: T[];
   removeMitigationIds?: string[]; // removes mitigation events with listed ids
-  oneTimeEffect?: Partial<MitigationEffect>; // effect applied immediately and just once
-  runningEffect?: NamedMitigationEffect;
 }
+
+export type EventChoice = EventChoiceGeneric<EventMitigation>;
+type EventChoiceDef = EventChoiceGeneric<Partial<EventMitigation>>;
 
 export interface Event {
   title: string;
   text?: string;
   help?: string;
-  mitigations?: EventMitigation[];
+  choices?: EventChoice[];
 }
 
 type EventText = ((stats: EventInput) => string) | string;
@@ -34,7 +31,7 @@ interface EventDef {
   title: EventText;
   text?: EventText;
   help?: EventText;
-  choices?: EventMitigation[];
+  choices?: EventChoiceDef[];
 }
 
 export interface EventTrigger {
@@ -61,11 +58,6 @@ export interface EventInput extends EventState {
 }
 
 export class EventHandler {
-  // TODO not used anymore, mitigation definition needs to be explicit now
-  static readonly defaultMitigation: EventMitigation = {
-    duration: infTimeout,
-    label: 'OK',
-  };
   eventStateHistory: Record<string, EventState> = {};
 
   evaluateDay(prevDate: string, currentDate: string, dayState: DayState, eventMitigations: EventMitigation[]) {
@@ -95,7 +87,7 @@ export class EventHandler {
     if (!triggerState) return;
 
     const trigger = triggerState.trigger;
-    triggerState.timeout = (trigger.timeout !== undefined) ? trigger.timeout : infTimeout;
+    triggerState.timeout = (trigger.timeout !== undefined) ? trigger.timeout : Infinity;
     const eventDef = sample(trigger.events);
     if (!eventDef) return;
 
@@ -107,8 +99,13 @@ export class EventHandler {
       title: EventHandler.interpolate(eventDef.title, data),
       text: eventDef.text ? EventHandler.interpolate(eventDef.text, data) : undefined,
       help: eventDef.help ? EventHandler.interpolate(eventDef.help, data) : undefined,
-      mitigations: eventDef.choices ? eventDef.choices.map(m => EventHandler.completeMitigation(m)) : undefined,
+      choices: eventDef.choices ? eventDef.choices.map(c => EventHandler.choiceFromDef(c)) : undefined,
     };
+  }
+
+  static choiceFromDef(choice: EventChoiceDef) {
+    const mitigations = choice.mitigations ? choice.mitigations.map(m => ({duration: 1, ...m})) : undefined;
+    return {...choice, mitigations};
   }
 
   private static interpolate(text: EventText, data: any) {
@@ -123,9 +120,5 @@ export class EventHandler {
 
       return isNil(value) ? original : valueToInsert;
     });
-  }
-
-  private static completeMitigation(mitigation: Partial<EventMitigation>): EventMitigation {
-    return {...EventHandler.defaultMitigation, ...mitigation};
   }
 }

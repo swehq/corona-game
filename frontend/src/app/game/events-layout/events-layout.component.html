@@ -3,28 +3,30 @@
   [@inOutAnimation]
   *ngIf="gameService.event">
   <cvd-row grow class="chart-overlay-title">
-    {{gameService.event.title}}
+    {{gameService.event?.title}}
   </cvd-row>
 
-  <cvd-row [grow]="2" *ngIf="gameService.event.text">
-    {{gameService.event.text}}
+  <cvd-row [grow]="2" *ngIf="gameService.event?.text">
+    {{gameService.event?.text}}
   </cvd-row>
 
   <cvd-row [grow]="2" *ngIf="gameService.event.help">
-    <small>{{gameService.event.help}}</small>
+    <small>{{gameService.event?.help}}</small>
   </cvd-row>
 
-  <cvd-row grow>
+  <cvd-row
+    grow
+    class="buttons">
     <cvd-button
-      *ngFor="let mitigation of gameService.event.mitigations"
+      *ngFor="let mitigation of gameService.event?.mitigations"
       (click)="resumeEvent(mitigation)">
       {{mitigation.label}}
     </cvd-button>
 
     <cvd-button
-      *ngIf="!gameService.event.mitigations?.length"
+      *ngIf="!gameService.event?.mitigations?.length"
       (click)="resumeEvent()">
-      Ok
+      OK
     </cvd-button>
   </cvd-row>
 </div>

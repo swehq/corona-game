@@ -93,7 +93,7 @@ const antivaxEvents = [
     text: 'Ve společnosti se šíří hoax o tom, že vakcína obsahuje látky z nenarozených dětí.',
     help: 'Rychlost vakcinace se snižuje.',
     mitigations: [
-      {label: 'Ok', vaccinationPerDay: -0.0002, timeout: Infinity},
+      {label: 'OK', vaccinationPerDay: -0.0002, timeout: Infinity},
     ],
   },
 ];
@@ -102,7 +102,7 @@ const antivaxEventsWithCampaign = antivaxEvents.map(e => ({
   ...e,
   help: 'Očkovací kampaň přestala fungovat.',
   mitigations: [
-    {label: 'Ok', id: VACCINATION_CAMPAIGN_ID, timeout: 0},
+    {label: 'OK', id: VACCINATION_CAMPAIGN_ID, timeout: 0},
   ],
 }));
 

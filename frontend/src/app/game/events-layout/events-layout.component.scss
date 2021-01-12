@@ -23,3 +23,22 @@
   font-size: 2rem;
   line-height: 150%;
 }
+
+.buttons {
+  ::ng-deep {
+    & > div > cvd-button {
+      // is single button
+      &:first-child {
+        &:last-child {
+          .mat-button-wrapper {
+            &:after {
+              content: '(enter)';
+              font-size: 0.9rem;
+              vertical-align: middle;
+            }
+          }
+        }
+      }
+    }
+  }
+}

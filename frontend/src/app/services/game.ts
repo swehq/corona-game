@@ -42,6 +42,17 @@ export class Game {
     schoolsCompensation: false,
     stayHome: false,
   };
+
+  static readonly zeroMitigationEffect: MitigationEffect = {
+    rMult: 1.0,
+    exposedDrift: 0,
+    economicCost: 0,
+    compensationCost: 0,
+    stabilityCost: 0,
+    schoolDaysLost: 0,
+    vaccinationPerDay: 0,
+  };
+
   mitigations = cloneDeep(Game.defaultMitigations);
   eventMitigations: EventMitigation[] = [];
   newEventMitigations: EventMitigation[] = [];
@@ -115,7 +126,7 @@ export class Game {
 
     // Remove mitigations by ID
     this.eventMitigations = this.eventMitigations
-      .filter(em => em.id !== undefined && !(em.id in this.removeMitigationIds));
+      .filter(em => em.id === undefined || !this.removeMitigationIds.includes(em.id));
 
     // apply new mitigations
     this.newEventMitigations.forEach(eventMitigation => {
@@ -183,12 +194,7 @@ export class Game {
 
   private calcMitigationEffect(date: string): MitigationEffect {
     const ret: MitigationEffect = {
-      rMult: 1.0,
-      exposedDrift: 0,
-      economicCost: 0,
-      compensationCost: 0,
-      stabilityCost: 0,
-      schoolDaysLost: 0,
+      ...Game.zeroMitigationEffect,
       vaccinationPerDay: this.vaccinationStartDate <= date ? this.vaccinationPerDay : 0,
     };
     let bordersClosed = false;

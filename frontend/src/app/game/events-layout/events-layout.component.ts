@@ -19,7 +19,7 @@ export class EventsLayoutComponent {
     if (choice !== undefined) {
       this.gameService.game.applyMitigationActions({
         eventMitigations: choice.mitigations,
-        removeMitigationIds: choice.removeMitigationIds
+        removeMitigationIds: choice.removeMitigationIds,
       });
     }
 

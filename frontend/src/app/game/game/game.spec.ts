@@ -110,5 +110,13 @@ describe('MitigationsTests', () => {
     game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 0}]});
     game.moveForward();
     expect(game.eventMitigations.length).toEqual(1);
+
+    // Test mitigation removal
+    game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 5}]});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(2);
+    game.applyMitigationActions({removeMitigationIds: ['test']});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(1);
   });
 });

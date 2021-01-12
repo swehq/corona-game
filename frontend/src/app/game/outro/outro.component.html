@@ -1,4 +1,63 @@
-<cvd-scatter-graph style="width: 80vw" [datasets]="(datasets$ | async)!"></cvd-scatter-graph>
+<div *ngIf="isGameLost()">
+  <h3>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h3>
+
+  <p>
+    Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.
+    Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu. Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.
+  </p>
+</div>
+
+<div *ngIf="!isGameLost()">
+  <h3>Konec hry</h3>
+
+  <p>
+    Vaše hra v roli vlády skončila, epidemii se díky vysokému počtu imunních podařilo pro teď vymýtit.
+  </p>
+</div>
+
+<p>
+Předtím, než si prohlédnete výsledky, rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
+</p>
+
+<p>
+V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale přesto na pár prvků upozornit:
+</p>
+<ul>
+  <li>
+    Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci a studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky. Tento výpadek zároveň dopadne nejvíce na skupiny, které to mají se vzděláváním už teď těžké.
+(Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
+  </li>
+  <li>
+    Mohli bychom legitimně říct, že za vaši hru se nakazilo ne {{stats.detectedInfections.total | formatNumber}}, ale podle hypotéz výzkumníků (TODO ODKAZ) reálně až {{4 * stats.detectedInfections.total | formatNumber}} lidí. Do hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
+  </li>
+</ul>
+
+<p>
+Pokud vás více zajímá, jak naše vzorce fungují, koukněte TODO SEM.
+</p>
+
+<p>
+  <strong>Vaše finální výsledky:</strong>
+</p>
+<ul>
+  <li>
+    nemoc prodělalo: {{stats.detectedInfections.total | formatNumber}}
+  </li>
+  <li>
+    mrtví: {{stats.deaths.total | formatNumber}}
+  </li>
+  <li>
+    náklady: {{stats.costs.total | formatNumber}}
+[TODO rozpocitat]
+  </li>
+<ul>
+
+
+<cvd-row>
+  <cvd-graphs></cvd-graphs>
+
+  <cvd-scatter-graph style="width: 40vw" [datasets]="(datasets$ | async)!"></cvd-scatter-graph>
+</cvd-row>
 
 <div style="padding-top: 2rem">
   <ng-content></ng-content>

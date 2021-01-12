@@ -4,6 +4,7 @@ import {ChartDataSets, ChartPoint} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GameResult, OutroService} from './outro.service';
+import {GameService} from '../game.service';
 
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.5)';
@@ -59,8 +60,18 @@ export class OutroComponent {
   );
 
   constructor(
-    private outroService: OutroService,
+    private outroService: OutroService, private gameService: GameService
   ) {
     outroService.fetchAllResults();
+  }
+
+  get stats() {
+    const lastStats = this.gameService.game.simulation.getLastStats();
+    if (lastStats === undefined) throw new Error('Missing game statistics');
+    return lastStats;
+  }
+
+  isGameLost() {
+    return this.gameService.game.isGameLost();
   }
 }

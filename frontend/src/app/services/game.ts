@@ -28,6 +28,7 @@ export interface GameData {
 export class Game {
   readonly infectionsWhenBordersOpen = 30;
   readonly infectionsWhenBordersClosed = 10;
+  readonly minimalStability = -50;
 
   static readonly defaultMitigations: Mitigations = {
     bordersClosed: false,
@@ -166,7 +167,12 @@ export class Game {
   }
 
   isFinished() {
-    return this.simulation.lastDate >= this.scenario.dates.endDate;
+    return this.simulation.lastDate >= this.scenario.dates.endDate || this.isGameLost();
+  }
+
+  isGameLost() {
+    const lastStats = this.simulation.getLastStats();
+    return lastStats !== undefined && lastStats.stability <= this.minimalStability;
   }
 
   updateRampUpMitigationsForScenario() {

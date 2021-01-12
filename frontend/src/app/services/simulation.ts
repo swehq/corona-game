@@ -92,12 +92,12 @@ export interface Stats {
   hospitalizationCosts: MetricStats;
   costs: MetricStats;
   schoolDaysLost: MetricStats;
-  estimatedResistant: number;
+  estimatedResistant: MetricStats;
   activeInfections: number;
   mortality: number;
   hospitalsUtilization: number;
   vaccinationRate: number;
-  vaccinated: number;
+  vaccinated: MetricStats;
   stability: number;
 }
 
@@ -393,9 +393,15 @@ export class Simulation {
 
     // Simple model of resolved infections assuming constant immunity duration of detected infections
     const losingImmunityIndex = this.modelStates.length - this.immunityMeanDuration;
-    const estimatedResistant = (lastStat ? lastStat.estimatedResistant : 0)
+    const estimatedResistantTotal = (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0)
       + detectedInfectionsResolved.today
-      - ((losingImmunityIndex >= 0) ? this.modelStates[losingImmunityIndex].stats.detectedInfectionsResolved.today : 0);
+      - (losingImmunityIndex >= 0 ?
+          this.modelStates[losingImmunityIndex].stats.detectedInfectionsResolved.today :
+          0);
+    const estimatedResistant = this.calcMetricStats('estimatedResistant',
+      estimatedResistantTotal - (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0));
+    const vaccinated = this.calcMetricStats('vaccinated',
+      state.vaccinated - (lastStat ? lastStat.vaccinated.totalUnrounded : 0));
 
     const stats = {
       detectedInfections,
@@ -411,7 +417,7 @@ export class Simulation {
       schoolDaysLost,
       hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
-      vaccinated: Math.round(state.vaccinated),
+      vaccinated,
       stability: modelInputs ? modelInputs.stability : this.initialStability,
     };
 

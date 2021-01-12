@@ -15,10 +15,6 @@ export class NewsComponent {
       .subscribe(() => cd.markForCheck());
   }
 
-  get today() {
-    return new Date(this.gameService.lastDate).toLocaleDateString();
-  }
-
   hasNamedEventMitigation() {
     return this.gameService.game.eventMitigations.find(m => m.name);
   }

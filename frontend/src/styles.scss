@@ -1,3 +1,5 @@
+@import 'material-definitions.scss';
+
 html, body {
   height: 100%;
   min-height: 100%;
@@ -56,4 +58,13 @@ dt {
 
 dd {
   margin-bottom: 0.5rem;
+}
+
+a[href] {
+  color: mat-color($mat-accent, main);;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }

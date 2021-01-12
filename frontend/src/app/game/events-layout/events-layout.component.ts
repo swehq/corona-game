@@ -9,7 +9,7 @@ import {inOutAnimation} from 'src/app/utils/animations';
   selector: 'cvd-events-layout',
   templateUrl: './events-layout.component.html',
   styleUrls: ['./events-layout.component.scss'],
-  animations: [inOutAnimation],
+  animations: [inOutAnimation()],
 })
 export class EventsLayoutComponent {
   constructor(public gameService: GameService) {

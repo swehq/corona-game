@@ -3,17 +3,10 @@
 
 :host {
   @include panel;
-  position: relative;
 }
 
 cvd-line-graph {
   padding-top: 1.5rem;
-}
-
-h3 {
-  display: block;
-  margin: 1rem 0;
-  text-align: center;
 }
 
 .tabs {
@@ -45,5 +38,13 @@ h3 {
 
   cvd-icon {
     margin-right: 1rem;
+  }
+}
+
+.tab-content {
+  h3 {
+    display: block;
+    margin: 1rem 0;
+    text-align: center;
   }
 }

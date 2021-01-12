@@ -13,7 +13,7 @@ type GameState = 'intro' | 'game' | 'outro';
   selector: 'cvd-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss'],
-  animations: [inOutAnimation],
+  animations: [inOutAnimation()],
 })
 export class GameComponent {
 

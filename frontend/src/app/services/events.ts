@@ -37,13 +37,13 @@ interface EventDef {
 export interface EventTrigger {
   id?: string;
   events: EventDef[];
-  timeout?: number;
+  reactivateAfter?: number;
   condition: (stats: EventInput) => boolean;
 }
 
 interface TriggerState {
   trigger: EventTrigger;
-  timeout: number;
+  activeBefore?: number;
 }
 
 export interface EventState {
@@ -63,11 +63,11 @@ export class EventHandler {
   evaluateDay(prevDate: string, currentDate: string, dayState: DayState, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
-      const initialTriggerStates = eventTriggers.map(et => ({trigger: et, timeout: 0}));
+      const initialTriggerStates = eventTriggers.map(et => ({trigger: et}));
       prevState = {triggerStates: initialTriggerStates, eventData: initialEventData};
     }
 
-    const triggerStates = prevState.triggerStates.map(ts => ({...ts, timeout: Math.max(0, ts.timeout - 1)}));
+    const triggerStates = prevState.triggerStates.map(ts => ({...ts, activeBefore: (ts.activeBefore !== undefined ? Math.max(0, ts.activeBefore + 1) : undefined)}));
     const currentState: EventState = {triggerStates, eventData: cloneDeep(prevState.eventData)};
 
     const eventInput: EventInput = {
@@ -81,13 +81,15 @@ export class EventHandler {
 
     this.eventStateHistory[currentDate] = currentState;
 
-    const active = shuffle(currentState.triggerStates.filter(ts => ts.timeout <= 0));
+    const active = shuffle(currentState.triggerStates.filter(ts =>
+      ts.activeBefore === undefined
+        || ts.trigger.reactivateAfter !== undefined && ts.activeBefore >= ts.trigger.reactivateAfter));
     const triggerState = active.find(ts => ts.trigger.condition(eventInput));
 
     if (!triggerState) return;
 
     const trigger = triggerState.trigger;
-    triggerState.timeout = (trigger.timeout !== undefined) ? trigger.timeout : Infinity;
+    triggerState.activeBefore = 0;
     const eventDef = sample(trigger.events);
     if (!eventDef) return;
 

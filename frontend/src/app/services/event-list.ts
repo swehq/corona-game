@@ -61,7 +61,10 @@ function isEventMitigationActive(eventInput: EventInput, id: string) {
  */
 function isEventTriggerActive(eventInput: EventInput, id: string) {
   const triggerState = eventInput.triggerStates.find(ts => ts.trigger.id === id);
-  return !isNil(triggerState) && triggerState.timeout <= 0;
+  return !isNil(triggerState) &&
+    (triggerState.activeBefore === undefined
+      || triggerState.trigger.reactivateAfter !== undefined
+        && triggerState.activeBefore >= triggerState.trigger.reactivateAfter);
 }
 
 export interface EventData {
@@ -220,7 +223,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) => ei.eventData.stabilityThreshold === 25
       && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
-    timeout: 1,
+    reactivateAfter: 1,
   },
   {
     events: [
@@ -231,7 +234,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) => ei.eventData.stabilityThreshold === 0
       && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
-    timeout: 1,
+    reactivateAfter: 1,
   },
   {
     events: [
@@ -243,7 +246,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) => ei.eventData.stabilityThreshold === -30
       && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
-    timeout: 1,
+    reactivateAfter: 1,
   },
   {
     events: [
@@ -252,7 +255,7 @@ export const eventTriggers: EventTrigger[] = [
       },
     ],
     condition: (ei: EventInput) => ei.eventData.stabilityThreshold > ei.eventData.lastStabilityThreshold,
-    timeout: 1,
+    reactivateAfter: 1,
   },
   /****************************************************************************
    *
@@ -364,7 +367,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) =>
       (!isEventMitigationActive(ei, SELF_ISOLATION_ID) && probability(ei.eventData.tooManyDeathsDays * 0.05)),
-    timeout: 1,
+    reactivateAfter: 1,
   },
   {
     events: [
@@ -376,7 +379,7 @@ export const eventTriggers: EventTrigger[] = [
       },
     ],
     condition: (ei: EventInput) => (isEventMitigationActive(ei, SELF_ISOLATION_ID) && ei.stats.deaths.avg7Day <= 500),
-    timeout: 1,
+    reactivateAfter: 1,
   },
   /****************************************************************************
    *
@@ -393,7 +396,7 @@ export const eventTriggers: EventTrigger[] = [
       },
     ],
     condition: (ei: EventInput) => dateBetween(ei.date, '2020-06-30', '2020-07-31'),
-    timeout: 60,
+    reactivateAfter: 60,
   },
   {
     events: [
@@ -405,7 +408,7 @@ export const eventTriggers: EventTrigger[] = [
       },
     ],
     condition: (ei: EventInput) => dateBetween(ei.date, '2020-09-01', '2020-09-30'),
-    timeout: 60,
+    reactivateAfter: 60,
   },
   {
     events: [
@@ -416,7 +419,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-05-20', '2020-06-14')
       || dateBetween(ei.date, '2020-06-14', '2020-07-14'),
-    timeout: 90,
+    reactivateAfter: 90,
   },
   {
     events: [
@@ -428,7 +431,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-09-10', '2020-10-09')
       || dateBetween(ei.date, '2020-10-09', '2020-11-09'),
-    timeout: 90,
+    reactivateAfter: 90,
   },
   /****************************************************************************
    *
@@ -555,7 +558,7 @@ export const eventTriggers: EventTrigger[] = [
     ],
     // TODO timing randomization
     condition: (ei: EventInput) => ei.date >= '2021-01-01',
-    timeout: 90,
+    reactivateAfter: 90,
   },
   {
     events: antivaxEventTexts.map(et =>
@@ -569,7 +572,7 @@ export const eventTriggers: EventTrigger[] = [
     id: ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER,
     condition: (ei: EventInput) =>
       (ei.eventData.showAntivaxEvent && !isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID)),
-    timeout: 7, // cannot occur more often than once every 7 days
+    reactivateAfter: 7, // cannot occur more often than once every 7 days
   },
   {
     events: antivaxEventTexts.map(et =>
@@ -585,7 +588,7 @@ export const eventTriggers: EventTrigger[] = [
     id: ANTIVAX_WITH_CAMPAIGN_TRIGGER,
     condition: (ei: EventInput) =>
       (ei.eventData.showAntivaxEvent && isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID)),
-    timeout: 7, // cannot occur more often than once every 7 days
+    reactivateAfter: 7, // cannot occur more often than once every 7 days
   },
   {
     events: [

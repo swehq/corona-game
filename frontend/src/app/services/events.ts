@@ -67,7 +67,8 @@ export class EventHandler {
       prevState = {triggerStates: initialTriggerStates, eventData: initialEventData};
     }
 
-    const triggerStates = prevState.triggerStates.map(ts => ({...ts, activeBefore: (ts.activeBefore !== undefined ? Math.max(0, ts.activeBefore + 1) : undefined)}));
+    const triggerStates = prevState.triggerStates.map(ts => ({...ts,
+      activeBefore: (ts.activeBefore !== undefined ? Math.max(0, ts.activeBefore + 1) : undefined)}));
     const currentState: EventState = {triggerStates, eventData: cloneDeep(prevState.eventData)};
 
     const eventInput: EventInput = {

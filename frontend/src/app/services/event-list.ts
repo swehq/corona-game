@@ -3,14 +3,23 @@ import {dateDiff} from './utils';
 import {isNil, random} from 'lodash';
 
 // Event mitigation IDs
+const TUTORIAL_ID = 'tutorial';
 const SELF_ISOLATION_ID = 'selfIsolation';
 const SCHOOL_HOLIDAYS_ID = 'schoolHolidays';
 const WARM_WEATHER_ID = 'warmWeather';
 const VACCINATION_CAMPAIGN_ID = 'vaccinationCampaign';
+const VACCINATION_CAMPAIGN_PAID_ID = 'vaccinationCampaignPaid';
 
 // Event trigger IDs
+const TUTORIAL_A_TRIGGER = 'tutorial_A';
+const TUTORIAL_B_TRIGGER = 'tutorial_B';
+const TUTORIAL_C_TRIGGER = 'tutorial_C';
+const TUTORIAL_D_TRIGGER = 'tutorial_D';
+const SELF_ISOLATION_TRIGGER = 'selfIsolation';
 const ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER = 'antivaxWithoutCampaignTrigger';
 const ANTIVAX_WITH_CAMPAIGN_TRIGGER = 'antivaxWithCampaignTrigger';
+
+const selfIsolationThreshold = 2000 / 7;
 
 /**
  * Generate first true randomly between given dates
@@ -68,23 +77,17 @@ function isEventTriggerActive(eventInput: EventInput, id: string) {
 }
 
 export interface EventData {
-  tooManyDeathsDays: number;
+  aboveSelfIsolationThresholdDays: number;
+  belowSelfIsolationThresholdDays: number;
   showAntivaxEvent: boolean;
-
-  // Stability events
-  stability: number;
-  lastStability: number;
-  stabilityThreshold: number;
-  lastStabilityThreshold: number;
+  minStability: number;
 }
 
 export const initialEventData: EventData = {
-  tooManyDeathsDays: 0,
+  aboveSelfIsolationThresholdDays: 0,
+  belowSelfIsolationThresholdDays: 0,
   showAntivaxEvent: false,
-  stability: 50,
-  lastStability: 50,
-  stabilityThreshold: 50,
-  lastStabilityThreshold: 50,
+  minStability: 50,
 };
 
 /**
@@ -94,11 +97,13 @@ export const initialEventData: EventData = {
 export function updateEventData(eventInput: EventInput) {
   const eventData = eventInput.eventData;
 
-  // Panic tracking
-  if (eventInput.stats.deaths.avg7Day >= (2500 / 7)) {
-    eventData.tooManyDeathsDays++;
+  // Used for self-isolation
+  if (eventInput.stats.deaths.avg7Day >= selfIsolationThreshold) {
+    eventData.aboveSelfIsolationThresholdDays++;
+    eventData.belowSelfIsolationThresholdDays = 0;
   } else {
-    eventData.tooManyDeathsDays = 0;
+    eventData.aboveSelfIsolationThresholdDays = 0;
+    eventData.belowSelfIsolationThresholdDays++;
   }
 
   // Antivax
@@ -108,29 +113,21 @@ export function updateEventData(eventInput: EventInput) {
     && isEventTriggerActive(eventInput, ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER)
     && probability(0.02);
 
-  // Stability thresholds
-  eventData.lastStability = eventData.stability;
-  eventData.stability = eventInput.stats.stability;
-  eventData.lastStabilityThreshold = eventData.stabilityThreshold;
-  [-45, -30, 0, 25, 50].forEach(t => {
-    if (eventData.stability <= t && t <= eventData.lastStability
-      || eventData.lastStability <= t && t <= eventData.stability) {
-      eventData.stabilityThreshold = t;
-    }
-  });
+  // Stability
+  eventData.minStability = Math.min(eventInput.stats.stability, eventData.minStability);
 }
 
 function simpleChoice(label: string, mitigation?: Partial<EventMitigation>) {
-  const mitigations = (mitigation !== undefined) ? [mitigation] : undefined;
+  const mitigations = mitigation ? [mitigation] : undefined;
   return {label, mitigations};
 }
 
 function okButton(mitigation?: Partial<EventMitigation>) {
-  return [simpleChoice('Ok', mitigation)];
+  return [simpleChoice('OK', mitigation)];
 }
 
 function okButtonEndMitigation(id: string) {
-  return [{label: 'Ok', removeMitigationIds: [id]}];
+  return [{label: 'OK', removeMitigationIds: [id]}];
 }
 
 const antivaxEventTexts = [
@@ -168,11 +165,113 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'V České republice je první případ nákazy koronavirem',
-        text: 'První případ nákazy Covidem-19 byl dnes potvrzen i v Česku. Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Více informací zjistíte v infoboxech jednotlivých opatření. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví.',
-        choices: [simpleChoice('Začít hrát')],
-     },
+        text: 'První případ nákazy Covidem-19 byl dnes potvrzen i v Česku. \
+Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření - nebo si se situací poradili jakkoliv jinak vám je libo. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví. \
+Každý panel má také v rohu otazník, který vám představí všechny své ovládací prvky. \
+[TODO] \
+Hru můžete vždy pozastavit mezerníkem, nebo tlačítkem pauza.',
+        help: 'Při každé události ve hře si také můžete přečíst vzkazy od vašeho průvodce. Tyto texty budou vždy mít tuto barvu a snažíme se vám skrze ně poradit. Ale nemusíte se jimi nijak řídit!',
+        choices: [
+          simpleChoice('Chci přímo do hry'),
+          simpleChoice('Ukažte mi ovládání', {id: TUTORIAL_ID, duration: Infinity}),
+        ],
+      },
     ],
     condition: (ei: EventInput) => ei.date === '2020-03-01',
+  },
+  {
+    events: [
+      {
+        title: 'Grafy (hlavní panel)',
+        text: 'Váš hlavní zdroj informací o aktuální situaci ve státě. Můžete si volit mezi zobrazením čtyř grafů: [TODO] \
+IKONKA 1: Počet nově nakažených: Tento graf zobrazuje kolik lidí se v daný den nově nakazilo. \
+IKONKA 2: Lebka: Počet zemřelých denně. Tento graf zobrazuje pouze lidi, kteří zemřeli přímo na Covid 19. Smrtnost nemoci záleží na okolnostech - nejpodstatnější je pro vás Kapacita nemocnic. Příliš mnoho nemocných, nemocnice přestanou stíhat a více lidí zemře. [TODO]',
+        help: 'Pokud nehledáte něco konkrétního (například kolik lidí má imunitu po nemoci a kolik z očkování), doporučíme vám zůstat na zobrazení nově nakažených. To je pro zvládání pandemie ten nejpodstatnější graf.',
+      },
+    ],
+    condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
+    id: TUTORIAL_A_TRIGGER,
+  },
+  {
+    events: [
+      {
+        title: 'Základní statistiky (pod grafy)',
+        text: 'Statistiky slouží jako rychlý přehled podstatných ukazatelů. V levé části panelu najdete čísla platná k aktuálnímu dni. Kromě opakování nakažených zde klíčovou roli hraje Kapacita nemocnic a Společenská stabilita. Pokud překročíte kapacitu nemocnic, bude nemoc výrazně nebezpečnější. Pokud budou vaše opatření příliš omezující nebo naopak zemře příliš lidí a společnost se úplně vystraší, může dojít k výměně vlády a vaše hra skončí. \
+V pravém sloupci vidíte součty. Kolik lidí celkem je imunních, kolik již bylo ztraceno peněz a kolik osob pandemii podlehlo.',
+        help: 'Propad stability na minimum je jediný způsob jak můžete před dostatečnou imunizací ukončit hru, dávejte si tedy na tento ukazatel obzvláštní pozor. Pokud bude příliš nízko, možná je čas uvolnit některá opatření.',
+      },
+    ],
+    condition: (ei: EventInput) => !isEventTriggerActive(ei, TUTORIAL_A_TRIGGER),
+    id: TUTORIAL_B_TRIGGER,
+  },
+  {
+    events: [
+      {
+        title: 'Opatření (panel s ovládacími prvky)',
+        text: 'Zde naleznete váš hlavní nástroj k zvládání pandemie. Jednotlivá opatření a jejich naznačené dopady si můžete projít po kliknutí na otazníček v rohu panelu. Ve hře se také můžete rozhodnout některá opatření “kompenzovat” - znamená to, že budete vydávat zvláštní zdroje jako kompenzace poškozeným podnikům. \
+Ve hře je pro zjednodušení stát nesmírně efektivní v zavádění a vypínání opatření. Vše je zavedeno okamžitě a vždy bez technických chyb. Toto je zásadní zjednodušení oproti reálnému světu.',
+        help: 'Všechna opatření o něco snižují šíření viru, ale také stojí peníze a snižují stabilitu ve společnosti. Je samozřejmě na vás, jakou strategii zvládnutí viru zvolíte: snažili jsme se, aby náš model byl co nejférovější a umožnil různé přístupy. Můžete například zkusit nasazovat a zase vypínat opatření tak, abyste se vyhli vlnám a přetížení nemocnic.',
+      },
+    ],
+    condition: (ei: EventInput) => !isEventTriggerActive(ei, TUTORIAL_B_TRIGGER),
+    id: TUTORIAL_C_TRIGGER,
+  },
+  {
+    events: [
+      {
+        title: 'Efekty opatření',
+        text: 'Poslední, zatím prázdný panel, vám bude ukazovat vliv všech voleb, které jste udělali v rámci různých krizových událostí. Událostí jsou ve hře desítky, ale při každé hře jich zažijete jen malou část.',
+        help: 'A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. \
+Hodně štěstí!',
+      },
+    ],
+    condition: (ei: EventInput) => !isEventTriggerActive(ei, TUTORIAL_C_TRIGGER),
+    id: TUTORIAL_D_TRIGGER,
+  },
+  /****************************************************************************
+   *
+   * Stability events
+   *
+   ****************************************************************************/
+  // Krize a bonusy duvery
+  {
+    events: [
+      {
+        title: 'Důvěra ve vládu opět stoupá',
+        help: 'Podařilo se obnovit důvěru obyvatelstva. To nám dává prostor pro aktivnější užívání opatření.',
+      },
+    ],
+    condition: (ei: EventInput) => ei.eventData.minStability <= 0 && ei.stats.stability >= 25,
+  },
+  {
+    events: [
+      {
+        title: 'Důvěra ve vládu klesá',
+        help: 'Důvěra lidí ve vládu klesá. Každé opatření má totiž náklady nejenom finanční, ale i ve stabilitě. Je tak nutné balancovat a zavírat jen když je to nutné. Opatření můžete vypínat a zapínat v panelu vpravo nahoře.',
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.stability <= 25,
+  },
+  {
+    events: [
+      {
+        title: 'Češi jsou z koronaviru frustrovaní',
+        text: 'Nálada je stále horší, tvrdí terapeut.',
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.stability <= 0,
+  },
+  {
+    events: [
+      {
+        title: 'Opozice vyzývá vládu k rezignaci a obyvatelstvo k opatrnosti!',
+        help: 'Pozor, situace je velmi špatná. Pokud to tak půjde dál, přijdete o šanci zkusit pandemii zvládnout. Může být nutné uvolnit některá opatření v panelu vpravo nahoře nebo začít na stejném místě platit kompenzace.',
+        // TODO effect on R?
+        choices: okButton({name: 'Výzvy k rezignaci', duration: 90}),
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.stability <= -30,
+    reactivateAfter: 90,
   },
   /****************************************************************************
    *
@@ -183,80 +282,41 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Analytici varují před rychlostí zadlužování země',
-        text: 'Náklady na zvládnutí koronavirové krize již dosáhly sta miliard.',
+        help: 'Hra měří i to jak moc zadlužujete stát i kolik ztrácí jednotlivé podniky vlivem situace a různých opatření. Peníze si můžeme půjčovat, ale velmi vysoké výdaje mohou mít negativní vedlejší dopady.',
       },
     ],
-    condition: (ei: EventInput) => ei.stats.costs.total > 100_000_000_000,
+    condition: (ei: EventInput) => ei.stats.costs.total > 300_000_000_000,
   },
   {
     events: [
       {
         title: 'Výše státního dluhu je hrozivá, říkají analytici',
-        text: 'Náklady na zvládnutí koronavirové krize již dosáhly pěti set miliard korun.',
+        help: 'Krize má vysoké náklady. V tuto chvíli nás pandemie stojí téměř přesně půlku celého státního rozpočtu České republiky v roce 2019.',
       },
     ],
-    condition: (ei: EventInput) => ei.stats.costs.total > 500_000_000_000,
+    condition: (ei: EventInput) => ei.stats.costs.total > 750_000_000_000,
   },
   {
     events: [
       {
         title: 'Státní dluh je nejvyšší v historii a dramaticky roste každou vteřinu!',
-        text: 'Náklady na zvládnutí koronavirové krize dosáhly bilionu korun.',
+        help: 'Pouze výdaje spojené s pandemií koronaviru dosáhly součtu výdajů státního rozpočtu. Státní dluh a nezaměstnanost jsou rekordní, hodnota koruny rychle klesá.',
         choices: okButton({stabilityCost: 6}),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.costs.total > 1_000_000_000_000,
+    condition: (ei: EventInput) => ei.stats.costs.total > 1_535_000_000_000,
+  },
+  {
+    events: [
+      {
+        title: 'Hyper inflace a blížící se státní bankrot',
+        help: 'Utrácíme o řád víc než bychom si mohli dovolit a běžná ekonomika je v troskách, řetězce vztahů mezi firmami přestávají fungovat. Ve společnosti je široká nespokojenost.',
+        choices: okButton({stabilityCost: 30}),
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.costs.total > 3_000_000_000_000,
   },
 
-  /****************************************************************************
-   *
-   * State events
-   *
-   ****************************************************************************/
-
-  // Krize a bonusy duvery
-  {
-    events: [
-      {
-        title: 'Důvěra ve vládu klesá',
-      },
-    ],
-    condition: (ei: EventInput) => ei.eventData.stabilityThreshold === 25
-      && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
-    reactivateAfter: 1,
-  },
-  {
-    events: [
-      {
-        title: 'Češi jsou z koronaviru frustrovaní',
-        text: 'Nálada je stále horší, tvrdí terapeut.',
-      },
-    ],
-    condition: (ei: EventInput) => ei.eventData.stabilityThreshold === 0
-      && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
-    reactivateAfter: 1,
-  },
-  {
-    events: [
-      {
-        title: 'Opozice vyzývá k rezignaci!',
-        help: 'Společenská stabilita dosahuje kritických čísel. Pokud dosáhne hodnoty -50, Vaše hra končí.',
-        choices: okButton({name: 'Výzvy k rezignaci', duration: 60}),
-      },
-    ],
-    condition: (ei: EventInput) => ei.eventData.stabilityThreshold === -30
-      && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
-    reactivateAfter: 1,
-  },
-  {
-    events: [
-      {
-        title: 'Důvěra ve vládu opět stoupá',
-      },
-    ],
-    condition: (ei: EventInput) => ei.eventData.stabilityThreshold > ei.eventData.lastStabilityThreshold,
-    reactivateAfter: 1,
-  },
   /****************************************************************************
    *
    * Death events
@@ -267,13 +327,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Za pouhý den COVID zabil {{stats.deaths.today}} lidí',
-      },
-      {
-        title: '{{stats.deaths.today}} mrtvých za jediný den',
-      },
-      {
-        title: 'Šok: {{stats.deaths.today}} mrtvých za jediný den',
-        text: 'Předseda vlády vydal prohlášení. Předsedkyně občanského sdružení antiCOVID, vyzývá k okamžité akci.',
+        help: 'Vypadá to, že to není pouhá chřipka. Je ke zvážení zapnout opatření, která mohou pomoci šíření viru zpomalit. Stejně tak ti, kteří nemoc přežijí, budou nějakou dobu imunní.',
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.today >= 10,
@@ -283,41 +337,49 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Česko má rekordní denní počet úmrtí lidí nakažených covidem',
-        help: 'Zvyšující se počet obětí negativně ovlivňuje hodnotu společenské stability.',
+        help: 'Stovka mrtvých denně zasévá do společnosti otázky, jestli vláda zvládá situaci dobře.',
         choices: okButton({stabilityCost: 2}),
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.today >= 100,
   },
-  // pocet mrtvych za den: 500+
+  // pocet mrtvych za den: 750+
   {
     events: [
       {
-        title: 'Česko zvládá pandemii nejhůř na světě, krematoria ukládají mrtvé do mrazících vozů',
-        help: 'Zvyšující se počet obětí negativně ovlivňuje hodnotu společenské stability.',
+        title: '{{stats.deaths.today}} mrtvých za den, kapacita krematorií lokálně překročena',
+        help: 'Takto rychlé přibývání obětí poprvé obyvatelstvo šokuje. Časem si možná zvyknou, ale zrychlení na více obětí denně už by přijali jen velmi těžko.',
         choices: okButton({stabilityCost: 6}),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.deaths.today >= 500,
+    condition: (ei: EventInput) => ei.stats.deaths.today >= 750,
   },
-  // pocet mrtvych za den: 1000+
+  // pocet mrtvych za den: 1500+
   {
     events: [
       {
-        title: 'Temné predikce se naplnily: Česko přesáhlo hranici 1000 mrtvých na koronavirus za den. Policie sváží mrtvé, armáda kope masové hroby',
-        help: 'Zvyšující se počet obětí negativně ovlivňuje hodnotu společenské stability.',
+        title: 'Temné predikce se naplnily: Česko přesáhlo hranici 1 500 mrtvých na koronavirus za den. Policie sváží mrtvé, armáda kope masové hroby.',
+        help: 'Více než 1 500 mrtvých denně je na stát s deseti miliony občanů velmi špatnou zprávou. Společnost je v šoku.',
         choices: okButton({stabilityCost: 30}),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.deaths.today >= 1000,
+    condition: (ei: EventInput) => ei.stats.deaths.today >= 1500,
   },
   // pocet mrtvych celkem: 10000+
   {
     events: [
       {
         title: 'Koronavirus v Česku usmrtil už přes 10 000 lidí.',
-        help: 'Zvyšující se počet obětí negativně ovlivňuje hodnotu společenské stability.',
-        choices: okButton({stabilityCost: 5}),
+        help: 'Překonání hranice deseti tisíc mrtvých přináší nedůvěru ve vládu. Lidé se ale také nějakou dobu raději sami více hlídají. Ekonomická aktivita i šíření infekce na dva týdny klesá.',
+        choices: [
+          {
+            label: 'OK',
+            mitigations: [
+              {stabilityCost: 5},
+              {rMult: 0.8, economicCost: 200_000_000, duration: 14},
+            ],
+          },
+        ],
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.total >= 10000,
@@ -327,8 +389,16 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Další tragický milník: Česko překonalo hranici 100 000 zemřelých na covid',
-        help: 'Zvyšující se počet obětí negativně ovlivňuje hodnotu společenské stability.',
-        choices: okButton({stabilityCost: 10}),
+        help: 'Sto tisíc mrtvých představuje světově tragické prvenství a bezprecedentní ztrátu životů. Tento milník lidi jak staví proti vládě, tak nutí k opatrnosti. Na dva týdny klesá ekonomická aktivita.',
+        choices: [
+          {
+            label: 'OK',
+            mitigations: [
+              {stabilityCost: 10},
+              {rMult: 0.8, economicCost: 200_000_000, duration: 14},
+            ],
+          },
+        ],
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.total >= 100_000,
@@ -340,7 +410,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'V centru Prahy dnes demonstrovali odpůrci koronavirových opatření. Neměli roušky, nedodržovali rozestupy',
         help: 'Zatknutí odpůrců může pobouřit část obyvatel a snížit tak společenskou stabilitu. Pokud však protesty proběhnou bez zásahu, přibude velké množství nakažených.',
         choices: [
-          simpleChoice('Nechat protesty proběhnout', {exposedDrift: random(1000, 2000)}),
+          simpleChoice('Nechat protesty proběhnout', {rMult: 1.2, exposedDrift: 50, duration: 14}),
           simpleChoice('Pozatýkat', {stabilityCost: 2}),
         ],
       },
@@ -358,16 +428,17 @@ export const eventTriggers: EventTrigger[] = [
         // TODO get values from game.ts
         // rMult is applied everyDay!
         choices: okButton({
-          id: SELF_ISOLATION_ID, rMult: 0.7, economicCost: (0.05 + 0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
+          id: SELF_ISOLATION_ID, rMult: 0.7, economicCost: 3.5 * 1.5 * 1_000_000_000,
           duration: Infinity,
           stabilityCost: (0.2 + 0.15 + 0.05 + 0.15) * 1.5,
           name: 'Dobrovolná izolace',
         }),
       },
     ],
-    condition: (ei: EventInput) =>
-      (!isEventMitigationActive(ei, SELF_ISOLATION_ID) && probability(ei.eventData.tooManyDeathsDays * 0.05)),
-    reactivateAfter: 1,
+    condition: (ei: EventInput) => (!isEventMitigationActive(ei, SELF_ISOLATION_ID)
+      && probability(ei.eventData.aboveSelfIsolationThresholdDays * 0.05)),
+    reactivateAfter: 21, // End isolation will not trigger until this reactivates
+    id: SELF_ISOLATION_TRIGGER,
   },
   {
     events: [
@@ -378,7 +449,9 @@ export const eventTriggers: EventTrigger[] = [
         choices: okButtonEndMitigation(SELF_ISOLATION_ID),
       },
     ],
-    condition: (ei: EventInput) => (isEventMitigationActive(ei, SELF_ISOLATION_ID) && ei.stats.deaths.avg7Day <= 500),
+    condition: (ei: EventInput) => isEventMitigationActive(ei, SELF_ISOLATION_ID)
+      && ei.eventData.belowSelfIsolationThresholdDays >= 7
+      && isEventTriggerActive(ei, SELF_ISOLATION_TRIGGER),
     reactivateAfter: 1,
   },
   /****************************************************************************
@@ -549,7 +622,7 @@ export const eventTriggers: EventTrigger[] = [
             mitigations: [
               {id: VACCINATION_CAMPAIGN_ID, name: 'Vakcinační kampaň',
                 vaccinationPerDay: 0.0001, duration: Infinity},
-              {economicCost: 1_000_000_000},
+              {id: VACCINATION_CAMPAIGN_PAID_ID, economicCost: 1_000_000_000},
             ],
           },
           simpleChoice('Neinvestovat', {vaccinationPerDay: -0.0001, duration: Infinity}),
@@ -559,6 +632,21 @@ export const eventTriggers: EventTrigger[] = [
     // TODO timing randomization
     condition: (ei: EventInput) => ei.date >= '2021-01-01',
     reactivateAfter: 90,
+  },
+  {
+    events: [
+      {
+        title: 'Vládní kampaň odrazuje občany',
+        text: 'Mysleli jsme to dobře, ale dopadlo to...nedobře.',
+        help: 'Každá propagační kampaň v sobě nese riziko selhání. Teď na něj došlo.',
+        choices: [
+          {label: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
+        ],
+      },
+    ],
+    condition: (ei: EventInput) => isEventMitigationActive(ei, VACCINATION_CAMPAIGN_PAID_ID)
+      && probability(0.25),
+    reactivateAfter: 1,
   },
   {
     events: antivaxEventTexts.map(et =>
@@ -581,7 +669,7 @@ export const eventTriggers: EventTrigger[] = [
         text: et.text,
         help: 'Očkovací kampaň přestala fungovat.',
         choices: [
-          {label: 'Ok', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
+          {label: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
         ],
       }),
     ),

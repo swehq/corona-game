@@ -1,0 +1,107 @@
+@import '~src/definitions';
+
+$backgroundCard: map-get($theme, background);
+
+:host {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 100;
+
+  pointer-events: none;
+
+  ::ng-deep {
+    h3 {
+      color: mat-color($theme-warn);
+    }
+  }
+}
+
+.toggle-help-tooltip {
+  position: absolute;
+  top: 0; left: 0;
+  z-index: 101;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+
+  pointer-events: auto;
+  cursor: pointer;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    z-index: -1;
+
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 15px 15px 0 0;
+    border-color: mat-color($backgroundCard, card) transparent transparent transparent;
+    transition: border-color 300ms;
+
+    @media only screen and (min-width: 600px) {
+      border-width: 25px 25px 0 0;
+    }
+  }
+
+  cvd-icon {
+    color: mat-color($theme-primary);
+
+    transition: color 300ms;
+
+    ::ng-deep {
+      mat-icon {
+        width: 2rem;
+        height: 2rem;
+
+        font-size: 2rem;
+      }
+    }
+  }
+
+  &:hover {
+    &:before {
+      border-color: $dark-bg-lighter-30 transparent transparent transparent;
+    }
+
+    cvd-icon {
+      color: $light-primary-text;
+    }
+  }
+
+  &.is-visible {
+    &:before {
+      border-color: transparent;
+    }
+
+    &, &:hover {
+      cvd-icon {
+        color: $dark-primary-text;
+      }
+    }
+  }
+}
+
+.content {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+
+  @include cut-out-corners(false, true, true, true);
+  background: $light-bg-alpha-95;
+}
+
+.content-text {
+  position: absolute;
+  top: 25px; left: 0; right: 0; bottom: 25px;
+
+  padding: 2rem;
+  padding-top: 1rem;
+
+  overflow-y: auto;
+  color: $dark-primary-text;
+  pointer-events: auto;
+}

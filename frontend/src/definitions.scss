@@ -10,45 +10,71 @@
   display: flex;
 }
 
-@mixin cut-out-corners() {
+@function ternary($condition, $true-statement, $false-statement) {
+  $output: $false-statement;
+
+  @if ($condition) {
+    $output: $true-statement;
+  }
+
+  @return $output;
+}
+
+@mixin cut-out-corners(
+  $topLeft: true,
+  $topRight: true,
+  $bottomRight: true,
+  $bottomLeft: true,
+) {
   clip-path:
     polygon(
-        0% 15px,                 /* top left */
-        15px 0%,                 /* top left */
-        calc(100% - 15px) 0%,    /* top right */
-        100% 15px,               /* top right */
-        100% calc(100% - 15px),  /* bottom right */
-        calc(100% - 15px) 100%,  /* bottom right */
-        15px 100%,               /* bottom left */
-        0 calc(100% - 15px)      /* bottom left */
+        ternary($topLeft, 0% 15px, 0 0),                     /* top left */
+        ternary($topLeft, 15px 0%, 0 0),                     /* top left */
+        ternary($topRight, calc(100% - 15px) 0%, 0 0),       /* top right */
+        ternary($topRight, 100% 15px, 0 0),                  /* top right */
+        ternary($bottomRight, 100% calc(100% - 15px), 0 0),  /* bottom right */
+        ternary($bottomRight, calc(100% - 15px) 100%, 0 0),  /* bottom right */
+        ternary($bottomLeft, 15px 100%, 0 0),                /* bottom left */
+        ternary($bottomLeft, 0 calc(100% - 15px), 0 0),      /* bottom left */
     );
 
   @media only screen and (min-width: 600px) {
     clip-path:
       polygon(
-          0% 25px,                 /* top left */
-          25px 0%,                 /* top left */
-          calc(100% - 25px) 0%,    /* top right */
-          100% 25px,               /* top right */
-          100% calc(100% - 25px),  /* bottom right */
-          calc(100% - 25px) 100%,  /* bottom right */
-          25px 100%,               /* bottom left */
-          0 calc(100% - 25px)      /* bottom left */
+          ternary($topLeft, 0% 25px, 0 0),                     /* top left */
+          ternary($topLeft, 25px 0%, 0 0),                     /* top left */
+          ternary($topRight, calc(100% - 25px) 0%, 0 0),       /* top right */
+          ternary($topRight, 100% 25px, 0 0),                  /* top right */
+          ternary($bottomRight, 100% calc(100% - 25px), 0 0),  /* bottom right */
+          ternary($bottomRight, calc(100% - 25px) 100%, 0 0),  /* bottom right */
+          ternary($bottomLeft, 25px 100%, 0 0),                /* bottom left */
+          ternary($bottomLeft, 0 calc(100% - 25px), 0 0),      /* bottom left */
       );
   }
 }
 
 @mixin panel() {
+  position: relative;
+
   min-width: 5rem;
   min-height: 5rem;
   padding: 3rem;
 
   justify-content: center;
 
-  @include cut-out-corners;
 
-  @include apply-themes {
-    $background: map-get($theme, background);
-    background-color: mat-color($background, card);
+  &:after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0; left: 0; right: 0; bottom: 0;
+
+    @include cut-out-corners;
+
+    @include apply-themes {
+      $background: map-get($theme, background);
+      background-color: mat-color($background, card);
+    }
   }
+
 }

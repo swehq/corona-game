@@ -1,0 +1,21 @@
+<span
+  (click)="toggleState()"
+  [class.is-visible]="isVisible"
+  class="toggle-help-tooltip">
+  <cvd-icon>
+    {{ !isVisible ? 'help_outline' : 'close' }}
+  </cvd-icon>
+</span>
+
+<div
+  *ngIf="isVisible"
+  [@scaleAnimation]
+  class="content">
+</div>
+
+<div
+  *ngIf="isVisible"
+  class="content-text"
+  [@inOutAnimation]>
+  <ng-content></ng-content>
+</div>

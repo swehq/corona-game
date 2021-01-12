@@ -3,7 +3,9 @@ import {dateDiff} from './utils';
 import {isNil, random} from 'lodash';
 
 // Event mitigation IDs
-const PANIC_ID = 'panic';
+const SELF_ISOLATION_ID = 'selfIsolation';
+const SCHOOL_HOLIDAYS_ID = 'schoolHolidays';
+const WARM_WEATHER_ID = 'warmWeather';
 const VACCINATION_CAMPAIGN_ID = 'vaccinationCampaign';
 
 // Event trigger IDs
@@ -17,7 +19,7 @@ const ANTIVAX_WITH_CAMPAIGN_TRIGGER = 'antivaxWithCampaignTrigger';
  * @param dateFrom - interval start (YYYY-MM-DD)
  * @param dateTo - interval end (YYYY-MM-DD)
  */
-function dateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
+function randomDateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
   if (dateDiff(date, dateFrom) < 0) {
     // before given interval
     return false;
@@ -28,6 +30,10 @@ function dateBetweenTrigger(date: string, dateFrom: string, dateTo: string) {
     // after given interval
     return false;
   }
+}
+
+function dateBetween(date: string, dateFrom: string, dateTo: string) {
+  return date >= dateFrom && date <= dateTo;
 }
 
 /**
@@ -61,11 +67,21 @@ function isEventTriggerActive(eventInput: EventInput, id: string) {
 export interface EventData {
   tooManyDeathsDays: number;
   showAntivaxEvent: boolean;
+
+  // Stability events
+  stability: number;
+  lastStability: number;
+  stabilityThreshold: number;
+  lastStabilityThreshold: number;
 }
 
 export const initialEventData: EventData = {
   tooManyDeathsDays: 0,
   showAntivaxEvent: false,
+  stability: 50,
+  lastStability: 50,
+  stabilityThreshold: 50,
+  lastStabilityThreshold: 50,
 };
 
 /**
@@ -75,17 +91,30 @@ export const initialEventData: EventData = {
 export function updateEventData(eventInput: EventInput) {
   const eventData = eventInput.eventData;
 
+  // Panic tracking
   if (eventInput.stats.deaths.avg7Day >= (2500 / 7)) {
     eventData.tooManyDeathsDays++;
   } else {
     eventData.tooManyDeathsDays = 0;
   }
 
+  // Antivax
   eventData.showAntivaxEvent = eventInput.date > '2021-01-10'
     // Both triggers need to be active in order not emit their events too soon one after another
     && isEventTriggerActive(eventInput, ANTIVAX_WITH_CAMPAIGN_TRIGGER)
     && isEventTriggerActive(eventInput, ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER)
     && probability(0.02);
+
+  // Stability thresholds
+  eventData.lastStability = eventData.stability;
+  eventData.stability = eventInput.stats.stability;
+  eventData.lastStabilityThreshold = eventData.stabilityThreshold;
+  [-45, -30, 0, 25, 50].forEach(t => {
+    if (eventData.stability <= t && t <= eventData.lastStability
+      || eventData.lastStability <= t && t <= eventData.stability) {
+      eventData.stabilityThreshold = t;
+    }
+  });
 }
 
 function simpleChoice(label: string, mitigation?: Partial<EventMitigation>) {
@@ -97,10 +126,30 @@ function okButton(mitigation?: Partial<EventMitigation>) {
   return [simpleChoice('Ok', mitigation)];
 }
 
+function okButtonEndMitigation(id: string) {
+  return [{label: 'Ok', removeMitigationIds: [id]}];
+}
+
 const antivaxEventTexts = [
   {
-    title: 'Toto jsou fakta: vakcína proti koronaviru je tvořena fragmenty tkání z potracených lidských plodů!',
-    text: 'Ve společnosti se šíří hoax o tom, že vakcína obsahuje látky z nenarozených dětí.',
+    title: 'Vakcína neprošla dostatečným testováním, tvrdí odborník',
+    text: 'Lidé mají strach, že nová vakcína proti koronaviru je nedostatečně testovaná a očkování proto odmítají',
+  },
+  {
+    title: 'Čeští odpůrci sepsali petici proti očkování',
+    text: 'Mezi obyvateli se šíří obava z očkování proti koronaviru',
+  },
+  {
+    title: 'Strachem proti očkování, odpůrci spustili online kampaň',
+    text: 'Odpůrci začali koordinovaně rozesílat zprávy, které mají nalomit důvěru lidí v očkování proti Covidu-19',
+  },
+  {
+    title: 'Češi popisují první pociťované vedlejší vedlejší účinky vakcíny proti covidu',
+    text: 'Lidé mají strach z vedlejších účinků očkování a vakcínu proto odmítají',
+  },
+  {
+    title: 'Vakcínu píchli premiérovi jen naoko',
+    text: 'Sociálními sítěmi se šíří nový hoax o tom, že premiér byl fingovaně očkován jehlou s krytem',
   },
 ];
 
@@ -115,9 +164,9 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Hra začíná',
-        text: s => `Nacházíte se v prvním dni hry, je ${new Date(s.date).toLocaleDateString()}, první nakažení SARS-CoV-19 se blíží.`,
-        help: 'Stiskněte Ok a hra začne',
+        title: 'V České republice je první případ nákazy koronavirem',
+        text: 'První případ nákazy Covidem-19 byl dnes potvrzen i v Česku. Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Více informací zjistíte v infoboxech jednotlivých opatření. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví.',
+        choices: [simpleChoice('Začít hrát')],
      },
     ],
     condition: (ei: EventInput) => ei.date === '2020-03-01',
@@ -169,7 +218,9 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Důvěra ve vládu klesá',
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= 25,
+    condition: (ei: EventInput) => ei.eventData.stabilityThreshold === 25
+      && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
+    timeout: 1,
   },
   {
     events: [
@@ -178,17 +229,30 @@ export const eventTriggers: EventTrigger[] = [
         text: 'Nálada je stále horší, tvrdí terapeut.',
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= 0,
+    condition: (ei: EventInput) => ei.eventData.stabilityThreshold === 0
+      && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
+    timeout: 1,
   },
   {
     events: [
       {
         title: 'Opozice vyzývá k rezignaci!',
         help: 'Společenská stabilita dosahuje kritických čísel. Pokud dosáhne hodnoty -50, Vaše hra končí.',
+        choices: okButton({name: 'Výzvy k rezignaci', duration: 60}),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= -30,
-    timeout: 30, // repeat every 30 days
+    condition: (ei: EventInput) => ei.eventData.stabilityThreshold === -30
+      && ei.eventData.stabilityThreshold < ei.eventData.lastStabilityThreshold,
+    timeout: 1,
+  },
+  {
+    events: [
+      {
+        title: 'Důvěra ve vládu opět stoupá',
+      },
+    ],
+    condition: (ei: EventInput) => ei.eventData.stabilityThreshold > ei.eventData.lastStabilityThreshold,
+    timeout: 1,
   },
   /****************************************************************************
    *
@@ -264,45 +328,7 @@ export const eventTriggers: EventTrigger[] = [
         choices: okButton({stabilityCost: 10}),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.deaths.total >= 100000,
-  },
-  // Panika
-  {
-    events: [
-      {
-        title: 'Za poslední týden si koronavirus vyžádal tisíce obětí a počet mrtvých stále rapidně vzrůstá.',
-        text: 'Kritická situace vede obyvatele k větší izolaci tam, kde je to možné.',
-        help: 'Izolace obyvatel zvyšuje náklady. Na druhou stranu výrazně snižuje hodnotu R.',
-        // cost = 1.5*cost of lockdown (values taken from game.ts)
-        // TODO get values from game.ts
-        // rMult is applied everyDay!
-        choices: okButton({
-          id: PANIC_ID, rMult: 0.985, economicCost: (0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
-          duration: Infinity,
-          stabilityCost: (0.15 + 0.05 + 0.15) * 1.5,
-          name: "Dobrovolná izolace",
-        }),
-      },
-    ],
-    condition: (ei: EventInput) =>
-      (!isEventMitigationActive(ei, PANIC_ID) && probability(ei.eventData.tooManyDeathsDays * 0.05)),
-    timeout: 1,
-  },
-  {
-    events: [
-      {
-        title: 'Život v zemi se vrací do normálu.',
-        help: 'Izolace obyvatel skončila.',
-        // end panic
-        // TODO timeout=0 (formerly undefined) effectively disables the mitigation
-        // needs to be reworked or documented
-        choices: [
-          {label: 'Ok', removeMitigationIds: [PANIC_ID]},
-        ],
-      },
-    ],
-    condition: (ei: EventInput) => (isEventMitigationActive(ei, PANIC_ID) && ei.stats.deaths.avg7Day <= 500),
-    timeout: 1,
+    condition: (ei: EventInput) => ei.stats.deaths.total >= 100_000,
   },
   // malo mrtvych / demostrance
   {
@@ -318,6 +344,40 @@ export const eventTriggers: EventTrigger[] = [
     ],
     condition: (ei: EventInput) => ei.stats.stability <= -10 && ei.stats.deaths.avg7Day < (500 / 7),
   },
+  // Self isolation
+  {
+    events: [
+      {
+        title: 'Za poslední týden si koronavirus vyžádal tisíce obětí a počet mrtvých stále rapidně vzrůstá.',
+        text: 'Kritická situace vede obyvatele k větší izolaci tam, kde je to možné.',
+        help: 'Izolace obyvatel zvyšuje náklady. Na druhou stranu výrazně snižuje hodnotu R.',
+        // cost = 1.5*cost of lockdown (values taken from game.ts)
+        // TODO get values from game.ts
+        // rMult is applied everyDay!
+        choices: okButton({
+          id: SELF_ISOLATION_ID, rMult: 0.7, economicCost: (0.05 + 0.32 + 0.06 + 0.35) * 1.5 * 1_000_000_000,
+          duration: Infinity,
+          stabilityCost: (0.2 + 0.15 + 0.05 + 0.15) * 1.5,
+          name: 'Dobrovolná izolace',
+        }),
+      },
+    ],
+    condition: (ei: EventInput) =>
+      (!isEventMitigationActive(ei, SELF_ISOLATION_ID) && probability(ei.eventData.tooManyDeathsDays * 0.05)),
+    timeout: 1,
+  },
+  {
+    events: [
+      {
+        title: 'Život v zemi se vrací do normálu.',
+        help: 'Izolace obyvatel skončila.',
+        // End isolation
+        choices: okButtonEndMitigation(SELF_ISOLATION_ID),
+      },
+    ],
+    condition: (ei: EventInput) => (isEventMitigationActive(ei, SELF_ISOLATION_ID) && ei.stats.deaths.avg7Day <= 500),
+    timeout: 1,
+  },
   /****************************************************************************
    *
    * Seasonal events
@@ -327,11 +387,13 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Začátek prázdnin',
-        text: 'Školáci dnes dostávají vysvědčení a začínají jim prázdniny.',
+        text: 'Školáci dostávají vysvědčení a začínají jim prázdniny.',
         help: 'Opatření “uzavření škol” bylo aktivováno bez dalších nákladů.',
+        choices: okButton({name: 'Prázdniny', id: SCHOOL_HOLIDAYS_ID, duration: 62}),
       },
     ],
-    condition: (ei: EventInput) => ei.date === '2020-06-31',
+    condition: (ei: EventInput) => dateBetween(ei.date, '2020-06-30', '2020-07-31'),
+    timeout: 60,
   },
   {
     events: [
@@ -339,26 +401,34 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Konec prázdnin',
         text: 'Prázdniny skončily a školáci se vrací do škol. Máme očekávat zhoršení situace?',
         help: 'Opatření “uzavření škol” opět vyžaduje další náklady a snižuje společenskou stabilitu.',
+        choices: okButtonEndMitigation(SCHOOL_HOLIDAYS_ID),
       },
     ],
-    condition: (ei: EventInput) => ei.date === '2020-09-01',
+    condition: (ei: EventInput) => dateBetween(ei.date, '2020-09-01', '2020-09-30'),
+    timeout: 60,
   },
   {
     events: [
       {
         title: 'Virus se v teplém podnebí hůř šíří. Vědci předpokládají zpomalení pandemie.',
+        choices: okButton({name: 'Teplé počasí', id: WARM_WEATHER_ID, duration: 120}),
       },
     ],
-    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-05-20', '2020-06-14'),
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-05-20', '2020-06-14')
+      || dateBetween(ei.date, '2020-06-14', '2020-07-14'),
+    timeout: 90,
   },
   {
     events: [
       {
         title: 'Konec teplého počasí',
         text: 'Jak teplota ovlivňuje šíření koronaviru? Chladné počasí počasí pomáhá šíření, tvrdí epidemiologové.',
+        choices: okButtonEndMitigation(WARM_WEATHER_ID),
       },
     ],
-    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-09-10', '2020-10-09'),
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-09-10', '2020-10-09')
+      || dateBetween(ei.date, '2020-10-09', '2020-11-09'),
+    timeout: 90,
   },
   /****************************************************************************
    *
@@ -404,7 +474,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-10-15', '2020-12-01'),
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-10-15', '2020-12-01'),
   },
   /****************************************************************************
    *
@@ -446,7 +516,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-12-02', '2020-12-20'),
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-12-02', '2020-12-20'),
   },
   /****************************************************************************
    *
@@ -462,7 +532,7 @@ export const eventTriggers: EventTrigger[] = [
         choices: okButton({stabilityCost: -10}),
       },
     ],
-    condition: (ei: EventInput) => dateBetweenTrigger(ei.date, '2020-10-25', '2020-11-25'),
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-10-25', '2020-11-25'),
   },
   {
     events: [
@@ -494,7 +564,7 @@ export const eventTriggers: EventTrigger[] = [
         text: et.text,
         help: 'Rychlost vakcinace se snižuje.',
         choices: okButton({vaccinationPerDay: -0.0002, duration: Infinity}),
-      })
+      }),
     ),
     id: ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER,
     condition: (ei: EventInput) =>
@@ -510,7 +580,7 @@ export const eventTriggers: EventTrigger[] = [
         choices: [
           {label: 'Ok', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
         ],
-      })
+      }),
     ),
     id: ANTIVAX_WITH_CAMPAIGN_TRIGGER,
     condition: (ei: EventInput) =>
@@ -525,12 +595,13 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Přijetí zahraniční pomoci urychlí vakcinaci a zvedne o několik procent proočkovanost ČR. Její odmítnutí se může negativně ovlivnit společenskou stabilitu.',
         choices: [
           // total impact 5% vaccinated over 25 days
-          simpleChoice('Přijmout zahraniční pomoc', {vaccinationPerDay: 0.002, duration: 25}),
+          simpleChoice('Přijmout zahraniční pomoc',
+            {name: 'Zahraniční pomoc v očkování', vaccinationPerDay: 0.002, duration: 25}),
           simpleChoice('Nepřijmout zahraniční pomoc', {stabilityCost: 5}),
         ],
       },
     ],
-    condition: (ei: EventInput) => (dateBetweenTrigger(ei.date, '2021-06-15', '2021-06-30')
+    condition: (ei: EventInput) => (randomDateBetweenTrigger(ei.date, '2021-06-15', '2021-06-30')
       && ei.stats.vaccinationRate < .75),
   },
   {

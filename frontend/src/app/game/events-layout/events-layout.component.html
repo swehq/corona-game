@@ -17,13 +17,13 @@
 
   <cvd-row grow>
     <cvd-button
-      *ngFor="let mitigation of gameService.event.mitigations"
-      (click)="resumeEvent(mitigation)">
-      {{mitigation.label}}
+      *ngFor="let choice of gameService.event.choices"
+      (click)="resumeEvent(choice)">
+      {{choice.label}}
     </cvd-button>
 
     <cvd-button
-      *ngIf="!gameService.event.mitigations?.length"
+      *ngIf="!gameService.event.choices?.length"
       cdkFocusInitial
       (click)="resumeEvent()">
       Ok

@@ -35,11 +35,9 @@ describe('GameValidation', () => {
   it('should validate CZ scenario w/ added trivial event mitigation', () => {
     const modifiedData = cloneDeep(data);
     const eventMitigation = {
-      timeout: 10,
-      label: 'OK',
+      duration: 10,
       rMult: 1,
       exposedDrift: 0,
-      cost: 0,
       stabilityCost: 0,
       vaccinationPerDay: 0,
     };
@@ -50,11 +48,10 @@ describe('GameValidation', () => {
   it('should not validate CZ scenario w/ added event mitigation', () => {
     const modifiedData = cloneDeep(data);
     const eventMitigation = {
-      timeout: 10,
+      duration: 10,
       label: 'rMult',
       rMult: 0.9,
       exposedDrift: 0,
-      cost: 0,
       stabilityCost: 0,
       vaccinationPerDay: 0,
     };
@@ -90,12 +87,12 @@ describe('MitigationsTests', () => {
     expect(game.eventMitigations.length).toEqual(0);
 
     // Add one event mitigation with infinite timeout
-    game.applyMitigationActions({eventMitigations: [EventHandler.defaultMitigation]});
+    game.applyMitigationActions({eventMitigations: [{duration: Infinity}]});
     game.moveForward();
     expect(game.eventMitigations.length).toEqual(1);
 
     // Add mitigation with timeout 5
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, duration: 5}]});
+    game.applyMitigationActions({eventMitigations: [{duration: 5}]});
     for (let i = 0; i < 5; i++) game.moveForward();
     expect(game.eventMitigations.length).toEqual(2);
 
@@ -103,14 +100,22 @@ describe('MitigationsTests', () => {
     expect(game.eventMitigations.length).toEqual(1);
 
     // test mitigations with ID
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test'}]});
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test'}]});
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test'}]});
+    game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 5}]});
+    game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 5}]});
+    game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 5}]});
     game.moveForward();
     expect(game.eventMitigations.length).toEqual(2);
 
     // Cancel mitigation with ID
-    game.applyMitigationActions({eventMitigations: [{...EventHandler.defaultMitigation, id: 'test', duration: 0}]});
+    game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 0}]});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(1);
+
+    // Test mitigation removal
+    game.applyMitigationActions({eventMitigations: [{id: 'test', duration: 5}]});
+    game.moveForward();
+    expect(game.eventMitigations.length).toEqual(2);
+    game.applyMitigationActions({removeMitigationIds: ['test']});
     game.moveForward();
     expect(game.eventMitigations.length).toEqual(1);
   });

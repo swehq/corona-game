@@ -3,15 +3,15 @@
   class="chart-overlay"
   [@inOutAnimation]
   *ngIf="gameService.event">
-  <cvd-row grow class="chart-overlay-title">
+  <h1>
     {{gameService.event.title}}
-  </cvd-row>
+  </h1>
 
   <cvd-row [grow]="2" *ngIf="gameService.event.text">
     <div [innerHtml]="gameService.event.text | safeHtml"></div>
   </cvd-row>
 
-  <cvd-row [grow]="2" *ngIf="gameService.event.help">
+  <cvd-row [grow]="2" *ngIf="gameService.event.help" class="chart-overlay-help">
     <div [innerHtml]="gameService.event.help | safeHtml"></div>
   </cvd-row>
 

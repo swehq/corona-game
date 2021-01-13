@@ -8,7 +8,7 @@ import {filter, map} from 'rxjs/operators';
 import {formatNumber} from '../../utils/format';
 import {GameService} from '../game.service';
 import {MitigationsService} from '../mitigations-control/mitigations.service';
-import {ChartValue, colors, NodeState} from './line-graph/line-graph.component';
+import {ChartValue, colors, DataLabelNodes, NodeState} from './line-graph/line-graph.component';
 
 @UntilDestroy()
 @Component({
@@ -49,7 +49,7 @@ export class GraphsComponent implements AfterViewInit {
   immunized$: Observable<number> | undefined;
 
   mitigations$: Subscription | undefined;
-  mitigationNodes: (string | undefined)[] = [];
+  dataLabelNodes: DataLabelNodes[] = [];
   templateData: any | undefined;
   activeTab = 0;
 
@@ -89,7 +89,11 @@ export class GraphsComponent implements AfterViewInit {
       untilDestroyed(this),
       map(d => d.length),
     ).subscribe(length => {
-      this.mitigationNodes[length - 1] = this.currentMitigation;
+      this.dataLabelNodes[length - 1] = {event: undefined, mitigations: this.currentMitigation};
+      if (this.gameService.activatedEvent) {
+        this.dataLabelNodes[length - 1].event = this.gameService.activatedEvent;
+      }
+
       this.currentMitigation = undefined;
     });
 
@@ -197,7 +201,7 @@ export class GraphsComponent implements AfterViewInit {
       untilDestroyed(this),
     ).subscribe(() => {
       this.currentMitigation = undefined;
-      this.mitigationNodes = [];
+      this.dataLabelNodes = [];
     });
 
     // TODO connect to change-only mitigation structure

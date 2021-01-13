@@ -12,6 +12,7 @@ import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 import {Pan} from './pan';
+import {Event, EventChoice} from '../../../services/events';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -24,10 +25,24 @@ export interface ChartValue {
   state?: NodeState;
 }
 
+export interface ActivatedEvent {
+  originEvent: Event;
+  choice: EventChoice | undefined;
+}
+
+export interface DataLabelNodes {
+  mitigations: string | undefined;
+  event: ActivatedEvent | undefined;
+}
+
 export const colors = {
   ok: '#9fe348',
   warn: '#b57648',
   critical: '#ff4851',
+  event: {
+    background: '#2d2d2d',
+    border: '#ff4851',
+  },
 };
 
 @UntilDestroy()
@@ -41,7 +56,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   customOptions: ChartOptions | undefined;
 
   @Input()
-  mitigationNodes: (string | undefined)[] = [];
+  dataLabelNodes: DataLabelNodes[] = [];
 
   @Input() singleLineTick$: Observable<ChartValue[]> | undefined;
   @Input() multiLineTick$: Observable<ChartValue[][]> | undefined;
@@ -85,7 +100,19 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
         title: tooltipItem => {
           this.pan.panAutoReset$.next();
-          return (tooltipItem[0].index && this.mitigationNodes[tooltipItem[0].index]) || '';
+          const dataLabelNode = this.dataLabelNodes[tooltipItem[0].index || 0] || undefined;
+          if (!dataLabelNode) return '';
+
+          let title = '';
+          if (dataLabelNode.event) {
+            const event = dataLabelNode.event;
+            title += `Událost: ${event?.originEvent.title}\nRozhodnutí: ${event?.choice?.label}\n`;
+          }
+
+          if (dataLabelNode.event && dataLabelNode.mitigations) title += `\n`;
+          if (dataLabelNode.mitigations) title += dataLabelNode.mitigations;
+
+          return title;
         },
       },
     },
@@ -104,8 +131,10 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         offset: 5,
         textAlign: 'center',
         rotation: -45,
-        backgroundColor: 'white',
-        borderColor: 'blue',
+        color: context => this.dataLabelNodes[context.dataIndex]?.event ? '#e3dce4' : '#676767',
+        backgroundColor: context => this.dataLabelNodes[context.dataIndex]?.event ? colors.event.background : 'white',
+        borderColor: colors.event.border,
+        borderWidth: context => this.dataLabelNodes[context.dataIndex]?.event ? 1 : 0,
         borderRadius: 3,
         padding: {
           top: 2,
@@ -113,11 +142,19 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           right: 4,
           left: 4,
         },
-        display: context => Boolean(this.mitigationNodes[context.dataIndex]) ? 'auto' : false,
-        formatter: (_, context) => this.mitigationNodes[context.dataIndex],
+        display: context => this.showDataLabel(context.dataIndex),
+        formatter: (_, context) => {
+          const index = context.dataIndex;
+          let datalabel = this.dataLabelNodes[index]?.mitigations;
+          if (this.dataLabelNodes[index]?.event) {
+            datalabel = this.dataLabelNodes[index]?.event?.choice?.label;
+          }
+          return datalabel;
+        },
         font: context => {
           const width = context.chart.width;
-          const size = Math.round(width! / 64);
+          let size = Math.round(width! / 64);
+          if (this.dataLabelNodes[context.dataIndex]?.event) size++;
           return {
             family: '"worksans", "Helvetica Neue", arial',
             size: size > 16 ? 16 : size,
@@ -149,6 +186,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
   constructor(public cd: ChangeDetectorRef, public gameService: GameService) {
     this.pan = new Pan(this);
+  }
+
+  showDataLabel(index: number) {
+    const mitigation = this.dataLabelNodes[index]?.mitigations;
+    const event = this.dataLabelNodes[index]?.event;
+    return mitigation || event ? 'auto' : false;
   }
 
   ngOnInit() {
@@ -277,7 +320,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private reset() {
     this.datasets = [];
     this.labels = [];
-    this.mitigationNodes = [];
+    this.dataLabelNodes = [];
     this.currentState = 'ok';
     this.seriesLength = 0;
     this.lastValue = undefined;
@@ -288,14 +331,22 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     return {
       borderColor: `${color}`,
       backgroundColor: `${color}33`,
-      pointBorderColor: `${color}`,
-      pointBackgroundColor: context => {
-        return context.dataIndex && this.mitigationNodes[context.dataIndex]
-          ? `${color}`
-          : `${color}33`;
+      pointBorderColor: context => {
+        const index = context.dataIndex || 0;
+        if (!this.dataLabelNodes[index]?.event) return `${color}`;
+        return colors.event.border;
       },
-      pointRadius: context =>
-        context.dataIndex && this.mitigationNodes[context.dataIndex] ? 4 : 0,
+      pointBackgroundColor: context => {
+        const index = context.dataIndex || 0;
+        if (this.dataLabelNodes[index]?.event) return colors.event.background;
+        return `${color}`;
+      },
+      pointRadius: context => {
+        const index = context.dataIndex || 0;
+        if (this.dataLabelNodes[index]?.event) return 5;
+        if (this.dataLabelNodes[index]?.mitigations) return 4;
+        return 0;
+      },
       pointBorderWidth: 1,
       pointHitRadius: 5,
     };

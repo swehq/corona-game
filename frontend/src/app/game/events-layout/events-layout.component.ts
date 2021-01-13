@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {GameService} from '../game.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {EventChoice} from '../../services/events';
+import {Event, EventChoice} from '../../services/events';
 import {inOutAnimation} from 'src/app/utils/animations';
 
 @UntilDestroy()
@@ -15,12 +15,16 @@ export class EventsLayoutComponent {
   constructor(public gameService: GameService) {
   }
 
-  resumeEvent(choice?: EventChoice) {
+  resumeEvent(event: Event, choice?: EventChoice) {
     if (choice !== undefined) {
-      this.gameService.game.applyMitigationActions({
+     this.gameService.game.applyMitigationActions({
         eventMitigations: choice.mitigations,
         removeMitigationIds: choice.removeMitigationIds,
       });
+
+      if (event.choices && event.choices?.length > 1) {
+        this.gameService.activatedEvent = {originEvent: event, choice};
+      }
     }
 
     this.gameService.event = undefined;

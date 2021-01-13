@@ -1,0 +1,9 @@
+@import '~src/definitions';
+
+:host {
+  @include panel;
+}
+
+h3 {
+  text-align: center;
+}

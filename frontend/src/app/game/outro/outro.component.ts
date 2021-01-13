@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {Router} from '@angular/router';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartPoint} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
@@ -22,6 +23,14 @@ const convert: (result: GameResult) => ChartPoint =
   styleUrls: ['./outro.component.scss'],
 })
 export class OutroComponent {
+
+  arePricesShowing: boolean = false;
+
+  prices: {[id: string] : number} = {
+    'nurse' : 30000,
+    'house' : 6899000,
+    'beer': 32
+  };
 
   datasets$: Observable<ChartDataSets[]> = combineLatest([
     this.outroService.myResult$.pipe(
@@ -60,9 +69,10 @@ export class OutroComponent {
   );
 
   constructor(
-    private outroService: OutroService, private gameService: GameService
+    private outroService: OutroService, private gameService: GameService, private router: Router,
   ) {
     outroService.fetchAllResults();
+    console.log(this.prices['nurse']);
   }
 
   get stats() {
@@ -73,5 +83,13 @@ export class OutroComponent {
 
   isGameLost() {
     return this.gameService.game.isGameLost();
+  }
+
+  openInfoPage() {
+    this.router.navigate(['/functionality-info']);
+  }
+
+  showPrices() {
+    this.arePricesShowing = this.arePricesShowing === false ? true : false;
   }
 }

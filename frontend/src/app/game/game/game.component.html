@@ -23,6 +23,12 @@
 
 <cvd-col *ngIf="state === 'outro'">
   <cvd-outro [@inOutAnimation]>
-    <cvd-button grow (click)="newGame()" color="warn">Nová hra</cvd-button>
+    <cvd-row grow [spacing]="3">
+      <button mat-stroked-button (click)="newGame()" cdkFocusInitial color="primary">Nová hra</button>
+    </cvd-row>
   </cvd-outro>
 </cvd-col>
+
+<div *ngIf="state === 'outro' || state === 'game'" grow class="credits">
+  <button mat-stroked-button (click)="openCredits()" cdkFocusInitial color="accent">Credits</button>
+</div>

@@ -3,7 +3,9 @@ import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ChartsModule} from 'ng2-charts';
 import {SharedModule} from '../shared/shared.module';
+import {CreditsComponent} from '../pages/credits/credits.component';
 import {EventsLayoutComponent} from './events-layout/events-layout.component';
+import {FunctionalityInfoComponent} from '../pages/functionality-info/functionality-info.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
 import {GraphsComponent} from './graphs/graphs.component';
@@ -24,6 +26,8 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
 @NgModule({
   declarations: [
     EventsLayoutComponent,
+    FunctionalityInfoComponent,
+    CreditsComponent,
     GameComponent,
     GraphsComponent,
     IntroComponent,

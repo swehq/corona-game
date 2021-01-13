@@ -72,7 +72,7 @@ export class MitigationsService {
       false: '3R - zrušeno',
     },
     schools: {
-      universities: 'Školy - zavřené univerzity',
+      universities: 'Školy - zavřené vysoké',
       all: 'Školy - zavřené všechny',
       false: 'Školy - neomezeno',
     },
@@ -230,7 +230,7 @@ export class MitigationsService {
       case 'schools':
         return [
           [false, 'Neomezeno'],
-          ['universities', 'Zavřít univerzity'],
+          ['universities', 'Zavřít vysoké'],
           ['all', 'Zavřít všechny'],
         ];
 

@@ -1,3 +1,4 @@
+import {Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter, map} from 'rxjs/operators';
 import {GameService} from '../game.service';
@@ -24,6 +25,7 @@ export class GameComponent {
     outroService: OutroService,
     private gameService: GameService,
     cd: ChangeDetectorRef,
+    private router: Router,
   ) {
     // fetch historical game results from BE
     window.setTimeout(() => outroService.fetchAllResults(), 10_000);
@@ -60,4 +62,8 @@ export class GameComponent {
     this.gameService.restartSimulation();
     this.state = 'game';
   }
+  openCredits() {
+    this.router.navigate(['/credits']);
+  }
+
 }

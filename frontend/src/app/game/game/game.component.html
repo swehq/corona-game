@@ -15,7 +15,7 @@
 
     <cvd-col grow alignItems="stretch" [spacing]="3">
       <cvd-mitigations-control></cvd-mitigations-control>
-      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
+      <cvd-simulation-control></cvd-simulation-control>
       <cvd-news></cvd-news>
     </cvd-col>
   </cvd-row>
@@ -23,6 +23,12 @@
 
 <cvd-col *ngIf="state === 'outro'">
   <cvd-outro [@inOutAnimation]>
-    <cvd-button grow (click)="newGame()" color="warn">Nová hra</cvd-button>
+    <cvd-row grow [spacing]="3">
+      <button mat-stroked-button (click)="newGame()" cdkFocusInitial color="primary">Nová hra</button>
+    </cvd-row>
   </cvd-outro>
 </cvd-col>
+
+<div *ngIf="state === 'outro' || state === 'game'" grow class="credits">
+  <button mat-stroked-button (click)="openCredits()" cdkFocusInitial color="accent">Credits</button>
+</div>

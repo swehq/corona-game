@@ -2,4 +2,28 @@
 
 :host {
   @include panel;
+
+  @include apply-themes {
+    .color-virus {
+      color: mat-color(map-get($theme, warn));
+    }
+
+    .color-money {
+      color: mat-color(map-get($theme, accent));
+    }
+  }
 }
+
+p {
+  margin-bottom: 2em;
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+.content {
+  text-align: center;
+}
+

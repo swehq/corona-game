@@ -1,66 +1,102 @@
-<h1 style="text-align: center">Covid 2020</h1>
+<cvd-col>
+  <h1 style="text-align: center">Covid 2020</h1>
 
-<div *ngIf="isGameLost()">
-  <h3>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h3>
+  <div *ngIf="isGameLost()">
+    <h2>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h2>
+
+    <p>
+      Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste
+      tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.
+      Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu.
+      Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.
+    </p>
+  </div>
+
+  <div *ngIf="!isGameLost()">
+    <h2>Konec hry</h2>
+
+    <p>
+      Vaše hra v roli vlády skončila, epidemii se díky vysokému počtu imunních podařilo pro teď vymýtit.
+    </p>
+  </div>
 
   <p>
-    Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.
-    Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu. Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.
+    Předtím, než si prohlédnete výsledky, rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých
+    s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky
+    covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
   </p>
-</div>
-
-<div *ngIf="!isGameLost()">
-  <h3>Konec hry</h3>
 
   <p>
-    Vaše hra v roli vlády skončila, epidemii se díky vysokému počtu imunních podařilo pro teď vymýtit.
+    V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale
+    přesto na pár prvků upozornit:
   </p>
-</div>
 
-<p>
-Předtím, než si prohlédnete výsledky, rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
-</p>
+  <p>
+    Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci a
+    studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky. Tento výpadek zároveň dopadne nejvíce
+    na skupiny, které to mají se vzděláváním už teď těžké.
+    (Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
+    <br>
+    Mohli bychom legitimně říct, že za vaši hru se nakazilo ne {{stats.detectedInfections.total | formatNumber}}, ale
+    podle hypotéz výzkumníků <!--TODO: ODKAZ--> reálně až {{4 * stats.detectedInfections.total | formatNumber}} lidí. Do
+    hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
+  </p>
+  <p>
+    <cvd-row>
+      Pokud vás více zajímá, jak naše vzorce fungují, koukněte
+      <a routerLink="/about">SEM</a>
+    </cvd-row>
+  </p>
 
-<p>
-V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale přesto na pár prvků upozornit:
-</p>
-<ul>
-  <li>
-    Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci a studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky. Tento výpadek zároveň dopadne nejvíce na skupiny, které to mají se vzděláváním už teď těžké.
-(Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
-  </li>
-  <li>
-    Mohli bychom legitimně říct, že za vaši hru se nakazilo ne {{stats.detectedInfections.total | formatNumber}}, ale podle hypotéz výzkumníků (TODO ODKAZ) reálně až {{4 * stats.detectedInfections.total | formatNumber}} lidí. Do hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
-  </li>
-</ul>
+  <cvd-col [spacing]="3" style="font-size: 1.6rem;">
+    <p>
+      <b>Vaše finální výsledky:</b>
+    </p>
+    <cvd-row class="color-virus" [spacing]="2">
+      <cvd-icon>coronavirus</cvd-icon>
+      Nemoc prodělalo: {{stats.detectedInfections.total | formatNumber}}
+    </cvd-row>
+    <cvd-row [spacing]="2">
+      <cvd-icon svgIcon="skull"></cvd-icon>
+      Mrtví: {{stats.deaths.total | formatNumber}}
+    </cvd-row>
+    <cvd-row class="color-money" [spacing]="2">
+      <cvd-icon svgIcon="money"></cvd-icon>
+      Náklady: {{stats.costs.total | formatNumber}}
+    </cvd-row>
+  </cvd-col>
 
-<p>
-Pokud vás více zajímá, jak naše vzorce fungují, koukněte TODO SEM.
-</p>
+  <br>
 
-<p>
-  <strong>Vaše finální výsledky:</strong>
-</p>
-<ul>
-  <li>
-    nemoc prodělalo: {{stats.detectedInfections.total | formatNumber}}
-  </li>
-  <li>
-    mrtví: {{stats.deaths.total | formatNumber}}
-  </li>
-  <li>
-    náklady: {{stats.costs.total | formatNumber}}
-[TODO rozpocitat]
-  </li>
-<ul>
+  <cvd-row>
+    <cvd-button (click)="showPrices()">
+      <b>Pro předstvu:</b>
+    </cvd-button>
+  </cvd-row>
 
+  <cvd-col *ngIf="arePricesShowing" [spacing]="3">
+    <br>
+    <cvd-row class="color-virus" [spacing]="2">
+      Potvrzené případy s COVID-19 v ČR za 2020 se pohybují kolem 866,522 czk
+    </cvd-row>
+    <cvd-row class="color-money" [spacing]="2">
+      Rozpočet v ČR za 2019 je kolem 1,535 miliard czk
+    </cvd-row>
+    <cvd-row class="color-money" [spacing]="2">
+      (Například vy jste utratil cenu {{ stats.costs.total / facts['beer'] | formatNumber}} piv,
+      {{ stats.costs.total / facts['house'] | formatNumber}} domů a
+      {{ stats.costs.total / facts['nurse'] | formatNumber}} ročních plateb pro zdravotní sestru)
+    </cvd-row>
+  </cvd-col>
 
-<cvd-row>
-  <cvd-graphs></cvd-graphs>
+  <br>
+  <cvd-col grow style="align-content: center;" [spacing]="3">
+    <cvd-graphs style="width: 80vw;"></cvd-graphs>
+    <cvd-scatter-graph style="width: 80vw" [options]="outroChartOptions"
+                       [datasets]="(datasets$ | async)!"></cvd-scatter-graph>
+  </cvd-col>
 
-  <cvd-scatter-graph style="width: 80vw" [options]="outroChartOptions" [datasets]="(datasets$ | async)!"></cvd-scatter-graph>
-</cvd-row>
-
-<div style="padding-top: 2rem">
-  <ng-content></ng-content>
-</div>
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
+</cvd-col>

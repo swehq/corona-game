@@ -1,27 +1,19 @@
-<cvd-col *ngIf="state === 'intro'" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
-  <cvd-intro [@inOutAnimation]>
-    <button
-      mat-stroked-button (click)="state = 'game'"
-      cdkFocusInitial color="accent">Začít hrát</button>
-  </cvd-intro>
-</cvd-col>
+<cvd-intro *ngIf="state === 'intro'" [@inOutAnimation]>
+  <button
+    mat-stroked-button (click)="state = 'game'"
+    cdkFocusInitial color="accent">Začít hrát
+  </button>
+</cvd-intro>
 
-<cvd-col *ngIf="state === 'game'">
-  <cvd-row class="content" [spacing]="3" wrap alignItems="flex-start" [@inOutAnimation]>
-    <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
-      <cvd-status-display></cvd-status-display>
-      <cvd-graphs></cvd-graphs>
-    </cvd-col>
+<cvd-row *ngIf="state === 'game'" class="content" [spacing]="3" wrap alignItems="flex-start" [@inOutAnimation]>
+  <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
+    <cvd-status-display></cvd-status-display>
+    <cvd-graphs></cvd-graphs>
+  </cvd-col>
 
-    <cvd-col grow alignItems="stretch" [spacing]="3">
-      <cvd-mitigations-control></cvd-mitigations-control>
-      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
-    </cvd-col>
-  </cvd-row>
-</cvd-col>
+  <cvd-col grow alignItems="stretch" [spacing]="3">
+    <cvd-mitigations-control></cvd-mitigations-control>
+    <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
+  </cvd-col>
+</cvd-row>
 
-<cvd-col *ngIf="state === 'outro'">
-  <cvd-outro [@inOutAnimation]>
-    <cvd-button grow (click)="newGame()" color="warn">Nová hra</cvd-button>
-  </cvd-outro>
-</cvd-col>

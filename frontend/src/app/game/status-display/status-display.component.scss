@@ -2,6 +2,7 @@
 
 :host {
   @include panel;
+  display: block;
 
   @include apply-themes {
     .color-virus {

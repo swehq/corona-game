@@ -172,7 +172,7 @@ export class Game {
 
   isGameLost() {
     const lastStats = this.simulation.getLastStats();
-    return lastStats !== undefined && lastStats.stability <= this.minimalStability;
+    return !!lastStats && lastStats.stability <= this.minimalStability;
   }
 
   updateRampUpMitigationsForScenario() {

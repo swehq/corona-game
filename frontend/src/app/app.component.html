@@ -1,3 +1,9 @@
 <cvd-col grow>
-  <cvd-game></cvd-game>
+  <router-outlet></router-outlet>
+
+<!--  TODO place on page -->
+<!--  TODO solve return to the game -->
+  <div *ngIf="(currentUrl$ | async) !== '/credits'" grow class="credits">
+    <button mat-stroked-button (click)="openCredits()" color="accent">Credits</button>
+  </div>
 </cvd-col>

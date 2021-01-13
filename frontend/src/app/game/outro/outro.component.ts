@@ -3,9 +3,9 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {GameResult, OutroService} from './outro.service';
-import {GameService} from '../game.service';
 import {formatNumber} from '../../utils/format';
+import {GameService} from '../game.service';
+import {GameResult, OutroService} from './outro.service';
 
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.5)';
@@ -23,6 +23,14 @@ const convert: (result: GameResult) => ChartPoint =
   styleUrls: ['./outro.component.scss'],
 })
 export class OutroComponent {
+
+  arePricesShowing = false;
+
+  facts: Record<string, number> = {
+    nurse: 30000,
+    house: 6899000,
+    beer: 32,
+  };
 
   private readonly scalesLabelsDefaults: ScaleTitleOptions = {
     display: true,
@@ -123,11 +131,15 @@ export class OutroComponent {
 
   get stats() {
     const lastStats = this.gameService.game.simulation.getLastStats();
-    if (lastStats === undefined) throw new Error('Missing game statistics');
+    if (!lastStats) throw new Error('Missing game statistics');
     return lastStats;
   }
 
   isGameLost() {
     return this.gameService.game.isGameLost();
+  }
+
+  showPrices() {
+    this.arePricesShowing = !this.arePricesShowing;
   }
 }

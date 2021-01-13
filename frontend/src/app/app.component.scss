@@ -2,4 +2,15 @@
 
 :host {
   @include flex-container;
+
+  max-width: 110rem;
+  width: 100%;
+  display: block;
+}
+
+.credits {
+  position: absolute;
+  z-index: 10;
+  top: 1%;
+  left: 94%;
 }

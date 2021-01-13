@@ -13,6 +13,7 @@ interface ScenarioDates {
 export interface MitigationActions {
   mitigations?: Partial<Mitigations>;
   eventMitigations?: EventMitigation[];
+  removeMitigationIds?: string[];
 }
 
 export type MitigationActionHistory = Record<string, MitigationActions>;

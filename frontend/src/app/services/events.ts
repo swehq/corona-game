@@ -3,23 +3,26 @@ import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
 
-// infinite event timeout
-// TODO remove
-export const infTimeout = Infinity;
-
 export interface EventMitigation extends Partial<MitigationEffect> {
-  timeout: number;
-  label: string;
   id?: string;
-  name?: string; // if filled, the mitigation is displayed to the user
-  oneTimeEffect?: Partial<MitigationEffect>;
+  name?: string;
+  duration: number; // number of days the effect is valid for (0 - affects 0 days)
 }
+
+interface EventChoiceGeneric<T> {
+  label: string;
+  mitigations?: T[];
+  removeMitigationIds?: string[]; // removes mitigation events with listed ids
+}
+
+export type EventChoice = EventChoiceGeneric<EventMitigation>;
+type EventChoiceDef = EventChoiceGeneric<Partial<EventMitigation>>;
 
 export interface Event {
   title: string;
   text?: string;
   help?: string;
-  mitigations?: EventMitigation[];
+  choices?: EventChoice[];
 }
 
 type EventText = ((stats: EventInput) => string) | string;
@@ -28,19 +31,19 @@ interface EventDef {
   title: EventText;
   text?: EventText;
   help?: EventText;
-  mitigations?: EventMitigation[];
+  choices?: EventChoiceDef[];
 }
 
 export interface EventTrigger {
   id?: string;
   events: EventDef[];
-  timeout?: number;
+  reactivateAfter?: number;
   condition: (stats: EventInput) => boolean;
 }
 
 interface TriggerState {
   trigger: EventTrigger;
-  timeout: number;
+  activeBefore?: number;
 }
 
 export interface EventState {
@@ -55,21 +58,17 @@ export interface EventInput extends EventState {
 }
 
 export class EventHandler {
-  // TODO not used anymore, mitigation definition needs to be explicit now
-  static readonly defaultMitigation: EventMitigation = {
-    timeout: infTimeout,
-    label: 'OK',
-  };
   eventStateHistory: Record<string, EventState> = {};
 
   evaluateDay(prevDate: string, currentDate: string, dayState: DayState, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
-      const initialTriggerStates = eventTriggers.map(et => ({trigger: et, timeout: 0}));
+      const initialTriggerStates = eventTriggers.map(et => ({trigger: et}));
       prevState = {triggerStates: initialTriggerStates, eventData: initialEventData};
     }
 
-    const triggerStates = prevState.triggerStates.map(ts => ({...ts, timeout: Math.max(0, ts.timeout - 1)}));
+    const triggerStates = prevState.triggerStates.map(ts => ({...ts,
+      activeBefore: (ts.activeBefore !== undefined ? Math.max(0, ts.activeBefore + 1) : undefined)}));
     const currentState: EventState = {triggerStates, eventData: cloneDeep(prevState.eventData)};
 
     const eventInput: EventInput = {
@@ -83,13 +82,15 @@ export class EventHandler {
 
     this.eventStateHistory[currentDate] = currentState;
 
-    const active = shuffle(currentState.triggerStates.filter(ts => ts.timeout <= 0));
+    const active = shuffle(currentState.triggerStates.filter(ts =>
+      ts.activeBefore === undefined
+        || ts.trigger.reactivateAfter !== undefined && ts.activeBefore >= ts.trigger.reactivateAfter));
     const triggerState = active.find(ts => ts.trigger.condition(eventInput));
 
     if (!triggerState) return;
 
     const trigger = triggerState.trigger;
-    triggerState.timeout = (trigger.timeout !== undefined) ? trigger.timeout : infTimeout;
+    triggerState.activeBefore = 0;
     const eventDef = sample(trigger.events);
     if (!eventDef) return;
 
@@ -101,8 +102,13 @@ export class EventHandler {
       title: EventHandler.interpolate(eventDef.title, data),
       text: eventDef.text ? EventHandler.interpolate(eventDef.text, data) : undefined,
       help: eventDef.help ? EventHandler.interpolate(eventDef.help, data) : undefined,
-      mitigations: eventDef.mitigations ? eventDef.mitigations.map(m => EventHandler.completeMitigation(m)) : undefined,
+      choices: eventDef.choices ? eventDef.choices.map(c => EventHandler.choiceFromDef(c)) : undefined,
     };
+  }
+
+  static choiceFromDef(choice: EventChoiceDef) {
+    const mitigations = choice.mitigations ? choice.mitigations.map(m => ({duration: 1, ...m})) : undefined;
+    return {...choice, mitigations};
   }
 
   private static interpolate(text: EventText, data: any) {
@@ -117,9 +123,5 @@ export class EventHandler {
 
       return isNil(value) ? original : valueToInsert;
     });
-  }
-
-  private static completeMitigation(mitigation: Partial<EventMitigation>): EventMitigation {
-    return {...EventHandler.defaultMitigation, ...mitigation};
   }
 }

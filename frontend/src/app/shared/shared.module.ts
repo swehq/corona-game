@@ -14,6 +14,7 @@ import {IconComponent} from './icon/icon.component';
 import {initIconRegistry} from './icon/icon.registry';
 import {SharedMaterialModule} from './shared-material.module';
 import {FormatNumberPipe} from '../pipes/format-number.pipe';
+import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
 import {HelpTooltipComponent} from './help-tooltip/help-tooltip.component';
 
 const DECLARATIONS: Declaration[] = [
@@ -21,6 +22,7 @@ const DECLARATIONS: Declaration[] = [
   HelpTooltipComponent,
   FormatNumberPipe,
   FormatPercentagePipe,
+  SafeHtmlPipe,
   ColComponent,
   FlexItemDirective,
   IconComponent,

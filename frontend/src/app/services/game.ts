@@ -233,25 +233,25 @@ export class Game {
     const ss = clippedLogNormalSampler(1, 0);             // Stability scaler
 
     // Special mitigation: controls drift across borders
-    addMitigation(['bordersClosed', true], 0.00, [0.00, 0.00], 0.06 * cs(), 0.05 * ss(), {isBorders: true});
+    addMitigation(['bordersClosed', true], 0.00, [0.00, 0.00], 0.39 * cs(), 0.05 * ss(), {isBorders: true});
 
     // https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)31142-9/fulltext
     // cites 14.3 % for face masks ?
     addMitigation(['rrr', true], 0.14, [0.10, 0.18], 0 * cs(), 0.001 * ss());
 
     // Taken from https://science.sciencemag.org/content/early/2020/12/15/science.abd9338
-    addMitigation(['events', 1000], 0.23, [0.00, 0.40], 0.02 * cs(), 0.05 * ss());
-    addMitigation(['events', 100], 0.34, [0.12, 0.52], 0.04 * cs(), 0.1 * ss());
-    addMitigation(['events', 10], 0.42, [0.17, 0.60], 0.05 * cs(), 0.2 * ss());
-    addMitigation(['businesses', 'some'], 0.18, [-0.08, 0.40], 0.12 * cs(), 0.07 * ss());
-    addMitigation(['businesses', 'most'], 0.27, [-0.03, 0.49], 0.32 * cs(), 0.15 * ss());
+    addMitigation(['events', 1000], 0.23, [0.00, 0.40], 0.081 * cs(), 0.05 * ss());
+    addMitigation(['events', 100], 0.34, [0.12, 0.52], 0.161 * cs(), 0.1 * ss());
+    addMitigation(['events', 10], 0.42, [0.17, 0.60], 0.24 * cs(), 0.2 * ss());
+    addMitigation(['businesses', 'some'], 0.18, [-0.08, 0.40], 0.54 * cs(), 0.07 * ss());
+    addMitigation(['businesses', 'most'], 0.27, [-0.03, 0.49], 0.98 * cs(), 0.15 * ss());
     // The universities are hard to separate from all schools, set the effect ~1/2
     addMitigation(['schools', 'universities'], 0.17, [0.03, 0.31], 0 * cs(), 0.02 * ss(),
       {isSchool: true}, {schoolDaysLost: 155_000});
-    addMitigation(['schools', 'all'], 0.38, [0.16, 0.54], 0.06 * cs(), 0.05 * ss(),
+    addMitigation(['schools', 'all'], 0.38, [0.16, 0.54], 0.31 * cs(), 0.05 * ss(),
       {isSchool: true}, {schoolDaysLost: 2_055_551});
     // Marginal effect of lockdowns on the top of the other measures
-    addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 0.35 * cs(), 0.15 * ss());
+    addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 1.03 * cs(), 0.15 * ss());
 
     // Compensations
     addMitigation(['schoolsCompensation', true], 0, [0, 0], 0.1 * cs(), 0.03 * ss());

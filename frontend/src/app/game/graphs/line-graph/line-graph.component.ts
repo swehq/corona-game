@@ -332,7 +332,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
 
   private formatDataLabel(index: number) {
     if (this.dataLabelNodes[index]?.event) {
-      return this.dataLabelNodes[index]?.event?.choice?.label!;
+      const label = this.dataLabelNodes[index]?.event?.choice?.chartLabel;
+      return label ? label : null;
     }
 
     const uiChange = this.dataLabelNodes[index].uiChange;
@@ -354,7 +355,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     let title = '';
     if (dataLabelNode.event) {
       const event = dataLabelNode.event;
-      title += `Událost: ${event?.originEvent.title}\nRozhodnutí: ${event?.choice?.label}\n`;
+      title += `Událost: ${event?.originEvent.title}\n`;
+      if (event?.choice?.chartLabel) title += `Rozhodnutí: ${event?.choice?.chartLabel}\n`;
     }
 
     if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;

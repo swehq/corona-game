@@ -1,4 +1,4 @@
-import {EventInput, EventMitigation, EventTrigger} from './events';
+import {EventChoiceDef, EventInput, EventMitigation, EventTrigger} from './events';
 import {dateDiff} from './utils';
 import {isNil, random} from 'lodash';
 
@@ -117,17 +117,18 @@ export function updateEventData(eventInput: EventInput) {
   eventData.minStability = Math.min(eventInput.stats.stability, eventData.minStability);
 }
 
-function simpleChoice(label: string, mitigation?: Partial<EventMitigation>) {
+function simpleChoice(buttonLabel: string, mitigation?: Partial<EventMitigation>,
+  chartLabel?: string): EventChoiceDef {
   const mitigations = mitigation ? [mitigation] : undefined;
-  return {label, mitigations};
+  return {buttonLabel, chartLabel, mitigations};
 }
 
-function okButton(mitigation?: Partial<EventMitigation>) {
-  return [simpleChoice('OK', mitigation)];
+function okButton(mitigation?: Partial<EventMitigation>, chartLabel?: string): [EventChoiceDef] {
+  return [simpleChoice('OK', mitigation, chartLabel)];
 }
 
-function okButtonEndMitigation(id: string) {
-  return [{label: 'OK', removeMitigationIds: [id]}];
+function okButtonEndMitigation(id: string, chartLabel?: string): [EventChoiceDef] {
+  return [{buttonLabel: 'OK', chartLabel, removeMitigationIds: [id]}];
 }
 
 const antivaxEventTexts = [
@@ -166,7 +167,7 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'V České republice je první případ nákazy koronavirem',
         text: '<p>První případ nákazy Covidem-19 byl dnes potvrzen i v Česku. \
-Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření &nbsp; nebo si se situací poradili jakkoliv jinak vám je libo. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví. \
+Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření nebo si se situací poradili jakkoliv jinak vám je libo. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví. \
 Každý panel má také v rohu otazník, který vám představí všechny své ovládací prvky.</p> \
 <p>Hru můžete vždy pozastavit mezerníkem, nebo tlačítkem pauza.</p>',
         help: 'Při každé události ve hře si také můžete přečíst vzkazy od vašeho průvodce. Tyto texty budou vždy mít tuto barvu a snažíme se vám skrze ně poradit. Ale nemusíte se jimi nijak řídit!',
@@ -304,7 +305,7 @@ Hodně štěstí!',
       {
         title: 'Státní dluh je nejvyšší v historii a dramaticky roste každou vteřinu!',
         help: 'Pouze výdaje spojené s pandemií koronaviru dosáhly součtu výdajů státního rozpočtu. Státní dluh a nezaměstnanost jsou rekordní, hodnota koruny rychle klesá.',
-        choices: okButton({stabilityCost: 6}),
+        choices: okButton({stabilityCost: 6}, 'Historický státní dluh'),
       },
     ],
     condition: (ei: EventInput) => ei.stats.costs.total > 1_535_000_000_000,
@@ -341,7 +342,7 @@ Hodně štěstí!',
       {
         title: 'Česko má rekordní denní počet úmrtí lidí nakažených covidem',
         help: 'Stovka mrtvých denně zasévá do společnosti otázky, jestli vláda zvládá situaci dobře.',
-        choices: okButton({stabilityCost: 2}),
+        choices: okButton({stabilityCost: 2}, 'Rekordní denní úmrtí'),
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.today >= 100,
@@ -352,7 +353,7 @@ Hodně štěstí!',
       {
         title: '{{stats.deaths.today}} mrtvých za den, kapacita krematorií lokálně překročena',
         help: 'Takto rychlé přibývání obětí poprvé obyvatelstvo šokuje. Časem si možná zvyknou, ale zrychlení na více obětí denně už by přijali jen velmi těžko.',
-        choices: okButton({stabilityCost: 6}),
+        choices: okButton({stabilityCost: 6}, 'Kapacita krematorií překročena'),
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.today >= 750,
@@ -376,7 +377,7 @@ Hodně štěstí!',
         help: 'Překonání hranice deseti tisíc mrtvých přináší nedůvěru ve vládu. Lidé se ale také nějakou dobu raději sami více hlídají. Ekonomická aktivita i šíření infekce na dva týdny klesá.',
         choices: [
           {
-            label: 'OK',
+            buttonLabel: 'OK',
             mitigations: [
               {stabilityCost: 5},
               {rMult: 0.8, economicCost: 200_000_000, duration: 14},
@@ -395,7 +396,7 @@ Hodně štěstí!',
         help: 'Sto tisíc mrtvých představuje světově tragické prvenství a bezprecedentní ztrátu životů. Tento milník lidi jak staví proti vládě, tak nutí k opatrnosti. Na dva týdny klesá ekonomická aktivita.',
         choices: [
           {
-            label: 'OK',
+            buttonLabel: 'OK',
             mitigations: [
               {stabilityCost: 10},
               {rMult: 0.8, economicCost: 200_000_000, duration: 14},
@@ -435,7 +436,7 @@ Hodně štěstí!',
           duration: Infinity,
           stabilityCost: (0.2 + 0.15 + 0.05 + 0.15) * 1.5,
           name: 'Dobrovolná izolace',
-        }),
+        }, 'Dobrovolná izolace'),
       },
     ],
     condition: (ei: EventInput) => (!isEventMitigationActive(ei, SELF_ISOLATION_ID)
@@ -449,7 +450,7 @@ Hodně štěstí!',
         title: 'Život v zemi se vrací do normálu.',
         help: 'Izolace obyvatel skončila.',
         // End isolation
-        choices: okButtonEndMitigation(SELF_ISOLATION_ID),
+        choices: okButtonEndMitigation(SELF_ISOLATION_ID, 'Konec dobrovolné izolace'),
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, SELF_ISOLATION_ID)
@@ -468,7 +469,7 @@ Hodně štěstí!',
         title: 'Začátek prázdnin',
         text: 'Školáci dostávají vysvědčení a začínají jim prázdniny.',
         help: 'Opatření “uzavření škol” bylo aktivováno bez dalších nákladů.',
-        choices: okButton({name: 'Prázdniny', id: SCHOOL_HOLIDAYS_ID, duration: 62}),
+        choices: okButton({name: 'Prázdniny', id: SCHOOL_HOLIDAYS_ID, duration: 62}, 'Začátek prázdnin'),
       },
     ],
     condition: (ei: EventInput) => dateBetween(ei.date, '2020-06-30', '2020-07-31'),
@@ -480,7 +481,7 @@ Hodně štěstí!',
         title: 'Konec prázdnin',
         text: 'Prázdniny skončily a školáci se vrací do škol. Máme očekávat zhoršení situace?',
         help: 'Opatření “uzavření škol” opět vyžaduje další náklady a snižuje společenskou stabilitu.',
-        choices: okButtonEndMitigation(SCHOOL_HOLIDAYS_ID),
+        choices: okButtonEndMitigation(SCHOOL_HOLIDAYS_ID, 'Konec prázdnin'),
       },
     ],
     condition: (ei: EventInput) => dateBetween(ei.date, '2020-09-01', '2020-09-30'),
@@ -490,7 +491,7 @@ Hodně štěstí!',
     events: [
       {
         title: 'Virus se v teplém podnebí hůř šíří. Vědci předpokládají zpomalení pandemie.',
-        choices: okButton({name: 'Teplé počasí', id: WARM_WEATHER_ID, duration: 120}),
+        choices: okButton({name: 'Teplé počasí', id: WARM_WEATHER_ID, duration: 120}, 'Teplé počasí'),
       },
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-05-20', '2020-06-14')
@@ -502,7 +503,7 @@ Hodně štěstí!',
       {
         title: 'Konec teplého počasí',
         text: 'Jak teplota ovlivňuje šíření koronaviru? Chladné počasí počasí pomáhá šíření, tvrdí epidemiologové.',
-        choices: okButtonEndMitigation(WARM_WEATHER_ID),
+        choices: okButtonEndMitigation(WARM_WEATHER_ID, 'Konec teplého počasí'),
       },
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-09-10', '2020-10-09')
@@ -576,11 +577,11 @@ Hodně štěstí!',
         text: 'Pro období svátků je možné zpřísnit opatření, nebo naopak udělit výjimky z opatření.',
         help: 'Lze očekávat, že udělení výjimek pro období svátků obyvatelé ocení a pozitivně se tak promítne do společenské stability, ale zato přinese větší počet nových nakažených. Přísná opatření se zase naopak setkají s nevolí obyvatel a poklesem společenské stability.',
         choices: [
-          simpleChoice('Povolit půlnoční mše', {stabilityCost: -2, exposedDrift: random(500, 1500)}),
-          simpleChoice('Udělit výjimku pro rodinná setkání nad 6 lidí', {stabilityCost: -2,
+          simpleChoice('Povolit mše', {stabilityCost: -2, exposedDrift: random(500, 1500)}),
+          simpleChoice('Povolit rodinná setkání nad 6 lidí', {stabilityCost: -2,
             exposedDrift: random(1000, 2000)}),
           simpleChoice('Povolit obojí', {stabilityCost: -5, exposedDrift: random(1500, 4000)}),
-          simpleChoice('Zakázat půlnoční mše i rodinná setkání nad 6 lidí', {stabilityCost: 5}),
+          simpleChoice('Zakázat mše i rodinná setkání', {stabilityCost: 5}),
         ],
       },
       // Silvestr
@@ -621,7 +622,7 @@ Hodně štěstí!',
         help: 'Investice do kampaně pro očkování zvýší zájem o vakcinaci a tím pádem její rychlost. Je na ni však třeba vydat další náklady a zároveň se při možném neúspěchu kampaně  negativně ovlivní společenskou stabilitu. Odmítnutí proma vakcinaci zpomalí.',
         choices: [
           {
-            label: 'Investovat do propagace vakcín',
+            buttonLabel: 'Investovat do propagace vakcín',
             mitigations: [
               {id: VACCINATION_CAMPAIGN_ID, name: 'Vakcinační kampaň',
                 vaccinationPerDay: 0.0001, duration: Infinity},
@@ -643,7 +644,7 @@ Hodně štěstí!',
         text: 'Mysleli jsme to dobře, ale dopadlo to...nedobře.',
         help: 'Každá propagační kampaň v sobě nese riziko selhání. Teď na něj došlo.',
         choices: [
-          {label: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
+          {buttonLabel: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
         ],
       },
     ],
@@ -672,7 +673,7 @@ Hodně štěstí!',
         text: et.text,
         help: 'Očkovací kampaň přestala fungovat.',
         choices: [
-          {label: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
+          {buttonLabel: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
         ],
       }),
     ),
@@ -703,6 +704,7 @@ Hodně štěstí!',
       {
         title: 'Úspěšně očkujeme',
         text: 'Polovina populace již byla očkována.',
+        choices: okButton(undefined, '1/2 očkována'),
       },
     ],
     condition: (ei: EventInput) => ei.stats.vaccinationRate > .5,

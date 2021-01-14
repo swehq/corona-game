@@ -7,60 +7,6 @@
 <cvd-row wrap alignItems="flex-start" [spacing]="4">
   <cvd-col grow class="chapter" alignItems="flex-start">
     <cvd-row class="item">
-      <span>
-        <cvd-icon class="color-virus">coronavirus</cvd-icon>
-      </span>
-      <span class="color-virus">
-        Nakažení
-        +{{stat$('detectedInfections', 'today') | async | formatNumber}}
-      </span>
-      <small>
-        {{stat$('detectedInfections', 'total') | async | formatNumber}}
-      </small>
-    </cvd-row>
-
-    <cvd-row class="item">
-      <cvd-icon class="color-death" svgIcon="skull"></cvd-icon>
-      <span class="color-death">
-        Zemřelí
-        +{{stat$('deaths', 'today') | async | formatNumber}}
-      </span>
-      <small>
-        {{stat$('deaths', 'total') | async | formatNumber}}
-      </small>
-    </cvd-row>
-  </cvd-col>
-
-  <cvd-col grow class="chapter" alignItems="flex-start">
-    <cvd-row class="item">
-      <cvd-icon class="color-medicine" svgIcon="vaccine"></cvd-icon>
-      <span class="color-medicine">
-        Imunní
-        {{(immunized$ | async)?.total | formatNumber}}
-      </span>
-      <small>
-        {{(immunized$ | async)?.today}}
-      </small>
-    </cvd-row>
-
-    <cvd-row class="item">
-      <cvd-icon svgIcon="money"></cvd-icon>
-      <span>
-        Náklady
-        {{stat$('costs', 'total') | async | formatNumber:true:true}}
-      </span>
-      <small>
-        +{{stat$('costs', 'today') | async | formatNumber:true:true}}
-      </small>
-    </cvd-row>
-  </cvd-col>
-</cvd-row>
-
-<mat-divider></mat-divider>
-
-<cvd-row wrap alignItems="flex-start" [spacing]="4">
-  <cvd-col grow class="chapter" alignItems="flex-start">
-    <cvd-row class="item">
       <cvd-icon>thumbs_up_down</cvd-icon>
         Společenská stabilita
         <mat-chip-list>

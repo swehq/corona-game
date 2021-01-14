@@ -7,6 +7,8 @@ import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {ActivatedEvent} from './graphs/line-graph/line-graph.component';
+import {meanBy} from 'lodash';
+import {LocalStorageKey} from '../../environments/defaults';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 
@@ -15,9 +17,9 @@ export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
   providedIn: 'root',
 })
 export class GameService {
-  readonly PLAY_SPEED = 400; // ms
-  readonly FORWARD_SPEED = 0; // ms
-  readonly REVERSE_SPEED = 50; // ms
+  // readonly PLAY_SPEED = 400; // ms
+  // readonly FORWARD_SPEED = 0; // ms
+  // readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
   event: Event | undefined;
@@ -25,6 +27,7 @@ export class GameService {
   activatedEvent: ActivatedEvent | undefined;
 
   private speed: Speed | undefined;
+  private speedInterval = 0;
   private _speed$ = new Subject<Speed>();
   speed$ = this._speed$.asObservable();
 
@@ -57,6 +60,7 @@ export class GameService {
     this.setSpeed(speed);
     this.showEvent(this.game.rampUpEvent);
     this.updateChart();
+    this.saveCheckpoint();
   }
 
   /**
@@ -77,7 +81,10 @@ export class GameService {
 
   setSpeed(speed: Speed) {
     if (this.speed === speed) return;
-    if (this.tickerId) clearInterval(this.tickerId);
+    if (this.tickerId) {
+      window.clearTimeout(this.tickerId);
+      this.tickerId = undefined;
+    }
 
     this.speed = speed;
     this._speed$.next(speed);
@@ -87,12 +94,45 @@ export class GameService {
       this.updateChart();
       this.setSpeed('pause');
     } else if (speed === 'play') {
-      this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
+      this.scheduleTick();
     } else if (speed === 'fwd') {
-      this.tickerId = window.setInterval(() => this.tick(), this.FORWARD_SPEED);
+      this.scheduleTick(.1);
     } else if (speed === 'rev') {
-      this.tickerId = window.setInterval(() => this.tick(), this.REVERSE_SPEED);
+      this.scheduleTick(-1);
     }
+  }
+
+  private scheduleTick(modifier = 1) {
+    const speedInterval = [250, 1500];
+    const ratioInterval = [1, 2];
+
+    let infectionChange = 1;
+    const stats = this.game.simulation.getLastStats();
+    if (stats) {
+      const infectionMean = meanBy(this.game.simulation.modelStates.slice(-14), 'stats.detectedInfections.today');
+      infectionChange = Math.max(
+        stats.detectedInfections.today / infectionMean,
+        infectionMean / stats.detectedInfections.today);
+      infectionChange = Math.sqrt(infectionChange);
+      infectionChange = Math.round(infectionChange / .25) * .25;
+      // tslint:disable-next-line:no-console
+      console.log('change', infectionChange);
+    }
+
+    const speed = speedInterval[0] + (speedInterval[1] - speedInterval[0]) *
+      (infectionChange - ratioInterval[0]) / (ratioInterval[1] - ratioInterval[0]);
+
+    if (speed > this.speedInterval) this.speedInterval += 100;
+    if (speed < this.speedInterval) this.speedInterval -= 100;
+    // tslint:disable-next-line:no-console
+    console.log('interval', this.speedInterval);
+
+    this.speedInterval = Math.max(speedInterval[0], this.speedInterval);
+    this.speedInterval = Math.min(speedInterval[1], this.speedInterval);
+    this.tickerId = window.setTimeout(() => {
+      this.tick();
+      if (this.tickerId) this.scheduleTick();
+    }, this.speedInterval * modifier);
   }
 
   private tick(updateChart = true) {
@@ -113,15 +153,16 @@ export class GameService {
     }
 
     const gameUpdate = this.game.moveForward();
-    const event = gameUpdate.event;
-    this.showEvent(event);
+    if (gameUpdate.dayState.date.endsWith('01')) this.saveCheckpoint();
 
     this._endOfDay$.next();
     if (updateChart) this.updateChart();
-    this.activatedEvent = undefined;
+    this.showEvent(gameUpdate.event);
   }
 
   private showEvent(event: Event | undefined) {
+    this.activatedEvent = undefined;
+
     if (!event) return;
     if (this.speed === 'max') return;
 
@@ -141,6 +182,25 @@ export class GameService {
 
   save() {
     const gameData = this.getGameData();
-    this.httpClient.post('/api/game-data', gameData).subscribe();
+    this.httpClient.post('/api/game-data', gameData).subscribe((data: any) => this.saveGameId(data.id));
   }
+
+  private saveGameId(id: string) {
+    const storageValue = window.localStorage.getItem(LocalStorageKey.SAVED_GAME_IDS);
+    let ids = [];
+
+    if (storageValue) ids = JSON.parse(storageValue);
+
+    ids.push(id);
+    window.localStorage.setItem(LocalStorageKey.SAVED_GAME_IDS, JSON.stringify(ids));
+  }
+
+  private saveCheckpoint() {
+    window.localStorage.setItem(LocalStorageKey.LAST_GAME_DATA, JSON.stringify(this.getGameData()));
+  }
+
+  // private loadGame() {
+  //   const dataString = window.localStorage.getItem(LocalStorageKey.LAST_GAME_DATA);
+  //   if (dataString) validateGame(JSON.parse(dataString));
+  // }
 }

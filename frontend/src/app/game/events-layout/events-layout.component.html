@@ -19,14 +19,13 @@
     <cvd-button
       *ngFor="let choice of gameService.event.choices"
       (click)="resumeEvent(gameService.event, choice)">
-      {{choice.label}}
+      {{choice.buttonLabel}}
     </cvd-button>
 
     <cvd-button
       *ngIf="!gameService.event.choices?.length"
-      cdkFocusInitial
       (click)="resumeEvent(gameService.event)">
-      Ok
+      OK
     </cvd-button>
   </cvd-row>
 </div>

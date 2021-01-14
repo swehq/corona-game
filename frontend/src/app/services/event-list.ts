@@ -165,11 +165,10 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'V České republice je první případ nákazy koronavirem',
-        text: 'První případ nákazy Covidem-19 byl dnes potvrzen i v Česku. \
-Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření - nebo si se situací poradili jakkoliv jinak vám je libo. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví. \
-Každý panel má také v rohu otazník, který vám představí všechny své ovládací prvky. \
-[TODO] \
-Hru můžete vždy pozastavit mezerníkem, nebo tlačítkem pauza.',
+        text: '<p>První případ nákazy Covidem-19 byl dnes potvrzen i v Česku. \
+Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření &nbsp; nebo si se situací poradili jakkoliv jinak vám je libo. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví. \
+Každý panel má také v rohu otazník, který vám představí všechny své ovládací prvky.</p> \
+<p>Hru můžete vždy pozastavit mezerníkem, nebo tlačítkem pauza.</p>',
         help: 'Při každé události ve hře si také můžete přečíst vzkazy od vašeho průvodce. Tyto texty budou vždy mít tuto barvu a snažíme se vám skrze ně poradit. Ale nemusíte se jimi nijak řídit!',
         choices: [
           simpleChoice('Chci přímo do hry'),
@@ -183,10 +182,14 @@ Hru můžete vždy pozastavit mezerníkem, nebo tlačítkem pauza.',
     events: [
       {
         title: 'Grafy (hlavní panel)',
-        text: 'Váš hlavní zdroj informací o aktuální situaci ve státě. Můžete si volit mezi zobrazením čtyř grafů: [TODO] \
-IKONKA 1: Počet nově nakažených: Tento graf zobrazuje kolik lidí se v daný den nově nakazilo. \
-IKONKA 2: Lebka: Počet zemřelých denně. Tento graf zobrazuje pouze lidi, kteří zemřeli přímo na Covid 19. Smrtnost nemoci záleží na okolnostech - nejpodstatnější je pro vás Kapacita nemocnic. Příliš mnoho nemocných, nemocnice přestanou stíhat a více lidí zemře. [TODO]',
-        help: 'Pokud nehledáte něco konkrétního (například kolik lidí má imunitu po nemoci a kolik z očkování), doporučíme vám zůstat na zobrazení nově nakažených. To je pro zvládání pandemie ten nejpodstatnější graf.',
+        text: '<p>Váš hlavní zdroj informací o aktuální situaci ve státě. Můžete si volit mezi zobrazením čtyř grafů:</p> \
+<ul style="list-style-type: none">\
+<li><strong>Ikonka viru</strong>: Počet nově nakažených</li>\
+<li><strong>Ikonka lebky</strong>: Počet nově zemřelých</li>\
+<li><strong>Ikonka peněz</strong>: Celkové náklady</li>\
+<li><strong>Ikonka injekce</strong>: Počet imunních &ndash; součet vakcinovaných a imunních po prodělání nemoci</li>\
+</ul>',
+        help: 'Pokud nehledáte něco konkrétního (například postup očkování), doporučíme vám zůstat na zobrazení nově nakažených. To je pro zvládání pandemie ten nejpodstatnější graf.',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),

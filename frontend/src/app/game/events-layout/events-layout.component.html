@@ -8,11 +8,11 @@
   </cvd-row>
 
   <cvd-row [grow]="2" *ngIf="gameService.event.text">
-    {{gameService.event.text}}
+    <div [innerHtml]="gameService.event.text | safeHtml"></div>
   </cvd-row>
 
   <cvd-row [grow]="2" *ngIf="gameService.event.help">
-    <small>{{gameService.event.help}}</small>
+    <div [innerHtml]="gameService.event.help | safeHtml"></div>
   </cvd-row>
 
   <cvd-row grow>

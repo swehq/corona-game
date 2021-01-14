@@ -5,9 +5,12 @@ import {Event} from '../services/events';
 import {ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {ActivatedEvent} from './graphs/line-graph/line-graph.component';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 
+@UntilDestroy()
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +22,7 @@ export class GameService {
   game!: Game;
   event: Event | undefined;
   tickerId: number | undefined;
+  activatedEvent: ActivatedEvent | undefined;
 
   private speed: Speed | undefined;
   private _speed$ = new Subject<Speed>();
@@ -110,6 +114,7 @@ export class GameService {
     this.showEvent(event);
 
     if (updateChart) this.updateChart();
+    this.activatedEvent = undefined;
   }
 
   private showEvent(event: Event | undefined) {

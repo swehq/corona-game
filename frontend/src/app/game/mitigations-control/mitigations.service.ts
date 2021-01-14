@@ -3,7 +3,7 @@ import {FormControl, FormGroup} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {isEqual} from 'lodash';
 import {Observable} from 'rxjs';
-import {debounceTime, map, pairwise, shareReplay, startWith} from 'rxjs/operators';
+import {delay, filter, map, pairwise, shareReplay, startWith} from 'rxjs/operators';
 import {Game} from '../../services/game';
 import {MitigationPair} from '../../services/scenario';
 import {GameService} from '../game.service';
@@ -25,6 +25,18 @@ export interface Mitigations {
   schoolsCompensation: boolean;
   stayHome: boolean;
 }
+
+type MitigationKey = keyof Mitigations;
+
+interface MitigationDiff {
+  oldValue: Mitigations;
+  newValue: Mitigations;
+  changed: MitigationKey[];
+}
+
+type MitigationForceCallback =
+  <K extends MitigationKey, V extends Mitigations[K]>
+  (mitigation: K, enabledValues: V | V[]) => void;
 
 @UntilDestroy()
 @Injectable({
@@ -87,22 +99,21 @@ export class MitigationsService {
   };
 
   readonly value$: Observable<Mitigations>;
+  readonly uiChanges$: Observable<MitigationDiff>;
+  readonly enforcedChanges$: Observable<MitigationDiff>;
+  private modelIsChanging = false;
 
   constructor(gameService: GameService) {
     this.formGroup.setValue(Game.defaultMitigations);
 
-    const _value$ = this.formGroup.valueChanges.pipe(
+    this.value$ = this.formGroup.valueChanges.pipe(
       startWith(this.formGroup.value),
       map(val => val as { [key in keyof Mitigations]: any }),
     );
 
-    this.value$ = _value$.pipe(
-      debounceTime(0),
-      shareReplay(1),
-    );
-
-    const changes$ = _value$.pipe(
+    this.uiChanges$ = this.value$.pipe(
       pairwise(),
+      filter(() => !this.modelIsChanging),
       map(([oldValue, newValue]) => {
         const keys = Object.keys(newValue) as (keyof Mitigations)[];
         const changed = keys.filter(key => !isEqual(oldValue[key], newValue[key]));
@@ -110,55 +121,16 @@ export class MitigationsService {
       }),
     );
 
-    changes$.pipe(
-      untilDestroyed(this),
-    ).subscribe(
-      ({newValue, changed}) => {
-        if (changed.includes('businesses') && newValue.businesses === false) {
-          this.force('businessesCompensation', false, newValue);
-        }
-
-        if (changed.includes('businesses') && newValue.businesses !== 'most') {
-          this.force('stayHome', false, newValue);
-        }
-
-        if (changed.includes('businessesCompensation') && newValue.businessesCompensation) {
-          this.force('businesses', ['some', 'most'], newValue);
-        }
-
-        if (changed.includes('events') && newValue.events === false) {
-          this.force('eventsCompensation', false, newValue);
-        }
-
-        if (changed.includes('events') && newValue.events !== 10) {
-          this.force('stayHome', false, newValue);
-        }
-
-        if (changed.includes('eventsCompensation') && newValue.eventsCompensation) {
-          this.force('events', [1000, 100, 10], newValue);
-        }
-
-        if (changed.includes('rrr') && newValue.rrr === false) {
-          this.force('stayHome', false, newValue);
-        }
-
-        if (changed.includes('schools') && newValue.schools !== 'all') {
-          this.force('schoolsCompensation', false, newValue);
-          this.force('stayHome', false, newValue);
-        }
-
-        if (changed.includes('schoolsCompensation') && newValue.schoolsCompensation) {
-          this.force('schools', 'all', newValue);
-        }
-
-        if (changed.includes('stayHome') && newValue.stayHome) {
-          this.force('businesses', 'most', newValue);
-          this.force('events', 10, newValue);
-          this.force('rrr', true, newValue);
-          this.force('schools', 'all', newValue);
-        }
-      },
+    this.enforcedChanges$ = this.uiChanges$.pipe(
+      delay(0), // critical! All observers of uiChanges$ must finish their callbacks first.
+      map(diff => this.getEnforcedChanges(diff)),
+      filter(diff => diff.changed.length > 0),
+      shareReplay(1),
     );
+
+    this.enforcedChanges$
+      .pipe(untilDestroyed(this))
+      .subscribe(diff => this.set(diff.newValue));
 
     this.value$
       .pipe(untilDestroyed(this))
@@ -167,6 +139,88 @@ export class MitigationsService {
     gameService.reset$
       .pipe(untilDestroyed(this))
       .subscribe(() => this.formGroup.setValue(gameService.game.mitigations));
+  }
+
+  getEnforcedChanges(diff: MitigationDiff): MitigationDiff {
+
+    // call projectChanges() to project changes to other mitigations
+    const step = (from: MitigationDiff): MitigationDiff => {
+      const newValue = {...from.newValue};
+      const changed = new Set<MitigationKey>();
+      const force: MitigationForceCallback = (mitigation, enabledValues) => {
+        enabledValues = (Array.isArray(enabledValues) ? enabledValues : [enabledValues]);
+        const currentValue = from.newValue[mitigation] as any;
+
+        if (enabledValues.includes(currentValue)) return;
+
+        newValue[mitigation] = enabledValues[0];
+        changed.add(mitigation);
+      };
+
+      this.enforceChanges(from, force);
+
+      return {oldValue: from.newValue, newValue, changed: Array.from(changed)};
+    };
+
+    // iterate until some change is forced
+    const allChanged = new Set<MitigationKey>();
+    let fromDiff: MitigationDiff;
+    let nextDiff = diff;
+    do {
+      fromDiff = nextDiff;
+      nextDiff = step(fromDiff);
+      nextDiff.changed.forEach(key => allChanged.add(key));
+    } while (nextDiff.changed.length);
+
+    return {oldValue: diff.newValue, newValue: nextDiff.newValue, changed: Array.from(allChanged)};
+  }
+
+  enforceChanges(diff: MitigationDiff, force: MitigationForceCallback) {
+    const {changed, newValue} = diff;
+
+    if (changed.includes('businesses') && newValue.businesses === false) {
+      force('businessesCompensation', false);
+    }
+
+    if (changed.includes('businesses') && newValue.businesses !== 'most') {
+      force('stayHome', false);
+    }
+
+    if (changed.includes('businessesCompensation') && newValue.businessesCompensation) {
+      force('businesses', ['some', 'most']);
+    }
+
+    if (changed.includes('events') && newValue.events === false) {
+      force('eventsCompensation', false);
+    }
+
+    if (changed.includes('events') && newValue.events !== 10) {
+      force('stayHome', false);
+    }
+
+    if (changed.includes('eventsCompensation') && newValue.eventsCompensation) {
+      force('events', [1000, 100, 10]);
+    }
+
+    if (changed.includes('rrr') && newValue.rrr === false) {
+      force('stayHome', false);
+    }
+
+    if (changed.includes('schools') && newValue.schools !== 'all') {
+      force('schoolsCompensation', false);
+      force('stayHome', false);
+    }
+
+    if (changed.includes('schoolsCompensation') && newValue.schoolsCompensation) {
+      force('schools', 'all');
+    }
+
+    if (changed.includes('stayHome') && newValue.stayHome) {
+      force('businesses', 'most');
+      force('events', 10);
+      force('rrr', true);
+      force('schools', 'all');
+    }
   }
 
   preset(level: MitigationsPresetLevel) {
@@ -199,22 +253,9 @@ export class MitigationsService {
   }
 
   set(mitigations: Mitigations) {
+    this.modelIsChanging = true;
     this.formGroup.setValue(mitigations);
-  }
-
-  force<K extends keyof Mitigations, V extends Mitigations[K]>(
-    mitigation: K,
-    enabledValues: V | V[],
-    referenceMitigations = this.formGroup.getRawValue(),
-  ) {
-    enabledValues = (Array.isArray(enabledValues) ? enabledValues : [enabledValues]) as V[];
-    const currentValue = referenceMitigations[mitigation];
-
-    if (enabledValues.includes(currentValue)) return;
-
-    const patch: Partial<Mitigations> = {};
-    patch[mitigation] = enabledValues[0];
-    this.formGroup.patchValue(patch);
+    this.modelIsChanging = false;
   }
 
   optionsFor<T extends MitigationPair>(paramName: T[0]): [value: T[1], label: string][] {

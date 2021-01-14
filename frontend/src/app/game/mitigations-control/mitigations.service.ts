@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {isEqual} from 'lodash';
-import {Observable} from 'rxjs';
-import {delay, filter, map, pairwise, shareReplay, startWith} from 'rxjs/operators';
+import {merge, Observable, OperatorFunction, Subject} from 'rxjs';
+import {delay, filter, map, pairwise, shareReplay, startWith, withLatestFrom} from 'rxjs/operators';
 import {Game} from '../../services/game';
 import {MitigationPair} from '../../services/scenario';
 import {GameService} from '../game.service';
@@ -98,12 +98,24 @@ export class MitigationsService {
     },
   };
 
-  readonly value$: Observable<Mitigations>;
-  readonly uiChanges$: Observable<MitigationDiff>;
-  readonly enforcedChanges$: Observable<MitigationDiff>;
+  private dailyDiff: MitigationDiff = {
+    oldValue: this.gameService.game.mitigations,
+    newValue: this.gameService.game.mitigations,
+    changed: [],
+  };
+  private _allChangesDaily$ = new Subject<MitigationDiff>();
+  private setValue$ = new Subject<[MitigationsPresetLevel | 'reset', Mitigations]>();
   private modelIsChanging = false;
 
-  constructor(gameService: GameService) {
+  readonly value$: Observable<Mitigations>;
+  readonly presetApplied$ = this.setValue$.asObservable(); // preset() or reset$
+  readonly uiChanges$: Observable<MitigationDiff>; // from user actions
+  readonly enforcedChanges$: Observable<MitigationDiff>; // from enforceChanges() logic
+  readonly setChanges$: Observable<MitigationDiff>; // from preset() and reset$
+  readonly changes$: Observable<MitigationDiff>; // all changes merged
+  readonly changesDaily$ = this._allChangesDaily$.asObservable(); // cumulative change per day
+
+  constructor(private gameService: GameService) {
     this.formGroup.setValue(Game.defaultMitigations);
 
     this.value$ = this.formGroup.valueChanges.pipe(
@@ -111,14 +123,17 @@ export class MitigationsService {
       map(val => val as { [key in keyof Mitigations]: any }),
     );
 
-    this.uiChanges$ = this.value$.pipe(
-      pairwise(),
-      filter(() => !this.modelIsChanging),
+    const calculateDiff: OperatorFunction<[Mitigations, Mitigations], MitigationDiff> =
       map(([oldValue, newValue]) => {
         const keys = Object.keys(newValue) as (keyof Mitigations)[];
         const changed = keys.filter(key => !isEqual(oldValue[key], newValue[key]));
         return {oldValue, newValue, changed};
-      }),
+      });
+
+    this.uiChanges$ = this.value$.pipe(
+      pairwise(),
+      filter(() => !this.modelIsChanging),
+      calculateDiff,
     );
 
     this.enforcedChanges$ = this.uiChanges$.pipe(
@@ -128,17 +143,68 @@ export class MitigationsService {
       shareReplay(1),
     );
 
+    this.setChanges$ = this.setValue$.pipe(
+      map(([_name, newValue]) => newValue),
+      withLatestFrom(this.value$),
+      map(([newValue, oldValue]) => [oldValue, newValue] as [Mitigations, Mitigations]),
+      calculateDiff,
+    );
+
+    this.changes$ = merge(
+      this.uiChanges$,
+      this.enforcedChanges$,
+      this.setChanges$,
+    );
+
+    this.changes$
+      .pipe(untilDestroyed(this))
+      .subscribe(diff => this.dailyDiff = {
+        ...this.dailyDiff,
+        newValue: diff.newValue,
+        changed: [...this.dailyDiff.changed, ...diff.changed],
+      });
+
+    this.gameService.endOfDay$
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        // remove duplicities
+        let changed = [...new Set(this.dailyDiff.changed)];
+
+        // remove mitigations finally changed back to oldValue
+        const {oldValue, newValue} = this.dailyDiff;
+        changed = changed.filter(key => !isEqual(oldValue[key], newValue[key]));
+
+        this._allChangesDaily$.next({oldValue, newValue, changed});
+
+        this.dailyDiff = {
+          ...this.dailyDiff,
+          oldValue: this.dailyDiff.newValue,
+          changed: [],
+        };
+      });
+
     this.enforcedChanges$
       .pipe(untilDestroyed(this))
       .subscribe(diff => this.set(diff.newValue));
 
-    this.value$
+    this.setValue$
       .pipe(untilDestroyed(this))
-      .subscribe(mitigations => gameService.game.applyMitigationActions({mitigations}));
+      .subscribe(preset => this.set(preset[1]));
 
     gameService.reset$
       .pipe(untilDestroyed(this))
-      .subscribe(() => this.formGroup.setValue(gameService.game.mitigations));
+      .subscribe(() => {
+        this.setValue$.next(['reset', gameService.game.mitigations]);
+        this.dailyDiff = {
+          oldValue: gameService.game.mitigations,
+          newValue: gameService.game.mitigations,
+          changed: [],
+        };
+      });
+
+    this.value$
+      .pipe(untilDestroyed(this))
+      .subscribe(mitigations => gameService.game.applyMitigationActions({mitigations}));
   }
 
   getEnforcedChanges(diff: MitigationDiff): MitigationDiff {
@@ -224,32 +290,25 @@ export class MitigationsService {
   }
 
   preset(level: MitigationsPresetLevel) {
-    switch (level) {
-      case 'open':
-        this.set(Game.defaultMitigations);
-        return;
+    const presets: Record<MitigationsPresetLevel, Mitigations> = {
+      open: {
+        ...Game.defaultMitigations,
+      },
+      level1: {
+        ...Game.defaultMitigations,
+        events: 1000,
+        rrr: true,
+      },
+      level2: {
+        ...Game.defaultMitigations,
+        events: 100,
+        rrr: true,
+        businesses: 'some',
+        schools: 'universities',
+      },
+    };
 
-      case 'level1':
-        this.set({
-          ...Game.defaultMitigations,
-          events: 1000,
-          rrr: true,
-        });
-        return;
-
-      case 'level2':
-        this.set({
-          ...Game.defaultMitigations,
-          events: 100,
-          rrr: true,
-          businesses: 'some',
-          schools: 'universities',
-        });
-        return;
-
-      default:
-        throw new Error(`Undefined MitigationsLevel ${level}`);
-    }
+    this.setValue$.next([level, presets[level]]);
   }
 
   set(mitigations: Mitigations) {

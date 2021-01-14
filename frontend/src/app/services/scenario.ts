@@ -23,16 +23,24 @@ export type MitigationPair = {
 }[keyof Mitigations];
 
 export class Scenario {
-  private mitigationActionHistory: MitigationActionHistory = {};
+  // Ramp up mitigations are applied only while ramping up the game
+  private rampUpMitigationHistory: MitigationActionHistory = {};
+  // Gameplay mitigations are applied both during ramp up and regular gameplay
+  // Gameplay mitigations should only contain event mitigations
+  private gameplayMitigationHistory: MitigationActionHistory = {};
   dates: ScenarioDates;
 
-  constructor(scenarioDates: ScenarioDates, mitigationActionHistory?: MitigationActionHistory) {
+  constructor(scenarioDates: ScenarioDates, gameplayMitigationHistory?: MitigationActionHistory) {
     this.dates = scenarioDates;
-    if (mitigationActionHistory) this.mitigationActionHistory = mitigationActionHistory;
+    if (gameplayMitigationHistory) this.gameplayMitigationHistory = gameplayMitigationHistory;
   }
 
-  getMitigationActions(date: string) {
-    return this.mitigationActionHistory[date];
+  getRampUpMitigationActions(date: string) {
+    return this.rampUpMitigationHistory[date];
+  }
+
+  getGameplayMitigationActions(date: string) {
+    return this.gameplayMitigationHistory[date];
   }
 
   /**
@@ -42,24 +50,45 @@ export class Scenario {
    * @param begin first date of the mitigation
    * @param end next day sets the mitigation to the default value
    */
-  addMitigationAction(mitigation: MitigationPair, begin: string, end?: string) {
+  addRampUpMitigationAction(mitigation: MitigationPair, begin: string, end?: string) {
     const id = mitigation[0];
     const level = mitigation[1];
 
-    this.mitigationActionHistory[begin] = {
-      mitigations: {...this.mitigationActionHistory[begin]?.mitigations, [id]: level},
-      eventMitigations: this.mitigationActionHistory[begin]?.eventMitigations,
+    this.rampUpMitigationHistory[begin] = {
+      ...this.rampUpMitigationHistory[begin],
+      mitigations: {...this.rampUpMitigationHistory[begin]?.mitigations, [id]: level},
     };
     if (end) {
       end = nextDay(end);
-      const oldAction = this.mitigationActionHistory[end];
+      const oldAction = this.rampUpMitigationHistory[end];
       // Do not overwrite preexisting actions
       if (oldAction?.mitigations === undefined || !(id in oldAction.mitigations)) {
-        this.mitigationActionHistory[end] = {
+        this.rampUpMitigationHistory[end] = {
+          ...oldAction,
           mitigations: {...oldAction?.mitigations, [id]: Game.defaultMitigations[id]},
-          eventMitigations: oldAction?.eventMitigations,
         };
       }
+    }
+  }
+
+  addGameplayEventMitigation(eventMitigation: EventMitigation, begin: string, end?: string) {
+    const oldEventMitigations = this.gameplayMitigationHistory[begin]?.eventMitigations;
+    this.gameplayMitigationHistory[begin] = {
+      ...this.gameplayMitigationHistory[begin],
+      eventMitigations: oldEventMitigations ? [...oldEventMitigations, eventMitigation] : [eventMitigation],
+    };
+
+    if (end) {
+      if (!eventMitigation.id) {
+        throw new Error('Cannot set end date without eventMitigation id');
+      }
+
+      const oldRemoveMitigationIds = this.gameplayMitigationHistory[end]?.removeMitigationIds;
+      this.gameplayMitigationHistory[end] = {
+        ...this.gameplayMitigationHistory[end],
+        removeMitigationIds:
+          oldRemoveMitigationIds ? [...oldRemoveMitigationIds, eventMitigation.id] : [eventMitigation.id],
+      };
     }
   }
 }
@@ -68,42 +97,73 @@ export class Scenario {
 const czechiaGame = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-03-01',
-  endDate: '2021-07-01',
+  endDate: '2021-10-01',
 });
+
+// Czechia vaccination schedule
+function addCzechiaVaccination(scenario: Scenario) {
+  // Vaccination rate per month
+  // https://koronavirus.mzcr.cz/wp-content/uploads/2020/12/Strategie_ockovani_proti_covid-19_aktual_221220.pdf
+  const vaccinationCalendar = {
+    '2020-12-27': 178_937, // assume same rate as January
+    '2021-01-01': 178_937,
+    '2021-02-01': 320_375,
+    '2021-03-01': 453_037,
+    '2021-04-01': 825_000,
+    '2021-05-01': 1_025_000,
+    '2021-06-01': 775_000,
+    '2021-07-01': 1_118_000,
+    '2021-08-01': 818_000,
+    // continues at the same rate
+  };
+  const population = 10_690_000;
+
+  Object.entries(vaccinationCalendar).forEach(e => {
+    const vaccineMitigation = {
+      name: 'Vakcíny',
+      id: 'vaccination',
+      duration: Infinity,
+      vaccinationPerDay: e[1] / 30 / population,
+    };
+    scenario.addGameplayEventMitigation(vaccineMitigation, e[0]);
+  });
+}
+addCzechiaVaccination(czechiaGame);
 
 // reproduce mitigation actions of Czech Republic up to December 2020
 const czechiaReal = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2021-01-09',
-  endDate: '2021-07-01',
+  endDate: '2021-10-01',
 });
+addCzechiaVaccination(czechiaReal);
 
 // First wave
-czechiaReal.addMitigationAction(['rrr', true], '2020-03-14', '2020-06-01');
-czechiaReal.addMitigationAction(['events', 100], '2020-03-10');
-czechiaReal.addMitigationAction(['events', 10], '2020-03-24');
-czechiaReal.addMitigationAction(['events', 100], '2020-05-11');
-czechiaReal.addMitigationAction(['events', 1000], '2020-05-25');
-czechiaReal.addMitigationAction(['businesses', 'most'], '2020-03-14');
-czechiaReal.addMitigationAction(['businesses', 'some'], '2020-05-11', '2020-07-01');
-czechiaReal.addMitigationAction(['schools', 'all'], '2020-03-13', '2020-08-31');
-czechiaReal.addMitigationAction(['stayHome', true], '2020-03-16', '2020-04-25');
-czechiaReal.addMitigationAction(['bordersClosed', true], '2020-03-16', '2020-04-25');
+czechiaReal.addRampUpMitigationAction(['rrr', true], '2020-03-14', '2020-06-01');
+czechiaReal.addRampUpMitigationAction(['events', 100], '2020-03-10');
+czechiaReal.addRampUpMitigationAction(['events', 10], '2020-03-24');
+czechiaReal.addRampUpMitigationAction(['events', 100], '2020-05-11');
+czechiaReal.addRampUpMitigationAction(['events', 1000], '2020-05-25');
+czechiaReal.addRampUpMitigationAction(['businesses', 'most'], '2020-03-14');
+czechiaReal.addRampUpMitigationAction(['businesses', 'some'], '2020-05-11', '2020-07-01');
+czechiaReal.addRampUpMitigationAction(['schools', 'all'], '2020-03-13', '2020-08-31');
+czechiaReal.addRampUpMitigationAction(['stayHome', true], '2020-03-16', '2020-04-25');
+czechiaReal.addRampUpMitigationAction(['bordersClosed', true], '2020-03-16', '2020-04-25');
 
 // Second wave
 // https://zpravy.aktualne.cz/domaci/casova-osa-covid/r~fd4c3f7e0ec511eb9d470cc47ab5f122/
 // https://cs.wikipedia.org/wiki/Pandemie_covidu-19_v_%C4%8Cesku
-czechiaReal.addMitigationAction(['rrr', true], '2020-09-10');
-czechiaReal.addMitigationAction(['schools', 'universities'], '2020-09-21');
-czechiaReal.addMitigationAction(['businesses', 'some'], '2020-10-09');
-czechiaReal.addMitigationAction(['events', 10], '2020-10-14');
-czechiaReal.addMitigationAction(['schools', 'all'], '2020-10-14');
-czechiaReal.addMitigationAction(['businesses', 'most'], '2020-10-21', '2020-11-30');
-czechiaReal.addMitigationAction(['schools', 'universities'], '2020-11-30');
-czechiaReal.addMitigationAction(['events', 100], '2020-11-30');
-czechiaReal.addMitigationAction(['businesses', 'most'], '2020-12-27', '2021-01-23');
-czechiaReal.addMitigationAction(['events', 10], '2020-12-27');
-czechiaReal.addMitigationAction(['schools', 'all'], '2020-12-27');
+czechiaReal.addRampUpMitigationAction(['rrr', true], '2020-09-10');
+czechiaReal.addRampUpMitigationAction(['schools', 'universities'], '2020-09-21');
+czechiaReal.addRampUpMitigationAction(['businesses', 'some'], '2020-10-09');
+czechiaReal.addRampUpMitigationAction(['events', 10], '2020-10-14');
+czechiaReal.addRampUpMitigationAction(['schools', 'all'], '2020-10-14');
+czechiaReal.addRampUpMitigationAction(['businesses', 'most'], '2020-10-21', '2020-11-30');
+czechiaReal.addRampUpMitigationAction(['schools', 'universities'], '2020-11-30');
+czechiaReal.addRampUpMitigationAction(['events', 100], '2020-11-30');
+czechiaReal.addRampUpMitigationAction(['businesses', 'most'], '2020-12-27', '2021-01-23');
+czechiaReal.addRampUpMitigationAction(['events', 10], '2020-12-27');
+czechiaReal.addRampUpMitigationAction(['schools', 'all'], '2020-12-27');
 
 export const scenarios = {
   czechiaGame,

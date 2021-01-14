@@ -30,7 +30,6 @@ export function validateGame(data: GameData, breakImmediately = true): boolean {
     }
 
     if (i < data.simulation.length - 1) {
-      game.updateMitigationsForScenario();
       game.moveForward(data.simulation[i + 1].randomness);
     }
   }

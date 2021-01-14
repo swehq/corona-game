@@ -26,8 +26,6 @@ export interface GameData {
 }
 
 export class Game {
-  readonly vaccinationStartDate = '2021-03-01';
-  readonly vaccinationPerDay = 0.01; // TODO move to vaccination event
   readonly infectionsWhenBordersOpen = 30;
   readonly infectionsWhenBordersClosed = 10;
 
@@ -72,7 +70,7 @@ export class Game {
 
   private rampUpGame() {
     while (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
-      this.updateMitigationsForScenario();
+      this.updateRampUpMitigationsForScenario();
       this.rampUpEvent = this.moveForward().event;
     }
   }
@@ -80,6 +78,7 @@ export class Game {
   moveForward(randomness = getRandomness()) {
     const lastDate = this.simulation.lastDate;
     const nextDate = nextDay(lastDate);
+    this.updateGameplayMitigationsForScenario();
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
@@ -170,8 +169,15 @@ export class Game {
     return this.simulation.lastDate >= this.scenario.dates.endDate;
   }
 
-  updateMitigationsForScenario() {
-    const mitigationActions = this.scenario.getMitigationActions(nextDay(this.simulation.lastDate));
+  updateRampUpMitigationsForScenario() {
+    const mitigationActions = this.scenario.getRampUpMitigationActions(nextDay(this.simulation.lastDate));
+    if (!mitigationActions) return;
+
+    this.applyMitigationActions(mitigationActions);
+  }
+
+  updateGameplayMitigationsForScenario() {
+    const mitigationActions = this.scenario.getGameplayMitigationActions(nextDay(this.simulation.lastDate));
     if (!mitigationActions) return;
 
     this.applyMitigationActions(mitigationActions);
@@ -195,7 +201,6 @@ export class Game {
   private calcMitigationEffect(date: string): MitigationEffect {
     const ret: MitigationEffect = {
       ...Game.zeroMitigationEffect,
-      vaccinationPerDay: this.vaccinationStartDate <= date ? this.vaccinationPerDay : 0,
     };
     let bordersClosed = false;
     const monthAsString = date.slice(5, 7);

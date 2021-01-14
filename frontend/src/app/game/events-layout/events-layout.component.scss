@@ -4,21 +4,19 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  background: $dark-bg-alpha-95;
+  background: $dark-background;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
   margin: auto;
-  width: 90%;
-  height: 85%;
   z-index: 101;
   color: $light-text;
   border: 2px solid mat-color(map-get($theme, warn));
   padding: 1.1rem;
   text-align: center;
-  font-size: 1.6rem;
   padding: 5%;
+  overflow: auto;
 }
 
 .chart-overlay-help {

@@ -5,18 +5,19 @@ import {DayState, MitigationEffect, Stats} from './simulation';
 
 export interface EventMitigation extends Partial<MitigationEffect> {
   id?: string;
-  name?: string;
+  name?: string;  // TODO consider removal (substitute by chart label)
   duration: number; // number of days the effect is valid for (0 - affects 0 days)
 }
 
 interface EventChoiceGeneric<T> {
-  label: string;
+  buttonLabel: string;
+  chartLabel?: string;  // undefined - not present in the chart
   mitigations?: T[];
   removeMitigationIds?: string[]; // removes mitigation events with listed ids
 }
 
 export type EventChoice = EventChoiceGeneric<EventMitigation>;
-type EventChoiceDef = EventChoiceGeneric<Partial<EventMitigation>>;
+export type EventChoiceDef = EventChoiceGeneric<Partial<EventMitigation>>;
 
 export interface Event {
   title: string;

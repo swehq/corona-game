@@ -22,7 +22,7 @@ export class EventsLayoutComponent {
         removeMitigationIds: choice.removeMitigationIds,
       });
 
-      if (event.choices && event.choices?.length > 1) {
+      if (event.choices?.length) {
         this.gameService.activatedEvent = {originEvent: event, choice};
       }
     }

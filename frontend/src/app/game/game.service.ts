@@ -34,6 +34,9 @@ export class GameService {
   private _reset$ = new Subject<void>();
   reset$ = this._reset$.asObservable();
 
+  private _endOfDay$ = new Subject<void>();
+  endOfDay$ = this._endOfDay$.asObservable();
+
   constructor(private httpClient: HttpClient) {
     this.restartSimulation();
   }
@@ -115,6 +118,7 @@ export class GameService {
 
     if (updateChart) this.updateChart();
     this.activatedEvent = undefined;
+    this._endOfDay$.next();
   }
 
   private showEvent(event: Event | undefined) {

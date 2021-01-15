@@ -27,7 +27,9 @@ export class EventsLayoutComponent {
       }
     }
 
-    this.gameService.event = undefined;
-    this.gameService.setSpeed('play');
+    this.gameService.removeEvent();
+    if (!this.gameService.currentEvent) {
+      this.gameService.setSpeed('play');
+    }
   }
 }

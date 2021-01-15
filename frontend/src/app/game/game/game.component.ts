@@ -53,7 +53,7 @@ export class GameComponent {
 
   @HostBinding('class.is-event-active')
   get isEventActiveClass() {
-    return this.gameService.event;
+    return this.gameService.currentEvent;
   }
 
   newGame() {

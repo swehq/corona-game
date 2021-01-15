@@ -1,4 +1,4 @@
-import {cloneDeep, get, isNil, shuffle, sample} from 'lodash';
+import {cloneDeep, get, isNil, sample} from 'lodash';
 import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
@@ -83,19 +83,22 @@ export class EventHandler {
 
     this.eventStateHistory[currentDate] = currentState;
 
-    const active = shuffle(currentState.triggerStates.filter(ts =>
+    const active = currentState.triggerStates.filter(ts =>
       ts.activeBefore === undefined
-        || ts.trigger.reactivateAfter !== undefined && ts.activeBefore >= ts.trigger.reactivateAfter));
-    const triggerState = active.find(ts => ts.trigger.condition(eventInput));
+        || ts.trigger.reactivateAfter !== undefined && ts.activeBefore >= ts.trigger.reactivateAfter);
+    const triggered = active.filter(ts => ts.trigger.condition(eventInput));
 
-    if (!triggerState) return;
+    if (triggered.length === 0) return;
 
-    const trigger = triggerState.trigger;
-    triggerState.activeBefore = 0;
-    const eventDef = sample(trigger.events);
-    if (!eventDef) return;
+    triggered.forEach(ts => ts.activeBefore = 0);
 
-    return EventHandler.eventFromDef(eventDef, dayState);
+    // Needs explicit cast because sample returns EventDef | undefined
+    const eventDefs = triggered.map(ts => sample(ts.trigger.events)).filter(e => e) as EventDef[];
+
+    // safeguard for empty event list
+    if (eventDefs.length === 0) return;
+
+    return eventDefs.map(ed => EventHandler.eventFromDef(ed, dayState));
   }
 
   static eventFromDef(eventDef: EventDef, data: any): Event {

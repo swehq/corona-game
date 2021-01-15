@@ -2,29 +2,29 @@
   cdkTrapFocus [cdkTrapFocusAutoCapture]="true"
   class="chart-overlay"
   [@inOutAnimation]
-  *ngIf="gameService.event">
+  *ngIf="gameService.currentEvent">
   <h1>
-    {{gameService.event.title}}
+    {{gameService.currentEvent.title}}
   </h1>
 
-  <cvd-row [grow]="2" *ngIf="gameService.event.text">
-    <div [innerHtml]="gameService.event.text | safeHtml"></div>
+  <cvd-row [grow]="2" *ngIf="gameService.currentEvent.text">
+    <div [innerHtml]="gameService.currentEvent.text | safeHtml"></div>
   </cvd-row>
 
-  <cvd-row [grow]="2" *ngIf="gameService.event.help" class="chart-overlay-help">
-    <div [innerHtml]="gameService.event.help | safeHtml"></div>
+  <cvd-row [grow]="2" *ngIf="gameService.currentEvent.help" class="chart-overlay-help">
+    <div [innerHtml]="gameService.currentEvent.help | safeHtml"></div>
   </cvd-row>
 
   <cvd-row grow>
     <cvd-button
-      *ngFor="let choice of gameService.event.choices"
-      (click)="resumeEvent(gameService.event, choice)">
+      *ngFor="let choice of gameService.currentEvent.choices"
+      (click)="resumeEvent(gameService.currentEvent, choice)">
       {{choice.buttonLabel}}
     </cvd-button>
 
     <cvd-button
-      *ngIf="!gameService.event.choices?.length"
-      (click)="resumeEvent(gameService.event)">
+      *ngIf="!gameService.currentEvent.choices?.length"
+      (click)="resumeEvent(gameService.currentEvent)">
       OK
     </cvd-button>
   </cvd-row>

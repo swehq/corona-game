@@ -45,7 +45,7 @@ export class GraphsComponent implements AfterViewInit {
 
   infectedToday$: Observable<ChartValue[]> | undefined;
   costTotal$: Observable<ChartValue[]> | undefined;
-  deathToday$: Observable<ChartValue[]> | undefined;
+  deathTotal$: Observable<ChartValue[]> | undefined;
   immunizedChart$: Observable<ChartValue[][]> | undefined;
   immunized$: Observable<number> | undefined;
 
@@ -66,7 +66,7 @@ export class GraphsComponent implements AfterViewInit {
     return 'critical';
   }
 
-  private deathThresholds(value: number): NodeState {
+  private deathDailyThresholds(value: number): NodeState {
     if (value < 50) return 'ok';
     if (value < 150) return 'warn';
     return 'critical';
@@ -128,12 +128,12 @@ export class GraphsComponent implements AfterViewInit {
       }))),
     );
 
-    this.deathToday$ = data$.pipe(
+    this.deathTotal$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
         label: new Date(gs.date),
-        value: gs.stats.deaths.today,
-        tooltipLabel: (value: number) => `Nově zemřelí: ${formatNumber(value)}`,
-        state: this.deathThresholds(gs.stats.deaths.today),
+        value: gs.stats.deaths.total,
+        tooltipLabel: (value: number) => `Zemřelí: ${formatNumber(value)}`,
+        state: this.deathDailyThresholds(gs.stats.deaths.today),
       }))),
     );
 
@@ -182,11 +182,10 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [false, false],
       },
       {
-        label: 'Nově zemřelí',
+        label: 'Zemřelí',
         svgIcon: 'skull',
-        headerData$: this.deathToday$.pipe(map(gs => last(gs)?.value)),
-        prefix: '+',
-        data$: this.deathToday$,
+        headerData$: this.deathTotal$.pipe(map(gs => last(gs)?.value)),
+        data$: this.deathTotal$,
         customOptions: null,
         pipe: [false, false],
       },

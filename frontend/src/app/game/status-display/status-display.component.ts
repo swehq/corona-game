@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {get, PropertyPath} from 'lodash';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
-import {formatNumber} from 'src/app/utils/format';
 import {Stats} from '../../services/simulation';
 import {GameService} from '../game.service';
 
@@ -21,17 +20,6 @@ export class StatusDisplayComponent {
     map(state => state.stats),
     distinctUntilChanged(),
     shareReplay(1),
-  );
-
-  immunized$ = this.stats$.pipe(
-    map(stats => {
-      const increment = stats.estimatedResistant.today + stats.vaccinated.today;
-
-      return {
-        today: (Math.sign(increment) >= 0 ? '+' : '') + formatNumber(increment),
-        total: stats.estimatedResistant.total + stats.vaccinated.total,
-      };
-    }),
   );
 
   constructor(

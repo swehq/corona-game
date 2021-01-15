@@ -16,7 +16,6 @@ import {MitigationSlideComponent} from './mitigations-control/controls/mitigatio
 import {MitigationToggleComponent} from './mitigations-control/controls/mitigation-toggle.component';
 import {MitigationConfigDirective} from './mitigations-control/mitigation-config.directive';
 import {MitigationsControlComponent} from './mitigations-control/mitigations-control.component';
-import {NewsComponent} from './news/news.component';
 import {OutroComponent} from './outro/outro.component';
 import {SimulationControlComponent} from './simulation-control/simulation-control.component';
 import {StatusDisplayComponent} from './status-display/status-display.component';
@@ -34,7 +33,6 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
     MitigationsControlComponent,
     MitigationSlideComponent,
     MitigationToggleComponent,
-    NewsComponent,
     OutroComponent,
     ScatterGraphComponent,
     SimulationControlComponent,

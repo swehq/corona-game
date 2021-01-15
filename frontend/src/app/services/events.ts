@@ -2,6 +2,7 @@ import {cloneDeep, get, isNil, sample} from 'lodash';
 import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
+import {Mitigations} from '../game/mitigations-control/mitigations.service';
 
 export interface EventMitigation extends Partial<MitigationEffect> {
   id?: string;
@@ -54,6 +55,7 @@ export interface EventState {
 
 export interface EventInput extends EventState {
   date: string;
+  mitigations: Mitigations;
   eventMitigations: EventMitigation[];
   stats: Stats;
 }
@@ -61,7 +63,8 @@ export interface EventInput extends EventState {
 export class EventHandler {
   eventStateHistory: Record<string, EventState> = {};
 
-  evaluateDay(prevDate: string, currentDate: string, dayState: DayState, eventMitigations: EventMitigation[]) {
+  evaluateDay(prevDate: string, currentDate: string, dayState: DayState,
+    mitigations: Mitigations, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
       const initialTriggerStates = eventTriggers.map(et => ({trigger: et}));
@@ -76,6 +79,7 @@ export class EventHandler {
       ...currentState,
       date: dayState.date,
       stats: dayState.stats,
+      mitigations,
       eventMitigations,
     };
 

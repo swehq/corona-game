@@ -1,9 +1,10 @@
 import {Component} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {ChartDataSets, ChartPoint} from 'chart.js';
+import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {GameResult, OutroService} from './outro.service';
+import {formatNumber} from '../../utils/format';
 
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.5)';
@@ -21,6 +22,11 @@ const convert: (result: GameResult) => ChartPoint =
   styleUrls: ['./outro.component.scss'],
 })
 export class OutroComponent {
+
+  private readonly scalesLabelsDefaults: ScaleTitleOptions = {
+    display: true,
+    fontSize: 16,
+  };
 
   datasets$: Observable<ChartDataSets[]> = combineLatest([
     this.outroService.myResult$.pipe(
@@ -46,7 +52,7 @@ export class OutroComponent {
 
       if (allPoints) {
         datasets.push({
-          label: 'Výsledky ostatních her',
+          label: 'Výsledky ostatních hráčů',
           data: allPoints,
           backgroundColor: ALL_RESULTS_COLOR,
           pointBorderColor: ALL_RESULTS_COLOR,
@@ -57,6 +63,55 @@ export class OutroComponent {
       return datasets;
     }),
   );
+
+  outroChartOptions: ChartOptions = {
+    legend: {
+      labels: {
+        fontSize: 14,
+      },
+    },
+    tooltips: {
+      displayColors: false,
+      callbacks: {
+        title: context => context[0].datasetIndex ? 'Výsledek jiného hráče' : 'Můj výsledek',
+        label: node => [
+          `Celkový počet mrtvých: ${formatNumber(+node.xLabel!)}`,
+          `Celkové náklady: ${formatNumber(+node.yLabel!, true, true)}`,
+        ],
+      },
+    },
+    scales: {
+      xAxes: [{
+        scaleLabel: {
+          ...this.scalesLabelsDefaults,
+          labelString: 'Celkový počet mrtvých',
+        },
+        type: 'linear',
+        position: 'bottom',
+        ticks: {
+          callback(value: number | string) {
+            return formatNumber(+value, false, true);
+          },
+        },
+      }],
+      yAxes: [{
+        scaleLabel: {
+          ...this.scalesLabelsDefaults,
+          labelString: 'Celkové náklady',
+        },
+        ticks: {
+          callback(value: number | string) {
+            return formatNumber(+value, false, true);
+          },
+        },
+      }],
+    },
+    plugins: {
+      datalabels: {
+        display: false,
+      },
+    },
+  };
 
   constructor(
     private outroService: OutroService,

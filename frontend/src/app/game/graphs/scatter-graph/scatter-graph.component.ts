@@ -10,20 +10,9 @@ import {formatNumber} from '../../../utils/format';
 export class ScatterGraphComponent {
 
   @Input()
-  datasets: ChartDataSets[] = [{
-    label: 'Scatter Dataset',
-    data: [{
-      x: -10,
-      y: 0,
-    }, {
-      x: 0,
-      y: 10,
-    }, {
-      x: 10,
-      y: 5,
-    }],
-  }];
+  datasets: ChartDataSets[] = [];
 
+  @Input()
   options: ChartOptions = {
     scales: {
       xAxes: [{
@@ -46,13 +35,6 @@ export class ScatterGraphComponent {
     plugins: {
       datalabels: {
         display: false,
-      },
-      zoom: {
-        pan: {
-          enabled: true,
-          mode: 'x',
-          speed: 2,
-        },
       },
     },
   };

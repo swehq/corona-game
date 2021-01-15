@@ -1,7 +1,7 @@
 import {AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ChartDataSets, ChartOptions} from 'chart.js';
+import {ChartDataSets, ChartOptions, ChartTooltipItem} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
 import {merge} from 'lodash';
@@ -30,8 +30,8 @@ export interface ActivatedEvent {
   choice: EventChoice | undefined;
 }
 
-export interface DataLabelNodes {
-  mitigations: string | undefined;
+export interface DataLabelNode {
+  uiChange: string[] | undefined;
   event: ActivatedEvent | undefined;
 }
 
@@ -56,7 +56,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   customOptions: ChartOptions | undefined;
 
   @Input()
-  dataLabelNodes: DataLabelNodes[] = [];
+  dataLabelNodes: DataLabelNode[] = [];
 
   @Input() singleLineTick$: Observable<ChartValue[]> | undefined;
   @Input() multiLineTick$: Observable<ChartValue[][]> | undefined;
@@ -97,23 +97,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       enabled: true,
       displayColors: false,
       callbacks: {
+        title: tooltipItem => this.formatTooltip(tooltipItem),
         label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
-        title: tooltipItem => {
-          this.pan.panAutoReset$.next();
-          const dataLabelNode = this.dataLabelNodes[tooltipItem[0].index || 0] || undefined;
-          if (!dataLabelNode) return '';
-
-          let title = '';
-          if (dataLabelNode.event) {
-            const event = dataLabelNode.event;
-            title += `Událost: ${event?.originEvent.title}\nRozhodnutí: ${event?.choice?.label}\n`;
-          }
-
-          if (dataLabelNode.event && dataLabelNode.mitigations) title += `\n`;
-          if (dataLabelNode.mitigations) title += dataLabelNode.mitigations;
-
-          return title;
-        },
       },
     },
     scales: {
@@ -143,14 +128,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           left: 4,
         },
         display: context => this.showDataLabel(context.dataIndex),
-        formatter: (_, context) => {
-          const index = context.dataIndex;
-          let datalabel = this.dataLabelNodes[index]?.mitigations;
-          if (this.dataLabelNodes[index]?.event) {
-            datalabel = this.dataLabelNodes[index]?.event?.choice?.label;
-          }
-          return datalabel;
-        },
+        formatter: (_, context) => this.formatDataLabel(context.dataIndex),
         font: context => {
           const width = context.chart.width;
           let size = Math.round(width! / 64);
@@ -189,9 +167,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   }
 
   showDataLabel(index: number) {
-    const mitigation = this.dataLabelNodes[index]?.mitigations;
+    const uiChange = this.dataLabelNodes[index]?.uiChange;
     const event = this.dataLabelNodes[index]?.event;
-    return mitigation || event ? 'auto' : false;
+    return uiChange || event ? 'auto' : false;
   }
 
   ngOnInit() {
@@ -344,11 +322,44 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       pointRadius: context => {
         const index = context.dataIndex || 0;
         if (this.dataLabelNodes[index]?.event) return 5;
-        if (this.dataLabelNodes[index]?.mitigations) return 4;
+        if (this.dataLabelNodes[index]?.uiChange) return 4;
         return 0;
       },
       pointBorderWidth: 1,
       pointHitRadius: 5,
     };
+  }
+
+  private formatDataLabel(index: number) {
+    if (this.dataLabelNodes[index]?.event) {
+      return this.dataLabelNodes[index]?.event?.choice?.label!;
+    }
+
+    const uiChange = this.dataLabelNodes[index].uiChange;
+    if (uiChange) {
+      if (uiChange.length > 1) {
+        const suffix = uiChange.length < 6 ? 'další' : 'dalších';
+        return `${uiChange[0]} (+${uiChange.length - 1} ${suffix})`;
+      }
+
+      return uiChange[0];
+    }
+  }
+
+  private formatTooltip(tooltipItem: ChartTooltipItem[]) {
+    this.pan.panAutoReset$.next();
+    const dataLabelNode = this.dataLabelNodes[tooltipItem[0].index || 0] || undefined;
+    if (!dataLabelNode) return '';
+
+    let title = '';
+    if (dataLabelNode.event) {
+      const event = dataLabelNode.event;
+      title += `Událost: ${event?.originEvent.title}\nRozhodnutí: ${event?.choice?.label}\n`;
+    }
+
+    if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;
+    if (dataLabelNode.uiChange) title += dataLabelNode.uiChange.join('\n');
+
+    return title;
   }
 }

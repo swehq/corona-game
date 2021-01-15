@@ -116,9 +116,9 @@ export class GameService {
     const event = gameUpdate.event;
     this.showEvent(event);
 
+    this._endOfDay$.next();
     if (updateChart) this.updateChart();
     this.activatedEvent = undefined;
-    this._endOfDay$.next();
   }
 
   private showEvent(event: Event | undefined) {

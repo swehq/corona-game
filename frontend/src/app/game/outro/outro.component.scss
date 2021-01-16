@@ -2,6 +2,7 @@
 
 :host {
   @include panel;
+  display: flex; // TODO move to mixin panel and check all other panels
 
   @include apply-themes {
     .color-virus {
@@ -16,7 +17,6 @@
 
 p {
   margin-bottom: 2em;
-  text-align: center;
 }
 
 h2 {

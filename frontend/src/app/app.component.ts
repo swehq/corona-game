@@ -1,8 +1,8 @@
 import {DOCUMENT} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Inject, Renderer2} from '@angular/core';
-import {NavigationEnd, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {filter, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {ConfigService} from './services/config.service';
 
 @UntilDestroy()
@@ -13,11 +13,6 @@ import {ConfigService} from './services/config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-
-  currentUrl$ = this.router.events.pipe(
-    filter(event => event instanceof NavigationEnd),
-    map(event => (event as NavigationEnd).url),
-  );
 
   constructor(
     configService: ConfigService,

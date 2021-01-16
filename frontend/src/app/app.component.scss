@@ -1,16 +1,18 @@
 @import '~src/definitions';
 
 :host {
-  @include flex-container;
-
-  max-width: 110rem;
   width: 100%;
-  display: block;
+  height: 100%;
+  display: flex;
 }
 
-.credits {
-  position: absolute;
-  z-index: 10;
-  top: 1%;
-  left: 94%;
+.page {
+  max-width: 110rem;
+  margin: auto;
+  height: 100%;
+}
+
+.content {
+  flex: 1 1 0;
+  overflow: scroll;
 }

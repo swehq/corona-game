@@ -2,6 +2,7 @@
 
 :host {
   @include panel;
+  display: flex; // TODO move to mixin panel and check all other panels
 }
 
 h3 {

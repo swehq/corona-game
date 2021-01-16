@@ -103,8 +103,11 @@
             "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
-            "production": {
-              "browserTarget": "corona-game:build:production"
+            "prod": {
+              "browserTarget": "corona-game:build:prod"
+            },
+            "dev": {
+              "browserTarget": "corona-game:build:dev"
             }
           }
         },

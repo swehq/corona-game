@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 import {GameModule} from '../game.module';
 import {CreditsComponent} from './credits.component';
 
@@ -9,6 +10,7 @@ describe('CreditsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        RouterTestingModule,
         GameModule,
       ],
     })

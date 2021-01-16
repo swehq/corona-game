@@ -87,7 +87,7 @@ export const initialEventData: EventData = {
   aboveSelfIsolationThresholdDays: 0,
   belowSelfIsolationThresholdDays: 0,
   showAntivaxEvent: false,
-  minStability: 50,
+  minStability: 100,
 };
 
 /**
@@ -245,7 +245,7 @@ Hodně štěstí!',
         help: 'Podařilo se obnovit důvěru obyvatelstva. To nám dává prostor pro aktivnější užívání opatření.',
       },
     ],
-    condition: (ei: EventInput) => ei.eventData.minStability <= 0 && ei.stats.stability >= 25,
+    condition: (ei: EventInput) => ei.eventData.minStability <= 50 && ei.stats.stability >= 75,
   },
   {
     events: [
@@ -254,7 +254,7 @@ Hodně štěstí!',
         help: 'Důvěra lidí ve vládu klesá. Každé opatření má totiž náklady nejenom finanční, ale i ve stabilitě. Je tak nutné balancovat a zavírat jen když je to nutné. Opatření můžete vypínat a zapínat v panelu vpravo nahoře.',
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= 25,
+    condition: (ei: EventInput) => ei.stats.stability <= 75,
   },
   {
     events: [
@@ -263,7 +263,7 @@ Hodně štěstí!',
         text: 'Nálada je stále horší, tvrdí terapeut.',
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= 0,
+    condition: (ei: EventInput) => ei.stats.stability <= 50,
   },
   {
     events: [
@@ -274,7 +274,7 @@ Hodně štěstí!',
         choices: okButton({name: 'Výzvy k rezignaci', duration: 90}),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= -30,
+    condition: (ei: EventInput) => ei.stats.stability <= 20,
     reactivateAfter: 90,
   },
   /****************************************************************************
@@ -419,7 +419,7 @@ Hodně štěstí!',
         ],
       },
     ],
-    condition: (ei: EventInput) => ei.stats.stability <= -10 && ei.stats.deaths.avg7Day < (500 / 7),
+    condition: (ei: EventInput) => ei.stats.stability <= 40 && ei.stats.deaths.avg7Day < (500 / 7),
   },
   // Self isolation
   {

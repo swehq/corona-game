@@ -85,7 +85,7 @@ export class GameService {
     if (speed === 'max') {
       while (!this.game.isFinished()) this.tick(false);
       this.updateChart();
-      this.setSpeed('finished');
+      this.setSpeed('pause');
     } else if (speed === 'play') {
       this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
     } else if (speed === 'fwd') {
@@ -107,7 +107,6 @@ export class GameService {
     }
 
     if (this.game.isFinished()) {
-      this.save();
       this.setSpeed('finished');
       return;
     }
@@ -146,7 +145,7 @@ export class GameService {
     };
   }
 
-  save() {
+  reqestToSave() {
     const gameData = this.getGameData();
     return this.httpClient.post('/api/game-data', gameData);
   }

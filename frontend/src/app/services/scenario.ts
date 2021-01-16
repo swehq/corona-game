@@ -1,6 +1,7 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
 import {Mitigations} from '../game/mitigations-control/mitigations.service';
 import {EventMitigation} from './events';
+import {maxMitigationDuration} from './event-list';
 import {Game} from './game';
 import {nextDay} from './utils';
 
@@ -122,7 +123,7 @@ function addCzechiaVaccination(scenario: Scenario) {
     const vaccineMitigation = {
       name: 'Vakcíny',
       id: 'vaccination',
-      duration: Infinity,
+      duration: maxMitigationDuration,
       vaccinationPerDay: e[1] / 30 / population,
     };
     scenario.addGameplayEventMitigation(vaccineMitigation, e[0]);

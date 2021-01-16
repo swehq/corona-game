@@ -2,6 +2,8 @@ import {EventChoiceDef, EventInput, EventMitigation, EventTrigger} from './event
 import {dateDiff} from './utils';
 import {isNil, random} from 'lodash';
 
+export const maxMitigationDuration = Number.MAX_SAFE_INTEGER;
+
 // Event mitigation IDs
 const TUTORIAL_ID = 'tutorial';
 const SELF_ISOLATION_ID = 'selfIsolation';
@@ -169,7 +171,7 @@ Každý panel má také v rohu otazník, který vám představí všechny své o
         help: 'Při každé události ve hře si také můžete přečíst vzkazy od vašeho průvodce. Tyto texty budou vždy mít tuto barvu a snažíme se vám skrze ně poradit. Ale nemusíte se jimi nijak řídit!',
         choices: [
           simpleChoice('Chci přímo do hry'),
-          simpleChoice('Ukažte mi ovládání', {id: TUTORIAL_ID, duration: Infinity}),
+          simpleChoice('Ukažte mi ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
         ],
       },
     ],
@@ -425,7 +427,7 @@ Hodně štěstí!',
         // rMult is applied everyDay!
         choices: okButton({
           id: SELF_ISOLATION_ID, rMult: 0.7, economicCost: 3.5 * 1.5 * 1_000_000_000,
-          duration: Infinity,
+          duration: maxMitigationDuration,
           stabilityCost: (0.2 + 0.15 + 0.05 + 0.15) * 1.5,
           name: 'Dobrovolná izolace',
         }, 'Dobrovolná izolace'),
@@ -515,7 +517,7 @@ Hodně štěstí!',
         help: 'Pokud ministr po porušení vlastních nařízení setrvá na místě, mohou se obyvatelé bouřit, což znamená pokles společenské stability. Vyhození ministra, který je ve své práci již zaběhlý, může výrazně posunout začátek očkování.',
         choices: [
           // todo: fire -> postpone vaxination start
-          simpleChoice('Vyhodit ministra', {vaccinationPerDay: -0.0001, duration: Infinity}),
+          simpleChoice('Vyhodit ministra', {vaccinationPerDay: -0.0001, duration: maxMitigationDuration}),
           simpleChoice('Neřešit prohřešek', {stabilityCost: 5}),
         ],
       },
@@ -617,11 +619,11 @@ Hodně štěstí!',
             buttonLabel: 'Investovat do propagace vakcín',
             mitigations: [
               {id: VACCINATION_CAMPAIGN_ID, name: 'Vakcinační kampaň',
-                vaccinationPerDay: 0.0001, duration: Infinity},
+                vaccinationPerDay: 0.0001, duration: maxMitigationDuration},
               {id: VACCINATION_CAMPAIGN_PAID_ID, economicCost: 1_000_000_000},
             ],
           },
-          simpleChoice('Neinvestovat', {vaccinationPerDay: -0.0001, duration: Infinity}),
+          simpleChoice('Neinvestovat', {vaccinationPerDay: -0.0001, duration: maxMitigationDuration}),
         ],
       },
     ],
@@ -650,7 +652,7 @@ Hodně štěstí!',
         title: et.title,
         text: et.text,
         help: 'Rychlost vakcinace se snižuje.',
-        choices: okButton({vaccinationPerDay: -0.0002, duration: Infinity}),
+        choices: okButton({vaccinationPerDay: -0.0002, duration: maxMitigationDuration}),
       }),
     ),
     id: ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER,

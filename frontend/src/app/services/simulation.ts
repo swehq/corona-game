@@ -122,7 +122,7 @@ export class Simulation {
   readonly tracingOverwhelmedThreshold = 1_000;
   readonly tracingRMultiplier = 0.9;
   readonly hospitalsBaselineUtilization = 0.5;
-  readonly initialStability = 50;
+  readonly initialStability = 100;
   readonly stabilityRecovery = 0.2;
   readonly hospitalizationCostPerDay = 5_000;
 

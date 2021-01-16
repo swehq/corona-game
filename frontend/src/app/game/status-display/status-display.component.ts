@@ -48,9 +48,8 @@ export class StatusDisplayComponent {
       // scales goes down
       if (low > high) {
         value = -value;
-        const newHigh = low;
-        low = high;
-        high = newHigh;
+        low = -low;
+        high = -high;
       }
 
       if (value < low) return 'primary';

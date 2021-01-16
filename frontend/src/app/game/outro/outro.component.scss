@@ -2,4 +2,20 @@
 
 :host {
   @include panel;
+  display: flex; // TODO move to mixin panel and check all other panels
+
+  @include apply-themes {
+    .color-virus {
+      color: mat-color(map-get($theme, warn));
+    }
+
+    .color-money {
+      color: mat-color(map-get($theme, accent));
+    }
+  }
 }
+
+.content {
+  text-align: center;
+}
+

@@ -10,6 +10,7 @@ import {ButtonComponent} from './button/button.component';
 import {ColComponent} from './flex/col.component';
 import {FlexItemDirective} from './flex/flex-item.directive';
 import {RowComponent} from './flex/row.component';
+import {FooterComponent} from './footer/footer.component';
 import {IconComponent} from './icon/icon.component';
 import {initIconRegistry} from './icon/icon.registry';
 import {SharedMaterialModule} from './shared-material.module';
@@ -20,6 +21,7 @@ import {HelpTooltipComponent} from './help-tooltip/help-tooltip.component';
 const DECLARATIONS: Declaration[] = [
   ButtonComponent,
   HelpTooltipComponent,
+  FooterComponent,
   FormatNumberPipe,
   FormatPercentagePipe,
   SafeHtmlPipe,

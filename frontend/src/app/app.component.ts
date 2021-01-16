@@ -1,5 +1,6 @@
 import {DOCUMENT} from '@angular/common';
 import {ChangeDetectionStrategy, Component, Inject, Renderer2} from '@angular/core';
+import {Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
 import {ConfigService} from './services/config.service';
@@ -12,10 +13,12 @@ import {ConfigService} from './services/config.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
+
   constructor(
     configService: ConfigService,
     @Inject(DOCUMENT) document: Document,
     renderer: Renderer2,
+    private router: Router,
   ) {
     const {body} = document;
 
@@ -33,5 +36,9 @@ export class AppComponent {
         }
       },
     );
+  }
+
+  openCredits() {
+    this.router.navigate(['/credits']);
   }
 }

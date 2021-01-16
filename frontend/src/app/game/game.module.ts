@@ -1,8 +1,11 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
+import {RouterModule} from '@angular/router';
 import {ChartsModule} from 'ng2-charts';
 import {SharedModule} from '../shared/shared.module';
+import {AboutComponent} from './about/about.component';
+import {CreditsComponent} from './credits/credits.component';
 import {EventsLayoutComponent} from './events-layout/events-layout.component';
 import {GameMaterialModule} from './game-material.module';
 import {GameComponent} from './game/game.component';
@@ -22,7 +25,9 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
 
 @NgModule({
   declarations: [
+    AboutComponent,
     EventsLayoutComponent,
+    CreditsComponent,
     GameComponent,
     GraphsComponent,
     IntroComponent,
@@ -43,6 +48,7 @@ import {StatusDisplayComponent} from './status-display/status-display.component'
     CommonModule,
     GameMaterialModule,
     ReactiveFormsModule,
+    RouterModule,
     SharedModule,
   ],
   exports: [

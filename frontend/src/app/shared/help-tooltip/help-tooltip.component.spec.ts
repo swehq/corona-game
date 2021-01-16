@@ -1,18 +1,19 @@
-/* tslint:disable:no-unused-variable */
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {GameModule} from '../../game/game.module';
 import {HelpTooltipComponent} from './help-tooltip.component';
 
 describe('HelpTooltipComponent', () => {
   let component: HelpTooltipComponent;
   let fixture: ComponentFixture<HelpTooltipComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ HelpTooltipComponent ],
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        GameModule,
+      ],
     })
-    .compileComponents();
-  }));
+      .compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HelpTooltipComponent);

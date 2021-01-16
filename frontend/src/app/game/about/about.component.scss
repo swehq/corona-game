@@ -4,16 +4,3 @@
   @include panel;
   display: flex; // TODO move to mixin panel and check all other panels
 }
-
-p {
-  margin-bottom: 2em;
-  text-align: justify;
-}
-
-.content {
-  text-align: center;
-}
-
-h2 {
-  text-align: center;
-}

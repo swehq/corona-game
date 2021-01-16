@@ -1,12 +1,13 @@
+import {Component, HostBinding} from '@angular/core';
+import {Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {filter, map} from 'rxjs/operators';
-import {GameService} from '../game.service';
-import {OutroService} from '../outro/outro.service';
-import {ChangeDetectorRef, Component, HostBinding} from '@angular/core';
+import {filter, map, switchMap} from 'rxjs/operators';
 import {DebugModeService} from 'src/app/services/debug-mode.service';
 import {inOutAnimation} from 'src/app/utils/animations';
+import {GameService} from '../game.service';
+import {OutroService} from '../outro/outro.service';
 
-type GameState = 'intro' | 'game' | 'outro';
+type GameState = 'intro' | 'game';
 
 @UntilDestroy()
 @Component({
@@ -23,7 +24,7 @@ export class GameComponent {
     public debugModeService: DebugModeService,
     outroService: OutroService,
     private gameService: GameService,
-    cd: ChangeDetectorRef,
+    private router: Router,
   ) {
     // fetch historical game results from BE
     window.setTimeout(() => outroService.fetchAllResults(), 10_000);
@@ -44,11 +45,12 @@ export class GameComponent {
     // trigger end of game
     gameService.speed$.pipe(
       filter(speed => speed === 'finished'),
+      switchMap(() => this.gameService.save()),
       untilDestroyed(this),
-    ).subscribe(() => {
-      this.state = 'outro';
-      cd.markForCheck();
-    });
+    ).subscribe(
+      _id => this.router.navigate(['/game', 123]),
+      () => this.router.navigate(['/game']),
+    );
   }
 
   @HostBinding('class.is-event-active')

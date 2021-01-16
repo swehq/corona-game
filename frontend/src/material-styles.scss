@@ -61,3 +61,7 @@ body {
   background-color: mat-color($mat-accent, main);
   color: mat-color($mat-dark-theme-foreground, elevation);
 }
+
+.mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button, .mat-fab, .mat-mini-fab {
+  font-weight: inherit;
+}

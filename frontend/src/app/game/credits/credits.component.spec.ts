@@ -1,20 +1,16 @@
-import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
 import {GameModule} from '../game.module';
-import {IntroComponent} from './intro.component';
+import {CreditsComponent} from './credits.component';
 
-describe('IntroComponent', () => {
-  let component: IntroComponent;
-  let fixture: ComponentFixture<IntroComponent>;
+describe('CreditsComponent', () => {
+  let component: CreditsComponent;
+  let fixture: ComponentFixture<CreditsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
         RouterTestingModule,
-        HttpClientTestingModule,
-        NoopAnimationsModule,
         GameModule,
       ],
     })
@@ -22,7 +18,7 @@ describe('IntroComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IntroComponent);
+    fixture = TestBed.createComponent(CreditsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

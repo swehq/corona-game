@@ -1,102 +1,105 @@
-<cvd-col>
+<cvd-col [spacing]="4" alignItems="stretch" style="padding: 2rem">
+
   <h1 style="text-align: center">Covid 2020</h1>
 
   <div *ngIf="isGameLost()">
     <h2>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h2>
-
-    <p>
+    <div>
       Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste
       tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.
       Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu.
       Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.
-    </p>
+    </div>
   </div>
 
   <div *ngIf="!isGameLost()">
     <h2>Konec hry</h2>
-
-    <p>
+    <div>
       Vaše hra v roli vlády skončila, epidemii se díky vysokému počtu imunních podařilo pro teď vymýtit.
-    </p>
+    </div>
   </div>
 
-  <p>
-    Předtím, než si prohlédnete výsledky, rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých
-    s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky
-    covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
-  </p>
+  <cvd-scatter-graph
+    style="width: 90%"
+    [options]="outroChartOptions" [datasets]="(datasets$ | async)!"
+  ></cvd-scatter-graph>
 
-  <p>
-    V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale
-    přesto na pár prvků upozornit:
-  </p>
+  <cvd-col [spacing]="3" alignItems="flex-start" style="font-size: 1.6rem;">
+    <div><h2>Vaše výsledky</h2></div>
 
-  <p>
-    Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci a
-    studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky. Tento výpadek zároveň dopadne nejvíce
-    na skupiny, které to mají se vzděláváním už teď těžké.
-    (Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
-    <br>
-    Mohli bychom legitimně říct, že za vaši hru se nakazilo ne {{stats.detectedInfections.total | formatNumber}}, ale
-    podle hypotéz výzkumníků <!--TODO: ODKAZ--> reálně až {{4 * stats.detectedInfections.total | formatNumber}} lidí. Do
-    hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
-  </p>
-  <p>
-    <cvd-row>
-      Pokud vás více zajímá, jak naše vzorce fungují, koukněte
-      <a routerLink="/about">SEM</a>
-    </cvd-row>
-  </p>
-
-  <cvd-col [spacing]="3" style="font-size: 1.6rem;">
-    <p>
-      <b>Vaše finální výsledky:</b>
-    </p>
     <cvd-row class="color-virus" [spacing]="2">
       <cvd-icon>coronavirus</cvd-icon>
       Nemoc prodělalo: {{stats.detectedInfections.total | formatNumber}}
     </cvd-row>
+
     <cvd-row [spacing]="2">
       <cvd-icon svgIcon="skull"></cvd-icon>
       Mrtví: {{stats.deaths.total | formatNumber}}
     </cvd-row>
-    <cvd-row class="color-money" [spacing]="2">
+
+    <cvd-row class="color-money" [spacing]="2" alignItems="baseline">
       <cvd-icon svgIcon="money"></cvd-icon>
       Náklady: {{stats.costs.total | formatNumber}}
+
+      <cvd-button (click)="showPrices()" style="margin-left: 2rem; color: unset">Pro srovnání</cvd-button>
+
+      <cvd-col *ngIf="arePricesShowing" [spacing]="3">
+        <!-- TODO fix this sentence -->
+        <!--    <cvd-row class="color-virus" [spacing]="2">-->
+        <!--      Potvrzené případy s COVID-19 v ČR za 2020 se pohybují kolem 866,522 CZK-->
+        <!--    </cvd-row>-->
+
+        <cvd-col class="color-money" alignItems="flex-start">
+          je to
+          <li>{{stats.costs.total / facts['beer'] | formatNumber}} piv</li>
+          <li>{{stats.costs.total / facts['house'] | formatNumber}} domů</li>
+          <li>{{stats.costs.total / facts['nurse'] | formatNumber}} ročních plateb pro zdravotní sestru</li>
+        </cvd-col>
+
+        <cvd-row class="color-money">
+          Rozpočet ČR za 2019 byl {{1535 | formatNumber}} miliard korun.
+        </cvd-row>
+      </cvd-col>
+
     </cvd-row>
   </cvd-col>
 
-  <br>
+  <cvd-graphs style="width: 90%"></cvd-graphs>
 
-  <cvd-row>
-    <cvd-button (click)="showPrices()">
-      <b>Pro předstvu:</b>
-    </cvd-button>
-  </cvd-row>
+  <cvd-col [spacing]="2" alignItems="flex-start">
+    <div>
+      Rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých
+      s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky
+      covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
+    </div>
 
-  <cvd-col *ngIf="arePricesShowing" [spacing]="3">
-    <br>
-    <cvd-row class="color-virus" [spacing]="2">
-      Potvrzené případy s COVID-19 v ČR za 2020 se pohybují kolem 866,522 czk
-    </cvd-row>
-    <cvd-row class="color-money" [spacing]="2">
-      Rozpočet v ČR za 2019 je kolem 1,535 miliard czk
-    </cvd-row>
-    <cvd-row class="color-money" [spacing]="2">
-      (Například vy jste utratil cenu {{ stats.costs.total / facts['beer'] | formatNumber}} piv,
-      {{ stats.costs.total / facts['house'] | formatNumber}} domů a
-      {{ stats.costs.total / facts['nurse'] | formatNumber}} ročních plateb pro zdravotní sestru)
-    </cvd-row>
-  </cvd-col>
+    <div>
+      V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale
+      přesto na pár prvků upozornit:
+    </div>
 
-  <br>
-  <cvd-col grow style="align-content: center;" [spacing]="3">
-    <cvd-graphs style="width: 80vw;"></cvd-graphs>
-    <cvd-scatter-graph style="width: 80vw" [options]="outroChartOptions"
-                       [datasets]="(datasets$ | async)!"></cvd-scatter-graph>
+    <div>
+      Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci
+      a studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky. Tento výpadek zároveň dopadne
+      nejvíce na skupiny, které to mají se vzděláváním už teď těžké.
+    </div>
+
+    <div>
+      (Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
+      Mohli bychom legitimně říct, že za vaši hru se nakazilo ne {{stats.detectedInfections.total | formatNumber}}, ale
+      podle hypotéz výzkumníků <!--TODO: ODKAZ--> reálně až {{4 * stats.detectedInfections.total | formatNumber}} lidí.
+      Do
+      hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
+    </div>
+
+    <div>
+      Pokud vás více zajímá, jak naše vzorce fungují, k dispozici je
+      <a routerLink="/about">popis použité metodiky</a>.
+    </div>
   </cvd-col>
 
   <div class="content">
     <ng-content></ng-content>
   </div>
+
 </cvd-col>

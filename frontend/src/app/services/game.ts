@@ -61,7 +61,7 @@ export class Game {
   mitigationParams = Game.randomizeMitigations();
   mitigationHistory: MitigationActionHistory = {};
   mitigationCache: MitigationActionHistory = {};
-  rampUpEvent: Event | undefined;
+  rampUpEvents: Event[] | undefined;
 
   constructor(public scenario: Scenario) {
     this.scenario = scenario;
@@ -71,7 +71,7 @@ export class Game {
   private rampUpGame() {
     while (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
       this.updateRampUpMitigationsForScenario();
-      this.rampUpEvent = this.moveForward().event;
+      this.rampUpEvents = this.moveForward().events;
     }
   }
 
@@ -82,9 +82,9 @@ export class Game {
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
-    const event = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.eventMitigations);
+    const events = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.mitigations, this.eventMitigations);
 
-    return {dayState, event};
+    return {dayState, events};
   }
 
 

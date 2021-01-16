@@ -20,7 +20,7 @@ export class GameService {
   readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
-  event: Event | undefined;
+  eventQueue: Event[] = [];
   tickerId: number | undefined;
   activatedEvent: ActivatedEvent | undefined;
 
@@ -52,10 +52,10 @@ export class GameService {
   restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
     this.setSpeed('pause');
     this.game = new Game(scenarios[scenario]);
-    this.event = undefined;
+    this.eventQueue = [];
     this._reset$.next();
     this.setSpeed(speed);
-    this.showEvent(this.game.rampUpEvent);
+    this.showEvents(this.game.rampUpEvents);
     this.updateChart();
   }
 
@@ -113,20 +113,27 @@ export class GameService {
     }
 
     const gameUpdate = this.game.moveForward();
-    const event = gameUpdate.event;
-    this.showEvent(event);
+    this.showEvents(gameUpdate.events);
 
     this._endOfDay$.next();
     if (updateChart) this.updateChart();
     this.activatedEvent = undefined;
   }
 
-  private showEvent(event: Event | undefined) {
-    if (!event) return;
+  private showEvents(events: Event[] | undefined) {
+    if (!events || events.length === 0) return;
     if (this.speed === 'max') return;
 
-    this.event = event;
+    this.eventQueue = this.eventQueue.concat(events);
     this.setSpeed('pause');
+  }
+
+  removeEvent() {
+    this.eventQueue.shift();
+  }
+
+  get currentEvent() {
+    return this.eventQueue[0];
   }
 
   getGameData(): GameData {

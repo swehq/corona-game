@@ -1,7 +1,8 @@
-import {cloneDeep, get, isNil, shuffle, sample} from 'lodash';
+import {cloneDeep, get, isNil, sample} from 'lodash';
 import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
+import {Mitigations} from '../game/mitigations-control/mitigations.service';
 
 export interface EventMitigation extends Partial<MitigationEffect> {
   id?: string;
@@ -54,6 +55,7 @@ export interface EventState {
 
 export interface EventInput extends EventState {
   date: string;
+  mitigations: Mitigations;
   eventMitigations: EventMitigation[];
   stats: Stats;
 }
@@ -61,7 +63,8 @@ export interface EventInput extends EventState {
 export class EventHandler {
   eventStateHistory: Record<string, EventState> = {};
 
-  evaluateDay(prevDate: string, currentDate: string, dayState: DayState, eventMitigations: EventMitigation[]) {
+  evaluateDay(prevDate: string, currentDate: string, dayState: DayState,
+    mitigations: Mitigations, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
       const initialTriggerStates = eventTriggers.map(et => ({trigger: et}));
@@ -76,6 +79,7 @@ export class EventHandler {
       ...currentState,
       date: dayState.date,
       stats: dayState.stats,
+      mitigations,
       eventMitigations,
     };
 
@@ -83,19 +87,22 @@ export class EventHandler {
 
     this.eventStateHistory[currentDate] = currentState;
 
-    const active = shuffle(currentState.triggerStates.filter(ts =>
+    const active = currentState.triggerStates.filter(ts =>
       ts.activeBefore === undefined
-        || ts.trigger.reactivateAfter !== undefined && ts.activeBefore >= ts.trigger.reactivateAfter));
-    const triggerState = active.find(ts => ts.trigger.condition(eventInput));
+        || ts.trigger.reactivateAfter !== undefined && ts.activeBefore >= ts.trigger.reactivateAfter);
+    const triggered = active.filter(ts => ts.trigger.condition(eventInput));
 
-    if (!triggerState) return;
+    if (triggered.length === 0) return;
 
-    const trigger = triggerState.trigger;
-    triggerState.activeBefore = 0;
-    const eventDef = sample(trigger.events);
-    if (!eventDef) return;
+    triggered.forEach(ts => ts.activeBefore = 0);
 
-    return EventHandler.eventFromDef(eventDef, dayState);
+    // Needs explicit cast because sample returns EventDef | undefined
+    const eventDefs = triggered.map(ts => sample(ts.trigger.events)).filter(e => e) as EventDef[];
+
+    // safeguard for empty event list
+    if (eventDefs.length === 0) return;
+
+    return eventDefs.map(ed => EventHandler.eventFromDef(ed, dayState));
   }
 
   static eventFromDef(eventDef: EventDef, data: any): Event {

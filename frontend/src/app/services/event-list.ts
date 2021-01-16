@@ -11,10 +11,6 @@ const VACCINATION_CAMPAIGN_ID = 'vaccinationCampaign';
 const VACCINATION_CAMPAIGN_PAID_ID = 'vaccinationCampaignPaid';
 
 // Event trigger IDs
-const TUTORIAL_A_TRIGGER = 'tutorial_A';
-const TUTORIAL_B_TRIGGER = 'tutorial_B';
-const TUTORIAL_C_TRIGGER = 'tutorial_C';
-const TUTORIAL_D_TRIGGER = 'tutorial_D';
 const SELF_ISOLATION_TRIGGER = 'selfIsolation';
 const ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER = 'antivaxWithoutCampaignTrigger';
 const ANTIVAX_WITH_CAMPAIGN_TRIGGER = 'antivaxWithCampaignTrigger';
@@ -194,7 +190,6 @@ Každý panel má také v rohu otazník, který vám představí všechny své o
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
-    id: TUTORIAL_A_TRIGGER,
   },
   {
     events: [
@@ -205,8 +200,7 @@ V pravém sloupci vidíte součty. Kolik lidí celkem je imunních, kolik již b
         help: 'Propad stability na minimum je jediný způsob jak můžete před dostatečnou imunizací ukončit hru, dávejte si tedy na tento ukazatel obzvláštní pozor. Pokud bude příliš nízko, možná je čas uvolnit některá opatření.',
       },
     ],
-    condition: (ei: EventInput) => !isEventTriggerActive(ei, TUTORIAL_A_TRIGGER),
-    id: TUTORIAL_B_TRIGGER,
+    condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
   },
   {
     events: [
@@ -217,8 +211,7 @@ Ve hře je pro zjednodušení stát nesmírně efektivní v zavádění a vypín
         help: 'Všechna opatření o něco snižují šíření viru, ale také stojí peníze a snižují stabilitu ve společnosti. Je samozřejmě na vás, jakou strategii zvládnutí viru zvolíte: snažili jsme se, aby náš model byl co nejférovější a umožnil různé přístupy. Můžete například zkusit nasazovat a zase vypínat opatření tak, abyste se vyhli vlnám a přetížení nemocnic.',
       },
     ],
-    condition: (ei: EventInput) => !isEventTriggerActive(ei, TUTORIAL_B_TRIGGER),
-    id: TUTORIAL_C_TRIGGER,
+    condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
   },
   {
     events: [
@@ -229,8 +222,7 @@ Ve hře je pro zjednodušení stát nesmírně efektivní v zavádění a vypín
 Hodně štěstí!',
       },
     ],
-    condition: (ei: EventInput) => !isEventTriggerActive(ei, TUTORIAL_C_TRIGGER),
-    id: TUTORIAL_D_TRIGGER,
+    condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
   },
   /****************************************************************************
    *

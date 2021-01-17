@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {MetaService} from 'src/app/services/meta.service';
 
 @Component({
   selector: 'cvd-intro',
@@ -6,4 +7,7 @@ import {Component} from '@angular/core';
   styleUrls: ['./intro.component.scss'],
 })
 export class IntroComponent {
+  constructor(meta: MetaService) {
+    meta.setTitle('Vítejte');
+  }
 }

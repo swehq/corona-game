@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import { MetaService } from 'src/app/services/meta.service';
+import {MetaService} from 'src/app/services/meta.service';
 
 @Component({
   selector: 'cvd-about',

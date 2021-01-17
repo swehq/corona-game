@@ -3,6 +3,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {MetaService} from 'src/app/services/meta.service';
 import {formatNumber} from '../../utils/format';
 import {GameService} from '../game.service';
 import {GameResult, OutroService} from './outro.service';
@@ -125,7 +126,9 @@ export class OutroComponent {
   constructor(
     private outroService: OutroService,
     private gameService: GameService,
+    meta: MetaService,
   ) {
+    meta.setTitle('Výsledky');
     outroService.fetchAllResults();
   }
 

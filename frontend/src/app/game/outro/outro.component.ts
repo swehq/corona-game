@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
@@ -24,6 +25,7 @@ const convert: (result: GameResult) => ChartPoint =
 })
 export class OutroComponent {
 
+  resultId$: Observable<string>;
   arePricesShowing = false;
 
   facts: Record<string, number> = {
@@ -125,7 +127,10 @@ export class OutroComponent {
   constructor(
     private outroService: OutroService,
     private gameService: GameService,
+    activatedRoute: ActivatedRoute,
   ) {
+    this.resultId$ = activatedRoute.params.pipe(map(data => data.id));
+
     outroService.fetchAllResults();
   }
 

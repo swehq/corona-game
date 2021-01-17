@@ -1,12 +1,11 @@
-import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {catchError} from 'rxjs/operators';
-import {Game, GameData} from '../services/game';
+import {Injectable} from '@angular/core';
+import {UntilDestroy} from '@ngneat/until-destroy';
+import {ReplaySubject, Subject} from 'rxjs';
 import {Event} from '../services/events';
-import {of, ReplaySubject, Subject} from 'rxjs';
+import {Game, GameData} from '../services/game';
 import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
-import {UntilDestroy} from '@ngneat/until-destroy';
 import {ActivatedEvent} from './graphs/line-graph/line-graph.component';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
@@ -148,7 +147,6 @@ export class GameService {
 
   reqestToSave() {
     const gameData = this.getGameData();
-    return this.httpClient.post('/api/game-data', gameData)
-      .pipe(catchError(() => of(12345))); // TODO remove after game validation fixed
+    return this.httpClient.post<{id: string}>('/api/game-data', gameData);
   }
 }

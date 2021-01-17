@@ -4,6 +4,10 @@
 :host {
   display: block;
   @include panel;
+
+  @media screen and (max-width: 510px) {
+    overflow-x: hidden;
+  }
 }
 
 cvd-line-graph {
@@ -19,6 +23,15 @@ cvd-line-graph {
   border-bottom: 1px solid $dark-bg-lighter-10;
 }
 
+.tabs-header-content {
+  display: flex;
+  width: 100%;
+
+  @media screen and (max-width: 510px) {
+    flex-wrap: wrap;
+  }
+}
+
 .tabs-header-item {
   width: 25%;
   padding: 1rem;
@@ -29,6 +42,10 @@ cvd-line-graph {
   &.is-active {
     border-color: mat-color(map-get($theme, primary))
   }
+
+  @media screen and (max-width: 510px) {
+    width: 50%;
+  }
 }
 
 .tab-icon {
@@ -36,6 +53,7 @@ cvd-line-graph {
   width: 100%;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
 
   cvd-icon {
     margin-right: 1rem;

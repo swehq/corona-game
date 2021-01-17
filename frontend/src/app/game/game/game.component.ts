@@ -7,8 +7,6 @@ import {inOutAnimation} from 'src/app/utils/animations';
 import {GameService} from '../game.service';
 import {OutroService} from '../outro/outro.service';
 
-type GameState = 'intro' | 'game';
-
 @UntilDestroy()
 @Component({
   selector: 'cvd-game',
@@ -17,8 +15,6 @@ type GameState = 'intro' | 'game';
   animations: [inOutAnimation()],
 })
 export class GameComponent {
-
-  state: GameState = 'intro';
 
   constructor(
     public debugModeService: DebugModeService,
@@ -48,8 +44,8 @@ export class GameComponent {
       switchMap(() => this.gameService.reqestToSave()),
       untilDestroyed(this),
     ).subscribe(
-      _id => this.router.navigate(['/game', 123]),
-      () => this.router.navigate(['/game']),
+      id => this.router.navigate(['/results', id]),
+      () => this.router.navigate(['/results']),
     );
   }
 
@@ -58,8 +54,7 @@ export class GameComponent {
     return this.gameService.currentEvent;
   }
 
-  newGame() {
-    this.gameService.restartSimulation();
-    this.state = 'game';
+  pause() {
+    this.gameService.setSpeed('pause');
   }
 }

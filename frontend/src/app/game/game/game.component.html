@@ -1,11 +1,5 @@
-<cvd-intro *ngIf="state === 'intro'" [@inOutAnimation]>
-  <button
-    mat-stroked-button (click)="state = 'game'"
-    cdkFocusInitial color="accent">Začít hrát
-  </button>
-</cvd-intro>
+<cvd-row class="content" [spacing]="3" wrap alignItems="flex-start" [@inOutAnimation]>
 
-<cvd-row *ngIf="state === 'game'" class="content" [spacing]="3" wrap alignItems="flex-start" [@inOutAnimation]>
   <cvd-col [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start">
     <cvd-status-display></cvd-status-display>
     <cvd-graphs></cvd-graphs>
@@ -15,5 +9,5 @@
     <cvd-mitigations-control></cvd-mitigations-control>
     <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
   </cvd-col>
-</cvd-row>
 
+</cvd-row>

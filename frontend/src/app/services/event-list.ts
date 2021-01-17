@@ -177,7 +177,7 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'Grafy (tento panel)',
         text: '<p>Hlavní zdroj informací o aktuální situaci ve státě. Překlikávat můžete mezi těmito čtyřmi grafy:</p> \
-<ul>\
+<ul style="list-style: none;">\
 <li><strong>Ikonka viru</strong>: (Nové nakažení) Tento graf zobrazuje, kolik lidí se v daný den nově nakazilo</li>\
 <li><strong>Ikonka lebky</strong>:(Zemřelí) Počet zemřelých denně. Tento graf zobrazuje lidi, kteří zemřeli přímo na Covid-19. Mějte ale na mysli i další okolnosti. Například přetížené nemocnice bez volných kapacit vedou k více úmrtím.</li>\
 <li><strong>Ikonka peněz</strong>: (Náklady) Graf nákladů značí ztráty, které státní kase i ekonomice jako celku pandemie přináší. Zavádění opatření, vyplácení kompenzací i hospitalizace - to vše stojí peníze.</li>\

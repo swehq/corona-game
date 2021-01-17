@@ -1,4 +1,6 @@
 :host {
+  display: block;
+
   ::ng-deep {
     cvd-line-graph,
     cvd-status-display,
@@ -20,4 +22,6 @@
 
 .content {
   width: 100%;
+  display: flex;
+  flex-wrap: row wrap;
 }

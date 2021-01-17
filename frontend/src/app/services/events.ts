@@ -27,12 +27,14 @@ export interface Event {
   choices?: EventChoice[];
 }
 
-type EventText = ((stats: EventInput) => string) | string;
+type EventText = ((eventInput: EventInput) => string) | string;
+type EventCondition = (eventInput: EventInput) => boolean;
 
 interface EventDef {
   title: EventText;
   text?: EventText;
   help?: EventText;
+  condition?: EventCondition;
   choices?: EventChoiceDef[];
 }
 
@@ -40,7 +42,7 @@ export interface EventTrigger {
   id?: string;
   events: EventDef[];
   reactivateAfter?: number;
-  condition: (stats: EventInput) => boolean;
+  condition: EventCondition;
 }
 
 interface TriggerState {
@@ -67,8 +69,10 @@ export class EventHandler {
     mitigations: Mitigations, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
-      const initialTriggerStates = eventTriggers.map(et => ({trigger: et}));
-      prevState = {triggerStates: initialTriggerStates, eventData: initialEventData};
+      prevState = {
+        triggerStates: eventTriggers.map(et => ({trigger: et})),
+        eventData: initialEventData(),
+      };
     }
 
     const triggerStates = prevState.triggerStates.map(ts => ({...ts,
@@ -97,7 +101,11 @@ export class EventHandler {
     triggered.forEach(ts => ts.activeBefore = 0);
 
     // Needs explicit cast because sample returns EventDef | undefined
-    const eventDefs = triggered.map(ts => sample(ts.trigger.events)).filter(e => e) as EventDef[];
+    const eventDefs = triggered.map(ts => {
+      const activeEvents = ts.trigger.events.filter(e => !e.condition || e.condition(eventInput));
+      return sample(activeEvents);
+      // Needs explicit cast because the compiler doesn't know we filter out undefined elements
+    }).filter(e => e) as EventDef[];
 
     // safeguard for empty event list
     if (eventDefs.length === 0) return;

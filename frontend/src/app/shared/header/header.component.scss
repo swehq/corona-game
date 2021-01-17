@@ -5,11 +5,33 @@
   align-items: center;
   justify-content: flex-start;
 
-  h1 {
+  .title {
     margin-bottom: 0;
   }
 
   a {
     margin-right: 1rem;
+  }
+
+  &.is-compact {
+    .logo {
+      width: 30px;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      line-height: 1rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .logo {
+      width: 40px;
+    }
+
+    .title {
+      font-size: 2rem;
+      line-height: 1rem;
+    }
   }
 }

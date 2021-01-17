@@ -81,12 +81,14 @@ export interface EventData {
   minStability: number;
 }
 
-export const initialEventData: EventData = {
-  aboveSelfIsolationThresholdDays: 0,
-  belowSelfIsolationThresholdDays: 0,
-  showAntivaxEvent: false,
-  minStability: 100,
-};
+export function initialEventData(): EventData {
+  return {
+    aboveSelfIsolationThresholdDays: 0,
+    belowSelfIsolationThresholdDays: 0,
+    showAntivaxEvent: false,
+    minStability: 100,
+  };
+}
 
 /**
  * Callback that is called every day before trigger conditions are evaluated

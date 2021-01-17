@@ -67,8 +67,10 @@ export class EventHandler {
     mitigations: Mitigations, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
-      const initialTriggerStates = eventTriggers.map(et => ({trigger: et}));
-      prevState = {triggerStates: initialTriggerStates, eventData: initialEventData};
+      prevState = {
+        triggerStates: eventTriggers.map(et => ({trigger: et})),
+        eventData: initialEventData(),
+      };
     }
 
     const triggerStates = prevState.triggerStates.map(ts => ({...ts,

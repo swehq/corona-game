@@ -40,9 +40,6 @@ module.exports = function (config) {
     browsers: ['Chrome'],
     singleRun: false,
     restartOnFileChange: true,
-    files: [
-      { pattern: './src/assets/**', watched: false, included: false, nocache: false, served: true }
-    ],
     proxies: {
       '/assets/': './src/assets/'
     },

@@ -15,6 +15,7 @@ const routes: Routes = [
   {path: 'results/:id', component: OutroComponent},
   {path: 'credits', component: CreditsComponent},
   {path: 'about', component: AboutComponent},
+  {path: '**', redirectTo: '/'}
 ];
 
 @NgModule({

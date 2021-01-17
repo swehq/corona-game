@@ -32,6 +32,16 @@ mat-divider {
   margin: 1em 0;
 }
 
+mat-chip-list {
+  margin-left: 0.5rem;
+}
+
 mat-chip {
   white-space: nowrap;
+}
+
+.chapter {
+  @media screen and (max-width: 450px) {
+    margin: 1rem;
+  }
 }

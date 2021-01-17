@@ -2,6 +2,7 @@
 @import '~src/material-definitions';
 
 :host {
+  display: block;
   @include panel;
 }
 

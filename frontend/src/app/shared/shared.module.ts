@@ -13,6 +13,7 @@ import {ColComponent} from './flex/col.component';
 import {FlexItemDirective} from './flex/flex-item.directive';
 import {RowComponent} from './flex/row.component';
 import {FooterComponent} from './footer/footer.component';
+import {HeaderComponent} from './header/header.component';
 import {HelpTooltipComponent} from './help-tooltip/help-tooltip.component';
 import {IconComponent} from './icon/icon.component';
 import {initIconRegistry} from './icon/icon.registry';
@@ -23,6 +24,7 @@ const DECLARATIONS: Declaration[] = [
   ButtonComponent,
   ColComponent,
   FlexItemDirective,
+  HeaderComponent,
   FooterComponent,
   FormatNumberPipe,
   FormatPercentagePipe,

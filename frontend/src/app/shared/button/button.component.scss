@@ -2,4 +2,15 @@ button {
   width: 100%;
   height: 100%;
   color: var(--color);
+
+  ::ng-deep {
+    .mat-button-wrapper {
+      display: flex;
+      justify-content: center;
+
+      cvd-icon {
+        margin-right: 1rem;
+      }
+    }
+  }
 }

@@ -34,7 +34,7 @@ cvd-app {
   box-sizing: border-box;
 }
 
-@media only screen and (min-width: 375px) {
+@media only screen and (min-width: 300px) {
   html {
     font-size: 10px;
 
@@ -79,4 +79,9 @@ a[href] {
   &:hover {
     text-decoration: underline;
   }
+}
+
+// utility classes
+.u-nowrap {
+  white-space: nowrap
 }

@@ -1,4 +1,8 @@
-<cvd-col [spacing]="3" alignItems="stretch" [formGroup]="mitigationsService.formGroup">
+<cvd-col
+  class="wrapper-col"
+  [spacing]="3"
+  alignItems="stretch"
+  [formGroup]="mitigationsService.formGroup">
 
   <cvd-row [spacing]="3">
     <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
@@ -28,6 +32,7 @@
 
 <cvd-help-tooltip>
   <h3>Opatření</h3>
+
   <p>
     Opatření jsou vaším hlavním prostředkem k ovlivňování šíření nákazy Covid-19.
     <strong>Barva</strong> jsou aktivní opatření, <em>barva</em> naopak značí, že opatření aktuálně není zavedeno.

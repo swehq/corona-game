@@ -15,7 +15,7 @@
     <div [innerHtml]="gameService.currentEvent.help | safeHtml"></div>
   </cvd-row>
 
-  <cvd-row grow>
+  <cvd-row grow wrap>
     <cvd-button
       *ngFor="let choice of gameService.currentEvent.choices"
       (click)="resumeEvent(gameService.currentEvent, choice)">

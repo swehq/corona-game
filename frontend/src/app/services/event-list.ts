@@ -168,7 +168,7 @@ export const eventTriggers: EventTrigger[] = [
 Na vás teď je, abyste na situaci zareagovali zavedením libovolných opatření nebo si se situací poradili jakkoliv jinak vám je libo. Barva jsou aktivní opatření, barva naopak značí, že opatření aktuálně není zavedeno. Každé opatření se projevuje na šíření koronaviru rozdílně. Pamatujte, že nějaká čas trvá, než se opatření na množství nakažených projeví. \
 Každý panel má také v rohu otazník, který vám představí všechny své ovládací prvky.</p> \
 <p>Hru můžete vždy pozastavit mezerníkem, nebo tlačítkem pauza.</p>',
-        help: 'Při každé události ve hře si také můžete přečíst vzkazy od vašeho průvodce. Tyto texty budou vždy mít tuto barvu a snažíme se vám skrze ně poradit. Ale nemusíte se jimi nijak řídit!',
+        help: '<p>Při každé události ve hře si také můžete přečíst vzkazy od vašeho průvodce. Tyto texty budou vždy mít tuto barvu a snažíme se vám skrze ně poradit. Ale nemusíte se jimi nijak řídit!</p>',
         choices: [
           simpleChoice('Chci přímo do hry'),
           simpleChoice('Ukažte mi ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),

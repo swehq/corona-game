@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {MetaService} from 'src/app/services/meta.service';
 
 @Component({
   selector: 'cvd-credits',
@@ -6,4 +7,7 @@ import {Component} from '@angular/core';
   styleUrls: ['./credits.component.scss'],
 })
 export class CreditsComponent {
+  constructor(meta: MetaService) {
+    meta.setTitle('Tvůrci');
+  }
 }

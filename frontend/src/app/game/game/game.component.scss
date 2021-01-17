@@ -23,5 +23,35 @@
 .content {
   width: 100%;
   display: flex;
-  flex-wrap: row wrap;
+  flex-wrap: wrap;
+}
+
+.col {
+  width: 50%;
+
+  &:first-child {
+    padding-right: 1rem;
+  }
+
+  &:last-child {
+    padding-left: 1rem;
+  }
+
+  @media screen and (max-width: 1024px) {
+    width: 100%;
+
+    &:first-child {
+      padding-right: 0;
+    }
+
+    &:last-child {
+      padding-left: 0;
+    }
+  }
+}
+
+cvd-mitigations-control,
+cvd-graphs,
+cvd-status-display {
+  margin-bottom: 2rem;
 }

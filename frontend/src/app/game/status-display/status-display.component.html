@@ -4,22 +4,21 @@
 
 <mat-divider></mat-divider>
 
-<cvd-row wrap alignItems="flex-start" [spacing]="4">
-  <cvd-col grow class="chapter" alignItems="flex-start">
+<cvd-row wrap alignItems="flex-start" [spacing]="2">
+  <cvd-col grow class="chapter" alignItems="center">
     <cvd-row class="item">
       <cvd-icon>thumbs_up_down</cvd-icon>
-        Společenská stabilita
+        <span class="u-nowrap">Společenská stabilita</span>
         <mat-chip-list>
           <mat-chip selected [color]="getColor$(stat$('stability'), 65, 35) | async">{{stat$('stability') | async | formatNumber:false:false:1}}</mat-chip>
         </mat-chip-list>
     </cvd-row>
-
   </cvd-col>
 
-  <cvd-col grow class="chapter" alignItems="flex-start">
+  <cvd-col grow class="chapter" alignItems="center">
     <cvd-row class="item">
       <cvd-icon svgIcon="hospital"></cvd-icon>
-        Vytíženost nemocnic
+        <span class="u-nowrap">Vytíženost nemocnic</span>
         <mat-chip-list>
           <mat-chip selected [color]="getColor$(stat$('hospitalsUtilization'), .7, .9) | async">{{stat$('hospitalsUtilization') | async | formatPercentage}}</mat-chip>
         </mat-chip-list>

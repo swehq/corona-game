@@ -1,7 +1,18 @@
+@import '~src/definitions';
+
 :host {
   display: block;
   width: 100%;
   padding: 1.5rem 0;
 
   text-align: center;
+}
+
+a {
+  &.is-active {
+    @include apply-themes {
+      color: mat-color(map-get($theme, primary));
+      font-weight: 500;
+    }
+  }
 }

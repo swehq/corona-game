@@ -784,4 +784,20 @@ Hodně štěstí!',
     ],
     condition: (ei: EventInput) => ei.stats.vaccinationRate > .5,
   },
+   /****************************************************************************
+   *
+   * End screen
+   *
+   ****************************************************************************/
+  {
+    events: [
+      {
+        title: 'Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize',
+        text: 'Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.',
+        help: 'Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu. Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.',
+        choices: [simpleChoice('Zobrazit výsledky')],
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.stability <= 0,
+  },
 ];

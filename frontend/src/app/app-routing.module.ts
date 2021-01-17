@@ -1,11 +1,11 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AboutComponent} from './game/about/about.component';
-import {CreditsComponent} from './game/credits/credits.component';
-import {CanDeactivateGame} from './game/game/can-deactivate-game';
-import {GameComponent} from './game/game/game.component';
-import {IntroComponent} from './game/intro/intro.component';
-import {OutroComponent} from './game/outro/outro.component';
+import {AboutComponent} from './game/pages/about/about.component';
+import {CreditsComponent} from './game/pages/credits/credits.component';
+import {CanDeactivateGame} from './game/pages/game/can-deactivate-game';
+import {GameComponent} from './game/pages/game/game.component';
+import {IntroComponent} from './game/pages/intro/intro.component';
+import {OutroComponent} from './game/pages/outro/outro.component';
 
 const routes: Routes = [
   {path: '', component: IntroComponent},

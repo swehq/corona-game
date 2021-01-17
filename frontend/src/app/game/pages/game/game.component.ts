@@ -46,9 +46,10 @@ export class GameComponent {
     gameService.speed$.pipe(
       filter(speed => speed === 'finished'),
       switchMap(() => this.gameService.save$()),
+      map(response => response.id),
       untilDestroyed(this),
     ).subscribe(
-      id => this.router.navigate(['/results', id]),
+      id => this.router.navigate([`/results/${id}`]),
       () => this.router.navigate(['/results']),
     );
   }

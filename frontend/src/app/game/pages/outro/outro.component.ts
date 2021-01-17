@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
@@ -25,6 +26,8 @@ const convert: (result: GameResult) => ChartPoint =
   styleUrls: ['./outro.component.scss'],
 })
 export class OutroComponent {
+
+  resultId$: Observable<string>;
 
   private readonly scalesLabelsDefaults: ScaleTitleOptions = {
     display: true,
@@ -126,7 +129,9 @@ export class OutroComponent {
     public gameService: GameService,
     meta: MetaService,
     public shareService: SocialNetworkShareService,
+    activatedRoute: ActivatedRoute,
   ) {
+    this.resultId$ = activatedRoute.params.pipe(map(data => data.id));
     meta.setTitle('Výsledky');
     outroService.fetchAllResults();
   }

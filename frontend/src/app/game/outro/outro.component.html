@@ -39,7 +39,7 @@
 
     <cvd-row class="color-money" [spacing]="2" alignItems="baseline">
       <cvd-icon svgIcon="money"></cvd-icon>
-      Náklady: {{stats.costs.total | formatNumber}}
+      Náklady: {{stats.costs.total | formatNumber:true:true}}
 
       <cvd-button (click)="showPrices()" style="margin-left: 2rem; color: unset">Pro srovnání</cvd-button>
 
@@ -67,35 +67,34 @@
   <cvd-graphs style="width: 90%"></cvd-graphs>
 
   <cvd-col [spacing]="2" alignItems="flex-start">
-    <div>
+    <p>
       Rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých
       s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky
       covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
-    </div>
+    </p>
 
-    <div>
+    <p>
       V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale
       přesto na pár prvků upozornit:
-    </div>
+    </p>
 
-    <div>
+    <p>
       Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci
-      a studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky. Tento výpadek zároveň dopadne
+      a studenti o minimálně <strong>{{stats.schoolDaysLost.total | formatNumber}} dnů výuky</strong>. Tento výpadek zároveň dopadne
       nejvíce na skupiny, které to mají se vzděláváním už teď těžké.
-    </div>
+    </p>
 
-    <div>
+    <p>
       (Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
-      Mohli bychom legitimně říct, že za vaši hru se nakazilo ne {{stats.detectedInfections.total | formatNumber}}, ale
-      podle hypotéz výzkumníků <!--TODO: ODKAZ--> reálně až {{4 * stats.detectedInfections.total | formatNumber}} lidí.
-      Do
-      hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
-    </div>
+      Mohli bychom legitimně říct, že za vaši hru se nakazilo ne <strong>{{stats.detectedInfections.total | formatNumber}}</strong>, ale
+      podle hypotéz výzkumníků <!--TODO: ODKAZ--> reálně až <strong>{{4 * stats.detectedInfections.total | formatNumber}} lidí</strong>.
+      Do hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
+    </p>
 
-    <div>
+    <p>
       Pokud vás více zajímá, jak naše vzorce fungují, k dispozici je
       <a routerLink="/about">popis použité metodiky</a>.
-    </div>
+    </p>
   </cvd-col>
 
   <div class="content">

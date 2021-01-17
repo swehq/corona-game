@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {catchError} from 'rxjs/operators';
 import {Game, GameData} from '../services/game';
 import {Event} from '../services/events';
-import {ReplaySubject, Subject} from 'rxjs';
+import {of, ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {UntilDestroy} from '@ngneat/until-destroy';
@@ -85,7 +86,7 @@ export class GameService {
     if (speed === 'max') {
       while (!this.game.isFinished()) this.tick(false);
       this.updateChart();
-      this.setSpeed('finished');
+      this.setSpeed('pause');
     } else if (speed === 'play') {
       this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
     } else if (speed === 'fwd') {
@@ -107,7 +108,6 @@ export class GameService {
     }
 
     if (this.game.isFinished()) {
-      this.save();
       this.setSpeed('finished');
       return;
     }
@@ -146,8 +146,9 @@ export class GameService {
     };
   }
 
-  save() {
+  reqestToSave() {
     const gameData = this.getGameData();
-    return this.httpClient.post('/api/game-data', gameData);
+    return this.httpClient.post('/api/game-data', gameData)
+      .pipe(catchError(() => of(12345))); // TODO remove after game validation fixed
   }
 }

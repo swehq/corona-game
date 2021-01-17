@@ -51,6 +51,6 @@ export class SimulationControlComponent implements OnInit {
   }
 
   save() {
-    this.gameService.save();
+    this.gameService.reqestToSave().subscribe();
   }
 }

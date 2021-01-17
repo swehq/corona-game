@@ -28,7 +28,7 @@ export interface GameData {
 export class Game {
   readonly infectionsWhenBordersOpen = 30;
   readonly infectionsWhenBordersClosed = 10;
-  readonly minimalStability = -50;
+  readonly minimalStability = 0;
 
   static readonly defaultMitigations: Mitigations = {
     bordersClosed: false,

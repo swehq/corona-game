@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "icons:register": "ts-node --project bin/tsconfig.json bin/register-icons.ts src/assets/icons/ src/app/shared/icon/icons.ts 1100",
+    "icons:register": "ts-node --project bin/tsconfig.json bin/register-icons.ts src/assets/icons/ src/app/shared/icon/icons.ts 5000",
     "version": "ts-node --project ts-node.config.json build/version.ts"
   },
   "private": true,

@@ -1,16 +1,22 @@
 import {Component} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {get, PropertyPath} from 'lodash';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
 import {Stats} from '../../../services/simulation';
 import {GameService} from '../../game.service';
 
+@UntilDestroy()
 @Component({
   selector: 'cvd-status-display',
   templateUrl: './status-display.component.html',
   styleUrls: ['./status-display.component.scss'],
 })
 export class StatusDisplayComponent {
+
+  speedFormControl = new FormControl();
+
   lastState$ = this.gameService.gameState$.pipe(
     filter(states => states.length > 0),
     map(states => states[states.length - 1]),
@@ -25,6 +31,17 @@ export class StatusDisplayComponent {
   constructor(
     private gameService: GameService,
   ) {
+    this.speedFormControl.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe(speed => this.gameService.setSpeed(speed));
+
+    this.gameService.speed$
+      .pipe(untilDestroyed(this))
+      .subscribe(speed => {
+        this.speedFormControl.setValue(speed);
+        // TODO enable after disabled state implemented
+        // if (this.gameService.currentEvent) this.speedFormControl.disable(); else this.speedFormControl.enable();
+      });
   }
 
   get today() {

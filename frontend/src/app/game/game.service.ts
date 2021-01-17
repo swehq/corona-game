@@ -11,15 +11,16 @@ import {LocalStorageKey} from '../../environments/defaults';
 import {validateGame} from '../services/validate';
 import {tap} from 'rxjs/operators';
 
-export type Speed = 'play' | 'auto' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
+export type Speed = 'auto' | 'rev' | 'pause' | 'slow' | 'play' | 'fast' | 'max' | 'finished';
 
 @UntilDestroy()
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
-  readonly PLAY_SPEED = 400; // ms
-  readonly FAST_SPEED = 0; // ms
+  readonly SLOW_SPEED = 2_000; // ms
+  readonly PLAY_SPEED = 1_000; // ms
+  readonly FAST_SPEED = 333; // ms
   readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
@@ -90,11 +91,13 @@ export class GameService {
       while (!this.game.isFinished()) this.tick(false);
       this.updateChart();
       this.setSpeed('pause');
+    } else if (speed === 'slow') {
+      this.scheduleTick(this.SLOW_SPEED);
     } else if (speed === 'play') {
       this.scheduleTick(this.PLAY_SPEED);
     } else if (speed === 'auto') {
       this.scheduleTick();
-    } else if (speed === 'fwd') {
+    } else if (speed === 'fast') {
       this.scheduleTick(this.FAST_SPEED);
     } else if (speed === 'rev') {
       this.scheduleTick(this.REVERSE_SPEED);

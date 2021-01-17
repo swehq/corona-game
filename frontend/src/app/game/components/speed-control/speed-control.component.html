@@ -1,0 +1,13 @@
+<mat-button-toggle-group
+  #group grow
+  [value]="value"
+  (change)="onUserAction($event.value)"
+>
+  <mat-button-toggle
+    *ngFor="let level of levels"
+    grow style="overflow: visible"
+    [value]="level.speed"
+  >
+    <cvd-icon size="large" [svgIcon]="level.icon"></cvd-icon>
+  </mat-button-toggle>
+</mat-button-toggle-group>

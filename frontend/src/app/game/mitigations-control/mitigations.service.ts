@@ -66,8 +66,8 @@ export class MitigationsService {
       false: 'Služby - neomezeno',
     },
     businessesCompensation: {
-      true: 'Nekompenzovat živnostníky',
-      false: 'Kompenzace živnostníkům',
+      false: 'Nekompenzovat živnostníky',
+      true: 'Kompenzace živnostníkům',
     },
     events: {
       1000: 'Akce - max. 1 000',
@@ -76,8 +76,8 @@ export class MitigationsService {
       false: 'Akce - neomezeno',
     },
     eventsCompensation: {
-      true: 'Nekompenzovat pohostinství',
-      false: 'Kompenzace pohostinství',
+      false: 'Nekompenzovat pohostinství',
+      true: 'Kompenzace pohostinství',
     },
     rrr: {
       true: '3R - zavedeno',
@@ -89,8 +89,8 @@ export class MitigationsService {
       false: 'Školy - neomezeno',
     },
     schoolsCompensation: {
-      true: 'Nezavést ošetřovné',
-      false: 'Zavést ošetřovné',
+      false: 'Nezavést ošetřovné',
+      true: 'Zavést ošetřovné',
     },
     stayHome: {
       true: 'Zákaz vycházení',

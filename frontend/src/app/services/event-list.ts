@@ -14,8 +14,6 @@ const VACCINATION_CAMPAIGN_PAID_ID = 'vaccinationCampaignPaid';
 
 // Event trigger IDs
 const SELF_ISOLATION_TRIGGER = 'selfIsolation';
-const ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER = 'antivaxWithoutCampaignTrigger';
-const ANTIVAX_WITH_CAMPAIGN_TRIGGER = 'antivaxWithCampaignTrigger';
 
 const selfIsolationThreshold = 2000 / 7;
 
@@ -77,7 +75,6 @@ function isEventTriggerActive(eventInput: EventInput, id: string) {
 export interface EventData {
   aboveSelfIsolationThresholdDays: number;
   belowSelfIsolationThresholdDays: number;
-  showAntivaxEvent: boolean;
   minStability: number;
 }
 
@@ -85,7 +82,6 @@ export function initialEventData(): EventData {
   return {
     aboveSelfIsolationThresholdDays: 0,
     belowSelfIsolationThresholdDays: 0,
-    showAntivaxEvent: false,
     minStability: 100,
   };
 }
@@ -105,13 +101,6 @@ export function updateEventData(eventInput: EventInput) {
     eventData.aboveSelfIsolationThresholdDays = 0;
     eventData.belowSelfIsolationThresholdDays++;
   }
-
-  // Antivax
-  eventData.showAntivaxEvent = eventInput.date > '2021-01-10'
-    // Both triggers need to be active in order not emit their events too soon one after another
-    && isEventTriggerActive(eventInput, ANTIVAX_WITH_CAMPAIGN_TRIGGER)
-    && isEventTriggerActive(eventInput, ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER)
-    && probability(0.02);
 
   // Stability
   eventData.minStability = Math.min(eventInput.stats.stability, eventData.minStability);
@@ -536,6 +525,7 @@ Hodně štěstí!',
         title: 'Nejsem ovce, nošení roušky odmítám! Přežijí silnější.',
         text: 'Významný politik veřejně odsuzuje nošení roušek a byl bez ní několikrát vyfocen v obchodě',
         help: 'Pokud významná politická osobnost nebude potrestána může to vést k menší disciplíně obyvatelstva při dodržování opatření, což může přinést, jak nové nakažené, tak negativně ovlivnit hodnotu R. Jeho potrestání však může pobouřit jeho příznivce a negativně tak ovlivnit společenskou stabilitu.',
+        condition: (ei: EventInput) => ei.mitigations.rrr,
         choices: [
           simpleChoice('Neřešit prohřešek', {rMult: 1.02, exposedDrift: random(1000, 2000)}),
           simpleChoice('Potrestat politika jako ostatní', {stabilityCost: 2}),
@@ -655,15 +645,9 @@ Hodně štěstí!',
         text: et.text,
         help: 'Rychlost vakcinace se snižuje.',
         choices: okButton({vaccinationPerDay: -0.0002, duration: maxMitigationDuration}),
+        condition: (ei: EventInput) => !isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID),
       }),
-    ),
-    id: ANTIVAX_WITHOUT_CAMPAIGN_TRIGGER,
-    condition: (ei: EventInput) =>
-      (ei.eventData.showAntivaxEvent && !isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID)),
-    reactivateAfter: 7, // cannot occur more often than once every 7 days
-  },
-  {
-    events: antivaxEventTexts.map(et =>
+    ).concat(antivaxEventTexts.map(et =>
       ({
         title: et.title,
         text: et.text,
@@ -671,11 +655,10 @@ Hodně štěstí!',
         choices: [
           {buttonLabel: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
         ],
+        condition: (ei: EventInput) => isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID),
       }),
-    ),
-    id: ANTIVAX_WITH_CAMPAIGN_TRIGGER,
-    condition: (ei: EventInput) =>
-      (ei.eventData.showAntivaxEvent && isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID)),
+    )),
+    condition: (ei: EventInput) => ei.date > '2021-01-10' && probability(0.02),
     reactivateAfter: 7, // cannot occur more often than once every 7 days
   },
   {

@@ -3,7 +3,7 @@ import {Event, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario} from './scenario';
-import {Mitigations} from '../game/mitigations-control/mitigations.service';
+import {Mitigations} from './mitigations.service';
 import {getRandomness} from './randomize';
 
 export interface MitigationParams extends MitigationEffect {

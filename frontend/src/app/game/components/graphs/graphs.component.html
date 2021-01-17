@@ -1,0 +1,53 @@
+<div class="tabs">
+  <div class="tabs-header">
+    <div class="tabs-header-content">
+      <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label" matRipple
+          (click)="activeTab = index" *ngFor="let tab of templateData; let index = index">
+        <span class="tab-icon">
+          <cvd-icon *ngIf="tab.svgIcon" [svgIcon]="tab.svgIcon"></cvd-icon>
+          <cvd-icon *ngIf="tab.icon">{{tab.icon}}</cvd-icon>
+          <span>
+            {{ tab.prefix }}{{ tab.headerData$ | async | formatNumber:tab.pipe[0]:tab.pipe[1] }}
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngFor="let content of templateData; let index = index">
+    <div
+      class="tab-content"
+      *ngIf="activeTab === index">
+      <h3>
+        {{ content.label }}
+      </h3>
+
+      <cvd-line-graph
+        *ngIf="!content.multiLineData$"
+        [dataLabelNodes]="dataLabelNodes"
+        [singleLineTick$]="content.data$"
+        [scopeFormControl]="scopeFormControl"
+        [customOptions]="content.customOptions">
+      </cvd-line-graph>
+
+      <cvd-line-graph
+        *ngIf="content.multiLineData$"
+        [dataLabelNodes]="dataLabelNodes"
+        [multiLineTick$]="content.multiLineData$"
+        [scopeFormControl]="scopeFormControl"
+        [customOptions]="content.customOptions">
+      </cvd-line-graph>
+    </div>
+  </ng-container>
+
+</div>
+
+<cvd-events-layout></cvd-events-layout>
+
+<cvd-help-tooltip>
+  <h3>Grafy</h3>
+
+  <p>
+    Graf nově nakažených. Můžete jej libovolně přibližovat a oddalovat. Zavedená opatření se na počtu nakažených projeví nejdříve po X dnech.
+  </p>
+</cvd-help-tooltip>

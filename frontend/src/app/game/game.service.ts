@@ -7,7 +7,7 @@ import {of, ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {ActivatedEvent} from './graphs/line-graph/line-graph.component';
+import {ActivatedEvent} from './components/graphs/line-graph/line-graph.component';
 
 export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 

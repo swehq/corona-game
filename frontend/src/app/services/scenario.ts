@@ -1,5 +1,5 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
-import {Mitigations} from '../game/mitigations-control/mitigations.service';
+import {Mitigations} from './mitigations.service';
 import {EventMitigation} from './events';
 import {maxMitigationDuration} from './event-list';
 import {Game} from './game';

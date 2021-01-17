@@ -7,8 +7,10 @@ export enum LocalStorageKey {
 
 export interface Environment {
   production: boolean;
+  baseTitle: string;
 }
 
 export const environment: Environment = {
   production: false,
+  baseTitle: 'Korona Hra',
 };

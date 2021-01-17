@@ -1,0 +1,24 @@
+@import '~src/definitions';
+
+.chart-overlay {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: $dark-background;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 101;
+  color: $light-text;
+  border: 2px solid mat-color(map-get($theme, warn));
+  padding: 1.1rem;
+  text-align: center;
+  padding: 2rem;
+  overflow: auto;
+}
+
+.chart-overlay-help {
+  color: mat-color(map-get($theme, accent));
+}

@@ -1,0 +1,69 @@
+@import '~src/definitions';
+@import '~src/material-definitions';
+
+:host {
+  display: block;
+  @include panel;
+
+  @media screen and (max-width: 510px) {
+    overflow-x: hidden;
+  }
+}
+
+cvd-line-graph {
+  padding-top: 1.5rem;
+}
+
+.tabs {
+  width: 100%;
+}
+
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid $dark-bg-lighter-10;
+}
+
+.tabs-header-content {
+  display: flex;
+  width: 100%;
+
+  @media screen and (max-width: 510px) {
+    flex-wrap: wrap;
+  }
+}
+
+.tabs-header-item {
+  width: 25%;
+  padding: 1rem;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 300ms;
+
+  &.is-active {
+    border-color: mat-color(map-get($theme, primary))
+  }
+
+  @media screen and (max-width: 510px) {
+    width: 50%;
+  }
+}
+
+.tab-icon {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+
+  cvd-icon {
+    margin-right: 1rem;
+  }
+}
+
+.tab-content {
+  h3 {
+    display: block;
+    margin: 1rem 0;
+    text-align: center;
+  }
+}

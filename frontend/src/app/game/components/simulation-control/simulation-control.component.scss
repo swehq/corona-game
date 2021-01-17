@@ -1,0 +1,6 @@
+@import '~src/definitions';
+
+:host {
+  @include panel;
+  display: block;
+}

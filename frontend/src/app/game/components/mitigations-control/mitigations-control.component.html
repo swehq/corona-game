@@ -1,0 +1,73 @@
+<cvd-col
+  class="wrapper-col"
+  [spacing]="3"
+  alignItems="stretch"
+  [formGroup]="mitigationsService.formGroup">
+
+  <cvd-row [spacing]="3">
+    <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+  </cvd-row>
+
+  <cvd-col [spacing]="3" alignItems="stretch">
+    <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+
+    <div>Kompenzovat</div>
+
+    <cvd-row [spacing]="3">
+      <cvd-mitigation-bool grow formControlName="eventsCompensation">Akce</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="businessesCompensation">Služby</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="schoolsCompensation">Školy</cvd-mitigation-bool>
+    </cvd-row>
+  </cvd-col>
+
+  <cvd-row [spacing]="3">
+    <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
+    <cvd-mitigation-bool grow formControlName="stayHome">Zákaz vycházení</cvd-mitigation-bool>
+  </cvd-row>
+
+</cvd-col>
+
+<cvd-help-tooltip>
+  <h3>Opatření</h3>
+
+  <p>
+    Opatření jsou vaším hlavním prostředkem k ovlivňování šíření nákazy Covid-19.
+    <strong>Barva</strong> jsou aktivní opatření, <em>barva</em> naopak značí, že opatření aktuálně není zavedeno.
+    Každé opatření se projevuje na šíření koronaviru rozdílně.
+  </p>
+
+  <dl>
+    <dt>Roušky, ruce, rozestupy</dt>
+    <dd>
+      opatření, které není náročné na náklady a snižuje rychlost šíření infekce
+    </dd>
+
+    <dt>Uzavření hranic</dt>
+    <dd>
+      s výjimkou tranzitní dopravy a několika dalších výjimek se omezuje provoz přes hranice. Opatření snižuje rychlost šíření, ale negativně ovlivňuje náklady a společenskou stabilitu
+    </dd>
+
+    <dt>Omezení akcí</dt>
+    <dd>
+      opatření omezující maximální počet shromážděných lidí. Dopadá na kulturní či sportovní akce a různé oslavy. Negativně ovlivňuje náladu ve společnosti. Rušení akcí a zájezdů se promítá do nákladů zvládání pandemie
+    </dd>
+
+    <dt>Služby</dt>
+    <dd>
+      zavření rizikových provozů zahrnuje restaurace, bary, tělocvičny a podobné služby, kde je vysoké riziko přenosu. Dalším stupněm je pak uzavření všech obchodů a služeb, s výjimkou nezbytných (prodej potravin, paliv, apod.) Obě opatření do určité míry snižují rychlost šíření, ale negativně ovlivňují náklady a společenskou stabilitu
+    </dd>
+
+    <dt>Školy</dt>
+    <dd>
+      zvolte, které školy budou uzavřeny. Vysoké školy snadněji přechází na distanční výuku a náklady na jejich zavření jsou tak menší. Základní školy jsou významným místem setkávání a přenosu, ale jejich zavření silně negativně ovlivňuje náklady a společenskou stabilitu
+    </dd>
+
+    <dt>Zákaz vycházení</dt>
+    <dd>
+      mimo nákupy a cestu do práce je vycházení zásadně omezeno. Výrazně negativně ovlivňuje náladu ve společnosti, jeho udržování je pak velmi nákladné
+    </dd>
+  </dl>
+</cvd-help-tooltip>

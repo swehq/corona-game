@@ -1,0 +1,48 @@
+@import '~src/definitions';
+
+:host {
+  @include panel;
+  display: flex; // TODO move to mixin panel and check all other panels
+}
+
+.credits {
+  text-align: center;
+
+  mat-divider {
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    @include apply-themes {
+      color: mat-color(map-get($theme, accent));
+    }
+  }
+}
+
+.content {
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.box {
+  margin-bottom: 1rem;
+  flex: 1 1 33%;
+  padding: 1.5rem;
+
+  text-align: center;
+
+  @media screen and (max-width: 1024px) {
+    flex: 1 1 50%;
+  }
+
+  @media screen and (max-width: 768px) {
+    flex: 1 1 100%;
+  }
+}
+
+cvd-button {
+  display: table;
+  margin: 1rem auto;
+}

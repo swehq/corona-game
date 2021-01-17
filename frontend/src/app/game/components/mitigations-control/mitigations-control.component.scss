@@ -1,0 +1,16 @@
+@import '~src/definitions';
+
+:host {
+  @include panel;
+  display: block;
+}
+
+.wrapper-col {
+  @media screen and (max-width: 500px) {
+    ::ng-deep {
+      & > .wrapper {
+        overflow-x: auto;
+      }
+    }
+  }
+}

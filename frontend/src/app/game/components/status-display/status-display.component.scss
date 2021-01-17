@@ -1,0 +1,47 @@
+@import '~src/definitions';
+
+:host {
+  @include panel;
+  display: block;
+
+  @include apply-themes {
+    .color-virus {
+      color: mat-color(map-get($theme, warn));
+    }
+
+    .color-medicine {
+      color: mat-color(map-get($theme, accent));
+    }
+  }
+}
+
+.item {
+  margin: 0.75rem 0;
+
+  cvd-icon {
+    padding-right: 1rem;
+  }
+}
+
+small {
+  color: $light-accent-text;
+  font-size: 75%;
+}
+
+mat-divider {
+  margin: 1em 0;
+}
+
+mat-chip-list {
+  margin-left: 0.5rem;
+}
+
+mat-chip {
+  white-space: nowrap;
+}
+
+.chapter {
+  @media screen and (max-width: 450px) {
+    margin: 1rem;
+  }
+}

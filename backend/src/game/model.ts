@@ -6,12 +6,16 @@ import {GameData} from '../../../frontend/src/app/services/game';
 // TODO be more strict
 const GameDataSchema = new Schema({
   mitigations: {
-    type: Array,
+    type: Object,
     required: true
   },
   simulation: {
     type: Array,
     required: true,
+  },
+  eventChoices: {
+    type: Object,
+    required: true
   },
   results: {
     dead: {

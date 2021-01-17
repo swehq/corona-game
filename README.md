@@ -46,7 +46,7 @@ in the `app.component.ts` and check the console for the report
 
 ```typescript
 import {validateGame} from 'src/app/services/validate';
-import realData from '../../game/game/data-czechia-real.json';
+import realData from 'src/app/game/pages/game/data-czechia-real.json';
 const data = realData as any;
 validateGame(data, false);
 ```

@@ -1,8 +1,8 @@
 import {cloneDeep, differenceWith, isEqual} from 'lodash';
-import {Event, EventHandler, EventMitigation} from './events';
+import {Event, EventAndChoice, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, dateDiff, nextDay} from './utils';
-import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario} from './scenario';
+import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario, EventAndChoiceHistory} from './scenario';
 import {Mitigations} from './mitigations.service';
 import {getRandomness} from './randomize';
 
@@ -21,8 +21,10 @@ export interface GameData {
   mitigations: {
     history: MitigationActionHistory;
     params: MitigationParams[],
+    controlChanges: Record<string, string[]>,
   };
   simulation: DayState[];
+  eventChoices: EventAndChoiceHistory;
 }
 
 export class Game {
@@ -64,6 +66,8 @@ export class Game {
   mitigationParams = Game.randomizeMitigations();
   mitigationHistory: MitigationActionHistory = {};
   mitigationCache: MitigationActionHistory = {};
+  eventChoices: EventAndChoiceHistory = {};
+  mitigationControlChanges: Record<string, string[]> = {};
   rampUpEvents: Event[] | undefined;
 
   constructor(public scenario: Scenario) {
@@ -101,7 +105,7 @@ export class Game {
     }
 
     const diff = differenceWith(Object.entries(this.mitigations), Object.entries(prevMitigations), isEqual);
-    if (diff.length > 0 || this.newEventMitigations.length > 0) {
+    if (diff.length > 0 || this.newEventMitigations.length > 0 || this.removeMitigationIds.length > 0) {
       this.mitigationHistory[nextDate] = {};
       if (diff.length > 0) {
         this.mitigationHistory[nextDate].mitigations =
@@ -204,6 +208,18 @@ export class Game {
     if (mitigationActions.removeMitigationIds) {
       mitigationActions.removeMitigationIds.forEach(id => this.removeMitigationIds.push(id));
     }
+  }
+
+  saveEventChoice(eventChoice: EventAndChoice) {
+    const nextDate = nextDay(this.simulation.lastDate);
+    if (!this.eventChoices[nextDate]) this.eventChoices[nextDate] = [];
+    this.eventChoices[nextDate].push(eventChoice);
+  }
+
+  saveMitigationControlChanges(changes: string[]) {
+    if (!changes.length) return;
+    const nextDate = nextDay(this.simulation.lastDate);
+    this.mitigationControlChanges[nextDate] = changes;
   }
 
   private calcMitigationEffect(date: string): MitigationEffect {

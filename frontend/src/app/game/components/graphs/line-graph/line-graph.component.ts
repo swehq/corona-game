@@ -12,7 +12,7 @@ import {formatNumber} from '../../../../utils/format';
 import {GameService} from '../../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 import {Pan} from './pan';
-import {Event, EventChoice} from '../../../../services/events';
+import {EventAndChoice} from '../../../../services/events';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -25,14 +25,9 @@ export interface ChartValue {
   state?: NodeState;
 }
 
-export interface ActivatedEvent {
-  originEvent: Event;
-  choice: EventChoice | undefined;
-}
-
 export interface DataLabelNode {
   uiChange: string[] | undefined;
-  event: ActivatedEvent | undefined;
+  event: EventAndChoice | undefined;
 }
 
 export const colors = {
@@ -355,7 +350,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     let title = '';
     if (dataLabelNode.event) {
       const event = dataLabelNode.event;
-      title += `Událost: ${event?.originEvent.title}\n`;
+      title += `Událost: ${event?.event.title}\n`;
       if (event?.choice?.chartLabel) title += `Rozhodnutí: ${event?.choice?.chartLabel}\n`;
     }
 

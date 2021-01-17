@@ -2,12 +2,11 @@ import {AfterViewInit, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
-import {last} from 'lodash';
+import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
-import {MitigationsService} from '../../../services/mitigations.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
 
 
@@ -53,13 +52,6 @@ export class GraphsComponent implements AfterViewInit {
   templateData: any | undefined;
   activeTab = 0;
 
-  private readonly emptyDataLabelNode: DataLabelNode = {
-    uiChange: undefined,
-    event: undefined,
-  };
-
-  private newDataLabelNode: DataLabelNode = {...this.emptyDataLabelNode};
-
   private costDailyThresholds(value: number): NodeState {
     if (value < 500_000_000) return 'ok';
     if (value < 2_000_000_000) return 'warn';
@@ -80,7 +72,6 @@ export class GraphsComponent implements AfterViewInit {
 
   constructor(
     public gameService: GameService,
-    private mitigationsService: MitigationsService,
   ) {
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
@@ -90,24 +81,16 @@ export class GraphsComponent implements AfterViewInit {
 
     const data$ = this.gameService.gameState$;
 
-    this.mitigationsService.changesDaily$.pipe(untilDestroyed(this)).subscribe(changed => {
-      const forcedChanges: string[] = [];
-      changed.changed.forEach(ch => {
-        forcedChanges.push(MitigationsService.mitigationsI18n[ch][String(changed.newValue[ch])]);
-      });
-
-      this.newDataLabelNode.uiChange = forcedChanges.length ? forcedChanges : undefined;
-    });
-
     data$.pipe(
-      map(gameStates => gameStates.length),
+      map(data => data.slice(this.dataLabelNodes.length)), // just new data
       untilDestroyed(this),
-    ).subscribe(length => {
-      if (this.gameService.activatedEvent) {
-        this.newDataLabelNode.event = this.gameService.activatedEvent;
-      }
-      this.dataLabelNodes[length - 1] = {...this.newDataLabelNode};
-      this.newDataLabelNode = {...this.emptyDataLabelNode};
+      ).subscribe(data => {
+        data.forEach(dayState => {
+          // TODO just first event of the day is displayed in the chart, display all
+          const event = first(this.gameService.game.eventChoices[dayState.date]);
+          const uiChange = this.gameService.game.mitigationControlChanges[dayState.date];
+          this.dataLabelNodes.push({event, uiChange});
+        });
     });
 
     this.infectedToday$ = data$.pipe(
@@ -212,7 +195,6 @@ export class GraphsComponent implements AfterViewInit {
     this.gameService.reset$.pipe(
       untilDestroyed(this),
     ).subscribe(() => {
-      this.newDataLabelNode = {...this.emptyDataLabelNode};
       this.dataLabelNodes = [];
     });
   }

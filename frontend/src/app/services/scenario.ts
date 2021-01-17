@@ -1,6 +1,6 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
 import {Mitigations} from './mitigations.service';
-import {EventMitigation} from './events';
+import {EventAndChoice, EventMitigation} from './events';
 import {maxMitigationDuration} from './event-list';
 import {Game} from './game';
 import {nextDay} from './utils';
@@ -18,6 +18,7 @@ export interface MitigationActions {
 }
 
 export type MitigationActionHistory = Record<string, MitigationActions>;
+export type EventAndChoiceHistory = Record<string, EventAndChoice[]>;
 
 export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];

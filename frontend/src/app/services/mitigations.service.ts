@@ -27,6 +27,7 @@ export interface Mitigations {
 }
 
 type MitigationKey = keyof Mitigations;
+type PresetValue = [MitigationsPresetLevel | 'reset', Mitigations];
 
 interface MitigationDiff {
   oldValue: Mitigations;
@@ -103,8 +104,7 @@ export class MitigationsService {
     newValue: this.gameService.game.mitigations,
     changed: [],
   };
-  private _allChangesDaily$ = new Subject<MitigationDiff>();
-  private setValue$ = new Subject<[MitigationsPresetLevel | 'reset', Mitigations]>();
+  private setValue$ = new Subject<PresetValue>();
   private modelIsChanging = false;
 
   readonly value$: Observable<Mitigations>;
@@ -113,7 +113,6 @@ export class MitigationsService {
   readonly enforcedChanges$: Observable<MitigationDiff>; // from enforceChanges() logic
   readonly setChanges$: Observable<MitigationDiff>; // from preset() and reset$
   readonly changes$: Observable<MitigationDiff>; // all changes merged
-  readonly changesDaily$ = this._allChangesDaily$.asObservable(); // cumulative change per day
 
   constructor(private gameService: GameService) {
     this.formGroup.setValue(Game.defaultMitigations);
@@ -174,7 +173,8 @@ export class MitigationsService {
         const {oldValue, newValue} = this.dailyDiff;
         changed = changed.filter(key => !isEqual(oldValue[key], newValue[key]));
 
-        this._allChangesDaily$.next({oldValue, newValue, changed});
+        this.gameService.game.saveMitigationControlChanges(
+          changed.map(ch => MitigationsService.mitigationsI18n[ch][String(newValue[ch])]));
 
         this.dailyDiff = {
           ...this.dailyDiff,
@@ -188,8 +188,10 @@ export class MitigationsService {
       .subscribe(diff => this.set(diff.newValue));
 
     this.setValue$
-      .pipe(untilDestroyed(this))
-      .subscribe(preset => this.set(preset[1]));
+      .pipe(
+        startWith(['reset', gameService.game.mitigations] as PresetValue),
+        untilDestroyed(this),
+      ).subscribe(preset => this.set(preset[1]));
 
     gameService.reset$
       .pipe(untilDestroyed(this))

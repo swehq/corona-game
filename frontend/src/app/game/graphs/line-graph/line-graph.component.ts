@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartTooltipItem} from 'chart.js';
@@ -61,6 +61,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   @Input() singleLineTick$: Observable<ChartValue[]> | undefined;
   @Input() multiLineTick$: Observable<ChartValue[][]> | undefined;
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
+  @ViewChild('canvas', {static: false}) canvas!: ElementRef<HTMLCanvasElement>;
 
   pan: Pan;
 
@@ -293,6 +294,10 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     const chartOptions = chart?.scales['x-axis-0']?.options;
     if (!chartOptions) return;
     chartOptions.ticks = {...chartOptions.ticks, ...options};
+  }
+
+  takeImage() {
+    return this.canvas.nativeElement.toDataURL('image/png');
   }
 
   private reset() {

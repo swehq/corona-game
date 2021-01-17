@@ -1,4 +1,4 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, Component, QueryList, ViewChildren} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
@@ -8,7 +8,7 @@ import {filter, map} from 'rxjs/operators';
 import {formatNumber} from '../../utils/format';
 import {GameService} from '../game.service';
 import {MitigationsService} from '../mitigations-control/mitigations.service';
-import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
+import {ChartValue, colors, DataLabelNode, LineGraphComponent, NodeState} from './line-graph/line-graph.component';
 
 
 @UntilDestroy()
@@ -18,6 +18,8 @@ import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-gr
   styleUrls: ['./graphs.component.scss'],
 })
 export class GraphsComponent implements AfterViewInit {
+
+  @ViewChildren(LineGraphComponent) lineGraphs!: QueryList<LineGraphComponent>;
 
   scopeFormControl = new FormControl(0);
 
@@ -215,5 +217,10 @@ export class GraphsComponent implements AfterViewInit {
       this.newDataLabelNode = {...this.emptyDataLabelNode};
       this.dataLabelNodes = [];
     });
+  }
+
+  takeImage() {
+    if (!this.lineGraphs?.length) return undefined;
+    return this.lineGraphs.first.takeImage();
   }
 }

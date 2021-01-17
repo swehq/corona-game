@@ -1,10 +1,11 @@
-import {Component, HostBinding} from '@angular/core';
+import {Component, HostBinding, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {DebugModeService} from 'src/app/services/debug-mode.service';
 import {inOutAnimation} from 'src/app/utils/animations';
 import {GameService} from '../game.service';
+import {GraphsComponent} from '../graphs/graphs.component';
 import {OutroService} from '../outro/outro.service';
 
 @UntilDestroy()
@@ -15,6 +16,8 @@ import {OutroService} from '../outro/outro.service';
   animations: [inOutAnimation()],
 })
 export class GameComponent {
+
+  @ViewChild(GraphsComponent) graphsComponent!: GraphsComponent;
 
   constructor(
     public debugModeService: DebugModeService,
@@ -56,5 +59,12 @@ export class GameComponent {
 
   pause() {
     this.gameService.setSpeed('pause');
+  }
+
+  takeImage() {
+    if (!this.graphsComponent) return;
+    const img = this.graphsComponent.takeImage();
+    if (!img) return;
+    window.location.href = img.replace('image/png', 'image/octet-stream');
   }
 }

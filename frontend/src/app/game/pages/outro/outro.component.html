@@ -16,6 +16,8 @@
     [options]="outroChartOptions" [datasets]="(datasets$ | async)!"
   ></cvd-scatter-graph>
 
+  <cvd-graphs style="width: 90%"></cvd-graphs>
+
   <div class="content">
     <ng-content></ng-content>
   </div>
@@ -65,6 +67,6 @@
   </cvd-col>
 
   <cvd-col>
-    <cvd-button cvdNavigateBack>Zpět</cvd-button>
+    <cvd-button cdkFocusInitial routerLink="/game" (click)="gameService.restartSimulation()">Hrát znovu a lépe</cvd-button>
   </cvd-col>
 </cvd-col>

@@ -117,7 +117,7 @@ export class OutroComponent {
 
   constructor(
     private outroService: OutroService,
-    private gameService: GameService,
+    public gameService: GameService,
     meta: MetaService,
   ) {
     meta.setTitle('Výsledky');

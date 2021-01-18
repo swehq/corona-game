@@ -1,13 +1,19 @@
 <div class="content"[@inOutAnimation]>
-
-  <div class="col">
-    <cvd-status-display></cvd-status-display>
-    <cvd-graphs></cvd-graphs>
-  </div>
-
-  <div class="col">
-    <cvd-mitigations-control></cvd-mitigations-control>
-    <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
-  </div>
-
+<!-- [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start" -->
+  
+    <div [ngClass]="{'col': !isSmallDevice}">
+      <cvd-status-display></cvd-status-display>
+      <cvd-graphs></cvd-graphs>
+    </div>
+    <div [ngClass]="{'col': !isSmallDevice}">
+      <div [ngClass]="{'mobile-mitigation-panel-box': isSmallDevice}">
+        <cvd-button *ngIf="isSmallDevice" (click)="onHideMitigations()" class="mitigation-button">
+          <cvd-icon svgIcon="twoSpeed" *ngIf="areMitigationsHidden" style="transform: rotate(-90deg);"></cvd-icon>
+          <cvd-icon svgIcon="twoSpeed" *ngIf="!areMitigationsHidden" style="transform: rotate(90deg);"></cvd-icon>
+        </cvd-button>
+        <cvd-mitigations-control *ngIf="!areMitigationsHidden" [ngClass]="{'mobile-mitigation-panel': isSmallDevice}" [isSmallDevice]="isSmallDevice"></cvd-mitigations-control>
+      </div>
+      <cvd-simulation-control *ngIf="debugModeService.getDebugMode()"></cvd-simulation-control>
+    </div>
+    <cvd-col *ngIf="isSmallDevice" style="height: 50vh;"></cvd-col>
 </div>

@@ -1,4 +1,5 @@
-<cvd-col
+<cvd-col 
+  *ngIf="!isSmallDevice"
   class="wrapper-col"
   [spacing]="3"
   alignItems="stretch"
@@ -22,6 +23,36 @@
   </cvd-row>
 
 </cvd-col>
+
+<cvd-row 
+  *ngIf="isSmallDevice"
+  class="mobile-control-panel"
+  [spacing]="3"
+  alignItems="stretch"
+  [formGroup]="mitigationsService.formGroup">
+
+  <cvd-col [spacing]="3" style="margin-left: 2rem;">
+    <cvd-row>
+      <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
+    </cvd-row>
+    <cvd-row>
+      <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+  </cvd-row>
+  </cvd-col>
+
+  <cvd-col [spacing]="3" alignItems="stretch">
+    <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+  </cvd-col>
+
+  <cvd-col [spacing]="3">
+    <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
+    <cvd-mitigation-bool grow formControlName="stayHome">Zákaz vycházení</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="compensations">Extra kompenzace</cvd-mitigation-bool>
+  </cvd-col>
+
+</cvd-row>
 
 <cvd-help-tooltip>
   <h3>Opatření</h3>

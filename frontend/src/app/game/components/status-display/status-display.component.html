@@ -1,5 +1,7 @@
-<cvd-row wrap alignItems="flex-start" [spacing]="0">
-  Dnes je {{today}}
+<cvd-row wrap>
+  <div>Dnes je {{today}}</div>
+  <div grow></div>
+  <cvd-speed-control [formControl]="speedFormControl"></cvd-speed-control>
 </cvd-row>
 
 <mat-divider></mat-divider>

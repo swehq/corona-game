@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64.000001 80.00000125" version="1.1" x="0px" y="0px">
+  <g transform="translate(0,-988.36216)" style="" display="inline">
+    <g style="" transform="matrix(0,1,-1,0,65.44188,988.36183)" display="inline">
+      <g transform="matrix(0,-1.0090157,-0.99722901,0,1049.5128,60.719718)">
+        <path
+          style="display:inline;opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+          d="m 19.574314,1007.3317 0,26.0217"/>
+        <path
+          style="display:inline;opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+          d="m 19.589028,1007.3542 22.604446,12.8906"/>
+        <path
+          style="display:inline;opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+          d="M 19.586308,1033.3082 42.318912,1020.645"/>
+      </g>
+      <path d="m 44.837343,47.165915 -25.625674,0" style="" display="inline" fill="none" stroke="#000000"
+            stroke-width="4.28445959" stroke-linecap="round" stroke-linejoin="miter" stroke-miterlimit="4"
+            stroke-dasharray="none" stroke-opacity="1"/>
+    </g>
+    <path style="" d="m -33.995586,1013.3666 -11.250001,6.4952 -11.249999,6.4952 0,-12.9904 0,-12.9904 11.25,6.4952 z"
+          transform="matrix(0.82370673,0,0,0.87131591,71.617703,137.27284)" fill-opacity="1"
+          fill-rule="nonzero" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
+          stroke-miterlimit="4" stroke-dasharray="none" stroke-opacity="1"/>
+  </g>
+  <g style="" display="inline">
+    <path
+      style="display:inline;opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:5.48600006;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:11.19999981;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+      d="M 61.257283,31.9999 A 29.257143,29.257143 0 0 0 32.000143,2.74262 29.257143,29.257143 0 0 0 2.743,31.9999 29.257143,29.257143 0 0 0 32.000143,61.257 29.257143,29.257143 0 0 0 61.257283,31.9999 Z"/>
+  </g>
+</svg>

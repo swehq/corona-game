@@ -1,21 +1,13 @@
 <cvd-col [spacing]="4" alignItems="stretch" style="padding: 2rem">
 
-  <h1 style="text-align: center">Covid 2020</h1>
-
   <div *ngIf="isGameLost()">
-    <h2>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h2>
-    <div>
-      Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste
-      tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.
-      Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu.
-      Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.
-    </div>
+    <h1>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h1>
   </div>
 
   <div *ngIf="!isGameLost()">
-    <h2>Konec hry</h2>
+    <h1>Vaše hra v roli vlády skončila.</h1>
     <div>
-      Vaše hra v roli vlády skončila, epidemii se díky vysokému počtu imunních podařilo pro teď vymýtit.
+      Vaše hra v roli vlády skončila. Začíná léto 2021 a naše simulace zde končí. Nedokážeme vidět tak daleko do budoucnosti, abychom jí mohli smysluplně a zajímavě simulovat.
     </div>
   </div>
 
@@ -24,82 +16,53 @@
     [options]="outroChartOptions" [datasets]="(datasets$ | async)!"
   ></cvd-scatter-graph>
 
-  <cvd-col [spacing]="3" alignItems="flex-start" style="font-size: 1.6rem;">
-    <div><h2>Vaše výsledky</h2></div>
-
-    <cvd-row class="color-virus" [spacing]="2">
-      <cvd-icon>coronavirus</cvd-icon>
-      Nemoc prodělalo: {{stats.detectedInfections.total | formatNumber}}
-    </cvd-row>
-
-    <cvd-row [spacing]="2">
-      <cvd-icon svgIcon="skull"></cvd-icon>
-      Mrtví: {{stats.deaths.total | formatNumber}}
-    </cvd-row>
-
-    <cvd-row class="color-money" [spacing]="2" alignItems="baseline">
-      <cvd-icon svgIcon="money"></cvd-icon>
-      Náklady: {{stats.costs.total | formatNumber:true:true}}
-
-      <cvd-button (click)="showPrices()" style="margin-left: 2rem; color: unset">Pro srovnání</cvd-button>
-
-      <cvd-col *ngIf="arePricesShowing" [spacing]="3">
-        <!-- TODO fix this sentence -->
-        <!--    <cvd-row class="color-virus" [spacing]="2">-->
-        <!--      Potvrzené případy s COVID-19 v ČR za 2020 se pohybují kolem 866,522 CZK-->
-        <!--    </cvd-row>-->
-
-        <cvd-col class="color-money" alignItems="flex-start">
-          je to
-          <li>{{stats.costs.total / facts['beer'] | formatNumber}} piv</li>
-          <li>{{stats.costs.total / facts['house'] | formatNumber}} domů</li>
-          <li>{{stats.costs.total / facts['nurse'] | formatNumber}} ročních plateb pro zdravotní sestru</li>
-        </cvd-col>
-
-        <cvd-row class="color-money">
-          Rozpočet ČR za 2019 byl {{1535 | formatNumber}} miliard korun.
-        </cvd-row>
-      </cvd-col>
-
-    </cvd-row>
-  </cvd-col>
-
-  <cvd-graphs style="width: 90%"></cvd-graphs>
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
 
   <cvd-col [spacing]="2" alignItems="flex-start">
     <p>
-      Rádi bychom vás upozornili, že simulace zachycuje jen zlomek problémů spjatých
-      s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model nezachycuje: dlouhodobé následky
-      covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
-    </p>
-
-    <p>
-      V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu. Dovolíme si ale
-      přesto na pár prvků upozornit:
-    </p>
-
-    <p>
-      Jedním z dlouhodobých a klíčových dopadů pandemie je snížení přístupu ke vzdělání. V průběhu vaší hry přišli žáci
-      a studenti o minimálně <strong>{{stats.schoolDaysLost.total | formatNumber}} dnů výuky</strong>. Tento výpadek zároveň dopadne
+      V grafu vidíte celkový počet mrtvých a utracené peníze.
+      Ale to nejsou všechny náklady pandemie.
+      <strong>V průběhu vaší hry přišli žáci a studenti o minimálně {{stats.schoolDaysLost.total | formatNumber}} dnů výuky</strong>.
+      Tento výpadek zároveň dopadne
       nejvíce na skupiny, které to mají se vzděláváním už teď těžké.
     </p>
 
     <p>
-      (Schopnost přejít na distanční výuku počítáme u vysokých škol velmi vstřícně. Mírní jsme i u ostatních škol.)
-      Mohli bychom legitimně říct, že za vaši hru se nakazilo ne <strong>{{stats.detectedInfections.total | formatNumber}}</strong>, ale
-      podle hypotéz výzkumníků <!--TODO: ODKAZ--> reálně až <strong>{{4 * stats.detectedInfections.total | formatNumber}} lidí</strong>.
+      Pro lepší představu, co znamenají vaše finanční náklady?
+        <cvd-col class="color-money" alignItems="flex-start">
+          <li>Vaše náklady pandemie: {{stats.costs.total / 1e9 | formatNumber}} miliard Kč</li>
+          <li>Státní rozpočet 2019: {{1551 | formatNumber}} miliard Kč</li>
+          <li>Státní rozpočet 2020: {{1842 | formatNumber}} miliard Kč</li>
+        </cvd-col>
+    </p>
+
+    <p>
+      Předtím, než si prohlédnete výsledky, rádi bychom vás upozornili, že simulace zachycuje jen zlomek
+      problémů spjatých s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model
+      nezachycuje: dlouhodobé následky covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
+    </p>
+
+    <p>
+      V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu.
+      Dovolíme si ale přesto na pár prvků upozornit.
+      Mohli bychom legitimně říct, že za vaši hru se nakazilo ne
+      <strong>{{stats.detectedInfections.total | formatNumber}}</strong>,
+      ale podle <a routerLink="/about"><!--TODO add anchor-->hypotéz výzkumníků</a> reálně až
+      <strong>{{4 * stats.detectedInfections.total | formatNumber}}</strong> lidí.
       Do hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
     </p>
 
     <p>
-      Pokud vás více zajímá, jak naše vzorce fungují, k dispozici je
-      <a routerLink="/about">popis použité metodiky</a>.
+      Pokud vás více zajímá, jak naše vzorce fungují, koukněte
+      <a routerLink="/about">sem</a>.
+    </p>
+
+    <p>
+      Chcete vědět více <a routerLink="/credits">o tom, kdo za simulací stojí?</a>
     </p>
   </cvd-col>
-
-  <div class="content">
-    <ng-content></ng-content>
-  </div>
 
   <cvd-col>
     <cvd-button cvdNavigateBack>Zpět</cvd-button>

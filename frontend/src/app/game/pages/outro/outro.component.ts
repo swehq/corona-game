@@ -25,14 +25,6 @@ const convert: (result: GameResult) => ChartPoint =
 })
 export class OutroComponent {
 
-  arePricesShowing = false;
-
-  facts: Record<string, number> = {
-    nurse: 30000,
-    house: 6899000,
-    beer: 32,
-  };
-
   private readonly scalesLabelsDefaults: ScaleTitleOptions = {
     display: true,
     fontSize: 16,
@@ -140,9 +132,5 @@ export class OutroComponent {
 
   isGameLost() {
     return this.gameService.game.isGameLost();
-  }
-
-  showPrices() {
-    this.arePricesShowing = !this.arePricesShowing;
   }
 }

@@ -13,7 +13,7 @@ import {router} from './game/routes';
 
   app.use(json());
   app.use(logger());
-  app.use(bodyParser({jsonLimit: '5mb'}));
+  app.use(bodyParser({formLimit: '5mb', jsonLimit: '5mb'}));
   app.use(router.routes()).use(router.allowedMethods());
 
   await mongoose.connect(MONGO_URI, {

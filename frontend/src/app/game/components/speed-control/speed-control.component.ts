@@ -22,6 +22,7 @@ export class SpeedControlComponent implements OnChanges, ControlValueAccessor {
   @ViewChild('group') group: MatButtonToggleGroup | null = null;
 
   value: Speed = 'play';
+  disabled = false;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.levels) {
@@ -46,5 +47,9 @@ export class SpeedControlComponent implements OnChanges, ControlValueAccessor {
 
   writeValue(value: any) {
     this.value = value;
+  }
+
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
   }
 }

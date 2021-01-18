@@ -39,8 +39,7 @@ export class StatusDisplayComponent {
       .pipe(untilDestroyed(this))
       .subscribe(speed => {
         this.speedFormControl.setValue(speed);
-        // TODO enable after disabled state implemented
-        // if (this.gameService.currentEvent) this.speedFormControl.disable(); else this.speedFormControl.enable();
+        if (this.gameService.currentEvent) this.speedFormControl.disable(); else this.speedFormControl.enable();
       });
   }
 

@@ -1,7 +1,7 @@
 import {cloneDeep, differenceWith, isEqual} from 'lodash';
 import {Event, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
-import {clippedLogNormalSampler, nextDay} from './utils';
+import {clippedLogNormalSampler, dateDiff, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario} from './scenario';
 import {Mitigations} from './mitigations.service';
 import {getRandomness} from './randomize';
@@ -28,7 +28,9 @@ export interface GameData {
 export class Game {
   readonly infectionsWhenBordersOpen = 30;
   readonly infectionsWhenBordersClosed = 10;
-  readonly minimalStability = -50;
+  readonly borderDriftDecayStartDate = '2021-01-01';
+  readonly borderDriftDecayDuration = 180;
+  readonly minimalStability = 0;
 
   static readonly defaultMitigations: Mitigations = {
     bordersClosed: false,
@@ -228,7 +230,12 @@ export class Game {
       bordersClosed ||= mitigationParam.flags.isBorders;
     });
 
-    ret.exposedDrift += bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen;
+    let borderDriftMult = 1.0;
+    if (date > this.borderDriftDecayStartDate) {
+      borderDriftMult = Math.max(0, 1 - dateDiff(date, this.borderDriftDecayStartDate) / this.borderDriftDecayDuration);
+    }
+    ret.exposedDrift += borderDriftMult
+      * (bordersClosed ? this.infectionsWhenBordersClosed : this.infectionsWhenBordersOpen);
 
     this.eventMitigations.forEach(em => Game.applyMitigationEffect(ret, em));
 

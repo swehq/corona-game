@@ -98,7 +98,7 @@ export class Scenario {
 const czechiaGame = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-03-01',
-  endDate: '2021-10-01',
+  endDate: '2021-06-30',
 });
 
 // Czechia vaccination schedule
@@ -135,7 +135,7 @@ addCzechiaVaccination(czechiaGame);
 const czechiaReal = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2021-01-09',
-  endDate: '2021-10-01',
+  endDate: '2021-06-30',
 });
 addCzechiaVaccination(czechiaReal);
 

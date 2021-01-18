@@ -22,3 +22,11 @@
 .chart-overlay-help {
   color: mat-color(map-get($theme, accent));
 }
+
+::ng-deep {
+  ul {
+    text-align: left;
+    list-style: square;
+    padding: 1em;
+  }
+}

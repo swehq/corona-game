@@ -10,11 +10,14 @@ export interface EventMitigation extends Partial<MitigationEffect> {
   duration: number; // number of days the effect is valid for (0 - affects 0 days)
 }
 
+export type EventChoiceAction = 'restart';
+
 interface EventChoiceGeneric<T> {
   buttonLabel: string;
   chartLabel?: string;  // undefined - not present in the chart
   mitigations?: T[];
   removeMitigationIds?: string[]; // removes mitigation events with listed ids
+  action?: EventChoiceAction;
 }
 
 export type EventChoice = EventChoiceGeneric<EventMitigation>;

@@ -17,6 +17,11 @@ export class EventsLayoutComponent {
 
   resumeEvent(event: Event, choice?: EventChoice) {
     if (choice !== undefined) {
+      if (choice.action === 'restart') {
+        this.gameService.restartSimulation();
+        return;
+      }
+
       this.gameService.game.applyMitigationActions({
         eventMitigations: choice.mitigations,
         removeMitigationIds: choice.removeMitigationIds,

@@ -513,7 +513,10 @@ Hodně štěstí!',
 <p>Náklady České republiky na zvládnutí prvních tří měsíců pandemie odhadujeme na XY (= zjišťujeme). Vy jste zaplatili {{stats.costs.total}}Kč</p>',
         help: 'První vlna může být překvapivá a nepříjemná. Možná nejste spokojeni s tím, jak se vám povedla a chcete to zkusit znovu, pak stačí zmáčknout <em>Restart</em>. Pokud chcete pokračovat dál, zmáčkněte <em>Jedeme dál</em>.',
         choices: [
-          simpleChoice('[TODO] Restart'),
+          {
+            buttonLabel: 'Restart',
+            action: 'restart',
+          },
           simpleChoice('Jedeme dál'),
         ],
       },

@@ -3,6 +3,26 @@
 :host {
   @include panel;
   display: block;
+  &.is-small-device {
+    ::ng-deep {
+      .toggle-help-tooltip:before {
+        border-color: transparent;
+      }
+      .content {
+        @include include-corners();
+      }
+    }
+  }
+}
+
+cvd-mitigation-bool {
+  flex: none;
+}
+
+.mobile-control-panel {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100vw;
 }
 
 .wrapper-col {

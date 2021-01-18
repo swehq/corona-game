@@ -1,4 +1,4 @@
-import {Component, HostBinding} from '@angular/core';
+import {Component, HostBinding, HostListener} from '@angular/core';
 import {Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {filter, switchMap} from 'rxjs/operators';
@@ -17,6 +17,11 @@ import {OutroService} from '../outro/outro.service';
 })
 export class GameComponent {
 
+  isSmallDevice = false;
+  winWidth: number = window.innerWidth;
+  maxMobileWidth = 485;
+  areMitigationsHidden = false;
+
   constructor(
     public debugModeService: DebugModeService,
     private outroService: OutroService,
@@ -25,6 +30,11 @@ export class GameComponent {
     meta: MetaService,
   ) {
     meta.setTitle('Hra');
+
+    // detect device type
+    if (this.winWidth <= this.maxMobileWidth) {
+      this.isSmallDevice = true;
+    }
 
     // fetch historical game results from BE
     window.setTimeout(() => outroService.fetchAllResults(), 10_000);
@@ -45,7 +55,19 @@ export class GameComponent {
     return this.gameService.currentEvent;
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.winWidth = event.target.innerWidth;
+    this.isSmallDevice = this.winWidth <= this.maxMobileWidth;
+    if (this.isSmallDevice === false) this.areMitigationsHidden = false;
+  }
+
   pause() {
     this.gameService.pause();
   }
+
+  onHideMitigations() {
+    this.areMitigationsHidden = !this.areMitigationsHidden;
+  }
+
 }

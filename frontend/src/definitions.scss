@@ -53,6 +53,10 @@
   }
 }
 
+@mixin include-corners() {
+  clip-path: inset(0% 0% 0% 0%);
+}
+
 @mixin panel() {
   position: relative;
 

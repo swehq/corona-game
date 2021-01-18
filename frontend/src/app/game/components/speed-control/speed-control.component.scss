@@ -1,12 +1,5 @@
 cvd-icon {
-  width: 3rem;
-  height: 3rem;
-}
-
-:host {
-  ::ng-deep {
-    .mat-button-toggle .mat-icon svg {
-      vertical-align: bottom;
-    }
-  }
+  padding-top: 0.1rem;
+  width: 2rem;
+  height: 2rem;
 }

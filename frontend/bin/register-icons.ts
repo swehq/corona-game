@@ -1,6 +1,6 @@
 import {readdirSync, readFileSync, writeFileSync} from 'fs';
 
-const iconFilePattern = /^([a-z,0-9,_,\-]+)\.svg$/;
+const iconFilePattern = /^([a-z,A-Z,0-9,_,\-]+)\.svg$/;
 
 const registerIcons = (path = './', fileName = 'icons.ts', maxSize = 1_024) => {
   const icons: Record<string, string | null> = {};

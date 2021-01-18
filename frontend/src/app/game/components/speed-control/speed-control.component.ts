@@ -14,9 +14,9 @@ export class SpeedControlComponent implements OnChanges, ControlValueAccessor {
 
   levels: {speed: Speed, icon: SvgIconName}[] = [
     {speed: 'pause', icon: 'pause'},
-    {speed: 'slow', icon: 'slow'},
-    {speed: 'play', icon: 'play'},
-    {speed: 'fast', icon: 'fast'},
+    {speed: 'slow', icon: 'oneSpeed'},
+    {speed: 'play', icon: 'twoSpeed'},
+    {speed: 'fast', icon: 'threeSpeed'},
   ];
 
   @ViewChild('group') group: MatButtonToggleGroup | null = null;

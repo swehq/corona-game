@@ -101,8 +101,9 @@ export class Game {
     }
 
     const diff = differenceWith(Object.entries(this.mitigations), Object.entries(prevMitigations), isEqual);
-    if (diff.length > 0 || this.newEventMitigations.length > 0) {
-      this.mitigationHistory[nextDate] = {};
+    if (diff.length > 0 || this.newEventMitigations.length > 0
+      || this.removeMitigationIds.length > 0) {
+       this.mitigationHistory[nextDate] = {};
       if (diff.length > 0) {
         this.mitigationHistory[nextDate].mitigations =
           diff.reduce((prev, cur) => ({...prev, [cur[0]]: cur[1]}), {});

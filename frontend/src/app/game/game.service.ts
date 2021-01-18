@@ -1,15 +1,17 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {catchError} from 'rxjs/operators';
 import {Game, GameData} from '../services/game';
 import {Event} from '../services/events';
-import {of, ReplaySubject, Subject} from 'rxjs';
+import {ReplaySubject, Subject} from 'rxjs';
 import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {ActivatedEvent} from './components/graphs/line-graph/line-graph.component';
+import {meanBy} from 'lodash';
+import {LocalStorageKey} from '../../environments/defaults';
+import {validateGame} from '../services/validate';
+import {tap} from 'rxjs/operators';
 
-export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
+export type Speed = 'play' | 'auto' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 
 @UntilDestroy()
 @Injectable({
@@ -17,16 +19,16 @@ export type Speed = 'play' | 'pause' | 'fwd' | 'rev' | 'max' | 'finished';
 })
 export class GameService {
   readonly PLAY_SPEED = 400; // ms
-  readonly FORWARD_SPEED = 0; // ms
+  readonly FAST_SPEED = 0; // ms
   readonly REVERSE_SPEED = 50; // ms
 
   game!: Game;
   eventQueue: Event[] = [];
   tickerId: number | undefined;
-  activatedEvent: ActivatedEvent | undefined;
 
   private speed: Speed | undefined;
-  private _speed$ = new Subject<Speed>();
+  private speedInterval = 0;
+  private _speed$ = new ReplaySubject<Speed>(1);
   speed$ = this._speed$.asObservable();
 
   private _gameState$ = new ReplaySubject<DayState[]>(1);
@@ -39,6 +41,10 @@ export class GameService {
   endOfDay$ = this._endOfDay$.asObservable();
 
   constructor(private httpClient: HttpClient) {
+    if (this.loadGameFromJson()) {
+      return;
+    }
+
     this.restartSimulation();
   }
 
@@ -58,15 +64,9 @@ export class GameService {
     this.setSpeed(speed);
     this.showEvents(this.game.rampUpEvents);
     this.updateChart();
+    // this.saveCheckpoint();
   }
 
-  /**
-   * Update charts according to part of model data
-   * @param which what part of the data to take
-   *    'last' takes last item
-   *    'all' takes all items
-   *    number takes right slice of the array beginning with defined index
-   */
   private updateChart() {
     this._gameState$.next(this.game.simulation.modelStates);
   }
@@ -78,7 +78,10 @@ export class GameService {
 
   setSpeed(speed: Speed) {
     if (this.speed === speed) return;
-    if (this.tickerId) clearInterval(this.tickerId);
+    if (this.tickerId) {
+      window.clearTimeout(this.tickerId);
+      this.tickerId = undefined;
+    }
 
     this.speed = speed;
     this._speed$.next(speed);
@@ -88,11 +91,13 @@ export class GameService {
       this.updateChart();
       this.setSpeed('pause');
     } else if (speed === 'play') {
-      this.tickerId = window.setInterval(() => this.tick(), this.PLAY_SPEED);
+      this.scheduleTick(this.PLAY_SPEED);
+    } else if (speed === 'auto') {
+      this.scheduleTick();
     } else if (speed === 'fwd') {
-      this.tickerId = window.setInterval(() => this.tick(), this.FORWARD_SPEED);
+      this.scheduleTick(this.FAST_SPEED);
     } else if (speed === 'rev') {
-      this.tickerId = window.setInterval(() => this.tick(), this.REVERSE_SPEED);
+      this.scheduleTick(this.REVERSE_SPEED);
     }
   }
 
@@ -113,15 +118,15 @@ export class GameService {
     }
 
     const gameUpdate = this.game.moveForward();
+    if (gameUpdate.dayState.date.endsWith('01')) this.saveCheckpoint();
     this.showEvents(gameUpdate.events);
 
     this._endOfDay$.next();
     if (updateChart) this.updateChart();
-    this.activatedEvent = undefined;
   }
 
   private showEvents(events: Event[] | undefined) {
-    if (!events || events.length === 0) return;
+    if (!events?.length) return;
     if (this.speed === 'max') return;
 
     this.eventQueue = this.eventQueue.concat(events);
@@ -141,14 +146,86 @@ export class GameService {
       mitigations: {
         history: this.game.mitigationHistory,
         params: this.game.mitigationParams,
+        controlChanges: this.game.mitigationControlChanges,
       },
       simulation: this.modelStates,
+      eventChoices: this.game.eventChoices,
     };
   }
 
-  reqestToSave() {
+  save$() {
+    this.saveCheckpoint();
     const gameData = this.getGameData();
-    return this.httpClient.post('/api/game-data', gameData)
-      .pipe(catchError(() => of(12345))); // TODO remove after game validation fixed
+    return this.httpClient.post('/api/game-data', gameData).pipe(
+      tap((data: any) => this.saveGameId(data.id)),
+    );
+  }
+
+  private saveGameId(id: string) {
+    const storageValue = window.localStorage.getItem(LocalStorageKey.SAVED_GAME_IDS);
+    let ids = [];
+
+    if (storageValue) ids = JSON.parse(storageValue);
+
+    ids.push(id);
+    window.localStorage.setItem(LocalStorageKey.SAVED_GAME_IDS, JSON.stringify(ids));
+  }
+
+  private saveCheckpoint() {
+    window.localStorage.setItem(LocalStorageKey.LAST_GAME_DATA, JSON.stringify(this.getGameData()));
+  }
+
+  private loadGameFromJson() {
+    this.setSpeed('pause');
+    const dataString = window.localStorage.getItem(LocalStorageKey.LAST_GAME_DATA);
+    if (!dataString) return false;
+
+    try {
+      const game = validateGame(JSON.parse(dataString));
+      if (!game) return false;
+
+      this.game = game;
+      this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
+      this._reset$.next();
+      this.setSpeed('play');
+      this.updateChart();
+    } catch {
+      return false;
+    }
+
+    return true;
+  }
+
+  private scheduleTick(interval?: number) {
+    if (interval !== undefined) this.speedInterval = interval;
+    else {
+      const speedInterval = [250, 1500];
+      const ratioInterval = [1, 2];
+
+      let infectionChange = 1;
+      const stats = this.game.simulation.getLastStats();
+      if (stats) {
+        const infectionMean = meanBy(this.game.simulation.modelStates.slice(-14), 'stats.detectedInfections.today');
+        infectionChange = Math.max(
+          stats.detectedInfections.today / infectionMean,
+          infectionMean / stats.detectedInfections.today);
+        infectionChange = Math.sqrt(infectionChange);
+        infectionChange = Math.round(infectionChange / .25) * .25;
+      }
+
+      const speed = speedInterval[0] + (speedInterval[1] - speedInterval[0]) *
+        (infectionChange - ratioInterval[0]) / (ratioInterval[1] - ratioInterval[0]);
+
+      if (speed > this.speedInterval) this.speedInterval += 100;
+      if (speed < this.speedInterval) this.speedInterval -= 100;
+
+      this.speedInterval = Math.max(speedInterval[0], this.speedInterval);
+      this.speedInterval = Math.min(speedInterval[1], this.speedInterval);
+    }
+
+    this.tickerId = window.setTimeout(() => {
+      this.tick();
+      if (this.tickerId) this.scheduleTick(this.speedInterval);
+    }, this.speedInterval);
   }
 }

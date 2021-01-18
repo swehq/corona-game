@@ -319,7 +319,8 @@
           "isSchool": false
         }
       }
-    ]
+    ],
+    "controlChanges": {}
   },
   "simulation": [
     {
@@ -33693,5 +33694,6 @@
         "stability": 86.86700000000091
       }
     }
-  ]
+  ],
+  "eventChoices": {}
 }

@@ -2,10 +2,10 @@ import {isEqual, last} from 'lodash';
 import {Game, GameData} from './game';
 import {Scenario} from './scenario';
 
-export function validateGame(data: GameData, breakImmediately = true): boolean {
+export function validateGame(data: GameData, breakImmediately = true): Game | undefined {
   // TODO add test of randomness params (expected distribution or element of interval at least)
   // TODO validate game length, end date
-  if (!data.simulation.length) return false;
+  if (!data.simulation.length) return;
 
   let res = true;
   const firstDay = data.simulation[0].date;
@@ -18,6 +18,8 @@ export function validateGame(data: GameData, breakImmediately = true): boolean {
   }, data.mitigations.history);
   const game = new Game(scenario);
   game.mitigationParams = data.mitigations.params;
+  game.eventChoices = data.eventChoices;
+  game.mitigationControlChanges = data.mitigations.controlChanges;
 
   for (let i = 0; i < data.simulation.length; i++) {
     const dayData = data.simulation[i];
@@ -25,7 +27,7 @@ export function validateGame(data: GameData, breakImmediately = true): boolean {
 
     if (!isEqual(dayData, dayCalculated)) {
       console.error(`Validation failed for ${dayData.date}`, dayData, dayCalculated);
-      if (breakImmediately) return false;
+      if (breakImmediately) return;
       else res = false;
     }
 
@@ -36,5 +38,5 @@ export function validateGame(data: GameData, breakImmediately = true): boolean {
 
   if (!res) console.error(`Validation failed, new data: ${JSON.stringify(game.simulation.modelStates, null, 2)}`);
 
-  return true;
+  return game;
 }

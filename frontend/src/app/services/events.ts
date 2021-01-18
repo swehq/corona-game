@@ -27,6 +27,11 @@ export interface Event {
   choices?: EventChoice[];
 }
 
+export interface EventAndChoice {
+  event: Event;
+  choice: EventChoice | undefined;
+}
+
 type EventText = ((eventInput: EventInput) => string) | string;
 type EventCondition = (eventInput: EventInput) => boolean;
 

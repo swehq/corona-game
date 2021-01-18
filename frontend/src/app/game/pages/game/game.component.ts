@@ -45,7 +45,7 @@ export class GameComponent {
     // trigger end of game
     gameService.speed$.pipe(
       filter(speed => speed === 'finished'),
-      switchMap(() => this.gameService.reqestToSave()),
+      switchMap(() => this.gameService.save$()),
       untilDestroyed(this),
     ).subscribe(
       id => this.router.navigate(['/results', id]),

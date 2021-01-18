@@ -1,3 +1,4 @@
 location /api {
         proxy_pass http://{{ backend_container }};
+        client_max_body_size 5M;
 }

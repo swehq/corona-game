@@ -9,6 +9,9 @@ const TUTORIAL_ID = 'tutorial';
 const SELF_ISOLATION_ID = 'selfIsolation';
 const VACCINATION_CAMPAIGN_ID = 'vaccinationCampaign';
 const VACCINATION_CAMPAIGN_PAID_ID = 'vaccinationCampaignPaid';
+const AUTUMN_2020_MINISTER_FIRED_ID = 'autumn2020MinisterFired';
+const SPRING_2021_DATA_LEAK_ID = 'spring2021DataLeak';
+const SPRING_2021_SECURITY_PROBLEM_ID = 'spring2021SecurityProblem';
 
 // Event trigger IDs
 const SELF_ISOLATION_TRIGGER = 'selfIsolation';
@@ -44,7 +47,7 @@ function randomDateBetweenTrigger(date: string, dateFrom: string, dateTo: string
  * Return true with given probability
  * @param probabilityRate - probability between 0..1 (e.g 0.05 means probability 5%)
  */
-function probability(probabilityRate: number){
+function probability(probabilityRate: number) {
   return probabilityRate > Math.random();
 }
 
@@ -55,6 +58,16 @@ function probability(probabilityRate: number){
  */
 function isEventMitigationActive(eventInput: EventInput, id: string) {
   const mitigation = eventInput.eventMitigations.find(em => em.id === id);
+  return !isNil(mitigation);
+}
+
+/**
+ * Returns true if EventMitigation is active and it will expire on this day
+ * @param eventInput - EventInput
+ * @param id - Id of the EventMitigation
+ */
+function isEventMitigationLastDay(eventInput: EventInput, id: string) {
+  const mitigation = eventInput.eventMitigations.find(em => em.id === id && em.duration === 1);
   return !isNil(mitigation);
 }
 
@@ -344,7 +357,7 @@ Hodně štěstí!',
       {
         title: '{{stats.deaths.today}} mrtvých za den, většině krematorií dochází kapacity',
         help: 'Takto rychlé přibývání obětí obyvatelstvo šokuje. Více obětí denně už by přijali jen velmi těžko.',
-        choices: okButton({stabilityCost: 6}, 'Kapacita krematorií překročena'),
+        choices: okButton({stabilityCost: 5}, 'Kapacita krematorií překročena'),
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.today >= 750,
@@ -412,6 +425,30 @@ Hodně štěstí!',
     ],
     condition: (ei: EventInput) => ei.stats.stability <= 40 && ei.stats.deaths.avg7Day < (500 / 7),
   },
+  // Hospital capacity warning
+  {
+    events: [
+      {
+        title: 'Nemocnice varují před náporem nemocných',
+        text: 'Nemocnice mají jen omezenou kapacitu - a varují, že pokud bude nemocných příliš, nemohou se o ně postarat.',
+        help: 'Pokud překročíte kapacitu nemocnic, smrtnost nemoci výrazně stoupne.',
+        choices: okButton(),
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.hospitalsUtilization > 0.75,
+  },
+  // Tracking capacity warning
+  {
+    events: [
+      {
+        title: 'Hygienické stanice přestávají stíhat',
+        text: 'Státní hygienické stanice zvládnou v naší hře trasovat přesně tisíc lidí denně. Pokud by váš denní přírůstek nakažených byl vyšší, začne trasování selhávat.',
+        help: 'Překonání hranice tisíce nakažených denně a s ním pád trasování může být podstatným mezníkem nezvládání pandemie. V našem modelovém státě není možné kapacitu trasování zvyšovat.',
+        choices: okButton(),
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.detectedInfections.today > 650,
+  },
   // Self isolation
   {
     events: [
@@ -419,7 +456,7 @@ Hodně štěstí!',
         title: 'Tisíce obětí za poslední týden a mrtvých stále přibývá!',
         text: 'Kritická situace vede obyvatele k větší izolaci tam, kde je to možné.',
         help: 'Izolace obyvatel znamená, že výrazně méně nakupují či pracují a jsou výrazně opatrnější. Nemoc se bude šířit mnohem pomaleji, ale ne vaší zásluhou.',
-        // cost = 1.5*cost of lockdown (values taken from game.ts)
+        // cost = 1.5 * cost of lockdown (values taken from game.ts)
         // TODO get values from game.ts
         // rMult is applied everyDay!
         choices: okButton({
@@ -457,7 +494,7 @@ Hodně štěstí!',
   {
     events: [
       {
-        title: 'Školáci dnes dostávají vysvědčení a začínají jim prázdnin',
+        title: 'Školáci dnes dostávají vysvědčení a začínají jim prázdniny',
         help: 'Žáci a studenti se o prázdninách ve školách nepotkávají. Opatření “uzavření škol” bylo aktivováno bez dalších nákladů.',
         choices: okButton(undefined, 'Začátek prázdnin'),
       },
@@ -510,7 +547,7 @@ Hodně štěstí!',
         text: '\
 <p>Několik dní před tím než dostanou vysvědčení školáci je příležitost hodnotit i vaše působení ve vládě od začátku pandemie.</p>\
 <p>Ve skutečné České republice došlo k 30. 6. 2020 k 347 úmrtím osob hospitalizovaných s nemocí Covid-19. Vám v simulaci zemřelo {{stats.deaths.total}} osob.</p>\
-<p>Náklady České republiky na zvládnutí prvních tří měsíců pandemie odhadujeme na XY (= zjišťujeme). Vy jste zaplatili {{stats.costs.total}}Kč</p>',
+<p>Náklady České republiky na zvládnutí prvních tří měsíců pandemie odhadujeme na 400 miliard Kč. Vy jste zaplatili {{stats.costs.total}} Kč</p>',
         help: 'První vlna může být překvapivá a nepříjemná. Možná nejste spokojeni s tím, jak se vám povedla a chcete to zkusit znovu, pak stačí zmáčknout <em>Restart</em>. Pokud chcete pokračovat dál, zmáčkněte <em>Jedeme dál</em>.',
         choices: [
           {
@@ -530,14 +567,12 @@ Hodně štěstí!',
    *
    ****************************************************************************/
   {
-    // TODO don't do first two evets if face masks are not on
     events: [
       {
         title: 'Ministr porušil svá vlastní pravidla, nakupoval zcela bez roušky',
         help: 'Pokud ministr po porušení vlastních nařízení setrvá na místě, mohou se obyvatelé bouřit, což znamená pokles společenské stability. Vyhození ministra, který je ve své práci již zaběhlý, může ale výrazně zkomplikovat řízení ministerstva a s tím třeba očkování.',
         choices: [
-          // TODO: fire -> postpone vaxination start
-          simpleChoice('Vyhodit ministra', {vaccinationPerDay: -0.0001, duration: maxMitigationDuration}),
+          simpleChoice('Vyhodit ministra', {id: AUTUMN_2020_MINISTER_FIRED_ID, duration: maxMitigationDuration}),
           simpleChoice('Neřešit prohřešek', {stabilityCost: 5}),
         ],
         condition: (ei: EventInput) => ei.mitigations.rrr,
@@ -547,7 +582,8 @@ Hodně štěstí!',
         text: 'Celebrita veřejně odsuzuje nošení roušek a byla bez ní několikrát vyfocena v obchodech i při dalších příležitostech. Část médií žádá pokutu.',
         help: 'Pokud významná osobnost nebude potrestána může to vést k menší disciplíně obyvatelstva při dodržování opatření, což může přinést, jak nové nakažené, tak negativně ovlivnit hodnotu R. Jeho potrestání však může pobouřit jeho příznivce a negativně tak ovlivnit společenskou stabilitu.',
         choices: [
-          simpleChoice('Neřešit prohřešek', {name: 'Celebrita odmítá roušku', rMult: 1.1, duration: 30}),
+          simpleChoice('Neřešit prohřešek',
+            {name: 'Celebrita odmítá roušku', rMult: 1.1, duration: 30}, 'Celebrita nenosí roušku'),
           simpleChoice('Potrestat celebritu jako ostatní', {stabilityCost: 3}),
         ],
         condition: (ei: EventInput) => ei.mitigations.rrr,
@@ -568,6 +604,7 @@ Hodně štěstí!',
           simpleChoice('Korespondenční volby', {stabilityCost: 5}),
           {
             buttonLabel: 'Prezenční volby',
+            chartLabel: 'Prezenční volby',
             mitigations: [
               {name: 'Volby', rMult: 1.3, duration: 14},
               {exposedDrift: 500},
@@ -577,6 +614,18 @@ Hodně štěstí!',
       },
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2020-10-15', '2020-12-01'),
+  },
+  {
+    events: [
+      {
+        title: 'Zmatky na ministerstvu',
+        text: 'Nedávná výměna ministra způsobila zmatky v očkování.',
+        help: 'Očkování se zpomalilo',
+        choices: okButton({vaccinationPerDay: -1, duration: 10}, 'Zmatky v očkování'),
+      },
+    ],
+    condition: (ei: EventInput) => ei.date === '2021-01-05'
+      && isEventMitigationActive(ei, AUTUMN_2020_MINISTER_FIRED_ID),
   },
   /****************************************************************************
    *
@@ -591,7 +640,7 @@ Hodně štěstí!',
         help: 'Zavření skiareálů rozčílí hodně lidí a připraví je o oblíbené zimní sporty. Jejich otevření ale může vést k vyššímu riziku šíření.',
         choices: [
           simpleChoice('Otevřít skiareály', {name: 'Skiareály', rMult: 1.2, duration: 60}),
-          simpleChoice('Neotevřít', {stabilityCost: 5}),
+          simpleChoice('Neotevřít', {stabilityCost: 5}, 'Otevřít skiareály'),
         ],
       },
     ],
@@ -627,6 +676,7 @@ Hodně štěstí!',
         choices: [
           {
             buttonLabel: 'Povolit večerní vycházení na Silvestra',
+            chartLabel: 'Silvestr',
             mitigations: [
               {stabilityCost: -2},
               {name: 'Silvestr', rMult: 1.5, duration: 3},
@@ -650,11 +700,11 @@ Hodně štěstí!',
         help: 'Únik dat z očkovacího registračního může způsobit mnoho problémů všem stranám. Pokud přiznáte pochybení, lidé budou rozčilení. Pokud jej popřete, mohou nastat dvě situace: buď budete odhaleni a obyvaté budou popuzeni výrazně více, nebo vám lež projde, hrstka lidí si bude stěžovat, ale národ zůstane uklidněn.',
         choices: [
           simpleChoice('Přiznat chybu', {stabilityCost: 3}),
-          // TODO Randomization
           {
             buttonLabel: 'Oznámit, že je vše pod kontrolou',
             mitigations: [
-              {stabilityCost: 3},
+              {stabilityCost: -3},
+              {id: SPRING_2021_DATA_LEAK_ID, duration: 7},
             ],
           },
         ],
@@ -666,13 +716,13 @@ Hodně štěstí!',
           simpleChoice('Okamžitě stáhnout systém',
             {vaccinationPerDay: -1, duration: 14},
             'Pozastaven očkovací systém'),
-          // TODO Randomization
           {
             buttonLabel: 'Uklidnit obyvatele',
             mitigations: [
+              {id: SPRING_2021_SECURITY_PROBLEM_ID, duration: 7},
             ],
           },
-         ],
+        ],
       },
       {
         title: 'Hackeři zaútočili na systém registrace očkování',
@@ -685,7 +735,27 @@ Hodně štěstí!',
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2021-03-13', '2021-05-15'),
   },
-   /****************************************************************************
+  {
+    events: [
+      {
+        title: 'Novinář odhalil masivní únik dat z očkovacího systému',
+        help: 'Únik dat z očkovacího registračního se nepodařilo utajit',
+        choices: okButton({stabilityCost: 9}),
+      },
+    ],
+    condition: (ei: EventInput) => isEventMitigationLastDay(ei, SPRING_2021_DATA_LEAK_ID) && probability(0.5),
+  },
+  {
+    events: [
+      {
+        title: 'Bezpečnostní chyba způsobila zhroucení očkovacího systému',
+        help: 'Očkování se zpomalilo',
+        choices: okButton({vaccinationPerDay: -1, duration: 30}, 'Zhroucení očkovacího systému'),
+      },
+    ],
+    condition: (ei: EventInput) => isEventMitigationLastDay(ei, SPRING_2021_SECURITY_PROBLEM_ID) && probability(0.3),
+  },
+  /****************************************************************************
    *
    * Vaccination events
    *
@@ -742,8 +812,8 @@ Hodně štěstí!',
       ({
         title: et.title,
         text: et.text,
-        help: 'Rychlost vakcinace se snižuje.',
-        choices: okButton({vaccinationPerDay: -0.0002, duration: maxMitigationDuration}),
+        help: 'Lidé se bojí. Rychlost vakcinace se na krátkou dobu výrazně snižuje.',
+        choices: okButton({vaccinationPerDay: -1, duration: 14}),
         condition: (ei: EventInput) => !isEventMitigationActive(ei, VACCINATION_CAMPAIGN_ID),
       }),
     ).concat(antivaxEventTexts.map(et =>
@@ -787,7 +857,7 @@ Hodně štěstí!',
     ],
     condition: (ei: EventInput) => ei.stats.vaccinationRate > .5,
   },
-   /****************************************************************************
+  /****************************************************************************
    *
    * End screen
    *

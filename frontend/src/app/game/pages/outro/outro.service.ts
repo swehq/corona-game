@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {GameData} from '../../../services/game';
 import {validateGame} from '../../../services/validate';
@@ -89,11 +89,14 @@ export class OutroService {
   }
 
   saveGame$() {
+    const {id} = this._current$.value;
+    if (id) return of(id);
+
     return this.gameService.save$().pipe(
       map(response => response.id),
-      tap(id => {
+      tap(newId => {
         const current = this._current$.value;
-        this._current$.next({...current, id});
+        this._current$.next({...current, id: newId});
       }),
     );
   }

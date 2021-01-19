@@ -437,7 +437,19 @@ Hodně štěstí!',
     ],
     condition: (ei: EventInput) => ei.stats.hospitalsUtilization > 0.75,
   },
-   // Self isolation
+  // Tracking capacity warning
+  {
+    events: [
+      {
+        title: 'Hygienické stanice přestávají stíhat',
+        text: 'Státní hygienické stanice zvládnou v naší hře trasovat přesně tisíc lidí denně. Pokud by váš denní přírůstek nakažených byl vyšší, začne trasování selhávat.',
+        help: 'Překonání hranice tisíce nakažených denně a s ním pád trasování může být podstatným mezníkem nezvládání pandemie. V našem modelovém státě není možné kapacitu trasování zvyšovat.',
+        choices: okButton(),
+      },
+    ],
+    condition: (ei: EventInput) => ei.stats.detectedInfections.today > 650,
+  },
+  // Self isolation
   {
     events: [
       {

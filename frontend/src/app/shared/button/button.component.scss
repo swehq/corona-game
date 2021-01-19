@@ -7,9 +7,16 @@ button {
     .mat-button-wrapper {
       display: flex;
       justify-content: center;
+      align-items: center;
 
       cvd-icon {
         margin-right: 1rem;
+      }
+
+      cvd-icon[svgicon] {
+        mat-icon {
+          height: 2.5rem;
+        }
       }
     }
   }

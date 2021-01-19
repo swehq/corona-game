@@ -4,6 +4,7 @@ import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
+import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
@@ -124,6 +125,7 @@ export class OutroComponent {
     private outroService: OutroService,
     public gameService: GameService,
     meta: MetaService,
+    public shareService: SocialNetworkShareService,
   ) {
     meta.setTitle('Výsledky');
     outroService.fetchAllResults();

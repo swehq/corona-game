@@ -7,6 +7,9 @@ import {MatButton} from '@angular/material/button';
   styleUrls: ['./button.component.scss'],
 })
 export class ButtonComponent {
+  @Input()
+  type: 'raised' | 'stroked' = 'stroked';
+
   @HostBinding('style.--color')
   @Input() color = '';
 
@@ -21,7 +24,7 @@ export class ButtonComponent {
   @HostListener('focus')
   onFocus() {
     if (this._nativeButtonElement) {
-      this._nativeButtonElement._elementRef.nativeElement.focus();
+      this._nativeButtonElement.focus(null, {preventScroll: true});
     }
   }
 }

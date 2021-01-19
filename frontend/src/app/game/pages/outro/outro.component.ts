@@ -75,11 +75,16 @@ export class OutroComponent {
     tooltips: {
       displayColors: false,
       callbacks: {
-        title: context => context[0].datasetIndex ? 'Výsledek jiného hráče' : 'Můj výsledek',
-        label: node => [
-          `Celkový počet mrtvých: ${formatNumber(+node.xLabel!)}`,
-          `Celkové náklady: ${formatNumber(+node.yLabel!, true, true)}`,
+        title: (results, data) => {
+          if (data!.datasets!.length > 1 && !results[0].datasetIndex) return 'Můj výsledek';
+          if (results.length === 1) return 'Výsledek jiného hráče';
+          return `Výsledek ${results.length} jiných hráčů`;
+        },
+        beforeBody: node => [
+          `Celkový počet mrtvých: ${formatNumber(+node[0].xLabel!)}`,
+          `Celkové náklady: ${formatNumber(+node[0].yLabel!, true, true)}`,
         ],
+        label: () => '',
       },
     },
     scales: {

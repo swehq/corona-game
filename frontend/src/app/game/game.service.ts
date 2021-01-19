@@ -65,7 +65,6 @@ export class GameService {
     this.setSpeed(speed);
     this.showEvents(this.game.rampUpEvents);
     this.updateChart();
-    // this.saveCheckpoint();
   }
 
   private updateChart() {

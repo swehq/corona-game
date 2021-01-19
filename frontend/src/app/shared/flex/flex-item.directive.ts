@@ -22,4 +22,10 @@ export class FlexItemDirective {
   get flex() {
     return `${this.grow} ${this.shrink} ${this.basis}`;
   }
+
+  // Safari
+  @HostBinding('style.-webkit-flex')
+  get webkitFlex() {
+    return `${this.grow} 0 auto`;
+  }
 }

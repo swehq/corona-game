@@ -16,7 +16,8 @@
     [options]="outroChartOptions" [datasets]="(datasets$ | async)!"
   ></cvd-scatter-graph>
 
-  <cvd-graphs style="width: 90%"></cvd-graphs>
+  <cvd-graphs *ngIf="isGameReady$ | async" style="width: 90%"></cvd-graphs>
+  <mat-spinner *ngIf="!(isGameReady$ | async)" style="margin:auto"></mat-spinner>
 
   <div class="content">
     <ng-content></ng-content>

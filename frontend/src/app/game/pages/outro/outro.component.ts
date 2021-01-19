@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
-import {UntilDestroy} from '@ngneat/until-destroy';
+import {ActivatedRoute} from '@angular/router';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -26,13 +27,19 @@ const convert: (result: GameResult) => ChartPoint =
 })
 export class OutroComponent {
 
+  resultId$: Observable<string>;
+  isGameReady$ = this.outroService.current$.pipe(
+    map(current => current.gameIsReady),
+  );
+
   private readonly scalesLabelsDefaults: ScaleTitleOptions = {
     display: true,
     fontSize: 16,
   };
 
   datasets$: Observable<ChartDataSets[]> = combineLatest([
-    this.outroService.myResult$.pipe(
+    this.outroService.current$.pipe(
+      map(current => current.result),
       map(result => result ? [convert(result)] : null),
     ),
     this.outroService.allResults$.pipe(
@@ -126,9 +133,15 @@ export class OutroComponent {
     public gameService: GameService,
     meta: MetaService,
     public shareService: SocialNetworkShareService,
+    activatedRoute: ActivatedRoute,
   ) {
+    this.resultId$ = activatedRoute.params.pipe(map(data => data.id));
     meta.setTitle('Výsledky');
     outroService.fetchAllResults();
+
+    this.resultId$
+      .pipe(untilDestroyed(this))
+      .subscribe(id => outroService.loadGame(id));
   }
 
   get stats() {

@@ -1,15 +1,15 @@
-import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Game, GameData} from '../services/game';
-import {Event} from '../services/events';
-import {ReplaySubject, Subject} from 'rxjs';
-import {scenarios} from '../services/scenario';
-import {DayState} from '../services/simulation';
+import {Injectable} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {meanBy} from 'lodash';
-import {LocalStorageKey} from '../../environments/defaults';
-import {validateGame} from '../services/validate';
+import {ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {LocalStorageKey} from '../../environments/defaults';
+import {Event} from '../services/events';
+import {Game, GameData} from '../services/game';
+import {scenarios} from '../services/scenario';
+import {DayState} from '../services/simulation';
+import {validateGame} from '../services/validate';
 
 export type Speed = 'auto' | 'rev' | 'pause' | 'slow' | 'play' | 'fast' | 'max' | 'finished';
 
@@ -159,8 +159,8 @@ export class GameService {
   save$() {
     this.saveCheckpoint();
     const gameData = this.getGameData();
-    return this.httpClient.post('/api/game-data', gameData).pipe(
-      tap((data: any) => this.saveGameId(data.id)),
+    return this.httpClient.post<{id: string}>('/api/game-data', gameData).pipe(
+      tap(data => this.saveGameId(data.id)),
     );
   }
 
@@ -179,24 +179,27 @@ export class GameService {
   }
 
   private loadGameFromJson() {
-    this.setSpeed('pause');
     const dataString = window.localStorage.getItem(LocalStorageKey.LAST_GAME_DATA);
     if (!dataString) return false;
 
     try {
       const game = validateGame(JSON.parse(dataString));
       if (!game) return false;
-
-      this.game = game;
-      this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
-      this._reset$.next();
+      this.restoreGame(game);
       this.setSpeed('play');
-      this.updateChart();
     } catch {
       return false;
     }
 
     return true;
+  }
+
+  restoreGame(game: Game) {
+    this.setSpeed('pause');
+    this.game = game;
+    this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
+    this._reset$.next();
+    this.updateChart();
   }
 
   private scheduleTick(interval?: number) {

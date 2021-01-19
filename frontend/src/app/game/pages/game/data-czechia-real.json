@@ -275,43 +275,13 @@
         }
       },
       {
-        "id": "schoolsCompensation",
+        "id": "compensations",
         "level": true,
         "rMult": 1,
         "exposedDrift": 0,
-        "economicCost": 100000000,
+        "economicCost": 1100000000,
         "compensationCost": 0,
-        "stabilityCost": 0.03,
-        "vaccinationPerDay": 0,
-        "schoolDaysLost": 0,
-        "flags": {
-          "isBorders": false,
-          "isSchool": false
-        }
-      },
-      {
-        "id": "businessesCompensation",
-        "level": true,
-        "rMult": 1,
-        "exposedDrift": 0,
-        "economicCost": 300000000,
-        "compensationCost": 0,
-        "stabilityCost": 0.05,
-        "vaccinationPerDay": 0,
-        "schoolDaysLost": 0,
-        "flags": {
-          "isBorders": false,
-          "isSchool": false
-        }
-      },
-      {
-        "id": "eventsCompensation",
-        "level": true,
-        "rMult": 1,
-        "exposedDrift": 0,
-        "economicCost": 400000000,
-        "compensationCost": 0,
-        "stabilityCost": 0.05,
+        "stabilityCost": -0.3,
         "vaccinationPerDay": 0,
         "schoolDaysLost": 0,
         "flags": {

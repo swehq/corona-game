@@ -37,13 +37,11 @@ export class Game {
   static readonly defaultMitigations: Mitigations = {
     bordersClosed: false,
     businesses: false,
-    businessesCompensation: false,
     events: false,
-    eventsCompensation: false,
     rrr: false,
     schools: false,
-    schoolsCompensation: false,
     stayHome: false,
+    compensations: false,
   };
 
   static readonly zeroMitigationEffect: MitigationEffect = {
@@ -301,9 +299,7 @@ export class Game {
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 1.03 * cs(), 0.15 * ss());
 
     // Compensations
-    addMitigation(['schoolsCompensation', true], 0, [0, 0], 0.1 * cs(), 0.03 * ss());
-    addMitigation(['businessesCompensation', true], 0, [0, 0], 0.3 * cs(), 0.05 * ss());
-    addMitigation(['eventsCompensation', true], 0, [0, 0], 0.4 * cs(), 0.05 * ss());
+    addMitigation(['compensations', true], 0, [0, 0], 1.1 * cs(), -0.3 * ss());
 
     // effectivityConfidence 2sigma confidence interval (can be asymmetric)
     // isSchool mitigations are effective during school holidays "for free"

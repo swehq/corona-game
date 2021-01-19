@@ -13,19 +13,12 @@
     <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
     <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
     <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
-
-    <div>Kompenzovat</div>
-
-    <cvd-row [spacing]="3">
-      <cvd-mitigation-bool grow formControlName="eventsCompensation">Akce</cvd-mitigation-bool>
-      <cvd-mitigation-bool grow formControlName="businessesCompensation">Služby</cvd-mitigation-bool>
-      <cvd-mitigation-bool grow formControlName="schoolsCompensation">Školy</cvd-mitigation-bool>
-    </cvd-row>
   </cvd-col>
 
   <cvd-row [spacing]="3">
     <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
     <cvd-mitigation-bool grow formControlName="stayHome">Zákaz vycházení</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="compensations">Extra kompenzace</cvd-mitigation-bool>
   </cvd-row>
 
 </cvd-col>

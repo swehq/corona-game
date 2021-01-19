@@ -67,6 +67,34 @@
   </cvd-col>
 
   <cvd-col>
-    <cvd-button cdkFocusInitial routerLink="/game" (click)="gameService.restartSimulation()">Hrát znovu a lépe</cvd-button>
+    <cvd-row>
+      <h4>Sdílejte svůj výsledek s přáteli</h4>
+    </cvd-row>
+
+    <cvd-row spacings="2" wrap>
+      <cvd-button (click)="shareService.shareTwitter()">
+        <cvd-icon svgIcon="twitter"></cvd-icon>
+        Twitter
+      </cvd-button>
+
+      <cvd-button (click)="shareService.shareFacebook()">
+        <cvd-icon svgIcon="facebook"></cvd-icon>
+        Facebook
+      </cvd-button>
+
+      <cvd-button (click)="shareService.shareLinkedIn()">
+        <cvd-icon svgIcon="linkedin"></cvd-icon>
+        LinkedIn
+      </cvd-button>
+    </cvd-row>
+  </cvd-col>
+
+  <cvd-col>
+    <cvd-button
+      routerLink="/game"
+      type="raised"
+      (click)="gameService.restartSimulation()">
+      Hrát znovu a lépe
+    </cvd-button>
   </cvd-col>
 </cvd-col>

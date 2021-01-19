@@ -1,5 +1,18 @@
 <div style="display: flex;">
-  <button mat-stroked-button #nativeButtonElement>
-    <ng-content></ng-content>
+  <button
+    *ngIf="type === 'raised'"
+    color="primary"
+    mat-raised-button #nativeButtonElement>
+    <ng-container [ngTemplateOutlet]="contentRef"></ng-container>
+  </button>
+
+  <button
+    *ngIf="type === 'stroked'"
+    mat-stroked-button #nativeButtonElement>
+    <ng-container [ngTemplateOutlet]="contentRef"></ng-container>
   </button>
 </div>
+
+<ng-template #contentRef>
+  <ng-content></ng-content>
+</ng-template>

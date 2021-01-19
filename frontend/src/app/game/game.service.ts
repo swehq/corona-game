@@ -160,7 +160,7 @@ export class GameService {
     this.saveCheckpoint();
     const gameData = this.getGameData();
     return this.httpClient.post<{id: string}>('/api/game-data', gameData).pipe(
-      tap((data: any) => this.saveGameId(data.id)),
+      tap(data => this.saveGameId(data.id)),
     );
   }
 
@@ -179,24 +179,27 @@ export class GameService {
   }
 
   private loadGameFromJson() {
-    this.setSpeed('pause');
     const dataString = window.localStorage.getItem(LocalStorageKey.LAST_GAME_DATA);
     if (!dataString) return false;
 
     try {
       const game = validateGame(JSON.parse(dataString));
       if (!game) return false;
-
-      this.game = game;
-      this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
-      this._reset$.next();
+      this.restoreGame(game);
       this.setSpeed('play');
-      this.updateChart();
     } catch {
       return false;
     }
 
     return true;
+  }
+
+  restoreGame(game: Game) {
+    this.setSpeed('pause');
+    this.game = game;
+    this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
+    this._reset$.next();
+    this.updateChart();
   }
 
   private scheduleTick(interval?: number) {

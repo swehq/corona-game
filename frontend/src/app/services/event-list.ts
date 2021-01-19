@@ -170,13 +170,12 @@ export const eventTriggers: EventTrigger[] = [
         title: 'První případ nákazy koronavirem!',
         text: '<p>Nemocí Covid-19 se v Česku nakazil první člověk a řešení této situace máte teď ve svých rukou. Než se do toho pustíte, měli byste vědět tohle:</p>\
 <ul>\
-  <li>Aktivní opatření jsou označena modře, šedá naopak znamená, že opatření aktuálně není zavedeno</li>\
   <li>Každé opatření má různý vliv na šíření koronaviru</li>\
   <li>Pamatujte, že nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
-  <li>Hru můžete vždy pozastavit mezerníkem nebo tlačítkem pauza</li>\
-  <li>Když nebudete vědět jak hru ovládat a co jednotlivé věci znamenají, najeďte myší na otazníky v rozích jednotlivých panelů</li>\
+  <li><strong>Hru můžete vždy pozastavit mezerníkem nebo tlačítkem pauza</strong></li>\
+  <li>Když nebudete vědět jak hru ovládat a co jednotlivé věci znamenají, klikněte na otazníky v rozích jednotlivých panelů</li>\
 </ul>',
-        help: 'Modrá barva značí komentář průvodce. Průvodce toho hodně ví, a proto vám bude radit, co by v nastalé situaci bylo dobré udělat. To, jestli jeho rady poslechnete, už je jen na vás!',
+        help: 'Modrá barva značí nezávazné rady průvodce. Naložte s nimi dle svého!',
         choices: [
           simpleChoice('Chci vidět ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
           simpleChoice('Chci přímo do hry'),
@@ -188,15 +187,9 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Grafy (tento panel)',
-        text: '<p>Hlavní zdroj informací o aktuální situaci ve státě. Překlikávat můžete mezi těmito čtyřmi grafy:</p> \
-<ul style="list-style: none;">\
-<li><strong>Ikonka viru</strong>: (Nové nakažení) Tento graf zobrazuje, kolik lidí se v daný den nově nakazilo</li>\
-<li><strong>Ikonka lebky</strong>:(Zemřelí) Počet zemřelých denně. Tento graf zobrazuje lidi, kteří zemřeli přímo na Covid-19. Mějte ale na mysli i další okolnosti. Například přetížené nemocnice bez volných kapacit vedou k více úmrtím.</li>\
-<li><strong>Ikonka peněz</strong>: (Náklady) Graf nákladů značí ztráty, které státní kase i ekonomice jako celku pandemie přináší. Zavádění opatření, vyplácení kompenzací i hospitalizace - to vše stojí peníze.</li>\
-<li><strong>Ikonka injekce</strong>: (Imunizovaní) Tento graf zobrazuje jak obyvatele, kteří prodělali Covid-19 a stali se tak na několik měsíců imunní, tak i lidi, kteří imunitu získali očkováním. Vaším cílem ve hře je dosáhnout 75 % imunní populace.</li>\
-</ul>',
-        help: 'Grafy v sobě nesou mnoho zajímavých informací. Jestli ale chcete s pandemii efektivně zatočit, doporučujeme se orientovat hlavně podle grafu nově nakažených, který odráží, jak se vám zvládání pandemie momentálně (ne)daří. ',
+        title: 'Grafy (v tomto panelu)',
+        text: '<p>Hlavní zdroj informací o aktuální situaci ve státě. Překlikávat můžete mezi čtyřmi různými grafy. Nejdůležitější je však graf nově nakažených.</p>\
+<p>Po skončení tutorialu klikněte na otazník v tomto panelu a přečtěte si o nich více.</p>',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
@@ -204,14 +197,10 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: '[TODO] Horní panel',
-        text: '<p>Statistiky slouží jako rychlý přehled toho nejdůležitějšího.</p>\
-<ul>\
-<li><strong>Datum</strong></li>\
-<li><strong>Společenská stabilita</strong>: reakce společnosti na vaše kroky. Pokud zavádíte příliš omezující opatření, nebo naopak umírá příliš lidí, může dojít k výměně vlády a hra skončí</li>\
-<li><strong>Kapacita nemocnic</strong>: pokud překročíte kapacitu nemocnic, zhroší se péče o nemocné a zemřelých tak bude přibývat více</li>\
-</ul>',
-        help: 'Průvodce: Zvláštní pozornost věnujte ukazateli společenské stability. Její propad na minimum je jediný způsob, jak může vaše hra skončit ještě před dostatečnou imunizací.',
+        title: 'Základní statistiky a rychlost hry (první panel)',
+        text: '<p>Zde můžete sledovat hodnotu společenské stability a kapacitu nemocnic.</p>\
+<p>Věnujte pozornost tomu, proč jsou pro vás společenská stabilita a kapacita nemocnic důležité. Klikněte na otazník v panelu rychlostí.</p>\
+<p>Zároveň vám tento panel umožňuje hru zrychlovat, zpomalovat nebo případně pozastavit tlačítkem pauza.</p>',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
@@ -219,20 +208,10 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Opatření (pravý horní panel)',
-        text: 'Zde naleznete svůj hlavní nástroj k zvládání pandemie. Ve hře se také můžete rozhodnout některá opatření kompenzovat - znamená to, že budete vydávat zvláštní zdroje jako kompenzace poškozeným podnikům. Ve hře je pro zjednodušení stát nesmírně efektivní v zavádění a rušení opatření. Vše je zavedeno okamžitě a vždy bez technických chyb. Toto je zásadní zjednodušení oproti reálnému světu. ',
-        help: 'Opatření o něco snižují šíření viru, ale také stojí peníze a snižují stabilitu ve společnosti. Je na vás, jakou strategii zvolíte. Snažili jsme se, aby náš model byl co nejférovější a umožnil různé přístupy. Můžete například zkusit nasazovat a zase vypínat opatření tak, abyste se vyhnuli vlnám a přetížení nemocnic. ',
-      },
-    ],
-    condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
-  },
-  {
-    events: [
-      {
-        title: 'Datum (pravý dolní panel)',
-        text: 'Zde naleznete pouze dnešní datum a pod ním případně vliv všech voleb, které jste udělali v rámci různých krizových událostí. Událostí jsou ve hře desítky, ale při každé hře jich zažijete jen malou část.',
-        help: 'A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. \
-Hodně štěstí!',
+        title: 'Panel opatření',
+        text: '<p>Zde naleznete svůj hlavní nástroj k zvládání pandemie. Aktivní opatření jsou označena modře, šedá naopak znamená, že opatření aktuálně není zavedeno.</p>\
+<p>Najeďte na otazník v panelu opatření a přečtěte si více o fungování opatření a kompenzacích.</p>',
+        help: 'A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),

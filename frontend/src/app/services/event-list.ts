@@ -167,18 +167,18 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'První případ nákazy koronavirem!',
-        text: '<p>Nemocí Covid-19 se v Česku nakazil první člověk a řešení této situace máte teď ve svých rukou. Než se do toho pustíte, měli byste vědět tohle:</p>\
-<ul>\
+        title: 'První případ nákazy koronavirem v Česku!',
+        text: '<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p>\
+<ul style="padding-top: 0.5rem; padding-bottom: 0.5rem">\
   <li>Každé opatření má různý vliv na šíření koronaviru</li>\
-  <li>Pamatujte, že nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
-  <li><strong>Hru můžete vždy pozastavit mezerníkem nebo tlačítkem pauza</strong></li>\
-  <li>Když nebudete vědět jak hru ovládat a co jednotlivé věci znamenají, klikněte na otazníky v rozích jednotlivých panelů</li>\
+  <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
+  <li>Kliknutí na otazníky u panelů otevře nápovědu</li>\
+  <li><strong>Hru můžete zastavit v panelu nahoře</strong></li>\
 </ul>',
         help: 'Modrá barva značí nezávazné rady průvodce. Naložte s nimi dle svého!',
         choices: [
-          simpleChoice('Chci vidět ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
-          simpleChoice('Chci přímo do hry'),
+          simpleChoice('Ukázat ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
+          simpleChoice('Hrát'),
         ],
       },
     ],
@@ -201,6 +201,17 @@ export const eventTriggers: EventTrigger[] = [
         text: '<p>Zde můžete sledovat hodnotu společenské stability a kapacitu nemocnic.</p>\
 <p>Věnujte pozornost tomu, proč jsou pro vás společenská stabilita a kapacita nemocnic důležité. Klikněte na otazník v panelu rychlostí.</p>\
 <p>Zároveň vám tento panel umožňuje hru zrychlovat, zpomalovat nebo případně pozastavit tlačítkem pauza.</p>',
+      },
+    ],
+    condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
+  },
+  {
+    events: [
+      {
+        title: 'Panel opatření',
+        text: '<p>Zde naleznete svůj hlavní nástroj k zvládání pandemie. Aktivní opatření jsou označena modře, šedá naopak znamená, že opatření aktuálně není zavedeno.</p>\
+<p>Najeďte na otazník v panelu opatření a přečtěte si více o fungování opatření a kompenzacích.</p>',
+        help: 'A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
@@ -525,8 +536,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Vláda dostala vysvědčení',
         text: '\
 <p>Několik dní před tím než dostanou vysvědčení školáci je příležitost hodnotit i vaše působení ve vládě od začátku pandemie.</p>\
-<p>Ve skutečné České republice došlo k 30. 6. 2020 k 347 úmrtím osob hospitalizovaných s nemocí Covid-19. Vám v simulaci zemřelo {{stats.deaths.total}} osob.</p>\
-<p>Náklady České republiky na zvládnutí prvních tří měsíců pandemie odhadujeme na 400 miliard Kč. Vy jste zaplatili {{stats.costs.total}} Kč</p>',
+<p>Ve skutečné České republice došlo k 30.6. 2020 k 347 úmrtím osob hospitalizovaných s nemocí Covid-19. Vám v simulaci zemřelo {{stats.deaths.total}} osob.</p>',
         help: 'První vlna může být překvapivá a nepříjemná. Možná nejste spokojeni s tím, jak se vám povedla a chcete to zkusit znovu, pak stačí zmáčknout <em>Restart</em>. Pokud chcete pokračovat dál, zmáčkněte <em>Jedeme dál</em>.',
         choices: [
           {
@@ -537,7 +547,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (ei: EventInput) => ei.date === '2020-06-29',
+    condition: (ei: EventInput) => ei.date === '2020-06-28',
     reactivateAfter: 90,
   },
   /****************************************************************************
@@ -557,9 +567,9 @@ export const eventTriggers: EventTrigger[] = [
         condition: (ei: EventInput) => ei.mitigations.rrr,
       },
       {
-        title: 'Nejsem ovce a nebudu se podřizovat bludům. Roušku symbolicky odmítám',
-        text: 'Celebrita veřejně odsuzuje nošení roušek a byla bez ní několikrát vyfocena v obchodech i při dalších příležitostech. Část médií žádá pokutu.',
-        help: 'Pokud významná osobnost nebude potrestána může to vést k menší disciplíně obyvatelstva při dodržování opatření, což může přinést, jak nové nakažené, tak negativně ovlivnit hodnotu R. Jeho potrestání však může pobouřit jeho příznivce a negativně tak ovlivnit společenskou stabilitu.',
+        title: 'Nebudu se podřizovat bludům. Roušku odmítám',
+        text: 'Celebrita veřejně odsuzuje nošení roušek a byla bez ní několikrát vyfocena v obchodech. Část médií žádá pokutu.',
+        help: 'Pokud osobnost nebude potrestána, může to vést k menší disciplíně obyvatel a vyššímu šíření nemoci. Potrestání však může pobouřit jeho příznivce a negativně tak ovlivnit společenskou stabilitu.',
         choices: [
           simpleChoice('Neřešit prohřešek',
             {name: 'Celebrita odmítá roušku', rMult: 1.1, duration: 30}, 'Celebrita nenosí roušku'),
@@ -568,7 +578,7 @@ export const eventTriggers: EventTrigger[] = [
         condition: (ei: EventInput) => ei.mitigations.rrr,
       },
       {
-        title: 'Investigativní novináři odhalili násobně předražené nákupy!',
+        title: 'Násobně předražené nákupy odhaleny!',
         text: 'Jeden z našich dodavatelů lékařského vybavení si účtuje mnohem víc peněz než je v branži zvykem, ale zároveň jsme na jeho dodávkách závislí. Změna může krátkodobě znamenat výpadek dodávek a s ním větší šíření nemoci.',
         help: 'Pokud budeme nadále setrvávat s dosavadním dodavatelem, ztratíme na nevýhodných zakázkách více peněz. Bez těchto dodávek se ale bude nemoc krátkodobě více šířit.',
         choices: [
@@ -649,7 +659,7 @@ export const eventTriggers: EventTrigger[] = [
   { // Silvestr
     events: [
       {
-        title: 'Jak česko oslaví příchod nového roku v době pandemie?',
+        title: 'Jak česko oslaví příchod nového roku?',
         text: 'Pro období svátků je možné zpřísnit opatření (aby se zamezilo většímu setkávání), nebo naopak udělit výjimky z opatření.',
         help: 'Výjimku z opatření velká část obyvatel ocení. Více scházení ale znamená rychlejší šíření nemoci. Zamezit šíření se dá zpřísněním opatření. To ale může obyvatele popudit.',
         choices: [
@@ -712,7 +722,7 @@ export const eventTriggers: EventTrigger[] = [
         ],
       },
     ],
-    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2021-03-13', '2021-05-15'),
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2021-02-13', '2021-02-16'),
   },
   {
     events: [
@@ -733,6 +743,32 @@ export const eventTriggers: EventTrigger[] = [
       },
     ],
     condition: (ei: EventInput) => isEventMitigationLastDay(ei, SPRING_2021_SECURITY_PROBLEM_ID) && probability(0.3),
+  },
+  /****************************************************************************
+   *
+   * Virus mutation
+   *
+   ****************************************************************************/
+  {
+    events: [
+      {
+        title: 'Přichází nová mutace viru',
+        help: 'Nová mutace viru se šíří rychleji. \
+Dejte si větší pozor na počet nakažených a zvažte přísnější opatření.',
+        choices: okButton({rMult: Math.sqrt(1.4), duration: maxMitigationDuration}),
+      },
+    ],
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2021-02-12', '2021-02-28'),
+  },
+  {
+    events: [
+      {
+        title: 'Zmutovaný koronavirus v zemi dominuje!',
+        help: 'Nová mutace viru už je v zemi hojně rozšířená. Virus je výrazně nakažlivější.',
+        choices: okButton({rMult: Math.sqrt(1.4), duration: maxMitigationDuration}),
+      },
+    ],
+    condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2021-03-01', '2021-03-08'),
   },
   /****************************************************************************
    *

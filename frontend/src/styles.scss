@@ -36,17 +36,17 @@ cvd-app {
 
 @media only screen and (min-width: 300px) {
   html {
-    font-size: 10px;
+    font-size: 9px;
 
     cvd-app {
-      padding: 2rem 1rem;
+      padding: 1rem 0;
     }
   }
 }
 
 @media only screen and (min-width: 768px) {
   html {
-    font-size: 11px;
+    font-size: 10px;
 
     cvd-app {
       padding: 2rem 1.2rem;
@@ -56,7 +56,7 @@ cvd-app {
 
 @media only screen and (min-width: 1384px) {
   html {
-    font-size: 12px;
+    font-size: 11px;
 
     cvd-app {
       padding: 2rem 1.5rem;

@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {Component, Inject, PLATFORM_ID} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
@@ -128,16 +129,23 @@ export class OutroComponent {
     },
   };
 
+  completeUrl = '';
+
   constructor(
     private outroService: OutroService,
     public gameService: GameService,
     meta: MetaService,
     public shareService: SocialNetworkShareService,
     activatedRoute: ActivatedRoute,
+    @Inject(PLATFORM_ID) platformId: string,
   ) {
     this.resultId$ = activatedRoute.params.pipe(map(data => data.id));
     meta.setTitle('Výsledky');
     outroService.fetchAllResults();
+
+    if (isPlatformBrowser(platformId)) {
+      this.completeUrl = window.location.href;
+    }
 
     this.resultId$
       .pipe(untilDestroyed(this))

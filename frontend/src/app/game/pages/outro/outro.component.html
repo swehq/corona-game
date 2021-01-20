@@ -72,18 +72,18 @@
       <h4>Sdílejte svůj výsledek s přáteli</h4>
     </cvd-row>
 
-    <cvd-row spacings="2" wrap>
-      <cvd-button (click)="shareService.shareTwitter()">
+    <cvd-row [spacing]="2" wrap>
+      <cvd-button (click)="shareService.shareTwitter(completeUrl)">
         <cvd-icon svgIcon="twitter"></cvd-icon>
         Twitter
       </cvd-button>
 
-      <cvd-button (click)="shareService.shareFacebook()">
+      <cvd-button (click)="shareService.shareFacebook(completeUrl)">
         <cvd-icon svgIcon="facebook"></cvd-icon>
         Facebook
       </cvd-button>
 
-      <cvd-button (click)="shareService.shareLinkedIn()">
+      <cvd-button (click)="shareService.shareLinkedIn(completeUrl)">
         <cvd-icon svgIcon="linkedin"></cvd-icon>
         LinkedIn
       </cvd-button>

@@ -169,11 +169,11 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'První případ nákazy koronavirem v Česku!',
         text: '<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p>\
-<ul style="padding-top: 0.5rem; padding-bottom: 0.5rem">\
+<ul>\
   <li>Každé opatření má různý vliv na šíření koronaviru</li>\
   <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
   <li>Kliknutí na otazníky u panelů otevře nápovědu</li>\
-  <li><strong>Hru můžete zastavit v panelu nahoře</strong></li>\
+  <li><strong>Rychlost hry ovládáte v panelu nahoře</strong></li>\
 </ul>',
         help: 'Modrá barva značí nezávazné rady průvodce. Naložte s nimi dle svého!',
         choices: [
@@ -211,7 +211,6 @@ export const eventTriggers: EventTrigger[] = [
         title: 'Panel opatření',
         text: '<p>Zde naleznete svůj hlavní nástroj k zvládání pandemie. Aktivní opatření jsou označena modře, šedá naopak znamená, že opatření aktuálně není zavedeno.</p>\
 <p>Najeďte na otazník v panelu opatření a přečtěte si více o fungování opatření a kompenzacích.</p>',
-        help: 'A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
@@ -219,10 +218,9 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Panel opatření',
-        text: '<p>Zde naleznete svůj hlavní nástroj k zvládání pandemie. Aktivní opatření jsou označena modře, šedá naopak znamená, že opatření aktuálně není zavedeno.</p>\
-<p>Najeďte na otazník v panelu opatření a přečtěte si více o fungování opatření a kompenzacích.</p>',
-        help: 'A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!',
+        title: 'Teď je to jen na vás',
+        help: '<p>A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!<p>\
+<p><strong>Po zavření tohoto okna spustíte htu v panelu nahoře</strong></p>',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),

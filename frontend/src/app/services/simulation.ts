@@ -111,7 +111,7 @@ export interface DayState {
 
 export class Simulation {
   readonly R0 = 3.3;
-  readonly RSeasonalityEffect = 0.25;
+  readonly seasonalityConst = 0.3;
   readonly seasonPeak = '2020-01-15';
   readonly initialPopulation = 10_690_000;
   readonly exposedStart = 12;
@@ -126,18 +126,18 @@ export class Simulation {
   readonly stabilityRecovery = 0.2;
   readonly hospitalizationCostPerDay = 5_000;
 
-  readonly rEmaUpdater = Simulation.createEmaUpdater(7, this.R0);
+  readonly rEmaUpdater = Simulation.createEmaUpdater(3.5, this.R0);
 
   // Durations of various model states
-  readonly exposedDuration = 3;        // Duration people spend in exposed state
-  readonly infectiousDuration = 5;     // How long people stay infectious before they isolate or get hospitalized
+  readonly infectiousRate = 0.175;     // Rate of E -> I transition
+  readonly infectiousDuration = 4;     // How long people stay infectious before they isolate or get hospitalized
   readonly hospitalized1Duration = 7;  // Duration of the hospitalization before the average death
   readonly hospitalized2Duration = 14; // Duration of the remaining hospitalization for the recovering patients
   readonly recoveringDuration = 14;    // How long is the infection considered active in statistics
   readonly immunityMeanDuration = 180; // Average time of R -> S transition
 
   // This is used to calculate the number of active cases
-  readonly incubationDays = 5;       // Days until infection is detected
+  readonly symptomsDelay = 2;       // Days until infection is detected
 
   readonly economicCostMultiplier = 2;
 
@@ -192,7 +192,7 @@ export class Simulation {
 
   private calcModelInputs(date: string, mitigationEffect: MitigationEffect): ModelInputs {
     const yesterday = last(this.modelStates)?.modelInputs;
-    const seasonalityMult = 1 + this.getSeasonalityEffect(date);
+    const seasonalityMult = this.getSeasonalityMult(date);
 
     const prevVaccinationRate = yesterday?.vaccinationRate ? yesterday.vaccinationRate : 0;
     let vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
@@ -248,7 +248,7 @@ export class Simulation {
     exposed += exposedNew;
 
     // exposed -> infectious
-    const infectiousNew = this.getSirStateInPast(this.exposedDuration).exposedNew;
+    const infectiousNew = this.infectiousRate * exposed;
     exposed -= infectiousNew;
     infectious += infectiousNew;
 
@@ -288,10 +288,10 @@ export class Simulation {
     suspectible += resistantEnd;
 
     // detected infections
-    const detectedNew = randomness.detectionRate * this.getSirStateInPast(this.incubationDays).exposedNew;
+    const detectedNew = randomness.detectionRate * this.getSirStateInPast(this.symptomsDelay).infectiousNew;
 
     // detected infections going to recovering
-    const incubationToInfectiousEndDuration = this.exposedDuration + this.infectiousDuration - this.incubationDays;
+    const incubationToInfectiousEndDuration = this.infectiousDuration - this.symptomsDelay;
     const detectedInfectiousEnd = this.getSirStateInPast(incubationToInfectiousEndDuration).detectedNew;
     const recoveringDetectedNotHospitalizedNew = detectedInfectiousEnd - hospitalized1New;
 
@@ -344,8 +344,8 @@ export class Simulation {
     return last(this.modelStates)?.stats;
   }
 
-  private getSeasonalityEffect(date: string): number {
-    return this.RSeasonalityEffect * Math.cos(2 * Math.PI * getSeasonality(date, this.seasonPeak));
+  private getSeasonalityMult(date: string): number {
+    return Math.exp(this.seasonalityConst * Math.cos(2 * Math.PI * getSeasonality(date, this.seasonPeak)));
   }
 
   private calcMetricStats(name: string, todayUnrounded: number): MetricStats {

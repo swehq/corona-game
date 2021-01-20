@@ -15,6 +15,8 @@ COPY frontend/src /app/frontend/src
 WORKDIR /app/backend
 RUN npm run build
 
+COPY backend/src/game/views /app/backend/dist/backend/src/game/views
+
 EXPOSE 8000
 
 CMD ["npm", "run", "start:prod"]

@@ -14,7 +14,7 @@ export class IntroComponent {
 
   loadSave() {
     if (this.gameService.loadGameFromJson()) return;
-    this.gameService.restartSimulation();
+    this.loadNewGame();
   }
 
   loadNewGame() {

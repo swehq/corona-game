@@ -1,5 +1,6 @@
 import {Component, HostBinding, HostListener, Input, ViewChild} from '@angular/core';
 import {MatButton} from '@angular/material/button';
+import {ThemePalette} from '@angular/material/core';
 
 @Component({
   selector: 'cvd-button',
@@ -9,6 +10,9 @@ import {MatButton} from '@angular/material/button';
 export class ButtonComponent {
   @Input()
   type: 'raised' | 'stroked' = 'stroked';
+
+  @Input()
+  themePalette: ThemePalette = undefined;
 
   @HostBinding('style.--color')
   @Input() color = '';

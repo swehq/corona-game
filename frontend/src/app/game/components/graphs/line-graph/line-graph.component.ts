@@ -70,6 +70,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private seriesLength = 0;
   private lastValue: number | undefined;
 
+  private axesFontSize = 11;
+  private readonly widthThresholds = {
+    phone: 500,
+    tablet: 960,
+  };
+
   @Input()
   scopeFormControl = new FormControl(0);
 
@@ -77,6 +83,11 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   datasets: ChartDataSets[] = [];
   labels: Label[] = [];
   options: ChartOptions = {
+    layout: {
+      padding: {
+        top: 32,
+      },
+    },
     title: {
       display: false,
       text: undefined,
@@ -91,6 +102,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     tooltips: {
       enabled: true,
       displayColors: false,
+      titleFontSize: 11,
+      bodyFontSize: 11,
       callbacks: {
         title: tooltipItem => this.formatTooltip(tooltipItem),
         label: tooltipItem => this.tooltipLabels[tooltipItem.datasetIndex!](+tooltipItem.yLabel!),
@@ -99,7 +112,15 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     scales: {
       yAxes: [{
         ticks: {
+          fontSize: this.axesFontSize,
           callback: value => formatNumber(+value, false, true),
+        },
+      }],
+      xAxes: [{
+        ticks: {
+          maxRotation: 0,
+          autoSkipPadding: 16,
+          fontSize: this.axesFontSize,
         },
       }],
     },
@@ -126,7 +147,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         formatter: (_, context) => this.formatDataLabel(context.dataIndex),
         font: context => {
           const width = context.chart.width;
-          let size = Math.round(width! / 64);
+          let size = Math.round(width! / 52);
           if (this.dataLabelNodes[context.dataIndex]?.event) size++;
           return {
             family: '"worksans", "Helvetica Neue", arial',
@@ -316,12 +337,24 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       },
       pointRadius: context => {
         const index = context.dataIndex || 0;
-        if (this.dataLabelNodes[index]?.event) return 5;
-        if (this.dataLabelNodes[index]?.uiChange) return 4;
-        return 0;
+
+        let pointRadius = 0;
+        if (this.dataLabelNodes[index]?.event) pointRadius = 5;
+        if (this.dataLabelNodes[index]?.uiChange) pointRadius = 4;
+
+        if (!pointRadius) return 0;
+
+        if (context.chart?.width! < this.widthThresholds.phone) pointRadius -= 2;
+
+        return pointRadius;
       },
       pointBorderWidth: 1,
       pointHitRadius: 5,
+      borderWidth: context => {
+        if (context.chart?.width! < this.widthThresholds.phone) return 1;
+        if (context.chart?.width! < this.widthThresholds.tablet) return 2;
+        return 3;
+      },
     };
   }
 
@@ -347,7 +380,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     const dataLabelNode = this.dataLabelNodes[tooltipItem[0].index || 0] || undefined;
     if (!dataLabelNode) return '';
 
-    let title = '';
+    let title = `${tooltipItem[0].xLabel}\n`;
     if (dataLabelNode.event) {
       const event = dataLabelNode.event;
       title += `Událost: ${event?.event.title}\n`;
@@ -355,7 +388,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     }
 
     if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;
-    if (dataLabelNode.uiChange) title += dataLabelNode.uiChange.join('\n');
+    if (dataLabelNode.uiChange) title += `${dataLabelNode.uiChange.join('\n')}\n`;
 
     return title;
   }

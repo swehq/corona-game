@@ -4,6 +4,7 @@
   padding-bottom: 2rem;
   align-items: center;
   justify-content: flex-start;
+  -webkit-flex: 0 0 auto; // Safari
 
   .title {
     margin-bottom: 0;

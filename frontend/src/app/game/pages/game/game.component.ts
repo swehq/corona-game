@@ -46,6 +46,6 @@ export class GameComponent {
   }
 
   pause() {
-    this.gameService.setSpeed('pause');
+    this.gameService.pause();
   }
 }

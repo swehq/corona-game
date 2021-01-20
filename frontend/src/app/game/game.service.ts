@@ -233,4 +233,10 @@ export class GameService {
       if (this.tickerId) this.scheduleTick(this.speedInterval);
     }, this.speedInterval);
   }
+
+  pause() {
+    if (this.speed === 'pause') return;
+    if (this.speed === 'finished') return;
+    this.setSpeed('pause');
+  }
 }

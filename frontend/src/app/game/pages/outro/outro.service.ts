@@ -67,25 +67,26 @@ export class OutroService {
     this.fetch$.next();
   }
 
-  loadGame(id: string) {
-    if (id === this._current$.value.id) return;
+  loadGame$(id: string) {
+    if (id === this._current$.value.id && this._current$.value.gameIsReady) return of(true);
 
     this._current$.next({id, gameIsReady: false});
 
-    this.httpClient.get<GameDataResponse>(`/api/game-data/${id}`).subscribe(
+    return this.httpClient.get<GameDataResponse>(`/api/game-data/${id}`).pipe(map(
       response => {
-        if (!response) return;
+        if (!response) return false;
 
         const {_id, created, results, ...gameData} = response;
         this._current$.next({id, gameIsReady: false, result: results});
 
         const game = validateGame(gameData);
-        if (!game) return;
+        if (!game) return false;
 
         this.gameService.restoreGame(game);
         this._current$.next({id, gameIsReady: true, result: results});
+        return true;
       },
-    );
+    ));
   }
 
   saveGame$() {

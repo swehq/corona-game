@@ -162,12 +162,10 @@ export class OutroComponent {
   }
 
   get stats() {
-    const lastStats = this.gameService.game.simulation.getLastStats();
-    if (!lastStats) throw new Error('Missing game statistics');
-    return lastStats;
+    return this.gameService.game?.simulation?.getLastStats();
   }
 
   isGameLost() {
-    return this.gameService.game.isGameLost();
+    return this.gameService.game?.isGameLost();
   }
 }

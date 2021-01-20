@@ -23,7 +23,7 @@
     <ng-content></ng-content>
   </div>
 
-  <cvd-col [spacing]="2" alignItems="flex-start">
+  <cvd-col *ngIf="stats" [spacing]="2" alignItems="flex-start">
     <p>
       V grafu vidíte celkový počet mrtvých a utracené peníze.
       Ale to nejsou všechny náklady pandemie.

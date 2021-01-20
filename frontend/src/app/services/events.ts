@@ -10,7 +10,7 @@ export interface EventMitigation extends Partial<MitigationEffect> {
   duration: number; // number of days the effect is valid for (0 - affects 0 days)
 }
 
-export type EventChoiceAction = 'restart';
+export type EventChoiceAction = 'restart' | 'pause';
 
 interface EventChoiceGeneric<T> {
   buttonLabel: string;

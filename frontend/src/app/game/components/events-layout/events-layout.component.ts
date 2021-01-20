@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
-import {GameService} from '../../game.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {Event, EventChoice} from '../../../services/events';
 import {inOutAnimation} from 'src/app/utils/animations';
+import {Event, EventChoice} from '../../../services/events';
+import {GameService} from '../../game.service';
 
 @UntilDestroy()
 @Component({
@@ -33,6 +33,7 @@ export class EventsLayoutComponent {
     this.gameService.removeEvent();
     if (!this.gameService.currentEvent) {
       this.gameService.setSpeed('play');
+      if (choice?.action === 'pause') this.gameService.setSpeed('pause');
     }
   }
 }

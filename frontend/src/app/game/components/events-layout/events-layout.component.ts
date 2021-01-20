@@ -32,7 +32,12 @@ export class EventsLayoutComponent {
 
     this.gameService.removeEvent();
     if (!this.gameService.currentEvent) {
-      this.gameService.setSpeed('play');
+      const keepPaused = choice && choice.action === 'pause';
+      if (!keepPaused) {
+        this.gameService.setSpeed('play');
+      } else {
+        // this.statusDisplayComponent.speedFormControl.enable();
+      }
     }
   }
 }

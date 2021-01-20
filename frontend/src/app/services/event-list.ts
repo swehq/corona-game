@@ -178,7 +178,10 @@ export const eventTriggers: EventTrigger[] = [
         help: 'Modrá barva značí nezávazné rady průvodce. Naložte s nimi dle svého!',
         choices: [
           simpleChoice('Ukázat ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
-          simpleChoice('Hrát'),
+          {
+            buttonLabel: 'Hrát',
+            action: 'pause',
+          },
         ],
       },
     ],
@@ -220,7 +223,13 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'Teď je to jen na vás',
         help: '<p>A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!<p>\
-<p><strong>Po zavření tohoto okna spustíte htu v panelu nahoře</strong></p>',
+<p><strong>Po zavření tohoto okna spustíte hru v panelu nahoře</strong></p>',
+        choices: [
+          {
+            buttonLabel: 'OK',
+            action: 'pause',
+          },
+        ],
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),

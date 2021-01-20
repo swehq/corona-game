@@ -39,5 +39,16 @@
     Přejeme, ať se vám v boji s koronavirem daří!
   </p>
 
-  <cvd-button cdkFocusInitial routerLink="/game">Hrát</cvd-button>
+  <cvd-row [horizontalSpacing]="3">
+    <cvd-button themePalette="accent" type="raised" *ngIf="!gameService.isLocalStorageGame(); else savedGameOptions" cdkFocusInitial
+                (click)="loadNewGame()" routerLink="/game">Hrát
+    </cvd-button>
+  </cvd-row>
+
+  <ng-template #savedGameOptions>
+    <cvd-button cdkFocusInitial themePalette="accent" type="raised" (click)="loadSave()" routerLink="/game">Pokračovat v poslední hře
+    </cvd-button>
+    <cvd-button cdkFocusInitial (click)="loadNewGame()" routerLink="/game">Hrát novou hru</cvd-button>
+  </ng-template>
+
 </cvd-col>

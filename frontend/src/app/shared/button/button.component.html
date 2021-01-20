@@ -1,7 +1,7 @@
 <div style="display: flex;">
   <button
     *ngIf="type === 'raised'"
-    color="primary"
+    [color]="themePalette"
     mat-raised-button #nativeButtonElement>
     <ng-container [ngTemplateOutlet]="contentRef"></ng-container>
   </button>

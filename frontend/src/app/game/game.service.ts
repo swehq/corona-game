@@ -42,11 +42,6 @@ export class GameService {
   endOfDay$ = this._endOfDay$.asObservable();
 
   constructor(private httpClient: HttpClient) {
-    if (this.loadGameFromJson()) {
-      return;
-    }
-
-    this.restartSimulation();
   }
 
   get lastDate() {
@@ -177,7 +172,7 @@ export class GameService {
     window.localStorage.setItem(LocalStorageKey.LAST_GAME_DATA, JSON.stringify(this.getGameData()));
   }
 
-  private loadGameFromJson() {
+  loadGameFromJson() {
     const dataString = window.localStorage.getItem(LocalStorageKey.LAST_GAME_DATA);
     if (!dataString) return false;
 
@@ -191,6 +186,10 @@ export class GameService {
     }
 
     return true;
+  }
+
+  isLocalStorageGame() {
+    return Boolean(window.localStorage.getItem(LocalStorageKey.LAST_GAME_DATA));
   }
 
   restoreGame(game: Game) {

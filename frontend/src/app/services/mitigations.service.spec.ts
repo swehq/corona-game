@@ -1,6 +1,6 @@
-import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
 import {MitigationsService} from './mitigations.service';
+import {TestingModule} from '../shared/testing/testing.module';
 
 describe('MitigationsService', () => {
   let service: MitigationsService;
@@ -8,7 +8,7 @@ describe('MitigationsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
+        TestingModule,
       ],
     });
     service = TestBed.inject(MitigationsService);

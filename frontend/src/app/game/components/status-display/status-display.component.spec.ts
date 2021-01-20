@@ -1,8 +1,7 @@
-import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {GameModule} from '../../game.module';
 
 import {StatusDisplayComponent} from './status-display.component';
+import {TestingModule} from '../../../shared/testing/testing.module';
 
 describe('StatusDisplayComponent', () => {
   let component: StatusDisplayComponent;
@@ -11,8 +10,7 @@ describe('StatusDisplayComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
-        GameModule,
+        TestingModule,
       ],
     })
       .compileComponents();

@@ -1,7 +1,6 @@
-import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {GameModule} from '../../game.module';
 import {MitigationsControlComponent} from './mitigations-control.component';
+import {TestingModule} from '../../../shared/testing/testing.module';
 
 describe('MitigationsControlComponent', () => {
   let component: MitigationsControlComponent;
@@ -10,8 +9,7 @@ describe('MitigationsControlComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
-        GameModule,
+        TestingModule,
       ],
     })
       .compileComponents();

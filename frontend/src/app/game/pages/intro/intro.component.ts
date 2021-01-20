@@ -1,5 +1,6 @@
 import {Component} from '@angular/core';
 import {MetaService} from 'src/app/services/meta.service';
+import {GameService} from '../../game.service';
 
 @Component({
   selector: 'cvd-intro',
@@ -7,7 +8,16 @@ import {MetaService} from 'src/app/services/meta.service';
   styleUrls: ['./intro.component.scss'],
 })
 export class IntroComponent {
-  constructor(meta: MetaService) {
+  constructor(meta: MetaService, public gameService: GameService) {
     meta.setTitle('Vítejte');
+  }
+
+  loadSave() {
+    if (this.gameService.loadGameFromJson()) return;
+    this.loadNewGame();
+  }
+
+  loadNewGame() {
+    this.gameService.restartSimulation();
   }
 }

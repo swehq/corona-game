@@ -1,10 +1,10 @@
 import {isPlatformBrowser} from '@angular/common';
 import {Component, Inject, PLATFORM_ID} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
-import {combineLatest, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {combineLatest, Observable, of} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
 import {formatNumber} from '../../../utils/format';
@@ -137,6 +137,7 @@ export class OutroComponent {
     meta: MetaService,
     public shareService: SocialNetworkShareService,
     activatedRoute: ActivatedRoute,
+    router: Router,
     @Inject(PLATFORM_ID) platformId: string,
   ) {
     this.resultId$ = activatedRoute.params.pipe(map(data => data.id));
@@ -147,9 +148,17 @@ export class OutroComponent {
       this.completeUrl = window.location.href;
     }
 
-    this.resultId$
-      .pipe(untilDestroyed(this))
-      .subscribe(id => outroService.loadGame(id));
+    this.resultId$.pipe(
+      switchMap(id => id
+        ? outroService.loadGame$(id)
+        : this.gameService.speed$.pipe(map(speed => speed === 'finished'))),
+      catchError(() => of(false)),
+      untilDestroyed(this),
+    ).subscribe(
+      gameIsValidAndFinished => {
+        if (!gameIsValidAndFinished) router.navigate(['/']);
+      },
+    );
   }
 
   get stats() {

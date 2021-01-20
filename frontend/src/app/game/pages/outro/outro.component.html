@@ -11,9 +11,9 @@
     </div>
   </div>
 
-  <cvd-scatter-graph
+  <cvd-scatter-graph *ngIf="(datasets$ | async) as datasets"
     style="width: 90%"
-    [options]="outroChartOptions" [datasets]="(datasets$ | async)!"
+    [options]="outroChartOptions" [datasets]="datasets"
   ></cvd-scatter-graph>
 
   <cvd-graphs *ngIf="isGameReady$ | async" style="width: 90%"></cvd-graphs>

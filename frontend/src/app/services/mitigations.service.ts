@@ -17,13 +17,11 @@ export type SchoolsLevel = false | 'universities' | 'all';
 export interface Mitigations {
   bordersClosed: boolean;
   businesses: BusinessesLevel;
-  businessesCompensation: boolean;
   events: EventsLevel;
-  eventsCompensation: boolean;
   rrr: boolean;
   schools: SchoolsLevel;
-  schoolsCompensation: boolean;
   stayHome: boolean;
+  compensations: boolean;
 }
 
 type MitigationKey = keyof Mitigations;
@@ -47,13 +45,11 @@ export class MitigationsService {
   formGroup = new FormGroup({
     bordersClosed: new FormControl(),
     businesses: new FormControl(),
-    businessesCompensation: new FormControl(),
     events: new FormControl(),
-    eventsCompensation: new FormControl(),
     rrr: new FormControl(),
     schools: new FormControl(),
-    schoolsCompensation: new FormControl(),
     stayHome: new FormControl(),
+    compensations: new FormControl(),
   });
 
   static readonly mitigationsI18n: { [key in keyof Mitigations]: Record<string, string> } = {
@@ -66,19 +62,11 @@ export class MitigationsService {
       most: 'Služby - otevřené jen základní',
       false: 'Služby - neomezeno',
     },
-    businessesCompensation: {
-      false: 'Nekompenzovat živnostníky',
-      true: 'Kompenzace živnostníkům',
-    },
     events: {
       1000: 'Akce - max. 1 000',
       100: 'Akce - max. 100',
       10: 'Akce - max. 10',
       false: 'Akce - neomezeno',
-    },
-    eventsCompensation: {
-      false: 'Nekompenzovat pohostinství',
-      true: 'Kompenzace pohostinství',
     },
     rrr: {
       true: '3R - zavedeno',
@@ -89,13 +77,13 @@ export class MitigationsService {
       all: 'Školy - zavřené všechny',
       false: 'Školy - neomezeno',
     },
-    schoolsCompensation: {
-      false: 'Nezavést ošetřovné',
-      true: 'Zavést ošetřovné',
-    },
     stayHome: {
       true: 'Zákaz vycházení',
       false: 'Vycházení neomezeno',
+    },
+    compensations: {
+      false: 'Žádné finanční kompenzace',
+      true: 'Finanční kompenzace',
     },
   };
 
@@ -246,28 +234,12 @@ export class MitigationsService {
   enforceChanges(diff: MitigationDiff, force: MitigationForceCallback) {
     const {changed, newValue} = diff;
 
-    if (changed.includes('businesses') && newValue.businesses === false) {
-      force('businessesCompensation', false);
-    }
-
     if (changed.includes('businesses') && newValue.businesses !== 'most') {
       force('stayHome', false);
     }
 
-    if (changed.includes('businessesCompensation') && newValue.businessesCompensation) {
-      force('businesses', ['some', 'most']);
-    }
-
-    if (changed.includes('events') && newValue.events === false) {
-      force('eventsCompensation', false);
-    }
-
     if (changed.includes('events') && newValue.events !== 10) {
       force('stayHome', false);
-    }
-
-    if (changed.includes('eventsCompensation') && newValue.eventsCompensation) {
-      force('events', [1000, 100, 10]);
     }
 
     if (changed.includes('rrr') && newValue.rrr === false) {
@@ -275,12 +247,7 @@ export class MitigationsService {
     }
 
     if (changed.includes('schools') && newValue.schools !== 'all') {
-      force('schoolsCompensation', false);
       force('stayHome', false);
-    }
-
-    if (changed.includes('schoolsCompensation') && newValue.schoolsCompensation) {
-      force('schools', 'all');
     }
 
     if (changed.includes('stayHome') && newValue.stayHome) {
@@ -292,17 +259,21 @@ export class MitigationsService {
   }
 
   preset(level: MitigationsPresetLevel) {
+    const defaultMitigationsKeepCompensations = {
+      ...Game.defaultMitigations,
+      compensations: this.gameService.game.mitigations.compensations,
+    };
     const presets: Record<MitigationsPresetLevel, Mitigations> = {
       open: {
-        ...Game.defaultMitigations,
+        ...defaultMitigationsKeepCompensations,
       },
       level1: {
-        ...Game.defaultMitigations,
+        ...defaultMitigationsKeepCompensations,
         events: 1000,
         rrr: true,
       },
       level2: {
-        ...Game.defaultMitigations,
+        ...defaultMitigationsKeepCompensations,
         events: 100,
         rrr: true,
         businesses: 'some',

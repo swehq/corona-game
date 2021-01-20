@@ -259,17 +259,21 @@ export class MitigationsService {
   }
 
   preset(level: MitigationsPresetLevel) {
+    const defaultMitigationsKeepCompensations = {
+      ...Game.defaultMitigations,
+      compensations: this.gameService.game.mitigations.compensations,
+    };
     const presets: Record<MitigationsPresetLevel, Mitigations> = {
       open: {
-        ...Game.defaultMitigations,
+        ...defaultMitigationsKeepCompensations,
       },
       level1: {
-        ...Game.defaultMitigations,
+        ...defaultMitigationsKeepCompensations,
         events: 1000,
         rrr: true,
       },
       level2: {
-        ...Game.defaultMitigations,
+        ...defaultMitigationsKeepCompensations,
         events: 100,
         rrr: true,
         businesses: 'some',

@@ -28,7 +28,7 @@ export interface GameData {
 }
 
 export class Game {
-  readonly infectionsWhenBordersOpen = 30;
+  readonly infectionsWhenBordersOpen = 70;
   readonly infectionsWhenBordersClosed = 10;
   readonly borderDriftDecayStartDate = '2021-01-01';
   readonly borderDriftDecayDuration = 180;

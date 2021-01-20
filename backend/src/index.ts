@@ -14,6 +14,12 @@ import {router} from './game/routes';
   app.use(json());
   app.use(logger());
   app.use(bodyParser({jsonLimit: '5mb'}));
+  var views = require('koa-views');
+  app.use(views(__dirname + '/game/views', {
+    map: {
+      html: 'handlebars'
+    }
+  }))
   app.use(router.routes()).use(router.allowedMethods());
 
   await mongoose.connect(MONGO_URI, {

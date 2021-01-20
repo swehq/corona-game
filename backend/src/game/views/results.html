@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Korona Hra</title>
+
+  <meta property="og:title" content="Korona Hra" />
+  <meta property="og:description"
+  {{#if dead}}
+    content="Vyzkoušej si řízení protipandemických opatření. Moje herní skóre je {{dead}} mrtvých a {{cost}} v nákladech."
+  {{else}}
+    content="Vyzkoušej si řízení protipandemických opatření. Jak dopadnete v porovnání s přáteli?"
+  {{/if}}
+  />
+  <meta property="og:image" content="/assets/images/og_image.png" />
+  <meta property="og:url" content="https://koronahra.cz/" />
+  <meta name="twitter:card" content="summary"></meta>
+
+  <meta property="description"
+  {{#if dead}}
+    content="Vyzkoušej si řízení protipandemických opatření. Moje herní skóre je {{dead}} mrtvých a {{cost}} v nákladech."
+  {{else}}
+    content="Vyzkoušej si řízení protipandemických opatření. Jak dopadnete v porovnání s přáteli?"
+  {{/if}}
+  />
+</head>
+
+<body></body>
+</html>

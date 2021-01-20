@@ -118,7 +118,7 @@ export class MitigationsService {
     this.formGroup.setValue(Game.defaultMitigations);
 
     this.value$ = this.formGroup.valueChanges.pipe(
-      startWith(this.formGroup.value),
+      startWith(this.gameService.game.mitigations),
       map(val => val as { [key in keyof Mitigations]: any }),
     );
 

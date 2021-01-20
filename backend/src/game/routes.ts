@@ -3,8 +3,11 @@ import {GameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
 import {last} from 'lodash';
+import { Context, DefaultState } from 'koa';
+import { formatNumber } from '../../../frontend/src/app/utils/format';
 
-export const router = new Router();
+export const router = new Router<DefaultState, Context>();
+// export const router = new Router();
 
 router.get('/api/game-data', async (ctx) => {
   const data = await GameDataModel.find({}, {results: 1});
@@ -12,7 +15,7 @@ router.get('/api/game-data', async (ctx) => {
 });
 
 router.get('/api/game-data/:id', async (ctx) => {
-  const data = await GameDataModel.findOne({_id: ctx.params.id}).exec();
+  const data = await GameDataModel.findOne({_id: ctx.params.id});
   if (!data) return ctx.status = 404;
   ctx.body = data;
 });
@@ -40,6 +43,22 @@ router.post('/api/game-data', async (ctx) => {
 
   ctx.body = {id: saveData._id};
 });
+
+router.get('/og/results/:id', async (ctx) => {
+  let data: any;
+
+  try {
+    data = await GameDataModel.findOne({_id: ctx.params.id}, {results: 1});
+    console.log(data);
+  } catch (e) {
+    await ctx.render('results');
+  }
+
+  await ctx.render('results', {
+    dead: formatNumber(data.results.dead),
+    cost: formatNumber(data.results.cost, true, true),
+  });
+})
 
 // TODO implement and use on FE or remove
 // router.put('/api/game-data/:id', async (req, res) => {

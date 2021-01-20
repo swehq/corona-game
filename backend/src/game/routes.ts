@@ -49,9 +49,10 @@ router.get('/og/results/:id', async (ctx) => {
 
   try {
     data = await GameDataModel.findOne({_id: ctx.params.id}, {results: 1});
-    console.log(data);
+    if (!data) throw Error();
   } catch (e) {
     await ctx.render('results');
+    return;
   }
 
   await ctx.render('results', {

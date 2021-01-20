@@ -4,13 +4,10 @@ location /api {
 }
 
 # set server-side rendering for dynamic result pages
-set $ssr "";
-if ($http_user_agent ~* "googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator") {
-  set $ssr UA;
-}
-if ($uri ~* ^/results/.+$) {
-  set $ssr "${ssr}L";
-}
-if ($ssr = "UAL") {
-  return 302 http://{{ backend_container }}/og$uri;
+location ~ ^/results/.+$ {
+  if ($http_user_agent ~* "googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator") {
+    proxy_pass http://{{ backend_container }}/og$request_uri;
+  }
+
+  proxy_pass http://{{ frontend_container }};
 }

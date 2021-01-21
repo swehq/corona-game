@@ -4,7 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
 import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
@@ -45,8 +45,7 @@ export class GraphsComponent implements AfterViewInit {
   infectedToday$: Observable<ChartValue[]> | undefined;
   costTotal$: Observable<ChartValue[]> | undefined;
   deathTotal$: Observable<ChartValue[]> | undefined;
-  immunizedChart$: Observable<ChartValue[][]> | undefined;
-  immunized$: Observable<number> | undefined;
+  immunizedTotal$: Observable<ChartValue[]> | undefined;
 
   dataLabelNodes: DataLabelNode[] = [];
   templateData: any | undefined;
@@ -120,36 +119,19 @@ export class GraphsComponent implements AfterViewInit {
       }))),
     );
 
-    this.immunizedChart$ = data$.pipe(
-      map(gameStates => gameStates.map(gs => ([
-        {
-          label: new Date(gs.date),
-          value: gs.stats.vaccinated.total,
-          tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
-          datasetOptions: {
-            backgroundColor: `${colors.critical}33`,
-            borderColor: `${colors.warn}`,
-            label: 'Očkovaní',
-            fill: 'origin',
-          },
-          color: colors.warn,
+    this.immunizedTotal$ = data$.pipe(
+      map(gameStates => gameStates.map(gs => ({
+        label: new Date(gs.date),
+        value: gs.stats.vaccinated.total,
+        tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
+        datasetOptions: {
+          backgroundColor: `${colors.critical}33`,
+          borderColor: `${colors.warn}`,
+          label: 'Očkovaní',
+          fill: 'origin',
         },
-        {
-          label: new Date(gs.date),
-          value: gs.stats.estimatedResistant.total,
-          tooltipLabel: (value: number) => `Krátce po nemoci: ${formatNumber(value)}`,
-          datasetOptions: {
-            label: 'Krátce po nemoci',
-            fill: '-1',
-          },
-        },
-      ]))),
-    );
-
-    this.immunized$ = this.immunizedChart$.pipe(
-      filter(states => states.length > 0),
-      map(states => states[states.length - 1]),
-      map(state => state[0].value + state[1].value),
+        color: colors.warn,
+      }))),
     );
 
     this.activeTab = 0;
@@ -181,10 +163,10 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [true, true],
       },
       {
-        label: 'Imunní',
+        label: 'Očkovaní',
         svgIcon: 'vaccine',
-        headerData$: this.immunized$,
-        multiLineData$: this.immunizedChart$,
+        headerData$: this.immunizedTotal$.pipe(map(gs => last(gs)?.value)),
+        data$: this.immunizedTotal$,
         customOptions: this.immunizedCustomOptions,
         pipe: [false, false],
       },

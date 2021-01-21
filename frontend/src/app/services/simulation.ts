@@ -140,8 +140,6 @@ export class Simulation {
   readonly symptomsDelay = 2;                 // Days until infection is detected
   readonly conservativeImmunityDuration = 90; // Used for calculating conservative immunity estimates
 
-  readonly economicCostMultiplier = 2;
-
   modelStates: DayState[] = [];
   sirStateBeforeStart: SirState = {
     suspectible: this.initialPopulation,
@@ -386,7 +384,7 @@ export class Simulation {
     const hospitalizationCosts = this.calcMetricStats('hospitalizationCosts',
       this.hospitalizationCostPerDay * (state.hospitalized1 + state.hospitalized2));
     const costs = this.calcMetricStats('costs',
-      economicCosts.today * this.economicCostMultiplier + compensationCosts.today + hospitalizationCosts.today);
+      economicCosts.today + compensationCosts.today + hospitalizationCosts.today);
     const schoolDaysLost = this.calcMetricStats('schoolDaysLost',
       mitigationEffect ? mitigationEffect.schoolDaysLost : 0);
 

@@ -134,7 +134,7 @@ export class Simulation {
   readonly hospitalized1Duration = 7;  // Duration of the hospitalization before the average death
   readonly hospitalized2Duration = 14; // Duration of the remaining hospitalization for the recovering patients
   readonly recoveringDuration = 14;    // How long is the infection considered active in statistics
-  readonly immunityMeanDuration = 180; // Average time of R -> S transition
+  readonly immunityMeanDuration = 365; // Average time of R -> S transition
 
   // This is used to calculate the number of active cases
   readonly symptomsDelay = 2;       // Days until infection is detected
@@ -391,15 +391,11 @@ export class Simulation {
 
     const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
-    // Simple model of resolved infections assuming constant immunity duration of detected infections
-    const losingImmunityIndex = this.modelStates.length - this.immunityMeanDuration;
-    const estimatedResistantTotal = (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0)
-      + detectedInfectionsResolved.today
-      - (losingImmunityIndex >= 0 ?
-          this.modelStates[losingImmunityIndex].stats.detectedInfectionsResolved.today :
-          0);
+    const estimatedResistantLast = (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0);
+    const estimatedResistantCurrent = estimatedResistantLast * (1 - 1 / this.immunityMeanDuration)
+      + detectedInfectionsResolved.today;
     const estimatedResistant = this.calcMetricStats('estimatedResistant',
-      estimatedResistantTotal - (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0));
+      estimatedResistantCurrent - (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0));
     const vaccinated = this.calcMetricStats('vaccinated',
       state.vaccinated - (lastStat ? lastStat.vaccinated.totalUnrounded : 0));
 

@@ -134,10 +134,11 @@ export class Simulation {
   readonly hospitalized1Duration = 7;  // Duration of the hospitalization before the average death
   readonly hospitalized2Duration = 14; // Duration of the remaining hospitalization for the recovering patients
   readonly recoveringDuration = 14;    // How long is the infection considered active in statistics
-  readonly immunityMeanDuration = 180; // Average time of R -> S transition
+  readonly immunityMeanDuration = 365; // Average time of R -> S transition
 
-  // This is used to calculate the number of active cases
-  readonly symptomsDelay = 2;       // Days until infection is detected
+  // Constants used for calculating user facing statistics
+  readonly symptomsDelay = 2;                 // Days until infection is detected
+  readonly conservativeImmunityDuration = 90; // Used for calculating conservative immunity estimates
 
   readonly economicCostMultiplier = 2;
 
@@ -392,11 +393,11 @@ export class Simulation {
     const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
     // Simple model of resolved infections assuming constant immunity duration of detected infections
-    const losingImmunityIndex = this.modelStates.length - this.immunityMeanDuration;
+    const immunityStartIndex = this.modelStates.length - this.conservativeImmunityDuration;
     const estimatedResistantTotal = (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0)
       + detectedInfectionsResolved.today
-      - (losingImmunityIndex >= 0 ?
-          this.modelStates[losingImmunityIndex].stats.detectedInfectionsResolved.today :
+      - (immunityStartIndex >= 0 ?
+          this.modelStates[immunityStartIndex].stats.detectedInfectionsResolved.today :
           0);
     const estimatedResistant = this.calcMetricStats('estimatedResistant',
       estimatedResistantTotal - (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0));

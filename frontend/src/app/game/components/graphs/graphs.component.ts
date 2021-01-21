@@ -137,9 +137,9 @@ export class GraphsComponent implements AfterViewInit {
         {
           label: new Date(gs.date),
           value: gs.stats.estimatedResistant.total,
-          tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
+          tooltipLabel: (value: number) => `Krátce po nemoci: ${formatNumber(value)}`,
           datasetOptions: {
-            label: 'Imunní po nemoci',
+            label: 'Krátce po nemoci',
             fill: '-1',
           },
         },

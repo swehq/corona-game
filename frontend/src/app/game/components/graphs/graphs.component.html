@@ -4,8 +4,7 @@
       <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label" matRipple
           (click)="activeTab = index" *ngFor="let tab of templateData; let index = index">
         <span class="tab-icon">
-          <cvd-icon *ngIf="tab.svgIcon" [svgIcon]="tab.svgIcon"></cvd-icon>
-          <cvd-icon *ngIf="tab.icon">{{tab.icon}}</cvd-icon>
+          <cvd-icon size="large" *ngIf="tab.svgIcon" [svgIcon]="tab.svgIcon"></cvd-icon>
           <span>
             {{ tab.prefix }}{{ tab.headerData$ | async | formatNumber:tab.pipe[0]:tab.pipe[1] }}
           </span>

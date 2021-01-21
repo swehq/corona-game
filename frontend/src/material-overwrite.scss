@@ -309,6 +309,10 @@ html {
     border-bottom: solid 3.6rem
   }
 
+  .mat-button-toggle .mat-icon svg {
+    vertical-align: baseline;
+  }
+
   .cdk-high-contrast-active .mat-button-toggle-checked.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
     border-bottom: solid 50.0rem
   }

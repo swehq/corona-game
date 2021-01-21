@@ -2,9 +2,7 @@
   (click)="toggleState()"
   [class.is-visible]="isVisible"
   class="toggle-help-tooltip">
-  <cvd-icon>
-    {{ !isVisible ? 'help_outline' : 'close' }}
-  </cvd-icon>
+  <cvd-icon [svgIcon]="!isVisible ? 'question' : 'close' "></cvd-icon>
 </span>
 
 <div

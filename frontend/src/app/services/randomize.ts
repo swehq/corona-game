@@ -24,5 +24,6 @@ export function getRandomness() {
     baseMortality: getRandom('baseMortality')(),
     hospitalizationRate: getRandom('hospitalizationRate')(),
     detectionRate: getRandom('detectionRate')(),
+    eventRandomSeed: Math.random(),
   };
 }

@@ -66,6 +66,7 @@ interface Randomness {
   baseMortality: number;
   hospitalizationRate: number;
   detectionRate: number;
+  eventRandomSeed: number;
 }
 
 interface ModelInputs {

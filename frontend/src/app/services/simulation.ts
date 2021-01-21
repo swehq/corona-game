@@ -139,8 +139,6 @@ export class Simulation {
   // This is used to calculate the number of active cases
   readonly symptomsDelay = 2;       // Days until infection is detected
 
-  readonly economicCostMultiplier = 2;
-
   modelStates: DayState[] = [];
   sirStateBeforeStart: SirState = {
     suspectible: this.initialPopulation,
@@ -385,7 +383,7 @@ export class Simulation {
     const hospitalizationCosts = this.calcMetricStats('hospitalizationCosts',
       this.hospitalizationCostPerDay * (state.hospitalized1 + state.hospitalized2));
     const costs = this.calcMetricStats('costs',
-      economicCosts.today * this.economicCostMultiplier + compensationCosts.today + hospitalizationCosts.today);
+      economicCosts.today + compensationCosts.today + hospitalizationCosts.today);
     const schoolDaysLost = this.calcMetricStats('schoolDaysLost',
       mitigationEffect ? mitigationEffect.schoolDaysLost : 0);
 

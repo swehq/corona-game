@@ -157,7 +157,7 @@ export class GraphsComponent implements AfterViewInit {
     this.templateData = [
       {
         label: 'Nově nakažení',
-        icon: 'coronavirus',
+        svgIcon: 'virus',
         headerData$: this.infectedToday$.pipe(map(gs => last(gs)?.value)),
         prefix: '+',
         data$: this.infectedToday$,

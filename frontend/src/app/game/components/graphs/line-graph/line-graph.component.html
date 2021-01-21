@@ -9,7 +9,7 @@
         [disabled]="pan.getDisability('left')"
         matTooltip="Posunout vlevo"
         class="left-pan-arrow">
-        <mat-icon>chevron_left</mat-icon>
+        <cvd-icon svgIcon="panLeft"></cvd-icon>
       </button>
 
       <button
@@ -17,14 +17,14 @@
         matTooltip="Posunout vpravo"
         (click)="pan.applyPan('right')"
         [disabled]="pan.getDisability('right')">
-        <mat-icon>chevron_right</mat-icon>
+        <cvd-icon svgIcon="panRight"></cvd-icon>
       </button>
 
       <button [ngClass]="{'blinking': pan.autoResetIndicator}" mat-icon-button
               matTooltip="Posunout na konec"
               (click)="pan.reset()" [disabled]="pan.getDisability('right')"
               class="right-pan-arrow">
-        <mat-icon>last_page</mat-icon>
+        <cvd-icon svgIcon="panEnd"></cvd-icon>
       </button>
 
       <div *ngIf="pan.autoResetIndicator" class="indicator"></div>

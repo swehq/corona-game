@@ -9,7 +9,7 @@ export class CanActivateGame implements CanActivate {
 
   canActivate() {
     this.layoutUtils.setIsGame(true);
-    if (!this.gameService.game && this.gameService.isLocalStorageGame()) {
+    if (!this.gameService.game) {
       this.router.navigate(['intro']);
       return false;
     }

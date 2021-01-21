@@ -28,6 +28,7 @@ export class GameService {
   tickerId: number | undefined;
 
   private speed: Speed | undefined;
+  private speedBeforePause: Speed = 'play';
   private speedInterval = 0;
   private _speed$ = new ReplaySubject<Speed>(1);
   speed$ = this._speed$.asObservable();
@@ -67,7 +68,7 @@ export class GameService {
   }
 
   togglePause() {
-    if (this.speed === 'pause') this.setSpeed('play');
+    if (this.speed === 'pause') this.setSpeed(this.speedBeforePause);
     else this.setSpeed('pause');
   }
 
@@ -76,6 +77,10 @@ export class GameService {
     if (this.tickerId) {
       window.clearTimeout(this.tickerId);
       this.tickerId = undefined;
+    }
+
+    if (['slow', 'play', 'fast', 'auto'].includes(speed)) {
+      this.speedBeforePause = speed;
     }
 
     this.speed = speed;

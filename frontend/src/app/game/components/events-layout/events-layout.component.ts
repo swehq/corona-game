@@ -32,7 +32,7 @@ export class EventsLayoutComponent {
 
     this.gameService.removeEvent();
     if (!this.gameService.currentEvent) {
-      this.gameService.setSpeed('play');
+      this.gameService.togglePause();
       if (choice?.action === 'pause') this.gameService.setSpeed('pause');
     }
   }

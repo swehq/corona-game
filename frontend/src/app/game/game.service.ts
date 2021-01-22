@@ -1,17 +1,34 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {UntilDestroy} from '@ngneat/until-destroy';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {meanBy} from 'lodash';
 import {ReplaySubject, Subject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {filter, tap} from 'rxjs/operators';
 import {LocalStorageKey} from '../../environments/defaults';
 import {Event} from '../services/events';
 import {Game, GameData} from '../services/game';
 import {scenarios} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {validateGame} from '../services/validate';
+import {NavigationEnd, Router} from '@angular/router';
 
 export type Speed = 'auto' | 'rev' | 'pause' | 'slow' | 'play' | 'fast' | 'max' | 'finished';
+
+export function changeFavicon(virus = false) {
+  const favIcon16: any = document.querySelector('#appIcon16');
+  const favIcon32: any = document.querySelector('#appIcon32');
+  const favIcon96: any = document.querySelector('#appIcon96');
+  const appleTouchIcon: any = document.querySelector('#appleTouchIcon');
+  const webmanifest: any = document.querySelector('#webmanifest');
+  const maskIcon: any = document.querySelector('#maskIcon');
+
+  favIcon16.href = virus ? 'assets/favicon/favicon-virus-16x16.png' : 'assets/favicon/favicon-controller-16x16.png';
+  favIcon32.href = virus ? 'assets/favicon/favicon-virus-32x32.png' : 'assets/favicon/favicon-controller-32x32.png';
+  favIcon96.href = virus ? 'assets/favicon/favicon-virus-96x96.png' : 'assets/favicon/favicon-controller-96x96.png';
+  appleTouchIcon.href = virus ? '/assets/favicon/apple-icon-virus-180x180.png' : '/assets/favicon/apple-icon-controller-180x180.png';
+  webmanifest.href = virus ? '/assets/favicon/site-virus.webmanifest' : '/assets/favicon/site-controller.webmanifest';
+  maskIcon.href = virus ? '/assets/favicon/favicon-virus.svg' : '/assets/favicon/favicon-controller.svg';
+}
 
 @UntilDestroy()
 @Injectable({
@@ -42,7 +59,11 @@ export class GameService {
   private _endOfDay$ = new Subject<void>();
   endOfDay$ = this._endOfDay$.asObservable();
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, router: Router) {
+    router.events.pipe(
+      filter(event => event instanceof NavigationEnd && event.urlAfterRedirects !== '/game'),
+      untilDestroyed(this),
+    ).subscribe(() => changeFavicon());
   }
 
   get lastDate() {
@@ -159,7 +180,7 @@ export class GameService {
   save$() {
     this.saveCheckpoint();
     const gameData = this.getGameData();
-    return this.httpClient.post<{id: string}>('/api/game-data', gameData).pipe(
+    return this.httpClient.post<{ id: string }>('/api/game-data', gameData).pipe(
       tap(data => this.saveGameId(data.id)),
     );
   }

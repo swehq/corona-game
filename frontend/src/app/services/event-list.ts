@@ -89,6 +89,7 @@ export interface EventData {
   aboveSelfIsolationThresholdDays: number;
   belowSelfIsolationThresholdDays: number;
   minStability: number;
+  daysBusinessesRestricted: number;
 }
 
 export function initialEventData(): EventData {
@@ -97,6 +98,7 @@ export function initialEventData(): EventData {
     aboveSelfIsolationThresholdDays: 0,
     belowSelfIsolationThresholdDays: 0,
     minStability: 100,
+    daysBusinessesRestricted: 0,
   };
 }
 
@@ -118,6 +120,9 @@ export function updateEventData(eventInput: EventInput) {
 
   // Stability
   eventData.minStability = Math.min(eventInput.stats.stability, eventData.minStability);
+
+  // Number days businesses were restricted
+  if (eventInput.mitigations.businesses) eventData.daysBusinessesRestricted++;
 }
 
 function simpleChoice(buttonLabel: string, mitigation?: Partial<EventMitigation>,
@@ -546,11 +551,11 @@ export const eventTriggers: EventTrigger[] = [
 <p>Ve skutečné České republice došlo k 30.6. 2020 k 347 úmrtím osob hospitalizovaných s nemocí Covid-19. Vám v simulaci zemřelo {{stats.deaths.total}} osob.</p>',
         help: 'První vlna může být překvapivá a nepříjemná. Možná nejste spokojeni s tím, jak se vám povedla a chcete to zkusit znovu, pak stačí zmáčknout <em>Restart</em>. Pokud chcete pokračovat dál, zmáčkněte <em>Jedeme dál</em>.',
         choices: [
+          simpleChoice('Jedeme dál'),
           {
             buttonLabel: 'Restart',
             action: 'restart',
           },
-          simpleChoice('Jedeme dál'),
         ],
       },
     ],
@@ -878,6 +883,51 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
       },
     ],
     condition: (ei: EventInput) => ei.stats.vaccinationRate > .5,
+  },
+  /****************************************************************************
+   *
+   * Small business restrictions
+   *
+   ****************************************************************************/
+  {
+    events: [
+      {
+        title: 'Pokud se teď opatření nerozvolní, neotevřeme už nikdy',
+        text: 'Kavárník Pavel: „S bratrem jsme si splnili sen. Našli jsme skvělý prostor a investovali do něj spoustu energie i peněz. Teď řešíme, jak splatit nájmy.“',
+        help: 'Přibývá lidí, kteří se nyní musí obávat o svoji živnost a budoucnost. Poskytnutí speciální podpory bude stát mnoho peněz. Pokud pomoc odmítnete, řada podniků ale nepřežije.',
+        choices: [
+          simpleChoice('Dotovat nájmy', {economicCost: 21_000_000_000, stabilityCost: -3}),
+          simpleChoice('To si nemůžeme dovolit', {stabilityCost: 5}),
+        ],
+      },
+      {
+        title: 'Diváci si zvykají na svůj obývák a Netflix',
+        text: 'Producenti posouvají premiéry na další rok nebo rovnou na internet. Zabije koronavirus kina? Provozovatelé žádají půjčky na dva roky provozu.',
+        help: 'Pandemie vyprázdnila multikina i místní sály a není ani příliš co promítat. Půjčky kinosálům je zachrání před krachem, ale otázka je, jestli se peníze kdy vrátí.',
+        choices: [
+          simpleChoice('Úvěr kinosálům', {economicCost: 7_000_000_000, stabilityCost: -1}),
+          simpleChoice('To si nemůžeme dovolit', {stabilityCost: 2}),
+        ],
+      },
+      {
+        title: '„Kousli jsme se. Další vlnu už ale nezvládneme“',
+        text: 'Martin a Petra vedou malou hračkářskou dílnu. Prodej přes internet ale nestačí na to, aby zvládali zaplatit zaměstnancům.',
+        help: 'Situace těžce dopadá na drobné podnikatele a ti nemají na výplaty zaměstnanců. Pokud je nepodpoříte, řada jich zkrachuje.',
+        choices: [
+          simpleChoice('Dotovat výplaty', {economicCost: 33_000_000_000, stabilityCost: -5}),
+          simpleChoice('To si nemůžeme dovolit', {stabilityCost: 5}),
+        ],
+      },
+      {
+        title: 'Krámky na rohu jsou prázdné, velké řetězce sčítají zisky',
+        help: 'Místní podniky nedokáží konkurovat nabídce a možnostem dopravy velkých firem. Poskytnutí speciální podpory bude stát mnoho peněz. Pokud pomoc odmítnete, řada podniků nepřežije.',
+        choices: [
+          simpleChoice('Dotovat malé podniky', {economicCost: 30_000_000_000, stabilityCost: -5}),
+          simpleChoice('To si nemůžeme dovolit', {stabilityCost: 5}),
+        ],
+      },
+    ],
+    condition: (ei: EventInput) => ei.eventData.daysBusinessesRestricted > 60,
   },
   /****************************************************************************
    *

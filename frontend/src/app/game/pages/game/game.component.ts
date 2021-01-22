@@ -17,10 +17,10 @@ import {OutroService} from '../outro/outro.service';
 })
 export class GameComponent {
 
-  isSmallDevice: boolean = false;
+  isSmallDevice = false;
   winWidth: number = window.innerWidth;
-  maxMobileWidth: number = 485;
-  areMitigationsHidden: boolean = false;
+  maxMobileWidth = 485;
+  areMitigationsHidden = false;
 
   constructor(
     public debugModeService: DebugModeService,

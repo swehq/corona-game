@@ -10,7 +10,7 @@ import {MitigationsPresetLevel, MitigationsService, Mitigations} from '../../../
   styleUrls: ['./mitigations-control.component.scss'],
 })
 export class MitigationsControlComponent {
-  @Input() isSmallDevice: boolean = false;
+  @Input() isSmallDevice = false;
 
   @HostBinding('class.is-small-device')
   get isSmallDeviceClass() {return this.isSmallDevice; }

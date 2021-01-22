@@ -4,11 +4,12 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
 import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {filter, map, tap} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
-import {GameService} from '../../game.service';
+import {changeFavicon, GameService} from '../../game.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
 
+export const CRITICAL_VIRUS_THRESHOLD = 15_000;
 
 @UntilDestroy()
 @Component({
@@ -51,6 +52,7 @@ export class GraphsComponent implements AfterViewInit {
   dataLabelNodes: DataLabelNode[] = [];
   templateData: any | undefined;
   activeTab = 0;
+  virusFavicon = false;
 
   private costDailyThresholds(value: number): NodeState {
     if (value < 500_000_000) return 'ok';
@@ -66,7 +68,7 @@ export class GraphsComponent implements AfterViewInit {
 
   private infectedThresholds(value: number): NodeState {
     if (value < 5_000) return 'ok';
-    if (value < 15_000) return 'warn';
+    if (value < CRITICAL_VIRUS_THRESHOLD) return 'warn';
     return 'critical';
   }
 
@@ -84,13 +86,13 @@ export class GraphsComponent implements AfterViewInit {
     data$.pipe(
       map(data => data.slice(this.dataLabelNodes.length)), // just new data
       untilDestroyed(this),
-      ).subscribe(data => {
-        data.forEach(dayState => {
-          // TODO just first event of the day is displayed in the chart, display all
-          const event = first(this.gameService.game.eventChoices[dayState.date]);
-          const uiChange = this.gameService.game.mitigationControlChanges[dayState.date];
-          this.dataLabelNodes.push({event, uiChange});
-        });
+    ).subscribe(data => {
+      data.forEach(dayState => {
+        // TODO just first event of the day is displayed in the chart, display all
+        const event = first(this.gameService.game.eventChoices[dayState.date]);
+        const uiChange = this.gameService.game.mitigationControlChanges[dayState.date];
+        this.dataLabelNodes.push({event, uiChange});
+      });
     });
 
     this.infectedToday$ = data$.pipe(
@@ -100,6 +102,13 @@ export class GraphsComponent implements AfterViewInit {
         tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
         state: this.infectedThresholds(gs.stats.detectedInfections.today),
       }))),
+      tap(infected => {
+        const newlyInfected = infected[infected.length - 1].value;
+        if (this.virusFavicon !== newlyInfected > CRITICAL_VIRUS_THRESHOLD) {
+          this.virusFavicon = !this.virusFavicon;
+          changeFavicon(this.virusFavicon);
+        }
+      }),
     );
 
     this.costTotal$ = data$.pipe(

@@ -11,4 +11,5 @@ export class GameServiceStub {
   reset$ = of();
   speed$ = of('auto');
   setSpeed = () => true;
+  isLocalStorageGame = () => false;
 }

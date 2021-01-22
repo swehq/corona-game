@@ -68,6 +68,7 @@ export interface EventInput extends EventState {
   mitigations: Mitigations;
   eventMitigations: EventMitigation[];
   stats: Stats;
+  randomSeed: number;
 }
 
 export class EventHandler {
@@ -93,6 +94,7 @@ export class EventHandler {
       stats: dayState.stats,
       mitigations,
       eventMitigations,
+      randomSeed: dayState.randomness ? dayState.randomness.eventRandomSeed : 0,
     };
 
     updateEventData(eventInput);

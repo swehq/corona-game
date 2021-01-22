@@ -1,8 +1,7 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
-import {Mitigations} from './mitigations.service';
+import {defaultMitigations, Mitigations} from './mitigations';
 import {EventAndChoice, EventMitigation} from './events';
 import {maxMitigationDuration} from './event-list';
-import {Game} from './game';
 import {nextDay} from './utils';
 
 interface ScenarioDates {
@@ -24,25 +23,22 @@ export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];
 }[keyof Mitigations];
 
+export type ScenarioName = keyof typeof scenarios;
+
 export class Scenario {
-  // Ramp up mitigations are applied only while ramping up the game
-  private rampUpMitigationHistory: MitigationActionHistory = {};
-  // Gameplay mitigations are applied both during ramp up and regular gameplay
-  // Gameplay mitigations should only contain event mitigations
-  private gameplayMitigationHistory: MitigationActionHistory = {};
+  // Ramp up mitigations are used to initialize game mitigationHistory
+  rampUpMitigationHistory: MitigationActionHistory = {};
+  // Scenario mitigations are always applied on the top of players actions
+  scenarioMitigations: MitigationActionHistory = {};
   dates: ScenarioDates;
 
-  constructor(scenarioDates: ScenarioDates, gameplayMitigationHistory?: MitigationActionHistory) {
+  constructor(scenarioDates: ScenarioDates, scenarioMitigations?: MitigationActionHistory) {
     this.dates = scenarioDates;
-    if (gameplayMitigationHistory) this.gameplayMitigationHistory = gameplayMitigationHistory;
+    if (scenarioMitigations) this.scenarioMitigations = scenarioMitigations;
   }
 
-  getRampUpMitigationActions(date: string) {
-    return this.rampUpMitigationHistory[date];
-  }
-
-  getGameplayMitigationActions(date: string) {
-    return this.gameplayMitigationHistory[date];
+  getScenarioMitigationActions(date: string) {
+    return this.scenarioMitigations[date];
   }
 
   /**
@@ -67,16 +63,16 @@ export class Scenario {
       if (oldAction?.mitigations === undefined || !(id in oldAction.mitigations)) {
         this.rampUpMitigationHistory[end] = {
           ...oldAction,
-          mitigations: {...oldAction?.mitigations, [id]: Game.defaultMitigations[id]},
+          mitigations: {...oldAction?.mitigations, [id]: defaultMitigations[id]},
         };
       }
     }
   }
 
   addGameplayEventMitigation(eventMitigation: EventMitigation, begin: string, end?: string) {
-    const oldEventMitigations = this.gameplayMitigationHistory[begin]?.eventMitigations;
-    this.gameplayMitigationHistory[begin] = {
-      ...this.gameplayMitigationHistory[begin],
+    const oldEventMitigations = this.scenarioMitigations[begin]?.eventMitigations;
+    this.scenarioMitigations[begin] = {
+      ...this.scenarioMitigations[begin],
       eventMitigations: oldEventMitigations ? [...oldEventMitigations, eventMitigation] : [eventMitigation],
     };
 
@@ -85,9 +81,9 @@ export class Scenario {
         throw new Error('Cannot set end date without eventMitigation id');
       }
 
-      const oldRemoveMitigationIds = this.gameplayMitigationHistory[end]?.removeMitigationIds;
-      this.gameplayMitigationHistory[end] = {
-        ...this.gameplayMitigationHistory[end],
+      const oldRemoveMitigationIds = this.scenarioMitigations[end]?.removeMitigationIds;
+      this.scenarioMitigations[end] = {
+        ...this.scenarioMitigations[end],
         removeMitigationIds:
           oldRemoveMitigationIds ? [...oldRemoveMitigationIds, eventMitigation.id] : [eventMitigation.id],
       };

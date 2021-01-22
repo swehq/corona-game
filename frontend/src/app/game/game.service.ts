@@ -7,7 +7,7 @@ import {filter, tap} from 'rxjs/operators';
 import {LocalStorageKey} from '../../environments/defaults';
 import {Event} from '../services/events';
 import {Game, GameData} from '../services/game';
-import {scenarios} from '../services/scenario';
+import {ScenarioName} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {validateGame} from '../services/validate';
 import {NavigationEnd, Router} from '@angular/router';
@@ -74,10 +74,11 @@ export class GameService {
     return this.game.simulation.modelStates;
   }
 
-  restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
+  restartSimulation(speed: Speed = 'play', scenarioName: ScenarioName = 'czechiaGame') {
     this.setSpeed('pause');
     window.localStorage.removeItem(LocalStorageKey.LAST_GAME_DATA);
-    this.game = new Game(scenarios[scenario]);
+    this.game = new Game(scenarioName);
+    this.game.rampUpGame();
     this.eventQueue = [];
     this._reset$.next();
     this.setSpeed(speed);
@@ -172,6 +173,7 @@ export class GameService {
         params: this.game.mitigationParams,
         controlChanges: this.game.mitigationControlChanges,
       },
+      scenarioName: this.game.scenarioName,
       simulation: this.modelStates,
       eventChoices: this.game.eventChoices,
     };
@@ -221,7 +223,6 @@ export class GameService {
   restoreGame(game: Game) {
     this.setSpeed('pause');
     this.game = game;
-    this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
     this._reset$.next();
     this.updateChart();
   }

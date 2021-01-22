@@ -3,7 +3,6 @@ import {EventHandler} from 'src/app/services/events';
 import {eventTriggers} from 'src/app/services/event-list';
 import {Game, GameData} from 'src/app/services/game';
 import {validateGame} from 'src/app/services/validate';
-import {scenarios} from 'src/app/services/scenario';
 import realData from './data-czechia-real.json';
 
 const data = realData as GameData;
@@ -83,7 +82,7 @@ describe('EventInterpolationTests', () => {
 
 describe('MitigationsTests', () => {
   it('should handle a sequence of event mitigations', () => {
-    const game = new Game(scenarios.czechiaGame);
+    const game = new Game('czechiaGame');
     expect(game.eventMitigations.length).toEqual(0);
 
     // Add one event mitigation with infinite timeout

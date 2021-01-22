@@ -1,10 +1,13 @@
-location /api {
+# RE-based location selectors need to be used in order to
+# override `location /` from nginx-proxy generated conf
+
+location ~ /api {
   proxy_pass http://{{ backend_container }};
   client_max_body_size 5M;
 }
 
-# set server-side rendering for dynamic result pages
-location ~ ^/results/.+$ {
+# set server-side rendering for bot UAs (preview scrapers)
+location ~ / {
   if ($http_user_agent ~* "googlebot|bingbot|yandex|baiduspider|twitterbot|facebookexternalhit|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator") {
     proxy_pass http://{{ backend_container }}/og$request_uri;
   }

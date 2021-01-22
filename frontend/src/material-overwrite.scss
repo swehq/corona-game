@@ -302,7 +302,7 @@ html {
 
   .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
     padding: 0 1.2rem;
-    line-height: 3.4rem
+    line-height: 3.1rem
   }
 
   .mat-button-toggle-checked .mat-button-toggle-focus-overlay {
@@ -310,11 +310,16 @@ html {
   }
 
   .mat-button-toggle .mat-icon svg {
-    vertical-align: baseline;
+    vertical-align: middle;
   }
 
   .cdk-high-contrast-active .mat-button-toggle-checked.mat-button-toggle-appearance-standard .mat-button-toggle-focus-overlay {
     border-bottom: solid 50.0rem
+  }
+
+  mat-button-toggle-group {
+    display: flex;
+    height: 3.4rem;
   }
 
 }

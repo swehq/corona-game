@@ -6,33 +6,39 @@
   justify-content: flex-start;
   -webkit-flex: 0 0 auto; // Safari
 
-  .title {
-    margin-bottom: 0;
-  }
-
   a {
     margin-right: 1rem;
   }
 
   &.is-compact {
     .logo {
-      width: 30px;
-    }
-
-    .title {
-      font-size: 1.5rem;
-      line-height: 1rem;
+      width: 80px;
     }
   }
 
-  @media screen and (max-width: 768px) {
-    .logo {
-      width: 40px;
-    }
+  @media only screen and (max-width: 767px) {
+    padding-bottom: 1rem;
 
-    .title {
-      font-size: 2rem;
-      line-height: 1rem;
+    .logo {
+      margin-left: 3rem;
+    }
+  }
+
+  @media only screen and (min-width: 300px) {
+    .logo {
+      width: 120px;
+    }
+  }
+
+  @media only screen and (min-width: 768px) {
+    .logo {
+      width: 140px;
+    }
+  }
+
+  @media only screen and (min-width: 1384px) {
+    .logo {
+      width: 180px;
     }
   }
 }

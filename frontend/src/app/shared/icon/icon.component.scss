@@ -4,23 +4,24 @@
   font-size: $size;
 }
 
+// Fixed icon resolution
 :host {
   display: flex;
 
   &.small {
     .mat-icon {
-      @include icon-size(0.75rem)
+      @include icon-size(13px)
     }
   }
 
   &.large {
     .mat-icon {
-      @include icon-size(2rem)
+      @include icon-size(26px)
     }
   }
 }
 
 .mat-icon {
   margin: auto;
-  @include icon-size(1.5rem)
+  @include icon-size(14px)
 }

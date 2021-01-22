@@ -25,7 +25,7 @@ export class GraphsComponent implements AfterViewInit {
       yAxes: [{
         ticks: {
           callback(value: number | string) {
-            return formatNumber(+value, false, true);
+            return formatNumber(+value, false, true, 2);
           },
         },
       }],

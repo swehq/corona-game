@@ -43,21 +43,26 @@ router.post('/api/game-data', async (ctx) => {
   ctx.body = {id: saveData._id};
 });
 
-router.get('/og/results/:id', async (ctx) => {
+router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
   let data: any;
+
+  const res = {
+    origin: ctx.origin,
+    url: ctx.url,
+  }
 
   try {
     data = await GameDataModel.findOne({_id: ctx.params.id}, {results: 1});
     if (!data) throw Error();
   } catch (e) {
-    await ctx.render('results');
+    await ctx.render('results', res);
     return;
   }
 
   await ctx.render('results', {
+    ...res,
     dead: formatNumber(data.results.dead),
     cost: formatNumber(data.results.cost, true, true),
-    origin: ctx.origin,
   });
 })
 

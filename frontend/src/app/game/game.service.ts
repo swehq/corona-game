@@ -150,6 +150,7 @@ export class GameService {
         params: this.game.mitigationParams,
         controlChanges: this.game.mitigationControlChanges,
       },
+      scenario: this.game.scenario,
       simulation: this.modelStates,
       eventChoices: this.game.eventChoices,
     };
@@ -200,7 +201,6 @@ export class GameService {
   restoreGame(game: Game) {
     this.setSpeed('pause');
     this.game = game;
-    this.game.scenario.dates.endDate = scenarios.czechiaGame.dates.endDate;
     this._reset$.next();
     this.updateChart();
   }

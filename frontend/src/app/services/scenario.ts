@@ -24,12 +24,17 @@ export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];
 }[keyof Mitigations];
 
-export class Scenario {
+export interface ScenarioSaveData {
+  gameplayMitigationHistory: MitigationActionHistory;
+  dates: ScenarioDates;
+}
+
+export class Scenario implements ScenarioSaveData {
   // Ramp up mitigations are applied only while ramping up the game
-  private rampUpMitigationHistory: MitigationActionHistory = {};
+  rampUpMitigationHistory: MitigationActionHistory = {};
   // Gameplay mitigations are applied both during ramp up and regular gameplay
   // Gameplay mitigations should only contain event mitigations
-  private gameplayMitigationHistory: MitigationActionHistory = {};
+  gameplayMitigationHistory: MitigationActionHistory = {};
   dates: ScenarioDates;
 
   constructor(scenarioDates: ScenarioDates, gameplayMitigationHistory?: MitigationActionHistory) {

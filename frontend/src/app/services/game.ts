@@ -2,7 +2,8 @@ import {cloneDeep, differenceWith, isEqual} from 'lodash';
 import {Event, EventAndChoice, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, dateDiff, nextDay} from './utils';
-import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario, EventAndChoiceHistory} from './scenario';
+import {MitigationActions, MitigationActionHistory, MitigationPair,
+  Scenario, ScenarioSaveData, EventAndChoiceHistory} from './scenario';
 import {Mitigations} from './mitigations.service';
 import {getRandomness} from './randomize';
 
@@ -23,6 +24,7 @@ export interface GameData {
     params: MitigationParams[],
     controlChanges: Record<string, string[]>,
   };
+  scenario: ScenarioSaveData;
   simulation: DayState[];
   eventChoices: EventAndChoiceHistory;
 }

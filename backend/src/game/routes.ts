@@ -77,7 +77,9 @@ function validate(data: any): boolean {
   if (!data.simulation || !data.simulation.length) return false;
 
   try {
-    if (!validateGame(data)) return false;
+    const game = validateGame(data);
+    if (!game) return false;
+    if (game.isGameLost() || !game.isFinished()) return false;
   } catch (e) {
     return false;
   }

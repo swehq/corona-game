@@ -55,6 +55,7 @@ export class GameService {
 
   restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
     this.setSpeed('pause');
+    window.localStorage.removeItem(LocalStorageKey.LAST_GAME_DATA);
     this.game = new Game(scenarios[scenario]);
     this.eventQueue = [];
     this._reset$.next();
@@ -185,7 +186,6 @@ export class GameService {
       const game = validateGame(JSON.parse(dataString));
       if (!game) return false;
       this.restoreGame(game);
-      this.setSpeed('play');
     } catch {
       return false;
     }

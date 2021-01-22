@@ -3,11 +3,10 @@ import {GameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
 import {last} from 'lodash';
-import { Context, DefaultState } from 'koa';
-import { formatNumber } from '../../../frontend/src/app/utils/format';
+import {Context, DefaultState} from 'koa';
+import {formatNumber} from '../../../frontend/src/app/utils/format';
 
 export const router = new Router<DefaultState, Context>();
-// export const router = new Router();
 
 router.get('/api/game-data', async (ctx) => {
   const data = await GameDataModel.find({}, {results: 1});
@@ -58,6 +57,7 @@ router.get('/og/results/:id', async (ctx) => {
   await ctx.render('results', {
     dead: formatNumber(data.results.dead),
     cost: formatNumber(data.results.cost, true, true),
+    origin: ctx.origin,
   });
 })
 

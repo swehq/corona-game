@@ -23,6 +23,12 @@ type WinterEvent = typeof WINTER_EVENTS[number];
 const selfIsolationThreshold = 2000 / 7;
 const selfIsolationMitigation1 = {rMult: 0.8, economicCost: 200_000_000};
 
+// LCG pseudorandom number generator parameters for event randomization
+const LCG_A = 1_664_525;
+const LCG_C = 1_013_904_223;
+const LCG_M = Math.pow(2, 32);
+let randomness = 0; // Will be seeded every sim day
+
 /**
  * Generate first true randomly between given dates
  * TODO: unit test
@@ -36,7 +42,7 @@ function randomDateBetweenTrigger(date: string, dateFrom: string, dateTo: string
     return false;
   } else if (dateDiff(date, dateTo) <= 0) {
     // in between interval
-    return (1 / (1 - dateDiff(date, dateTo))) > Math.random();
+    return probability(1 / (1 - dateDiff(date, dateTo)));
   } else {
     // after given interval
     return false;
@@ -48,7 +54,8 @@ function randomDateBetweenTrigger(date: string, dateFrom: string, dateTo: string
  * @param probabilityRate - probability between 0..1 (e.g 0.05 means probability 5%)
  */
 function probability(probabilityRate: number) {
-  return probabilityRate > Math.random();
+  randomness = (randomness * LCG_A + LCG_C) % LCG_M;
+  return probabilityRate * LCG_M > randomness;
 }
 
 /**
@@ -108,6 +115,10 @@ export function initialEventData(): EventData {
  */
 export function updateEventData(eventInput: EventInput) {
   const eventData = eventInput.eventData;
+
+  // Init (pseudo-)random number generator seed for events every day
+  // detectedInfections should be good enough source of randomness
+  randomness = Math.floor(eventInput.randomSeed * LCG_M);
 
   // Used for self-isolation
   if (eventInput.stats.deaths.avg7Day >= selfIsolationThreshold) {

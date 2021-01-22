@@ -3,6 +3,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
 import {ConfigService} from '../../../services/config.service';
 import {GameService, Speed} from '../../game.service';
+import {validateGame} from 'src/app/services/validate';
+import realData from 'src/app/game/pages/game/data-czechia-real.json';
 
 @UntilDestroy()
 @Component({
@@ -52,5 +54,13 @@ export class SimulationControlComponent implements OnInit {
 
   save() {
     this.gameService.save$().subscribe();
+  }
+
+  replayTest() {
+    const data = realData as any;
+    const game = validateGame(data, false);
+    if (game) {
+      this.gameService.restoreGame(game);
+    }
   }
 }

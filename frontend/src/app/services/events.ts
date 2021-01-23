@@ -2,7 +2,7 @@ import {cloneDeep, get, isNil, sample} from 'lodash';
 import {formatNumber} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
-import {Mitigations} from './mitigations.service';
+import {Mitigations} from './mitigations';
 
 export interface EventMitigation extends Partial<MitigationEffect> {
   id?: string;

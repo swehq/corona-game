@@ -4,27 +4,13 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {isEqual} from 'lodash';
 import {merge, Observable, OperatorFunction, Subject} from 'rxjs';
 import {delay, filter, map, pairwise, shareReplay, startWith, withLatestFrom} from 'rxjs/operators';
-import {Game} from './game';
 import {MitigationPair} from './scenario';
+import {defaultMitigations, Mitigations} from './mitigations';
 import {GameService} from '../game/game.service';
 
 export type MitigationsPresetLevel = 'open' | 'level1' | 'level2';
 
-export type EventsLevel = false | 1000 | 100 | 10;
-export type BusinessesLevel = false | 'some' | 'most';
-export type SchoolsLevel = false | 'universities' | 'all';
-
-export interface Mitigations {
-  bordersClosed: boolean;
-  businesses: BusinessesLevel;
-  events: EventsLevel;
-  rrr: boolean;
-  schools: SchoolsLevel;
-  stayHome: boolean;
-  compensations: boolean;
-}
-
-type MitigationKey = keyof Mitigations;
+export type MitigationKey = keyof Mitigations;
 type PresetValue = [MitigationsPresetLevel | 'reset', Mitigations];
 
 interface MitigationDiff {
@@ -103,7 +89,7 @@ export class MitigationsService {
   readonly changes$: Observable<MitigationDiff>; // all changes merged
 
   constructor(private gameService: GameService) {
-    this.formGroup.setValue(Game.defaultMitigations);
+    this.formGroup.setValue(defaultMitigations);
 
     this.value$ = this.formGroup.valueChanges.pipe(
       startWith(this.gameService.game.mitigations),
@@ -260,7 +246,7 @@ export class MitigationsService {
 
   preset(level: MitigationsPresetLevel) {
     const defaultMitigationsKeepCompensations = {
-      ...Game.defaultMitigations,
+      ...defaultMitigations,
       compensations: this.gameService.game.mitigations.compensations,
     };
     const presets: Record<MitigationsPresetLevel, Mitigations> = {

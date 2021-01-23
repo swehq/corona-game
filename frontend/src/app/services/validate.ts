@@ -1,6 +1,5 @@
 import {isEqual, last} from 'lodash';
 import {Game, GameData} from './game';
-import {Scenario} from './scenario';
 
 export function validateGame(data: GameData, breakImmediately = true): Game | undefined {
   // TODO add test of randomness params (expected distribution or element of interval at least)
@@ -8,9 +7,7 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
   if (!data.simulation.length) return;
 
   let res = true;
-  // Build a synthetic scenario that contains the replay of historic mitigations
-  const scenario = new Scenario(data.scenario.dates, data.scenario.scenarioMitigations);
-  const game = new Game(scenario);
+  const game = new Game(data.scenarioName);
   game.mitigationParams = data.mitigations.params;
   game.mitigationHistory = data.mitigations.history;
   game.eventChoices = data.eventChoices;

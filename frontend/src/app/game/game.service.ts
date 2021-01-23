@@ -7,7 +7,7 @@ import {tap} from 'rxjs/operators';
 import {LocalStorageKey} from '../../environments/defaults';
 import {Event} from '../services/events';
 import {Game, GameData} from '../services/game';
-import {scenarios} from '../services/scenario';
+import {ScenarioName} from '../services/scenario';
 import {DayState} from '../services/simulation';
 import {validateGame} from '../services/validate';
 
@@ -53,9 +53,9 @@ export class GameService {
     return this.game.simulation.modelStates;
   }
 
-  restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
+  restartSimulation(speed: Speed = 'play', scenarioName: ScenarioName = 'czechiaGame') {
     this.setSpeed('pause');
-    this.game = new Game(scenarios[scenario]);
+    this.game = new Game(scenarioName);
     this.game.rampUpGame();
     this.eventQueue = [];
     this._reset$.next();
@@ -151,7 +151,7 @@ export class GameService {
         params: this.game.mitigationParams,
         controlChanges: this.game.mitigationControlChanges,
       },
-      scenario: this.game.scenario,
+      scenarioName: this.game.scenarioName,
       simulation: this.modelStates,
       eventChoices: this.game.eventChoices,
     };

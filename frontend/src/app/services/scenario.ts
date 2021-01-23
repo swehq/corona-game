@@ -1,8 +1,7 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
-import {Mitigations} from './mitigations.service';
+import {defaultMitigations, Mitigations} from './mitigations';
 import {EventAndChoice, EventMitigation} from './events';
 import {maxMitigationDuration} from './event-list';
-import {Game} from './game';
 import {nextDay} from './utils';
 
 interface ScenarioDates {
@@ -24,15 +23,12 @@ export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];
 }[keyof Mitigations];
 
-export interface ScenarioSaveData {
-  scenarioMitigations: MitigationActionHistory;
-  dates: ScenarioDates;
-}
+export type ScenarioName = keyof typeof scenarios;
 
-export class Scenario implements ScenarioSaveData {
+export class Scenario {
   // Ramp up mitigations are used to initialize game mitigationHistory
   rampUpMitigationHistory: MitigationActionHistory = {};
-  // Gameplay mitigations are applied both during ramp up and regular gameplay
+  // Scenario mitigations are always applied on the top of players actions
   scenarioMitigations: MitigationActionHistory = {};
   dates: ScenarioDates;
 
@@ -67,7 +63,7 @@ export class Scenario implements ScenarioSaveData {
       if (oldAction?.mitigations === undefined || !(id in oldAction.mitigations)) {
         this.rampUpMitigationHistory[end] = {
           ...oldAction,
-          mitigations: {...oldAction?.mitigations, [id]: Game.defaultMitigations[id]},
+          mitigations: {...oldAction?.mitigations, [id]: defaultMitigations[id]},
         };
       }
     }

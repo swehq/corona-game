@@ -2,6 +2,7 @@ import Router from 'koa-router';
 import {GameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
+import {scenarios} from '../../../frontend/src/app/services/scenario';
 import {last} from 'lodash';
 import { Context, DefaultState } from 'koa';
 import { formatNumber } from '../../../frontend/src/app/utils/format';
@@ -73,6 +74,7 @@ function genericError() {
 }
 
 function validate(data: any): boolean {
+  const scenario = scenarios.czechiaGame;
   if (!data.mitigations) return false;
   if (!data.simulation || !data.simulation.length) return false;
 

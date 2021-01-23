@@ -2,9 +2,9 @@ import {cloneDeep, differenceWith, isEqual} from 'lodash';
 import {Event, EventAndChoice, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, dateDiff, nextDay} from './utils';
-import {MitigationActions, MitigationActionHistory, MitigationPair,
-  Scenario, ScenarioSaveData, EventAndChoiceHistory} from './scenario';
-import {Mitigations} from './mitigations.service';
+import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario,
+  ScenarioName, scenarios, EventAndChoiceHistory} from './scenario';
+import {defaultMitigations} from './mitigations';
 import {getRandomness} from './randomize';
 
 export interface MitigationParams extends MitigationEffect {
@@ -24,7 +24,7 @@ export interface GameData {
     params: MitigationParams[],
     controlChanges: Record<string, string[]>,
   };
-  scenario: ScenarioSaveData;
+  scenarioName: ScenarioName;
   simulation: DayState[];
   eventChoices: EventAndChoiceHistory;
 }
@@ -36,16 +36,6 @@ export class Game {
   readonly borderDriftDecayDuration = 180;
   readonly minimalStability = 0;
 
-  static readonly defaultMitigations: Mitigations = {
-    bordersClosed: false,
-    businesses: false,
-    events: false,
-    rrr: false,
-    schools: false,
-    stayHome: false,
-    compensations: false,
-  };
-
   static readonly zeroMitigationEffect: MitigationEffect = {
     rMult: 1.0,
     exposedDrift: 0,
@@ -56,12 +46,13 @@ export class Game {
     vaccinationPerDay: 0,
   };
 
-  mitigations = cloneDeep(Game.defaultMitigations);
+  mitigations = cloneDeep(defaultMitigations);
   eventMitigations: EventMitigation[] = [];
   newEventMitigations: EventMitigation[] = [];
   removeMitigationIds: string[] = [];
 
-  simulation = new Simulation(this.scenario.dates.rampUpStartDate);
+  scenario: Scenario;
+  simulation: Simulation;
   eventHandler = new EventHandler();
   mitigationParams = Game.randomizeMitigations();
   mitigationHistory: MitigationActionHistory;
@@ -70,9 +61,11 @@ export class Game {
   mitigationControlChanges: Record<string, string[]> = {};
   rampUpEvents: Event[] | undefined;
 
-  constructor(public scenario: Scenario) {
-    this.scenario = scenario;
-    this.mitigationHistory = cloneDeep(scenario.rampUpMitigationHistory);
+  constructor(public scenarioName: ScenarioName) {
+    this.scenarioName = scenarioName;
+    this.scenario = scenarios[scenarioName];
+    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate);
+    this.mitigationHistory = cloneDeep(this.scenario.rampUpMitigationHistory);
   }
 
   public rampUpGame() {
@@ -100,7 +93,7 @@ export class Game {
     // Calculate migitation actions this day
     let prevMitigations = this.mitigationCache[this.simulation.lastDate]?.mitigations;
     if (!prevMitigations) {
-      prevMitigations = Game.defaultMitigations;
+      prevMitigations = defaultMitigations;
     }
 
     const diff = differenceWith(Object.entries(this.mitigations), Object.entries(prevMitigations), isEqual);
@@ -161,7 +154,7 @@ export class Game {
   moveBackward() {
     if (!this.canMoveBackward()) return;
 
-    this.mitigations = {...Game.defaultMitigations, ...this.mitigationCache[this.simulation.lastDate]!.mitigations};
+    this.mitigations = {...defaultMitigations, ...this.mitigationCache[this.simulation.lastDate]!.mitigations};
     const prevEventMitigations = this.mitigationCache[this.simulation.lastDate]!.eventMitigations;
     this.eventMitigations = prevEventMitigations ? prevEventMitigations : [];
     this.newEventMitigations = [];

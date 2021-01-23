@@ -1,5 +1,5 @@
 import {cloneDeep, get, isNil, sample} from 'lodash';
-import {formatNumber} from '../utils/format';
+import {formatNumber, locale} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
 import {Mitigations} from './mitigations.service';
@@ -145,7 +145,7 @@ export class EventHandler {
       let valueToInsert: string;
 
       if (typeof value === 'number') valueToInsert = formatNumber(value, false, true);
-      else valueToInsert = value.toLocaleString();
+      else valueToInsert = value.toLocaleString(locale);
 
       return isNil(value) ? original : valueToInsert;
     });

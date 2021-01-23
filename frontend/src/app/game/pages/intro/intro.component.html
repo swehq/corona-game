@@ -1,27 +1,27 @@
-<cvd-col cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+<cvd-col>
   <h2>Vítejte</h2>
 
   <p>
-    Nacházíte se v simulaci šíření nákazy Covid-19 v ČR.
+    Nacházíte se v&nbsp;simulaci šíření nákazy Covid-19 v&nbsp;ČR.
   </p>
 
   <p>
-    Simulace vznikla na základě modelu, o kterém se můžete dozvědět více <a routerLink="/about">zde</a>.
-    Umožní vám dostat se do role vlády, která rozhoduje o tom, jaká proticovidová opatření budou zavedena.
-    Vyzkoušíte si řešení situací spjatých s řešením epidemie koronaviru a přehledně uvidíte následky jednotlivých kroků.
-    Simulace je postavená na přibližně deseti milionový stát v Evropě,
-    z čehož vyplývají některá specifika (například veřejnost reaguje negativně na omezení
-    a zároveň není možné se zcela izolovat od světa).
+    Simulace vznikla na základě modelu, o&nbsp;kterém se můžete dozvědět více <a routerLink="/about">zde</a>.
+    Umožní vám dostat se do role vlády, která rozhoduje o&nbsp;tom, jaká proticovidová opatření budou zavedena.
+    Vyzkoušíte si řešení situací spjatých s&nbsp;řešením epidemie koronaviru a&nbsp;přehledně uvidíte následky jednotlivých kroků.
+    Simulace je postavená na přibližně deseti milionový stát v&nbsp;Evropě,
+    z&nbsp;čehož vyplývají některá specifika (například veřejnost reaguje negativně na omezení
+    a&nbsp;zároveň není možné se zcela izolovat od světa).
   </p>
 
   <p>
     Po skončení simulace vám ukážeme jednoduchý přehled toho,
-    jak jste si v této hře vedli a zároveň budete moci sdílet odkaz s přáteli a porovnat s nimi své výsledky.
+    jak jste si v&nbsp;této hře vedli a&nbsp;zároveň budete moci sdílet odkaz s&nbsp;přáteli a&nbsp;porovnat s&nbsp;nimi své výsledky.
     Hra končí buď tím, že je dostatek obyvatel státu imunní nebo tím, že je společnost tak nespokojená,
     že již vládnout nemůžete. Všechno ostatní je ale na vás &ndash; to, co považujete za optimální strategii
-    a dobrý výsledek je vaše rozhodnutí. Budete rozhodovat také nejen o opatřeních, ale bude třeba reagovat
+    a&nbsp;dobrý výsledek je vaše rozhodnutí. Budete rozhodovat také nejen o&nbsp;opatřeních, ale bude třeba reagovat
     na různé náhodné krize.
-    Těch ve hře také uvidíte jen šestinu možných a spousta jich navíc záleží na vašich krocích.
+    Těch ve hře také uvidíte jen šestinu možných a&nbsp;spousta jich navíc záleží na vašich krocích.
     Může tak být zajímavé zkoušet různé strategie či to probrat s přáteli.
   </p>
 
@@ -40,15 +40,31 @@
   </p>
 
   <cvd-row [horizontalSpacing]="3">
-    <cvd-button themePalette="accent" type="raised" *ngIf="!gameService.isLocalStorageGame(); else savedGameOptions" cdkFocusInitial
-                (click)="loadNewGame()" routerLink="/game">Hrát
+    <cvd-button
+      themePalette="accent"
+      type="raised"
+      *ngIf="!gameService.isLocalStorageGame(); else savedGameOptions"
+      [cvdAutofocus]="true"
+      (click)="loadNewGame()"
+      routerLink="/game">
+      Hrát
     </cvd-button>
   </cvd-row>
 
   <ng-template #savedGameOptions>
-    <cvd-button cdkFocusInitial themePalette="accent" type="raised" (click)="loadSave()" routerLink="/game">Pokračovat v poslední hře
+    <cvd-button
+      themePalette="accent"
+      [cvdAutofocus]="true"
+      type="raised"
+      (click)="loadSave()"
+      routerLink="/game">Pokračovat v poslední hře
     </cvd-button>
-    <cvd-button cdkFocusInitial (click)="loadNewGame()" routerLink="/game">Hrát novou hru</cvd-button>
+
+    <cvd-button
+      (click)="loadNewGame()"
+      routerLink="/game">
+      Hrát novou hru
+    </cvd-button>
   </ng-template>
 
 </cvd-col>

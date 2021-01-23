@@ -22,7 +22,7 @@ export class ButtonComponent {
 
   @HostBinding('tabindex')
   setTabIndex() {
-    return '-1';
+    return '0';
   }
 
   @HostListener('focus')

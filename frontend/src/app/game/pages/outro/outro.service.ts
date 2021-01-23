@@ -10,6 +10,8 @@ import {GameService} from '../../game.service';
 export interface GameResult {
   dead: number;
   cost: number;
+  stability?: number;
+  schoolDaysLost?: number;
 }
 
 interface Current {
@@ -48,6 +50,8 @@ export class OutroService {
       map(state => ({
         dead: state.stats.deaths.total,
         cost: state.stats.costs.total,
+        schoolDaysLost: state.stats.schoolDaysLost.total,
+        stability: state.stats.stability,
       })),
       untilDestroyed(this),
     ).subscribe(

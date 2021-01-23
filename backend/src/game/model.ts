@@ -26,6 +26,14 @@ const GameDataSchema = new Schema({
       type: Number,
       required: true,
     },
+    schoolDaysLost: {
+      type: Number,
+      required: true,
+    },
+    stability: {
+      type: Number,
+      required: true,
+    },
   },
   created: {
     type: Date,

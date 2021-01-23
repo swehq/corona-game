@@ -14,10 +14,15 @@ import {GameResult, OutroService} from './outro.service';
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.5)';
 
-const convert: (result: GameResult) => ChartPoint =
+interface OutroChartPoint extends ChartPoint {
+  result: GameResult;
+}
+
+const convert: (result: GameResult) => OutroChartPoint =
   result => ({
     x: result.dead,
     y: result.cost,
+    result,
   });
 
 @UntilDestroy()
@@ -89,10 +94,22 @@ export class OutroComponent {
           if (results.length === 1) return 'Výsledek jiného hráče';
           return `Výsledek ${results.length} jiných hráčů`;
         },
-        beforeBody: node => [
-          `Celkový počet mrtvých: ${formatNumber(+node[0].xLabel!)}`,
-          `Celkové náklady: ${formatNumber(+node[0].yLabel!, true, true)}`,
-        ],
+        beforeBody: (node, data) => {
+          const dataset = data!.datasets![node[0].datasetIndex!];
+          const point = dataset!.data![node[0].index!] as OutroChartPoint;
+          const result = point.result;
+          const ret = [
+            `Celkový počet mrtvých: ${formatNumber(result.dead)}`,
+            `Celkové náklady: ${formatNumber(result.cost, true, true)}`,
+          ];
+          if (result.schoolDaysLost !== undefined) {
+            ret.push(`Ztracených dnů výuky: ${formatNumber(result.schoolDaysLost)}`);
+          }
+          if (result.stability !== undefined) {
+            ret.push(`Společenská stabilita: ${formatNumber(result.stability)}`);
+          }
+          return ret;
+        },
         label: () => '',
       },
     },

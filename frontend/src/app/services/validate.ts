@@ -9,13 +9,10 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
 
   let res = true;
   // Build a synthetic scenario that contains the replay of historic mitigations
-  const scenario = new Scenario({
-    rampUpStartDate: data.scenario.dates.rampUpStartDate,
-    rampUpEndDate: data.scenario.dates.rampUpStartDate,
-    endDate: data.scenario.dates.endDate,
-  }, data.mitigations.history);
+  const scenario = new Scenario(data.scenario.dates, data.scenario.scenarioMitigations);
   const game = new Game(scenario);
   game.mitigationParams = data.mitigations.params;
+  game.mitigationHistory = data.mitigations.history;
   game.eventChoices = data.eventChoices;
   game.mitigationControlChanges = data.mitigations.controlChanges;
 
@@ -30,13 +27,12 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
     }
 
     if (i < data.simulation.length - 1) {
+      game.applyMitigationsFromHistory();
       game.moveForward(data.simulation[i + 1].randomness);
     }
   }
 
   if (!res) console.error(`Validation failed, new data: ${JSON.stringify(game.simulation.modelStates, null, 2)}`);
 
-  // Set the real scenario for the future gameplay mitigations
-  game.scenario = new Scenario(data.scenario.dates, data.scenario.gameplayMitigationHistory);
   return game;
 }

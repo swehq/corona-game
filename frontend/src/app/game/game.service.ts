@@ -56,6 +56,7 @@ export class GameService {
   restartSimulation(speed: Speed = 'play', scenario: keyof typeof scenarios = 'czechiaGame') {
     this.setSpeed('pause');
     this.game = new Game(scenarios[scenario]);
+    this.game.rampUpGame();
     this.eventQueue = [];
     this._reset$.next();
     this.setSpeed(speed);

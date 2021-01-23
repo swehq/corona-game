@@ -64,7 +64,7 @@ export class Game {
   simulation = new Simulation(this.scenario.dates.rampUpStartDate);
   eventHandler = new EventHandler();
   mitigationParams = Game.randomizeMitigations();
-  mitigationHistory: MitigationActionHistory = {};
+  mitigationHistory: MitigationActionHistory;
   mitigationCache: MitigationActionHistory = {};
   eventChoices: EventAndChoiceHistory = {};
   mitigationControlChanges: Record<string, string[]> = {};
@@ -72,12 +72,12 @@ export class Game {
 
   constructor(public scenario: Scenario) {
     this.scenario = scenario;
-    this.rampUpGame();
+    this.mitigationHistory = cloneDeep(scenario.rampUpMitigationHistory);
   }
 
-  private rampUpGame() {
+  public rampUpGame() {
     while (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
-      this.updateRampUpMitigationsForScenario();
+      this.applyMitigationsFromHistory();
       this.rampUpEvents = this.moveForward().events;
     }
   }
@@ -85,7 +85,6 @@ export class Game {
   moveForward(randomness = getRandomness()) {
     const lastDate = this.simulation.lastDate;
     const nextDate = nextDay(lastDate);
-    this.updateGameplayMitigationsForScenario();
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
     const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
@@ -122,6 +121,8 @@ export class Game {
       // this can happen only after rewind
       delete this.mitigationHistory[nextDate];
     }
+
+    this.applyScenarioMitigations();
 
     // Update event mitigation timeouts
     this.eventMitigations = this.eventMitigations.map(em => {
@@ -181,15 +182,15 @@ export class Game {
     return !!lastStats && lastStats.stability <= this.minimalStability;
   }
 
-  updateRampUpMitigationsForScenario() {
-    const mitigationActions = this.scenario.getRampUpMitigationActions(nextDay(this.simulation.lastDate));
+  applyMitigationsFromHistory() {
+    const mitigationActions = this.mitigationHistory[nextDay(this.simulation.lastDate)];
     if (!mitigationActions) return;
 
     this.applyMitigationActions(mitigationActions);
   }
 
-  updateGameplayMitigationsForScenario() {
-    const mitigationActions = this.scenario.getGameplayMitigationActions(nextDay(this.simulation.lastDate));
+  applyScenarioMitigations() {
+    const mitigationActions = this.scenario.getScenarioMitigationActions(nextDay(this.simulation.lastDate));
     if (!mitigationActions) return;
 
     this.applyMitigationActions(mitigationActions);

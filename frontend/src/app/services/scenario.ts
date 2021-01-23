@@ -25,29 +25,24 @@ export type MitigationPair = {
 }[keyof Mitigations];
 
 export interface ScenarioSaveData {
-  gameplayMitigationHistory: MitigationActionHistory;
+  scenarioMitigations: MitigationActionHistory;
   dates: ScenarioDates;
 }
 
 export class Scenario implements ScenarioSaveData {
-  // Ramp up mitigations are applied only while ramping up the game
+  // Ramp up mitigations are used to initialize game mitigationHistory
   rampUpMitigationHistory: MitigationActionHistory = {};
   // Gameplay mitigations are applied both during ramp up and regular gameplay
-  // Gameplay mitigations should only contain event mitigations
-  gameplayMitigationHistory: MitigationActionHistory = {};
+  scenarioMitigations: MitigationActionHistory = {};
   dates: ScenarioDates;
 
-  constructor(scenarioDates: ScenarioDates, gameplayMitigationHistory?: MitigationActionHistory) {
+  constructor(scenarioDates: ScenarioDates, scenarioMitigations?: MitigationActionHistory) {
     this.dates = scenarioDates;
-    if (gameplayMitigationHistory) this.gameplayMitigationHistory = gameplayMitigationHistory;
+    if (scenarioMitigations) this.scenarioMitigations = scenarioMitigations;
   }
 
-  getRampUpMitigationActions(date: string) {
-    return this.rampUpMitigationHistory[date];
-  }
-
-  getGameplayMitigationActions(date: string) {
-    return this.gameplayMitigationHistory[date];
+  getScenarioMitigationActions(date: string) {
+    return this.scenarioMitigations[date];
   }
 
   /**
@@ -79,9 +74,9 @@ export class Scenario implements ScenarioSaveData {
   }
 
   addGameplayEventMitigation(eventMitigation: EventMitigation, begin: string, end?: string) {
-    const oldEventMitigations = this.gameplayMitigationHistory[begin]?.eventMitigations;
-    this.gameplayMitigationHistory[begin] = {
-      ...this.gameplayMitigationHistory[begin],
+    const oldEventMitigations = this.scenarioMitigations[begin]?.eventMitigations;
+    this.scenarioMitigations[begin] = {
+      ...this.scenarioMitigations[begin],
       eventMitigations: oldEventMitigations ? [...oldEventMitigations, eventMitigation] : [eventMitigation],
     };
 
@@ -90,9 +85,9 @@ export class Scenario implements ScenarioSaveData {
         throw new Error('Cannot set end date without eventMitigation id');
       }
 
-      const oldRemoveMitigationIds = this.gameplayMitigationHistory[end]?.removeMitigationIds;
-      this.gameplayMitigationHistory[end] = {
-        ...this.gameplayMitigationHistory[end],
+      const oldRemoveMitigationIds = this.scenarioMitigations[end]?.removeMitigationIds;
+      this.scenarioMitigations[end] = {
+        ...this.scenarioMitigations[end],
         removeMitigationIds:
           oldRemoveMitigationIds ? [...oldRemoveMitigationIds, eventMitigation.id] : [eventMitigation.id],
       };

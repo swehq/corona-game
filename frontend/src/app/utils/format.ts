@@ -1,3 +1,5 @@
+export const locale = 'cs';
+
 /**
  * Format number in a user friendly locate aware way
  * @param value - number to format
@@ -42,5 +44,5 @@ export function formatNumber(value: number, showCurrencySymbol = false, shrink =
 
   affix += showCurrencySymbol ? ' Kč' : '';
 
-  return `${value.toLocaleString(undefined, formatOptions)}${affix}`;
+  return `${value.toLocaleString(locale, formatOptions)}${affix}`;
 }

@@ -13,6 +13,7 @@ import {GameService} from '../../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 import {Pan} from './pan';
 import {EventAndChoice} from '../../../../services/events';
+import {formatDate} from 'src/app/utils/format-date';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -219,7 +220,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.tooltipLabels[this.datasets.length - 1] = tick.tooltipLabel;
         this.seriesLength++;
         this.lastValue = tick.value;
-        this.labels.push(typeof tick.label === 'string' ? tick.label : tick.label.toLocaleDateString());
+        this.labels.push(typeof tick.label === 'string' ? tick.label : formatDate(tick.label));
         this.setScope();
       });
     });
@@ -251,7 +252,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.seriesLength++;
         this.labels.push((typeof ticks[0].label === 'string'
           ? ticks[0].label
-          : ticks[0].label.toLocaleDateString()),
+          : formatDate(ticks[0].label)),
         );
       });
     });

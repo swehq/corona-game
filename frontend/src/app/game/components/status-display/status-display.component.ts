@@ -4,6 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {get, PropertyPath} from 'lodash';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
+import {formatDate} from 'src/app/utils/format-date';
 import {Stats} from '../../../services/simulation';
 import {GameService} from '../../game.service';
 
@@ -44,7 +45,7 @@ export class StatusDisplayComponent {
   }
 
   get today() {
-    return new Date(this.gameService.lastDate).toLocaleDateString();
+    return formatDate(new Date(this.gameService.lastDate));
   }
 
   stat$(name: keyof Stats, path?: PropertyPath) {

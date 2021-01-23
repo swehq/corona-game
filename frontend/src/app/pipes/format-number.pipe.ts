@@ -7,7 +7,7 @@ import {formatNumber} from '../utils/format';
 export class FormatNumberPipe implements PipeTransform {
 
   transform(value: number | null | undefined, showCurrencySymbol = false, shrink = false,
-    accuracy = shrink ? 1 : 2) {
+    accuracy = 1) {
     value = value || 0;
     return formatNumber(value, showCurrencySymbol, shrink, accuracy);
   }

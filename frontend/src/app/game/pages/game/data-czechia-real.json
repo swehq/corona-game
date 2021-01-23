@@ -292,6 +292,7 @@
     ],
     "controlChanges": {}
   },
+  "scenarioName": "czechiaGame",
   "simulation": [
     {
       "date": "2020-02-25",

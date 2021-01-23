@@ -1,6 +1,5 @@
 import {isEqual, last} from 'lodash';
 import {Game, GameData} from './game';
-import {Scenario} from './scenario';
 
 export function validateGame(data: GameData, breakImmediately = true): Game | undefined {
   // TODO add test of randomness params (expected distribution or element of interval at least)
@@ -8,16 +7,9 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
   if (!data.simulation.length) return;
 
   let res = true;
-  const firstDay = data.simulation[0].date;
-  const lastDay = last(data.simulation)!.date;
-
-  const scenario = new Scenario({
-    rampUpStartDate: firstDay,
-    rampUpEndDate: firstDay,
-    endDate: lastDay,
-  }, data.mitigations.history);
-  const game = new Game(scenario);
+  const game = new Game(data.scenarioName);
   game.mitigationParams = data.mitigations.params;
+  game.mitigationHistory = data.mitigations.history;
   game.eventChoices = data.eventChoices;
   game.mitigationControlChanges = data.mitigations.controlChanges;
 
@@ -32,6 +24,7 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
     }
 
     if (i < data.simulation.length - 1) {
+      game.applyMitigationsFromHistory();
       game.moveForward(data.simulation[i + 1].randomness);
     }
   }

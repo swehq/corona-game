@@ -10,6 +10,7 @@
 >
   <mat-button-toggle
     *ngFor="let level of levels"
+    [matTooltip]="speedDictionary[level.speed]"
     grow style="overflow: visible"
     [disabled]="disabled"
     [value]="level.speed"

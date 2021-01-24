@@ -38,6 +38,12 @@ export class SpeedControlComponent implements OnChanges, ControlValueAccessor {
 
   value: Speed = 'play';
   disabled = false;
+  speedDictionary: {[key: string]: string} = {
+    pause: 'Pauza',
+    slow: 'Pomalý postup',
+    play: 'Středně rychlý postup',
+    fast: 'Rychlý postup',
+  };
 
   constructor(gameService: GameService) {
     gameService.speed$.pipe(

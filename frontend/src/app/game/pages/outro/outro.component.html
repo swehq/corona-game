@@ -1,5 +1,5 @@
 <mat-spinner *ngIf="!(isGameReady$ | async)" style="margin:auto"></mat-spinner>
-<cvd-col *ngIf="isGameReady$ | async" [spacing]="4" alignItems="stretch" style="padding: 2rem">
+<cvd-col *ngIf="isGameReady$ | async" [verticalSpacing]="4" alignItems="stretch" style="padding: 2rem">
 
   <div *ngIf="isGameLost()">
     <h1>Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize</h1>
@@ -13,11 +13,10 @@
   </div>
 
   <cvd-scatter-graph *ngIf="(datasets$ | async) as datasets"
-    style="width: 90%"
     [options]="outroChartOptions" [datasets]="datasets"
   ></cvd-scatter-graph>
 
-  <cvd-graphs style="width: 90%"></cvd-graphs>
+  <cvd-graphs></cvd-graphs>
 
   <div class="content">
     <ng-content></ng-content>

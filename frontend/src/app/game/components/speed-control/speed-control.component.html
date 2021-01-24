@@ -2,6 +2,11 @@
   #group grow
   [value]="value"
   (change)="onUserAction($event.value)"
+  matRipple
+  [matRippleDisabled]="true"
+  matRippleColor="#92e3d930"
+  [matRippleUnbounded]="true"
+  [matRippleCentered]="true"
 >
   <mat-button-toggle
     *ngFor="let level of levels"

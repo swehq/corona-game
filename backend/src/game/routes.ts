@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import {GameDataModel} from './model';
+import {GameDataModel, InvalidGameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
 import {last} from 'lodash';
@@ -22,6 +22,8 @@ router.get('/api/game-data/:id', async (ctx) => {
 router.post('/api/game-data', async (ctx) => {
   const inputData: GameData = ctx.request.body;
   if (!validate(inputData)) {
+    const saveData = new InvalidGameDataModel({data: inputData});
+    await saveData.save();
     ctx.status = 400;
     ctx.body = genericError();
     return;
@@ -40,7 +42,7 @@ router.post('/api/game-data', async (ctx) => {
     return;
   }
 
-  ctx.body = {id: saveData._id};
+  ctx.body = {id: saveData._id, created: saveData.created};
 });
 
 router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
@@ -65,13 +67,6 @@ router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
     cost: formatNumber(data.results.cost, true, true),
   });
 })
-
-// TODO implement and use on FE or remove
-// router.put('/api/game-data/:id', async (req, res) => {
-//   const todo = await GameDataModel.findOneAndUpdate({_id: req.params.id}, req.body, {new: true}).exec();
-//   if (!todo) return res.sendStatus(404);
-//   res.send(todo);
-// });
 
 function genericError() {
   return {error: 'Game data invalid'};

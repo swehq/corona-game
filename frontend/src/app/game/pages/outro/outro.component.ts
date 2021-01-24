@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable, of} from 'rxjs';
-import {catchError, map, switchMap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
 import {formatNumber} from '../../../utils/format';
@@ -27,11 +27,11 @@ const convert: (result: GameResult) => ChartPoint =
   styleUrls: ['./outro.component.scss'],
 })
 export class OutroComponent {
-
   resultId$: Observable<string>;
   isGameReady$ = this.outroService.current$.pipe(
     map(current => current.gameIsReady),
   );
+  isMyGame = false;
 
   private readonly scalesLabelsDefaults: ScaleTitleOptions = {
     display: true,
@@ -140,7 +140,10 @@ export class OutroComponent {
     router: Router,
     @Inject(PLATFORM_ID) platformId: string,
   ) {
-    this.resultId$ = activatedRoute.params.pipe(map(data => data.id));
+    this.resultId$ = activatedRoute.params.pipe(
+      map(data => data.id),
+      tap(id => this.isMyGame = this.gameService.isMyGameId(id)),
+    );
     meta.setTitle('Výsledky');
     outroService.fetchAllResults();
 

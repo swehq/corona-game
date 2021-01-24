@@ -102,4 +102,8 @@ $backgroundCard: map-get($theme, background);
   overflow-y: auto;
   color: $dark-primary-text;
   pointer-events: auto;
+
+  ::ng-deep & ul {
+    list-style: none;
+  }
 }

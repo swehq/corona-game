@@ -3,6 +3,14 @@
 :host {
   @include panel;
   display: flex; // TODO move to mixin panel and check all other panels
+
+  @media screen and (max-width: 768px) {
+    padding: 0.5rem;
+
+    cvd-graphs {
+      padding: 3rem 0.5rem;
+    }
+  }
 }
 
 .content {

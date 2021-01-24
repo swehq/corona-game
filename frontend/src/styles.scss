@@ -73,16 +73,19 @@ dd {
 }
 
 a[href] {
-  color: mat-color($mat-accent, main);;
-  text-decoration: none;
+  color: mat-color($mat-accent, main);
 
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
   }
 }
 
 ul {
-  list-style: none;
+  list-style: square;
+}
+
+strong {
+  color: mat-color($mat-accent, main);
 }
 
 // utility classes

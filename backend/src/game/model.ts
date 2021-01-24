@@ -7,7 +7,11 @@ import {GameData} from '../../../frontend/src/app/services/game';
 const GameDataSchema = new Schema({
   mitigations: {
     type: Object,
-    required: true
+    required: true,
+  },
+  scenarioName: {
+    type: String,
+    required: true,
   },
   simulation: {
     type: Array,
@@ -32,7 +36,29 @@ const GameDataSchema = new Schema({
     reqired: true,
     default: Date.now,
   },
-});
+}, {minimize: false});
 
-interface GameDataDocument extends GameData, Document {}
+const InvalidGameDataSchema = new Schema({
+  data: {},
+  created: {
+    type: Date,
+    reqired: true,
+    default: Date.now,
+  },
+}, {minimize: false});
+
+interface GameDataDocument extends GameData, Document {
+  results: {
+    dead: number,
+    cost: number,
+  }
+  created: Date,
+}
+
+interface InvalidGameDataDocument extends Document {
+  data: any,
+  created: Date,
+}
+
 export const GameDataModel = model<GameDataDocument>('GameData', GameDataSchema);
+export const InvalidGameDataModel = model<InvalidGameDataDocument>('InvalidGameData', InvalidGameDataSchema);

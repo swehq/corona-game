@@ -7,7 +7,7 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
   if (!data.simulation.length) return;
 
   let res = true;
-  const game = new Game(data.scenarioName);
+  const game = new Game(data.scenarioName || 'czechiaGame');
   game.mitigationParams = data.mitigations.params;
   game.mitigationHistory = data.mitigations.history;
   game.eventChoices = data.eventChoices;

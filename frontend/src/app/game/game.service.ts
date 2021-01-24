@@ -30,6 +30,11 @@ export function changeFavicon(virus = false) {
   maskIcon.href = virus ? '/assets/favicon/favicon-virus.svg' : '/assets/favicon/favicon-controller.svg';
 }
 
+interface SavedGame {
+  id: string;
+  created: string;
+}
+
 @UntilDestroy()
 @Injectable({
   providedIn: 'root',
@@ -76,7 +81,7 @@ export class GameService {
 
   restartSimulation(speed: Speed = 'play', scenarioName: ScenarioName = 'czechiaGame') {
     this.setSpeed('pause');
-    window.localStorage.removeItem(LocalStorageKey.LAST_GAME_DATA);
+    this.removeCheckpoint();
     this.game = new Game(scenarioName);
     this.game.rampUpGame();
     this.eventQueue = [];
@@ -182,23 +187,37 @@ export class GameService {
   save$() {
     this.saveCheckpoint();
     const gameData = this.getGameData();
-    return this.httpClient.post<{ id: string }>('/api/game-data', gameData).pipe(
-      tap(data => this.saveGameId(data.id)),
+    return this.httpClient.post<SavedGame>('/api/game-data', gameData).pipe(
+      tap(data => {
+        this.saveGameId(data.id, data.created);
+        this.removeCheckpoint();
+      }),
     );
   }
 
-  private saveGameId(id: string) {
-    const storageValue = window.localStorage.getItem(LocalStorageKey.SAVED_GAME_IDS);
-    let ids = [];
+  private saveGameId(id: string, created: string) {
+    const storageValue = window.localStorage.getItem(LocalStorageKey.SAVED_GAMES);
+    let games: SavedGame[] = [];
 
-    if (storageValue) ids = JSON.parse(storageValue);
+    if (storageValue) games = JSON.parse(storageValue);
 
-    ids.push(id);
-    window.localStorage.setItem(LocalStorageKey.SAVED_GAME_IDS, JSON.stringify(ids));
+    games.push({id, created});
+    window.localStorage.setItem(LocalStorageKey.SAVED_GAMES, JSON.stringify(games));
   }
 
   private saveCheckpoint() {
     window.localStorage.setItem(LocalStorageKey.LAST_GAME_DATA, JSON.stringify(this.getGameData()));
+  }
+
+  private removeCheckpoint() {
+    window.localStorage.removeItem(LocalStorageKey.LAST_GAME_DATA);
+  }
+
+  isMyGameId(id: string) {
+    const games = window.localStorage.getItem(LocalStorageKey.SAVED_GAMES);
+    if (!games) return false;
+    if ((JSON.parse(games) as any[]).find(g => g.id === id)) return true;
+    return false;
   }
 
   loadGameFromJson() {

@@ -1,7 +1,7 @@
 export enum LocalStorageKey {
   CONFIG = 'config',
   DEBUG_MODE = 'debugMode',
-  SAVED_GAME_IDS = 'savedGameIds',
+  SAVED_GAMES = 'savedGames',
   LAST_GAME_DATA = 'lastGameData',
 }
 

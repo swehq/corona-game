@@ -45,12 +45,13 @@ router.post('/api/game-data', async (ctx) => {
   ctx.body = {id: saveData._id, created: saveData.created};
 });
 
+// use data for `/results/:id` path, fallback otherwise
 router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
   let data: any;
 
   const res = {
-    origin: ctx.origin,
-    url: ctx.url,
+    origin: ensureHttps(ctx.origin),
+    url: ensureHttps(`${ctx.protocol}://${ctx.host}${ctx.url.replace(/^\/og/, '')}`),
   }
 
   try {
@@ -85,4 +86,8 @@ function validate(data: any): boolean {
   }
 
   return true;
+}
+
+function ensureHttps(url: string) {
+  return url.replace(/^http:\/\//, 'https://')
 }

@@ -9,7 +9,8 @@
   roles:
     - docker-compose
 
-- hosts: server
+- name: Reload server
+  hosts: server
   gather_facts: no
 
   vars_files:

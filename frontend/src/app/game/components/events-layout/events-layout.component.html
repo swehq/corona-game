@@ -1,5 +1,4 @@
 <div
-  cdkTrapFocus [cdkTrapFocusAutoCapture]="true"
   class="chart-overlay"
   [@inOutAnimation]
   *ngIf="gameService.currentEvent">
@@ -17,13 +16,15 @@
 
   <cvd-row grow wrap>
     <cvd-button
-      *ngFor="let choice of gameService.currentEvent.choices"
+      *ngFor="let choice of gameService.currentEvent.choices; let index = index"
+      [cvdAutofocus]="index === 0"
       (click)="resumeEvent(gameService.currentEvent, choice)">
       {{choice.buttonLabel}}
     </cvd-button>
 
     <cvd-button
       *ngIf="!gameService.currentEvent.choices?.length"
+      [cvdAutofocus]="true"
       (click)="resumeEvent(gameService.currentEvent)">
       OK
     </cvd-button>

@@ -4,6 +4,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
+import {AutofocusDirective} from '../directives/autofocus.directive';
 import {FormatNumberPipe} from '../pipes/format-number.pipe';
 import {FormatPercentagePipe} from '../pipes/format-percentage.pipe';
 import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
@@ -33,6 +34,7 @@ const DECLARATIONS: Declaration[] = [
   NavigateBackDirective,
   RowComponent,
   SafeHtmlPipe,
+  AutofocusDirective,
 ];
 
 @NgModule({

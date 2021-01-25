@@ -3,7 +3,7 @@ import {untilDestroyed} from '@ngneat/until-destroy';
 import {BaseChartDirective} from 'ng2-charts';
 import {Subject} from 'rxjs';
 import {debounceTime, delay, filter, tap, withLatestFrom} from 'rxjs/operators';
-import {GameService} from '../../../game.service';
+import {GameService, Speed} from '../../../game.service';
 import {LineGraphComponent} from './line-graph.component';
 
 export class Pan {
@@ -30,10 +30,13 @@ export class Pan {
     this.panAutoReset$.pipe(
       withLatestFrom(this.gameService.speed$),
       filter(([_, speed]) => {
-        if (speed === 'pause') return false;
+        if (this.isAutoPanDisabled(speed)) return false;
         return Boolean((this.chart?.chart as any).scales['x-axis-0']?.options.ticks.max);
       }),
-      tap(() => this.autoResetIndicator = false),
+      tap(() => {
+        this.autoResetIndicator = false;
+        this.cd.detectChanges();
+      }),
       debounceTime(50),
       delay(100),
       tap(() => {
@@ -44,7 +47,7 @@ export class Pan {
     ).subscribe();
 
     this.gameService.speed$.pipe(untilDestroyed(this.parent)).subscribe(speed => {
-      if (speed === 'pause') this.autoResetIndicator = false;
+      if (this.isAutoPanDisabled(speed)) this.autoResetIndicator = false;
       else if (this.panActive) this.panAutoReset$.next();
     });
 
@@ -55,7 +58,7 @@ export class Pan {
         untilDestroyed(this.parent),
       )
       .subscribe(([_, speed]) => {
-        if (speed === 'pause') return;
+        if (this.isAutoPanDisabled(speed)) return;
         this.panActive = false;
         this.autoResetIndicator = false;
         this.minIndex = 0;
@@ -77,6 +80,9 @@ export class Pan {
       [min, max] = this.panRight();
     }
 
+    if (max === null) {
+      this.autoResetIndicator = false;
+    }
     this.parent.setXAxisTicks({min, max});
     this.chart?.update();
     this.panAutoReset$.next();
@@ -86,8 +92,7 @@ export class Pan {
   panRight() {
     let max;
     let min;
-
-    if (this.parent.labels.length < this.parent.labels.length - this.minIndex) {
+    if (this.parent.labels.length <= this.parent.labels.length - this.minIndex) {
       min = this.parent.labels[this.parent.labels.length - this.parent.scope];
       max = null;
     } else {
@@ -129,5 +134,9 @@ export class Pan {
     return side === 'right'
       ? !chartTicks.max || chartTicks.max === lastTick
       : !chartTicks.min || chartTicks.min === this.parent.labels[0];
+  }
+
+  private isAutoPanDisabled(speed: Speed) {
+    return speed === 'pause' || speed === 'finished';
   }
 }

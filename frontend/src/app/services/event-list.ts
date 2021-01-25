@@ -448,7 +448,7 @@ export const eventTriggers: EventTrigger[] = [
         choices: okButton(),
       },
     ],
-    condition: (ei: EventInput) => ei.stats.hospitalsUtilization > 0.75,
+    condition: (ei: EventInput) => ei.stats.hospitalsUtilization > 0.85,
   },
   // Tracking capacity warning
   {

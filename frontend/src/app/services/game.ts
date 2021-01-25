@@ -55,7 +55,9 @@ export class Game {
   simulation: Simulation;
   eventHandler = new EventHandler();
   mitigationParams = Game.randomizeMitigations();
+  // History of user mitigation action; useful for replay; doesn't contain scenario mitigations
   mitigationHistory: MitigationActionHistory;
+  // State of mitigation actions before scenatio mitigations are applied
   mitigationCache: MitigationActionHistory = {};
   eventChoices: EventAndChoiceHistory = {};
   mitigationControlChanges: Record<string, string[]> = {};
@@ -105,10 +107,10 @@ export class Game {
       }
 
       if (this.newEventMitigations.length > 0) {
-        this.mitigationHistory[nextDate].eventMitigations = this.newEventMitigations;
+        this.mitigationHistory[nextDate].eventMitigations = cloneDeep(this.newEventMitigations);
       }
       if (this.removeMitigationIds.length > 0) {
-        this.mitigationHistory[nextDate].removeMitigationIds = this.removeMitigationIds;
+        this.mitigationHistory[nextDate].removeMitigationIds = cloneDeep(this.removeMitigationIds);
       }
     } else if (this.mitigationHistory[nextDate]) {
       // this can happen only after rewind

@@ -70,6 +70,10 @@
             "prod": {
               "fileReplacements": [
                 {
+                  "replace": "src/app/game/pages/game/data-czechia-real.json",
+                  "with": "src/app/game/pages/game/data-czechia-real.prod.json"
+                },
+                {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }

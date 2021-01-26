@@ -13,6 +13,18 @@
       color: mat-color(map-get($theme, accent));
     }
   }
+
+  @media screen and (max-width: 450px) {
+    .status-display-label {
+      display: none;
+    }
+  }
+
+  cvd-help-tooltip {
+    li:nth-child(1) {
+      margin-bottom: 1rem;
+    }
+  }
 }
 
 .item {

@@ -22,14 +22,18 @@ const GameDataSchema = new Schema({
     required: true
   },
   results: {
-    dead: {
-      type: Number,
-      required: true,
+    type: {
+      dead: {
+        type: Number,
+        required: true,
+      },
+      cost: {
+        type: Number,
+        required: true,
+      },
     },
-    cost: {
-      type: Number,
-      required: true,
-    },
+    required: true,
+    index: true,
   },
   created: {
     type: Date,

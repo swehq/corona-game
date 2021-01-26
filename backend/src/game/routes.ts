@@ -10,7 +10,9 @@ import {formatNumber} from '../../../frontend/src/app/utils/format';
 export const router = new Router<DefaultState, Context>();
 
 router.get('/api/game-data', async (ctx) => {
-  const data = await GameDataModel.find({}, {results: 1});
+  const data = await GameDataModel
+    .find({}, {results: 1, _id: 0})
+    .hint('results_1')
   ctx.body = data.map((i: any) => i.results);
 });
 

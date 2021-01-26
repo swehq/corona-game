@@ -6,15 +6,23 @@ networks:
       name: nginx
 
 services:
-  backend:
-    container_name: "{{ backend_container }}"
+{% if backend_container_count is not defined %}
+{% set backend_container_count = 1 %}
+{% endif %}
+{% for counter in range(1, backend_container_count + 1) %}
+  backend-{{ counter }}:
+    hostname: "{{ backend_container }}"
+    container_name: "{{ backend_container }}-{{ counter }}"
     image: "{{ backend_remote_image_latest }}"
     restart: unless-stopped
     networks:
-      - nginx
-      - "{{ base_name }}-{{ env }}"
+      nginx:
+        aliases:
+          - "{{ backend_container }}"
+      "{{ base_name }}-{{ env }}":
     environment:
       PORT: 80
       MONGO_URI: mongodb://mongo/corona
     expose:
       - 80
+{% endfor %}

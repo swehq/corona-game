@@ -1,5 +1,6 @@
 env: dev
 url: korona.swehq.com
 admin_email: admin@swehq.com
+backend_container_count: 4
 
 www_redirection: false

@@ -118,14 +118,14 @@ export class Simulation {
   readonly exposedStart = 12;
   readonly vaccinationMaxRate = 0.75;
   readonly hospitalizationRateMean = randomizeSettings.hospitalizationRate[0];
-  readonly hospitalsOverwhelmedThreshold = 20_000;
+  readonly hospitalsOverwhelmedThreshold = 25_000;
   readonly hospitalsOverwhelmedMortalityMultiplier = 2;
   readonly tracingOverwhelmedThreshold = 1_000;
   readonly tracingRMultiplier = 0.9;
-  readonly hospitalsBaselineUtilization = 0.5;
+  readonly hospitalsBaselineUtilization = 0.64;
   readonly initialStability = 100;
   readonly stabilityRecovery = 0.2;
-  readonly hospitalizationCostPerDay = 5_000;
+  readonly hospitalizationCostPerDay = 14_500;
 
   readonly rEmaUpdater = Simulation.createEmaUpdater(3.5, this.R0);
 

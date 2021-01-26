@@ -2,6 +2,7 @@ import Router from 'koa-router';
 import {GameDataModel, InvalidGameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
+import {scenarios} from '../../../frontend/src/app/services/scenario';
 import {last} from 'lodash';
 import {Context, DefaultState} from 'koa';
 import {formatNumber} from '../../../frontend/src/app/utils/format';
@@ -73,11 +74,14 @@ function genericError() {
   return {error: 'Game data invalid'};
 }
 
-function validate(data: any): boolean {
+function validate(data: GameData): boolean {
   if (!data.mitigations) return false;
   if (!data.simulation || !data.simulation.length) return false;
 
   try {
+    const scenario = scenarios[data.scenarioName];
+    const lastSimData = last(data.simulation)!;
+    if (scenario.dates.endDate !== lastSimData.date) return false;
     const game = validateGame(data);
     if (!game) return false;
     if (game.isGameLost() || !game.isFinished()) return false;

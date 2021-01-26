@@ -2,7 +2,7 @@ import {AfterViewInit, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartOptions} from 'chart.js';
-import {first, last} from 'lodash';
+import {first, last} from 'lodash-es';
 import {Observable} from 'rxjs';
 import {filter, map, tap} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';

@@ -1,4 +1,4 @@
-import {cloneDeep, get, isNil, sample} from 'lodash';
+import {cloneDeep, get, isNil, sample} from 'lodash-es';
 import {formatNumber, locale} from '../utils/format';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';

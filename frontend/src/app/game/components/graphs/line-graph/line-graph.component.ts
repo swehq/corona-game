@@ -4,7 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartTooltipItem} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
-import {merge} from 'lodash';
+import {merge} from 'lodash-es';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';

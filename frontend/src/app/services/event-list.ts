@@ -1,6 +1,6 @@
 import {EventChoiceDef, EventInput, EventMitigation, EventTrigger} from './events';
-import {dateDiff} from './utils';
-import {isNil, sample} from 'lodash';
+import {dateDiff, indexByFraction} from './utils';
+import {isNil} from 'lodash';
 
 export const maxMitigationDuration = Number.MAX_SAFE_INTEGER;
 
@@ -99,9 +99,9 @@ export interface EventData {
   daysBusinessesRestricted: number;
 }
 
-export function initialEventData(): EventData {
+export function initialEventData(randomSeed: number): EventData {
   return {
-    winterEvent: sample(WINTER_EVENTS) as WinterEvent, // sample returns WinterEvent | undefined
+    winterEvent: indexByFraction(WINTER_EVENTS, randomSeed) as WinterEvent, // sample returns WinterEvent | undefined
     aboveSelfIsolationThresholdDays: 0,
     belowSelfIsolationThresholdDays: 0,
     minStability: 100,

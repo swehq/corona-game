@@ -1,11 +1,11 @@
 import {cloneDeep, differenceWith, isEqual} from 'lodash';
 import {Event, EventAndChoice, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
-import {clippedLogNormalSampler, dateDiff, nextDay} from './utils';
+import {dateDiff, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario,
   ScenarioName, scenarios, EventAndChoiceHistory} from './scenario';
 import {defaultMitigations} from './mitigations';
-import {getRandomness} from './randomize';
+import {SeededRandom} from './randomize';
 
 export interface MitigationParams extends MitigationEffect {
   id: MitigationPair[0];
@@ -25,6 +25,7 @@ export interface GameData {
     controlChanges: Record<string, string[]>,
   };
   scenarioName: ScenarioName;
+  randomSeed: string;
   simulation: DayState[];
   eventChoices: EventAndChoiceHistory;
 }
@@ -52,9 +53,11 @@ export class Game {
   removeMitigationIds: string[] = [];
 
   scenario: Scenario;
+  randomSeed: string;
+  rng: SeededRandom;
   simulation: Simulation;
   eventHandler = new EventHandler();
-  mitigationParams = Game.randomizeMitigations();
+  mitigationParams: MitigationParams[];
   // History of user mitigation action; useful for replay; doesn't contain scenario mitigations
   mitigationHistory: MitigationActionHistory;
   // State of mitigation actions before scenatio mitigations are applied
@@ -63,10 +66,13 @@ export class Game {
   mitigationControlChanges: Record<string, string[]> = {};
   rampUpEvents: Event[] | undefined;
 
-  constructor(public scenarioName: ScenarioName) {
+  constructor(public scenarioName: ScenarioName, randomSeed?: string) {
     this.scenarioName = scenarioName;
     this.scenario = scenarios[scenarioName];
-    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate);
+    this.randomSeed = randomSeed ? randomSeed : Math.random().toString();
+    this.rng = new SeededRandom(this.randomSeed);
+    this.mitigationParams = Game.randomizeMitigations(this.randomSeed + '$MitigationSalt');
+    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate, this.rng.getRandomness());
     this.mitigationHistory = cloneDeep(this.scenario.rampUpMitigationHistory);
   }
 
@@ -77,12 +83,12 @@ export class Game {
     }
   }
 
-  moveForward(randomness = getRandomness()) {
+  moveForward() {
     const lastDate = this.simulation.lastDate;
     const nextDate = nextDay(lastDate);
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
-    const dayState = this.simulation.simOneDay(mitigationEffect, randomness);
+    const dayState = this.simulation.simOneDay(mitigationEffect, this.rng.getRandomness());
     const events = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.mitigations, this.eventMitigations);
 
     return {dayState, events};
@@ -268,13 +274,16 @@ export class Game {
     if (applied.schoolDaysLost !== undefined) affected.schoolDaysLost += applied.schoolDaysLost;
   }
 
-  static randomizeMitigations() {
+  static randomizeMitigations(randomSeed: string) {
     const res: MitigationParams[] = [];
+    const rng = new SeededRandom(randomSeed);
 
     // Randomization of mitigation effect is turned off
     const effectivitySigmaScaling = 0;
-    const cs = clippedLogNormalSampler(1_000_000_000, 0); // Cost scaler (unit)
-    const ss = clippedLogNormalSampler(1, 0);             // Stability scaler
+    // Cost scaler (cost is specified in billions)
+    function cs() { return rng.clippedLogNormal(1_000_000_000, 0); }
+    // Stability scaler
+    function ss() { return rng.clippedLogNormal(1, 0); }
 
     // Special mitigation: controls drift across borders
     addMitigation(['bordersClosed', true], 0.00, [0.00, 0.00], 0.556 * cs(), 0.09 * ss(), {isBorders: true});
@@ -316,7 +325,7 @@ export class Game {
       const mitigation = {
         id,
         level,
-        rMult: clippedLogNormalSampler(1 - effectivity, effectivitySigma)(),
+        rMult: rng.clippedLogNormal(1 - effectivity, effectivitySigma),
         exposedDrift: 0,
         economicCost,
         compensationCost: 0,

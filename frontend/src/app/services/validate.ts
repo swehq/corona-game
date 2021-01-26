@@ -7,7 +7,7 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
   if (!data.simulation.length) return;
 
   let res = true;
-  const game = new Game(data.scenarioName || 'czechiaGame');
+  const game = new Game(data.scenarioName || 'czechiaGame', data.randomSeed);
   game.mitigationParams = data.mitigations.params;
   game.mitigationHistory = data.mitigations.history;
   game.eventChoices = data.eventChoices;
@@ -25,7 +25,7 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
 
     if (i < data.simulation.length - 1) {
       game.applyMitigationsFromHistory();
-      game.moveForward(data.simulation[i + 1].randomness);
+      game.moveForward();
     }
   }
 

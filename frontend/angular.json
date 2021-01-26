@@ -30,7 +30,8 @@
               "chart.js",
               "chartjs-plugin-datalabels",
               "chartjs-plugin-zoom",
-              "lodash"
+              "lodash",
+              "seedrandom"
             ],
             "assets": [
               "src/favicon.ico",

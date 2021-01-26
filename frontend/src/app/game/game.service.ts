@@ -179,6 +179,7 @@ export class GameService {
         controlChanges: this.game.mitigationControlChanges,
       },
       scenarioName: this.game.scenarioName,
+      randomSeed: this.game.randomSeed,
       simulation: this.modelStates,
       eventChoices: this.game.eventChoices,
     };

@@ -10,20 +10,22 @@
   <cvd-col grow class="chapter" alignItems="center">
     <cvd-row class="item">
       <cvd-icon size="large" svgIcon="stability"></cvd-icon>
-        <span class="u-nowrap">Společenská stabilita</span>
-        <mat-chip-list>
-          <mat-chip selected [color]="getColor$(stat$('stability'), 65, 35) | async">{{stat$('stability') | async | formatNumber:false:false:1}}</mat-chip>
-        </mat-chip-list>
+      <span class="u-nowrap status-display-label">Společenská stabilita</span>
+      <mat-chip-list>
+        <mat-chip selected
+                  [color]="getColor$(stat$('stability'), 65, 35) | async">{{stat$('stability') | async | formatNumber:false:false:1}}</mat-chip>
+      </mat-chip-list>
     </cvd-row>
   </cvd-col>
 
   <cvd-col grow class="chapter" alignItems="center">
     <cvd-row class="item">
       <cvd-icon size="large" svgIcon="hospital"></cvd-icon>
-        <span class="u-nowrap">Vytíženost nemocnic</span>
-        <mat-chip-list>
-          <mat-chip selected [color]="getColor$(stat$('hospitalsUtilization'), .7, .9) | async">{{stat$('hospitalsUtilization') | async | formatPercentage}}</mat-chip>
-        </mat-chip-list>
+      <span class="u-nowrap status-display-label">Vytíženost nemocnic</span>
+      <mat-chip-list>
+        <mat-chip selected
+                  [color]="getColor$(stat$('hospitalsUtilization'), .7, .9) | async">{{stat$('hospitalsUtilization') | async | formatPercentage}}</mat-chip>
+      </mat-chip-list>
     </cvd-row>
   </cvd-col>
 </cvd-row>
@@ -38,18 +40,28 @@
 
   <ul>
     <li>
-      <strong>Společenská stabilita:</strong>
-      reakce společnosti na vaše kroky. Pokud zavádíte příliš omezující opatření,
-      nebo naopak umírá příliš lidí, může dojít k výměně vlády a hra skončí.
+      <cvd-row justifyContent="flex-start" grow [horizontalSpacing]="2">
+        <cvd-icon size="large" svgIcon="stability"></cvd-icon>
+        <div>
+          <strong>Společenská stabilita:</strong>
+          reakce společnosti na vaše kroky. Pokud zavádíte příliš omezující opatření,
+          nebo naopak umírá příliš lidí, může dojít k výměně vlády a hra skončí.
+        </div>
+      </cvd-row>
     </li>
     <li>
-      <strong>Kapacita nemocnic:</strong>
-      pokud překročíte kapacitu nemocnic, zhorší se péče o nemocné a zemřelých tak bude přibývat více.
+      <cvd-row justifyContent="flex-start" grow [horizontalSpacing]="2">
+        <cvd-icon size="large" svgIcon="hospital"></cvd-icon>
+        <div>
+          <strong>Vytíženost nemocnic:</strong>
+          pokud překročíte kapacitu nemocnic, zhorší se péče o nemocné a zemřelých tak bude přibývat více.
+        </div>
+      </cvd-row>
     </li>
   </ul>
 
   <p>
     <em>Zvláštní pozornost věnujte ukazateli společenské stability.
-    Její propad na minimum je jediný způsob, jak může vaše hra skončit ještě před dostatečnou imunizací.</em>
+      Její propad na minimum je jediný způsob, jak může vaše hra skončit ještě před dostatečnou imunizací.</em>
   </p>
 </cvd-help-tooltip>

@@ -1,4 +1,4 @@
-import {isEqual, last} from 'lodash';
+import {isEqual, last} from 'lodash-es';
 import {Game, GameData} from './game';
 
 export function validateGame(data: GameData, breakImmediately = true): Game | undefined {

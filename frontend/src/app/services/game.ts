@@ -1,4 +1,4 @@
-import {cloneDeep, differenceWith, isEqual} from 'lodash';
+import {cloneDeep, differenceWith, isEqual} from 'lodash-es';
 import {Event, EventAndChoice, EventHandler, EventMitigation} from './events';
 import {DayState, MitigationEffect, Simulation} from './simulation';
 import {clippedLogNormalSampler, dateDiff, nextDay} from './utils';

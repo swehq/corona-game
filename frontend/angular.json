@@ -29,8 +29,7 @@
             "allowedCommonJsDependencies": [
               "chart.js",
               "chartjs-plugin-datalabels",
-              "chartjs-plugin-zoom",
-              "lodash"
+              "chartjs-plugin-zoom"
             ],
             "assets": [
               "src/favicon.ico",

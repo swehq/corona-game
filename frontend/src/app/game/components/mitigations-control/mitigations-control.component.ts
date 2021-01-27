@@ -1,5 +1,5 @@
+import {ChangeDetectorRef, Component, Input, HostBinding} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ChangeDetectorRef, Component} from '@angular/core';
 import {MitigationsPresetLevel, MitigationsService, MitigationKey} from '../../../services/mitigations.service';
 
 @UntilDestroy()
@@ -9,6 +9,11 @@ import {MitigationsPresetLevel, MitigationsService, MitigationKey} from '../../.
   styleUrls: ['./mitigations-control.component.scss'],
 })
 export class MitigationsControlComponent {
+  @Input() isSmallDevice = false;
+
+  @HostBinding('class.is-small-device')
+  get isSmallDeviceClass() {return this.isSmallDevice; }
+
   constructor(public mitigationsService: MitigationsService, cd: ChangeDetectorRef) {
     mitigationsService.formGroup.valueChanges
       .pipe(untilDestroyed(this))

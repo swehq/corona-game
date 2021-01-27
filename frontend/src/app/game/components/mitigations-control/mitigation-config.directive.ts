@@ -13,6 +13,7 @@ export class MitigationConfigDirective {
     this.levelsComponent.levels = this.mitigationsService.optionsFor(paramName);
   }
 
+
   private levelsComponent: MitigationToggleComponent | MitigationScaleComponent;
 
   constructor(

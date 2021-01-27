@@ -10,28 +10,6 @@ export function dateDiff(laterDate: string, earlierDate: string) {
   return differenceInDays(new Date(`${laterDate}T00:00`), new Date(`${earlierDate}T00:00`));
 }
 
-// Create 3 sigma clipped function sampling from log normal (math checks out for sigma << mode)
-export function clippedLogNormalSampler(mode: number, sigma: number) {
-  return () => mode * Math.exp(clippedRandn() * sigma / mode);
-}
-
-// 3 sigma clipped normal distribution
-function clippedRandn() {
-  let r = randn();
-  while (Math.abs(r) > 3) {
-    r = randn();
-  }
-
-  return r;
-}
-
-function randn() {
-  const u = 1 - Math.random();
-  const v = Math.random();
-
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-}
-
 /**
  * Returns seasonal stage of the year in the interval [0, .5]
  * @param date actual date
@@ -43,4 +21,10 @@ export function getSeasonality(date: string, peak: string) {
   const seasonalityPhase = (daysDistance / tropicalYearLength) % 1;
 
   return seasonalityPhase > .5 ? 1 - seasonalityPhase : seasonalityPhase;
+}
+
+export function indexByFraction<T>(array: Readonly<T[]>, i: number) {
+  if (array.length === 0) return undefined;
+  const idx = Math.floor(i * array.length);
+  return array[idx];
 }

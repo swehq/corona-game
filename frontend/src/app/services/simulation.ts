@@ -26,7 +26,7 @@
 */
 
 import {last} from 'lodash';
-import {settings as randomizeSettings, getRandomness} from './randomize';
+import {settings as randomizeSettings, Randomness} from './randomize';
 import {getSeasonality, nextDay} from './utils';
 
 export interface MitigationEffect {
@@ -59,14 +59,6 @@ interface SirState {
   hospitalsUtilization: number;
   vaccinated: number;
   recoveringDetectedNotHospitalizedNew: number;
-}
-
-interface Randomness {
-  rNoiseMult: number;
-  baseMortality: number;
-  hospitalizationRate: number;
-  detectionRate: number;
-  eventRandomSeed: number;
 }
 
 interface ModelInputs {
@@ -104,7 +96,7 @@ export interface Stats {
 
 export interface DayState {
   date: string;
-  randomness?: Randomness;
+  randomness: Randomness;
   modelInputs?: ModelInputs;
   sirState: SirState;
   stats: Stats;
@@ -163,19 +155,13 @@ export class Simulation {
     recoveringDetectedNotHospitalizedNew: 0,
   };
 
-  constructor(initiator: string | DayState[]) {
-    if (Array.isArray(initiator)) {
-      this.modelStates = initiator;
-      return;
-    }
-
-    const startDate = initiator;
+  constructor(startDate: string, randomness: Randomness) {
     const sirState: SirState = {...this.sirStateBeforeStart};
     sirState.suspectible = this.initialPopulation - this.exposedStart;
     sirState.exposed = this.exposedStart;
     sirState.exposedNew = this.exposedStart;
     this.modelStates.push(
-      {date: startDate, sirState, stats: this.calcStats(sirState, undefined, undefined)});
+      {date: startDate, randomness, sirState, stats: this.calcStats(sirState, undefined, undefined)});
   }
 
   private getSirStateInPast(n: number) {
@@ -324,7 +310,7 @@ export class Simulation {
     return lastState.date;
   }
 
-  simOneDay(mitigationEffect: MitigationEffect, randomness: ReturnType<typeof getRandomness>): DayState {
+  simOneDay(mitigationEffect: MitigationEffect, randomness: Randomness): DayState {
     const date = nextDay(last(this.modelStates)!.date);
     const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
     const sirState: SirState = this.calcSirState(modelInputs, randomness);

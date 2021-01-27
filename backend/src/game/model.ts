@@ -13,6 +13,10 @@ const GameDataSchema = new Schema({
     type: String,
     required: true,
   },
+  randomSeed: {
+    type: String,
+    required: true,
+  },
   simulation: {
     type: Array,
     required: true,

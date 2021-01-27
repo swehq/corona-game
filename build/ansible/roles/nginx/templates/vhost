@@ -1,6 +1,10 @@
 location ^~ /api/ {
   proxy_pass http://{{ backend_container }};
   client_max_body_size 5M;
+
+  proxy_cache default_cache;
+  proxy_buffering on;
+  add_header X-Proxy-Cache $upstream_cache_status;
 }
 
 location ^~ /assets/ {

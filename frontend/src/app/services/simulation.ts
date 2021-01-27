@@ -25,7 +25,7 @@
 
 */
 
-import {last} from 'lodash-es';
+import {last} from 'lodash';
 import {settings as randomizeSettings, getRandomness} from './randomize';
 import {getSeasonality, nextDay} from './utils';
 

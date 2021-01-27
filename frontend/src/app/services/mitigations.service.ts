@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FormControl, FormGroup} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {isEqual} from 'lodash-es';
+import {isEqual} from 'lodash';
 import {merge, Observable, OperatorFunction, Subject} from 'rxjs';
 import {delay, filter, map, pairwise, shareReplay, startWith, withLatestFrom} from 'rxjs/operators';
 import {MitigationPair} from './scenario';

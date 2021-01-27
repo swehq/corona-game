@@ -1,4 +1,4 @@
-import {cloneDeep, last} from 'lodash-es';
+import {cloneDeep, last} from 'lodash';
 import {EventHandler} from 'src/app/services/events';
 import {eventTriggers} from 'src/app/services/event-list';
 import {Game, GameData} from 'src/app/services/game';

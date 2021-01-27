@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {meanBy} from 'lodash-es';
+import {meanBy} from 'lodash';
 import {ReplaySubject, Subject} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 import {LocalStorageKey} from '../../environments/defaults';

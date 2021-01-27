@@ -5,6 +5,6 @@
   shell: docker-compose {{item}}
   with_items:
     - pull
-    - up -d
+    - up -d --remove-orphans
   args:
     chdir: "{{ deploy_dir }}"

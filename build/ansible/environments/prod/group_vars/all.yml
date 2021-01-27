@@ -1,5 +1,6 @@
 env: prod
 url: koronahra.cz
 admin_email: admin@koronahra.cz
+backend_container_count: 4
 
 www_redirection: true

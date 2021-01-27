@@ -3,6 +3,7 @@ import {GameDataModel, InvalidGameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
 import {scenarios} from '../../../frontend/src/app/services/scenario';
+import {dateDiff} from '../../../frontend/src/app/services/utils';
 import {last} from 'lodash';
 import {Context, DefaultState} from 'koa';
 import {formatNumber} from '../../../frontend/src/app/utils/format';
@@ -78,12 +79,12 @@ function genericError() {
 
 function validate(data: GameData): boolean {
   if (!data.mitigations) return false;
-  if (!data.simulation || !data.simulation.length) return false;
+  if (!data.simulation) return false;
 
   try {
     const scenario = scenarios[data.scenarioName];
-    const lastSimData = last(data.simulation)!;
-    if (scenario.dates.endDate !== lastSimData.date) return false;
+    const scenarioDuration = 1 + dateDiff(scenario.dates.endDate, scenario.dates.rampUpStartDate);
+    if (data.simulation.length !== scenarioDuration) return false;
     const game = validateGame(data);
     if (!game) return false;
     if (game.isGameLost() || !game.isFinished()) return false;

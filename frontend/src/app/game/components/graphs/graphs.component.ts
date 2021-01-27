@@ -6,8 +6,9 @@ import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
 import {filter, map, tap} from 'rxjs/operators';
 import {formatNumber} from '../../../utils/format';
-import {changeFavicon, GameService} from '../../game.service';
+import {GameService} from '../../game.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
+import {changeFavicon} from '../../../services/router-utils.service';
 
 export const CRITICAL_VIRUS_THRESHOLD = 15_000;
 
@@ -32,6 +33,7 @@ export class GraphsComponent implements AfterViewInit {
       }],
     },
   };
+
   immunizedCustomOptions: ChartOptions = {
     legend: {
       display: true,

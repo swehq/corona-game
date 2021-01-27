@@ -153,19 +153,19 @@ function okButtonEndMitigation(id: string, chartLabel?: string): [EventChoiceDef
 const antivaxEventTexts = [
   {
     title: 'Vakcína neprošla dostatečným testováním, tvrdí lékař',
-    text: 'Lidé mají strach, že nová vakcína proti koronaviru je nedostatečně testovaná a očkování proto odmítají',
+    text: 'Lidé mají strach, že nová vakcína proti koronaviru je nedostatečně testovaná, a očkování proto odmítají.',
   },
   {
-    title: 'České celebrity sepsaly petici proti očkování',
-    text: 'Odpor vůči očkování se šíří',
+    title: 'Celebrity sepsaly petici proti očkování',
+    text: 'Odpor vůči očkování se šíří.',
   },
   {
     title: 'Lékař zemřel po očkování',
-    text: 'Lékař v USA zemřel po očkování. Detaily případu jsou zatím neznámé, občani se obávají očkování.',
+    text: 'Lékař v USA zemřel po očkování. Detaily případu jsou zatím neznámé, občané se obávají očkování.',
   },
   {
-    title: 'Horečky, průjmy: Češi popisují první pociťované vedlejší vedlejší účinky vakcíny',
-    text: 'Lidé mají strach z vedlejších účinků očkování a vakcínu proto odmítají',
+    title: 'Horečky, průjmy: Občané popisují první pociťované vedlejší účinky vakcíny',
+    text: 'Lidé mají strach z vedlejších účinků očkování a vakcínu proto odmítají.',
   },
   {
     title: 'Lékař ukázal pět jednoduchých triků jak vyléčit koronavirus doma',
@@ -186,7 +186,7 @@ export const eventTriggers: EventTrigger[] = [
         title: 'První případ nákazy koronavirem v Česku!',
         text: '<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p>\
 <ul>\
-  <li>Každé opatření má různý vliv na šíření koronaviru</li>\
+  <li>Opatření různou měrou ovlivňují šíření koronaviru</li>\
   <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
   <li>Kliknutí na otazníky u panelů otevře nápovědu</li>\
   <li><strong>Rychlost hry ovládáte v panelu nahoře</strong></li>\
@@ -208,7 +208,7 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'Grafy (v tomto panelu)',
         text: '<p>Hlavní zdroj informací o aktuální situaci ve státě. Překlikávat můžete mezi čtyřmi různými grafy. Nejdůležitější je však graf nově nakažených.</p>\
-<p>Po skončení tutorialu klikněte na otazník v tomto panelu a přečtěte si o nich více.</p>',
+<p>Po skončení tutorialu klikněte na otazník v tomto panelu a přečtěte si více.</p>',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
@@ -216,10 +216,10 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Základní statistiky a rychlost hry (první panel)',
-        text: '<p>Zde můžete sledovat hodnotu společenské stability a kapacitu nemocnic.</p>\
-<p>Věnujte pozornost tomu, proč jsou pro vás společenská stabilita a kapacita nemocnic důležité. Klikněte na otazník v panelu rychlostí.</p>\
-<p>Zároveň vám tento panel umožňuje hru zrychlovat, zpomalovat nebo případně pozastavit tlačítkem pauza.</p>',
+        title: 'Rychlost hry a základní statistiky (první panel)',
+        text: '<p>Tento panel umožňuje hru zrychlovat, zpomalovat nebo případně pozastavit tlačítkem pauza.</p>\
+<p>Zároveň zde můžete sledovat hodnotu společenské stability a kapacitu nemocnic.</p>\
+<p>Věnujte pozornost tomu, proč jsou pro vás společenská stabilita a kapacita nemocnic důležité. Klikněte na otazník v panelu rychlostí.</p>',
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
@@ -238,7 +238,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Teď je to jen na vás',
-        help: '<p>A tím se ukončuje naše krátká cesta po ovládání hry. Jakmile zmáčknete OK, bude už jen na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!<p>\
+        help: '<p>A tím končí naše krátká cesta po ovládání hry. Jakmile stisknete OK, bude už na vás, jak si s pandemií poradíte. Ale nebojte, ve všech mimořádných situacích se vám pokusíme nabídnout radu. Hodně štěstí!<p>\
 <p><strong>Po zavření tohoto okna spustíte hru v panelu nahoře</strong></p>',
         choices: [
           {
@@ -260,7 +260,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Češi důvěřují vládě!',
-        help: 'Vypadá to, že jste si získali zpět důvěru obyvatel. Nemusíte se teď obávat příliš negativních reakcí při zavádění opatření.',
+        help: 'Vypadá to, že jste získali zpět důvěru obyvatel. Nemusíte se teď obávat příliš negativních reakcí při zavádění opatření.',
       },
     ],
     condition: (ei: EventInput) => ei.eventData.minStability <= 50 && ei.stats.stability >= 75,
@@ -268,7 +268,7 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Lidem dochází trpělivost! Nevěří vládním rozhodnutím',
+        title: 'Lidem dochází trpělivost! Nevěří vládním rozhodnutím.',
         help: 'Vaše volba opatření otřásla důvěrou obyvatel. Nezapomínejte, že opatření mají vliv na společenskou stabilitu. Když budou příliš přísná a budou trvat dlouho, lidé začnou být nespokojení.',
       },
     ],
@@ -287,7 +287,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Opozice vyzývá vládu k rezignaci!',
-        help: 'Pozor, situace je velmi špatná. Další pokles stability může hru předčasně ukončit. Co k situaci vedlo? Vysoký počet zemřelých vyžaduje zpřísnění opatření. Naopak příliš přísná opatření může být nutné uvolnit nebo začít platit kompenzace.',
+        help: 'Pozor, situace je velmi špatná. Další pokles stability může hru předčasně ukončit. Co k situaci vedlo? Vysoký počet zemřelých vyžaduje zpřísnění opatření. Naopak příliš přísná opatření může být nutné uvolnit nebo začít kompenzovat.',
         choices: okButton({...selfIsolationMitigation1, name: 'Výzvy k rezignaci', duration: 30}),
       },
     ],
@@ -348,7 +348,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Covid zabil {{stats.deaths.today}} lidí za pouhý den',
-        help: 'Vypadá to, že to není pouhá chřipka. Je ke zvážení zapnout v panelu vpravo nahoře opatření, která mohou pomoci šíření viru zpomalit. Ti, kteří nemoc přežijí, budou nějakou dobu imunní.',
+        help: 'Vypadá to, že to není pouhá chřipka. Je ke zvážení zapnout v panelu vpravo nahoře opatření, která mohou šíření viru zpomalit. Ti, kteří nemoc přežijí, budou nějakou dobu imunní.',
       },
     ],
     condition: (ei: EventInput) => ei.stats.deaths.today >= 10,
@@ -358,7 +358,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Rekordní denní počet úmrtí nakažených covidem',
-        help: 'Stovka mrtvých denně zasévá do společnosti otázky, jestli vláda zvládá situaci dobře. Podívejte se v panelu vpravo nahoře, zda máte zavedena dostatečná opatření.',
+        help: 'Stovka mrtvých denně zasévá do společnosti otázky, jestli vláda zvládá situaci. Podívejte se v panelu vpravo nahoře, zda máte zavedena dostatečná opatření.',
         choices: okButton({stabilityCost: 2}, 'Rekordní denní úmrtí'),
       },
     ],
@@ -379,7 +379,7 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Temné predikce se naplnily: přes 1500 mrtvých za den. Armáda kope masové hroby',
+        title: 'Temné predikce se naplnily: přes 1500 mrtvých za den. Armáda kope masové hroby.',
         help: 'Více než 1 500 mrtvých denně je na stát s deseti miliony občanů velmi špatnou zprávou. Společnost je v šoku.',
         choices: okButton({stabilityCost: 30}),
       },
@@ -409,8 +409,8 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Další tragický milník: Česko překonalo hranici 100 000 zemřelých na Covid-19',
-        help: 'Sto tisíc mrtvých představuje světově tragické prvenství a nevídanou ztrátu životů. Tento milník lidi staví proti vládě. Zároveň ale po dva týdny budou opatrnější.',
+        title: 'Další tragický milník: Česko překonalo hranici 100 000 zemřelých na covid-19',
+        help: 'Sto tisíc mrtvých představuje tragické světové prvenství a nevídanou ztrátu životů. Tento milník lidi staví proti vládě. Zároveň ale po dva týdny budou opatrnější.',
         choices: [
           {
             buttonLabel: 'OK',
@@ -519,7 +519,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Prázdniny skončily a školáci se vrací do škol. Máme očekávat zhoršení situace?',
-        help: 'Opatření “uzavření škol” opět vyžaduje další náklady a snižuje společenskou stabilitu. Můžete je nechat zavřené, ale opatření už nebude automaticky zdarma.',
+        help: 'Opatření “uzavření škol” opět zvyšuje náklady a snižuje společenskou stabilitu. Můžete je nechat zavřené, ale opatření už nebude automatické a zdarma.',
         choices: okButton(undefined, 'Konec prázdnin'),
       },
     ],
@@ -540,7 +540,7 @@ export const eventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Chladné počasí počasí pomáhá šíření koronaviru, tvrdí epidemiologové',
+        title: 'Chladné počasí pomáhá šíření koronaviru, tvrdí epidemiologové',
         help: 'V chladném počasí se lidé více potkávají v malých prostorách a virus se šíří rychleji. Jeden nakažený zvládne nakazit více lidí. Možná je vhodný čas zavést opatření.',
         choices: okButton(undefined, 'Konec teplého počasí'),
       },
@@ -558,8 +558,8 @@ export const eventTriggers: EventTrigger[] = [
       {
         title: 'Vláda dostala vysvědčení',
         text: '\
-<p>Několik dní před tím než dostanou vysvědčení školáci je příležitost hodnotit i vaše působení ve vládě od začátku pandemie.</p>\
-<p>Ve skutečné České republice došlo k 30.6.2020 k 347 úmrtím osob hospitalizovaných s nemocí Covid-19. Vám v simulaci zemřelo {{stats.deaths.total}} osob.</p>',
+<p>Několik dní před tím, než dostanou vysvědčení školáci, je příležitost hodnotit i vaše působení ve vládě od začátku pandemie.</p>\
+<p>Ve skutečné České republice došlo k 30. 6. 2020 k 347 úmrtím osob hospitalizovaných s nemocí covid-19. Vám v simulaci zemřelo {{stats.deaths.total}} osob.</p>',
         help: 'První vlna může být překvapivá a nepříjemná. Možná nejste spokojeni s tím, jak se vám povedla a chcete to zkusit znovu, pak stačí zmáčknout <em>Restart</em>. Pokud chcete pokračovat dál, zmáčkněte <em>Jedeme dál</em>.',
         choices: [
           simpleChoice('Jedeme dál'),
@@ -709,7 +709,7 @@ export const eventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Únik dat způsobený neopatrností!',
-        help: 'Únik dat z očkovacího registračního může způsobit mnoho problémů všem stranám. Pokud přiznáte pochybení, lidé budou rozčilení. Pokud jej popřete, mohou nastat dvě situace: buď budete odhaleni a obyvaté budou popuzeni výrazně více, nebo vám lež projde, hrstka lidí si bude stěžovat, ale národ zůstane uklidněn.',
+        help: 'Únik dat z očkovacího registračního systému může způsobit mnoho problémů všem stranám. Pokud přiznáte pochybení, lidé budou rozčilení. Pokud jej popřete, mohou nastat dvě situace: buď budete odhaleni a obyvaté budou popuzeni výrazně více, nebo vám lež projde, hrstka lidí si bude stěžovat, ale národ zůstane uklidněn.',
         choices: [
           simpleChoice('Přiznat chybu', {stabilityCost: 3}),
           {
@@ -723,7 +723,7 @@ export const eventTriggers: EventTrigger[] = [
       },
       {
         title: 'Odhalení fatální bezpečnostní díry očkovacího systému',
-        help: 'Okamžité stažení systému může je bezpečná varianta, která s sebou ale nese zpoždění očkování o dva týdny. Pokud se pokusíte obyvatele uklidnit, problém popřít a nechat systém nasazený, může (ale nemusí) se stát, že zranitelný systém bude nabourán a očkování se pozdrží o výrazně delší dobu.',
+        help: 'Okamžité stažení systému je bezpečná varianta, která s sebou ale nese zpoždění očkování o dva týdny. Pokud se pokusíte obyvatele uklidnit, problém popřít a nechat systém nasazený, může (ale nemusí) se stát, že zranitelný systém bude nabourán a očkování se pozdrží o výrazně delší dobu.',
         choices: [
           simpleChoice('Okamžitě stáhnout systém',
             {vaccinationPerDay: -1, duration: 14},
@@ -738,7 +738,7 @@ export const eventTriggers: EventTrigger[] = [
       },
       {
         title: 'Hackeři zaútočili na systém registrace očkování',
-        help: 'Hackeři vyžadují “výkupné” za napadený systém. Buď jim částku zaplatíte, nebo je odmítnete, ale náprava škod bude trvat další týden, po který nebude možné se registrovat k očkování.',
+        help: 'Hackeři vyžadují výkupné za napadený systém. Buď jim částku zaplatíte, nebo je odmítnete, ale náprava škod bude trvat další týden, po který nebude možné se registrovat k očkování.',
         choices: [
           simpleChoice('Zaplatit 10 miliónů' , {economicCost: 10_000_000}),
           simpleChoice('Odmítnout', {vaccinationPerDay: -1, duration: 7}, 'Hackeři'),
@@ -801,8 +801,8 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
   {
     events: [
       {
-        title: 'Testování vakcín v poslední fázi. Státy EU objednaly miliony očkovacích dávek',
-        help: 'Úspěšný vývoj vakcín a jejich nákup ukazuje možnost získání imunity bez prodělání nemoci. Lidé jsou nadšení, že vidí konec tunelu. Starostí tvého ministerstva pak není distribuce, ale pouze propagace vakcín. Distribuci a vše další zařídí kolegové nezávisle na vašich rozhodnutích. Teď už stačí vydržet..',
+        title: 'Testování vakcín v poslední fázi. Státy EU objednaly miliony očkovacích dávek.',
+        help: 'Úspěšný vývoj vakcín a jejich nákup nabízí možnost získání imunity bez prodělání nemoci. Lidé jsou nadšení, že vidí světlo na konci tunelu. Starostí vašeho ministerstva pak není distribuce, ale pouze propagace vakcín. Distribuci a vše další zařídí kolegové nezávisle na vašich rozhodnutích. Teď už stačí vydržet..',
         choices: okButton({stabilityCost: -10}),
       },
     ],
@@ -834,7 +834,7 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
     events: [
       {
         title: 'Vládní kampaň odrazuje občany',
-        text: 'Mysleli jsme to dobře, ale dopadlo to...nedobře.',
+        text: 'Mysleli jsme to dobře, ale dopadlo to... nedobře.',
         help: 'Každá propagační kampaň v sobě nese riziko selhání. Teď na něj došlo.',
         choices: [
           {buttonLabel: 'OK', removeMitigationIds: [VACCINATION_CAMPAIGN_ID]},
@@ -871,7 +871,7 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
   {
     events: [
       {
-        title: 'Tři sousední země překročily hranici 75 % proočkování populace',
+        title: 'Tři sousední země překročily hranici 75% proočkování populace',
         text: 'Sousední země mají proočkováno a nabízejí pomoc s očkováním v ČR.',
         help: 'Přijetí zahraniční pomoci urychlí vakcinaci a zvedne o několik procent proočkovanost ČR. Její odmítnutí rozčílí část společnosti.',
         choices: [
@@ -914,7 +914,7 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
       {
         title: 'Diváci si zvykají na svůj obývák a Netflix',
         text: 'Producenti posouvají premiéry na další rok nebo rovnou na internet. Zabije koronavirus kina? Provozovatelé žádají půjčky na dva roky provozu.',
-        help: 'Pandemie vyprázdnila multikina i místní sály a není ani příliš co promítat. Půjčky kinosálům je zachrání před krachem, ale otázka je, jestli se peníze kdy vrátí.',
+        help: 'Pandemie vyprázdnila multikina i místní sály a není ani příliš co promítat. Půjčky kinosálům je zachrání před krachem, ale otázka je, jestli se peníze někdy vrátí.',
         choices: [
           simpleChoice('Úvěr kinosálům', {economicCost: 7_000_000_000, stabilityCost: -1}),
           simpleChoice('To si nemůžeme dovolit', {stabilityCost: 2}),

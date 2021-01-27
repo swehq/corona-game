@@ -1,6 +1,6 @@
 import {EventChoiceDef, EventInput, EventMitigation, EventTrigger} from './events';
 import {dateDiff} from './utils';
-import {isNil, sample} from 'lodash-es';
+import {isNil, sample} from 'lodash';
 
 export const maxMitigationDuration = Number.MAX_SAFE_INTEGER;
 

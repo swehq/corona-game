@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {get} from 'lodash-es';
+import {get, PropertyPath} from 'lodash';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
 import {formatDate} from 'src/app/utils/format-date';
@@ -48,7 +48,7 @@ export class StatusDisplayComponent {
     return formatDate(new Date(this.gameService.lastDate));
   }
 
-  stat$(name: keyof Stats, path?: string) {
+  stat$(name: keyof Stats, path?: PropertyPath) {
     const res = this.stats$.pipe(
       map(stats => stats[name]),
     );

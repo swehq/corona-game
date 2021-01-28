@@ -12,7 +12,7 @@ import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 
 const MY_RESULT_COLOR = '#9fe348';
-const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.5)';
+const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
 
 const convert: (result: GameResult) => ChartPoint =
   result => ({
@@ -66,8 +66,9 @@ export class OutroComponent {
           label: 'Výsledky ostatních hráčů',
           data: allPoints,
           backgroundColor: ALL_RESULTS_COLOR,
-          pointBorderColor: ALL_RESULTS_COLOR,
+          pointBorderColor: 'rgba(0,0,0,0)',
           pointBackgroundColor: ALL_RESULTS_COLOR,
+          pointRadius: 2,
         });
       }
 

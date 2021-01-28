@@ -956,4 +956,13 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
     ],
     condition: (ei: EventInput) => ei.stats.stability <= 0,
   },
+  {
+    events: [
+      {
+        title: 'Vaše hra v roli vlády skončila',
+        help: 'Nyní se zobrazí Vaše výsledky a možnosti sdílení s přáteli. Kvůli velkému zájmu o hru to může chvíli trvat.',
+      },
+    ],
+    condition: (ei: EventInput) => ei.date === '2021-06-29',
+  },
 ];

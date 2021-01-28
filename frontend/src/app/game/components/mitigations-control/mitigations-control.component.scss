@@ -3,11 +3,18 @@
 :host {
   @include panel;
   display: block;
+
   &.is-small-device {
+    padding-left: 0;
+    margin-bottom: 0;
+
+    background-color: $dark-bg-darker;
+
     ::ng-deep {
       .toggle-help-tooltip:before {
         border-color: transparent;
       }
+
       .content {
         @include include-corners();
       }

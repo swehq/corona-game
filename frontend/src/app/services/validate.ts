@@ -31,7 +31,7 @@ export function validateGame(data: GameData, breakImmediately = true): Game | un
     const dayCalculated = last(game.simulation.modelStates);
 
     if (!isEqualWith(dayData, dayCalculated, upToEpsilonCustomizer)) {
-      console.error(`Validation failed for ${dayData.date}`, dayData, dayCalculated);
+      console.error(`Validation failed for ${dayData.date}`);
       if (breakImmediately) return;
       else res = false;
     }

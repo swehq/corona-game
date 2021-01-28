@@ -20,14 +20,14 @@ describe('GameValidation', () => {
 
   it('should not validate CZ scenario w/ modified dead state', () => {
     const modifiedData = cloneDeep(data);
-    last(modifiedData.simulation)!.sirState.dead += 1e-9;
+    last(modifiedData.simulation)!.sirState.dead += 1e-3;
     expect(validateGame(modifiedData)).toBeFalsy();
   });
 
   it('should not validate CZ scenario w/ modified mortality randomness', () => {
     const modifiedData = cloneDeep(data);
     const randomnessToModify = modifiedData.simulation.find(s => s.date === '2020-10-10')!.randomness;
-    randomnessToModify!.baseMortality += 1e-9;
+    randomnessToModify!.baseMortality += 1e-6;
     expect(validateGame(modifiedData)).toBeFalsy();
   });
 

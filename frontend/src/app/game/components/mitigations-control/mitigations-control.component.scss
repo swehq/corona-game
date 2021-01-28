@@ -7,8 +7,14 @@
   &.is-small-device {
     padding-left: 0;
     margin-bottom: 0;
+    background-color: transparent;
 
-    background-color: $dark-bg-darker;
+    .background-wrapper {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+
+      background-color: $dark-bg-darker;
+    }
 
     ::ng-deep {
       .toggle-help-tooltip:before {
@@ -27,9 +33,12 @@ cvd-mitigation-bool {
 }
 
 .mobile-control-panel {
+  position: relative;
+  z-index: 1;
+
+  width: 100vw;
   overflow-x: auto;
   overflow-y: hidden;
-  width: 100vw;
 }
 
 .wrapper-col {

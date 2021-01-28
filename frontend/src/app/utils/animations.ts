@@ -15,7 +15,7 @@ export const inOutAnimation = (delay = '0ms') => {
         ':leave',
         [
           style({opacity: 1}),
-          animate(`100ms 300ms ease-in`, style({opacity: 0})),
+          animate(`100ms 0ms ease-in`, style({opacity: 0})),
         ],
       ),
     ],

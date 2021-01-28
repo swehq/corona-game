@@ -8,22 +8,22 @@
     <div [class.col]="!isSmallDevice">
       <div
         [class.mobile-mitigation-panel-box]="isSmallDevice"
-        [class.enable-background]="areMitigationsHidden">
+        [class.enable-background]="mitigationsPanelHidden">
 
         <div
           grow
           *ngIf="isSmallDevice"
-          [ngClass]="(areMitigationsHidden) ? 'open-above-panel-space' : 'close-above-panel-space'">
+          [ngClass]="(mitigationsPanelHidden) ? 'open-above-panel-space' : 'close-above-panel-space'">
 
           <button mat-fab
             (click)="onHideMitigations()"
             class="open-mitigation-button"
-            *ngIf="areMitigationsHidden">
+            *ngIf="mitigationsPanelHidden">
             <cvd-icon svgIcon="controller" size="large"></cvd-icon>
           </button>
 
           <a
-            *ngIf="!areMitigationsHidden"
+            *ngIf="!mitigationsPanelHidden"
             mat-button
             (click)="onHideMitigations()"
             class="close-mitigation-button">
@@ -32,7 +32,7 @@
         </div>
 
         <cvd-mitigations-control
-          *ngIf="!areMitigationsHidden"
+          *ngIf="!mitigationsPanelHidden"
           [isSmallDevice]="isSmallDevice">
         </cvd-mitigations-control>
       </div>

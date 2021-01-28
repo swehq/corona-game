@@ -2,7 +2,7 @@ location ^~ /api/ {
   proxy_pass http://{{ backend_container }};
   client_max_body_size 5M;
 
-  proxy_cache default_cache;
+  proxy_cache cache.{{url}};
   proxy_buffering on;
   add_header X-Proxy-Cache $upstream_cache_status;
 }
@@ -20,3 +20,11 @@ location ~ / {
 
   proxy_pass http://{{ frontend_container }};
 }
+
+gzip on;
+gzip_http_version 1.1;
+gzip_disable "MSIE [1-6]\.";
+gzip_min_length 1100;
+gzip_vary on;
+gzip_proxied expired no-cache no-store private auth;
+gzip_comp_level 9;

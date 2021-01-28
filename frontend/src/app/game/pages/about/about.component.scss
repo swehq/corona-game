@@ -3,16 +3,19 @@
 :host {
   @include panel;
   display: flex; // TODO move to mixin panel and check all other panels
+  text-align: left;
 }
 
-.about {
-  text-align: left;
+.figure {
+  text-align: center;
+}
 
-  h3 {
-    font-weight: bold;
-  }
+.model-img {
+  width: 100%;
+  max-width: 700px;
+}
 
-  .figure {
-    text-align: center;
-  }
+cvd-button {
+  display: table;
+  margin: 1rem auto;
 }

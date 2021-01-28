@@ -68,9 +68,11 @@ cvd-status-display {
 }
 
 .open-mitigation-button {
+  right: 3rem;
+
   background-color: map-get($mat-primary, main);
   pointer-events: auto;
-  right: 3rem;
+
   cvd-icon {
     color: $dark-bg-darker;
   }
@@ -85,25 +87,17 @@ cvd-status-display {
 }
 
 .close-mitigation-button {
-  background-color: $dark-bg-darker;
   padding: 1rem;
+  background-color: $dark-bg-darker;
+  border-radius: 0;
+
   cvd-icon {
     color: map-get($mat-warn, main);
   }
 }
 
-.dark-box {
-  background-color: $dark-bg-darker;
-}
-
 .enable-background {
   pointer-events: none;
-}
-
-.mobile-mitigation-panel {
-  background-color: $dark-bg-darker;
-  padding-left: 0px;
-  margin-bottom: 0%;
 }
 
 .mobile-mitigation-panel-box {

@@ -1,38 +1,38 @@
-<div class="content"[@inOutAnimation]>
+<div class="content" [@inOutAnimation]>
 <!-- [grow]="2" [spacing]="3" alignItems="stretch" justifyContent="flex-start" -->
-  
+
     <div class="col">
       <cvd-status-display></cvd-status-display>
       <cvd-graphs></cvd-graphs>
     </div>
     <div [class.col]="!isSmallDevice">
-      <div 
+      <div
         [class.mobile-mitigation-panel-box]="isSmallDevice"
-        [class.enable-background]="areMitigationsHidden">
+        [class.enable-background]="mitigationsPanelHidden">
 
         <div
-          grow 
+          grow
           *ngIf="isSmallDevice"
-          [ngClass]="(areMitigationsHidden)?'open-above-panel-space':'close-above-panel-space'">
-          
+          [ngClass]="(mitigationsPanelHidden) ? 'open-above-panel-space' : 'close-above-panel-space'">
+
           <button mat-fab
-          (click)="onHideMitigations()"
-          class="open-mitigation-button"
-          *ngIf="areMitigationsHidden">
-          <cvd-icon svgIcon="controller" size="large"></cvd-icon>
+            (click)="onHideMitigations()"
+            class="open-mitigation-button"
+            *ngIf="mitigationsPanelHidden">
+            <cvd-icon svgIcon="controller" size="large"></cvd-icon>
           </button>
-          <div *ngIf="!areMitigationsHidden" class="dark-box">
-            <a mat-button
-              (click)="onHideMitigations()"
-              class="close-mitigation-button">
-              <cvd-icon svgIcon="cross" size="large"></cvd-icon>
-            </a>
-          </div>
-          
+
+          <a
+            *ngIf="!mitigationsPanelHidden"
+            mat-button
+            (click)="onHideMitigations()"
+            class="close-mitigation-button">
+            <cvd-icon svgIcon="cross" size="large"></cvd-icon>
+          </a>
         </div>
-        <cvd-mitigations-control 
-          *ngIf="!areMitigationsHidden" 
-          [class.mobile-mitigation-panel]="isSmallDevice" 
+
+        <cvd-mitigations-control
+          *ngIf="!mitigationsPanelHidden"
           [isSmallDevice]="isSmallDevice">
         </cvd-mitigations-control>
       </div>

@@ -1,5 +1,6 @@
 import {ChangeDetectorRef, Component, Input, HostBinding} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {inOutAnimation, scaleAnimation} from 'src/app/utils/animations';
 import {MitigationsPresetLevel, MitigationsService, MitigationKey} from '../../../services/mitigations.service';
 
 @UntilDestroy()
@@ -7,6 +8,7 @@ import {MitigationsPresetLevel, MitigationsService, MitigationKey} from '../../.
   selector: 'cvd-mitigations-control',
   templateUrl: './mitigations-control.component.html',
   styleUrls: ['./mitigations-control.component.scss'],
+  animations: [scaleAnimation('50%', '100%', '1', '0'), inOutAnimation('400ms')],
 })
 export class MitigationsControlComponent {
   @Input() isSmallDevice = false;

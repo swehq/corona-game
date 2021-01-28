@@ -6,7 +6,7 @@ import {inOutAnimation, scaleAnimation} from 'src/app/utils/animations';
   templateUrl: './help-tooltip.component.html',
   styleUrls: ['./help-tooltip.component.scss'],
   animations: [
-    scaleAnimation,
+    scaleAnimation(),
     inOutAnimation('400ms'),
   ],
 })

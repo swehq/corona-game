@@ -1,4 +1,4 @@
-<cvd-col 
+<cvd-col
   *ngIf="!isSmallDevice"
   class="wrapper-col"
   [spacing]="3"
@@ -24,9 +24,16 @@
 
 </cvd-col>
 
-<cvd-row 
+<div
+  *ngIf="isSmallDevice"
+  [@scaleAnimation]
+  class="background-wrapper">
+</div>
+
+<cvd-row
   *ngIf="isSmallDevice"
   class="mobile-control-panel"
+  [@inOutAnimation]
   [spacing]="3"
   alignItems="stretch"
   [formGroup]="mitigationsService.formGroup">
@@ -54,7 +61,7 @@
 
 </cvd-row>
 
-<cvd-help-tooltip>
+<cvd-help-tooltip [@inOutAnimation]>
   <h3>Opatření</h3>
 
   <p>

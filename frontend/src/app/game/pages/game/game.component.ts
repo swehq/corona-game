@@ -20,7 +20,7 @@ export class GameComponent {
   isSmallDevice = false;
   winWidth: number = window.innerWidth;
   maxMobileWidth = 485;
-  areMitigationsHidden = false;
+  mitigationsPanelHidden = false;
 
   constructor(
     public debugModeService: DebugModeService,
@@ -59,7 +59,7 @@ export class GameComponent {
   onResize(event: any) {
     this.winWidth = event.target.innerWidth;
     this.isSmallDevice = this.winWidth <= this.maxMobileWidth;
-    if (this.isSmallDevice === false) this.areMitigationsHidden = false;
+    if (this.isSmallDevice === false) this.mitigationsPanelHidden = false;
   }
 
   pause() {
@@ -67,7 +67,7 @@ export class GameComponent {
   }
 
   onHideMitigations() {
-    this.areMitigationsHidden = !this.areMitigationsHidden;
+    this.mitigationsPanelHidden = !this.mitigationsPanelHidden;
   }
 
 }

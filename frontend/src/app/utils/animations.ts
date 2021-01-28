@@ -22,29 +22,41 @@ export const inOutAnimation = (delay = '0ms') => {
   );
 };
 
-export const scaleAnimation = trigger(
-  'scaleAnimation',
-  [
-    transition(
-      ':enter',
-      [
-        style({
-          transform: 'scale(0)',
-          transformOrigin: '0 0',
-        }),
-        animate('300ms cubic-bezier(.64,1.03,.26,.83)', style({transform: 'scale(1)'})),
-      ],
-    ),
-    transition(
-      ':leave',
-      [
-        style({
-          transform: 'scale(1)',
-          transformOrigin: '0 0',
-        }),
-        animate('300ms cubic-bezier(.64,1.03,.26,.83)', style({transform: 'scale(0)'})),
-      ],
-    ),
-  ],
-);
-
+export const scaleAnimation = (
+  transformOriginX = '0',
+  transformOriginY = '0',
+  initialScaleX = '0',
+  initialScaleY = '0',
+) => {
+  return trigger(
+    'scaleAnimation',
+    [
+      transition(
+        ':enter',
+        [
+          style({
+            transform: `scale(${initialScaleX}, ${initialScaleY})`,
+            transformOrigin: `${transformOriginX} ${transformOriginY}`,
+          }),
+          animate(
+            '300ms cubic-bezier(.64,1.03,.26,.83)',
+            style({transform: 'scale(1, 1)'}),
+          ),
+        ],
+      ),
+      transition(
+        ':leave',
+        [
+          style({
+            transform: 'scale(1, 1)',
+            transformOrigin: `${transformOriginX} ${transformOriginY}`,
+          }),
+          animate(
+            '300ms cubic-bezier(.64,1.03,.26,.83)',
+            style({transform: `scale(${initialScaleX}, ${initialScaleY})`}),
+          ),
+        ],
+      ),
+    ],
+  );
+};

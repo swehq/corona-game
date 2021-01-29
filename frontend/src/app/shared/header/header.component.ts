@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, HostBinding, Input} from '@angular/core';
+import {DebugModeService} from 'src/app/services/debug-mode.service';
 
 @Component({
   selector: 'cvd-header',
@@ -14,4 +15,6 @@ export class HeaderComponent {
   get compactClass() {
     return this.compactMode === true;
   }
+
+  constructor(public debugModeService: DebugModeService) {}
 }

@@ -1,24 +1,24 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {TestingModule} from '../../../shared/testing/testing.module';
-import {GameModule} from '../../game.module';
-import {CreditsComponent} from './credits.component';
+import {SharedModule} from '../shared.module';
+import {TestingModule} from '../testing/testing.module';
+import {LanguagePickerComponent} from './language-picker.component';
 
-describe('CreditsComponent', () => {
-  let component: CreditsComponent;
-  let fixture: ComponentFixture<CreditsComponent>;
+describe('LanguagePickerComponent', () => {
+  let component: LanguagePickerComponent;
+  let fixture: ComponentFixture<LanguagePickerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
+        SharedModule,
         TestingModule,
-        GameModule,
       ],
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CreditsComponent);
+    fixture = TestBed.createComponent(LanguagePickerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

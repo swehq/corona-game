@@ -1,6 +1,11 @@
-<a routerLink="/">
-  <img
-    src="assets/images/logos/logo.png"
-    alt="Korona Hra"
-    class="logo">
-</a>
+<div class="header-row">
+  <a routerLink="/">
+    <img
+      src="assets/images/logos/logo.png"
+      alt="Korona Hra"
+      class="logo">
+  </a>
+  <div class="language-picker-space">
+    <cvd-language-picker *ngIf="debugModeService.getDebugMode()" class="language-picker"></cvd-language-picker>
+  </div>
+</div>

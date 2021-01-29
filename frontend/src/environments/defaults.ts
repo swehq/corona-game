@@ -3,6 +3,7 @@ export enum LocalStorageKey {
   DEBUG_MODE = 'debugMode',
   SAVED_GAMES = 'savedGames',
   LAST_GAME_DATA = 'lastGameData',
+  LANGUAGE = 'language',
 }
 
 export interface Environment {

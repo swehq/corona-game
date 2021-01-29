@@ -42,3 +42,23 @@
     }
   }
 }
+
+.header-row {
+  justify-content: flex-start;
+  flex-flow: row wrap;
+  align-items: center;
+  display: flex;
+  flex: 1;
+}
+
+.language-picker {
+  padding-right: 3rem;
+}
+
+.language-picker-space {
+  justify-content: flex-end;
+  flex-flow: row wrap;
+  align-items: center;
+  display: flex;
+  flex: 1;
+}

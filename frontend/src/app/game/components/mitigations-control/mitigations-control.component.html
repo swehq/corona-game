@@ -17,7 +17,7 @@
   </cvd-col>
 
   <cvd-row [spacing]="3">
-    <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
+    <cvd-button grow (click)="preset('open')" color="info">{{'Otevřít vše' | translate}}</cvd-button>
     <cvd-mitigation-bool grow formControlName="stayHome">Zákaz vycházení</cvd-mitigation-bool>
     <cvd-mitigation-bool grow formControlName="compensations">Extra kompenzace</cvd-mitigation-bool>
   </cvd-row>

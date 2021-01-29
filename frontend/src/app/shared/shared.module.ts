@@ -4,6 +4,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
 import {AutofocusDirective} from '../directives/autofocus.directive';
 import {FormatNumberPipe} from '../pipes/format-number.pipe';
 import {FormatPercentagePipe} from '../pipes/format-percentage.pipe';
@@ -18,6 +19,7 @@ import {HeaderComponent} from './header/header.component';
 import {HelpTooltipComponent} from './help-tooltip/help-tooltip.component';
 import {IconComponent} from './icon/icon.component';
 import {initIconRegistry} from './icon/icon.registry';
+import {LanguagePickerComponent} from './language-picker/language-picker.component';
 import {NavigateBackDirective} from './navigate-back/navigate-back.directive';
 import {SharedMaterialModule} from './shared-material.module';
 
@@ -31,6 +33,7 @@ const DECLARATIONS: Declaration[] = [
   FormatPercentagePipe,
   HelpTooltipComponent,
   IconComponent,
+  LanguagePickerComponent,
   NavigateBackDirective,
   RowComponent,
   SafeHtmlPipe,
@@ -46,11 +49,13 @@ const DECLARATIONS: Declaration[] = [
     ReactiveFormsModule,
     RouterModule,
     SharedMaterialModule,
+    TranslateModule,
   ],
   exports: [
     ...DECLARATIONS,
     ReactiveFormsModule,
     SharedMaterialModule,
+    TranslateModule,
   ],
 })
 export class SharedModule {

@@ -18,6 +18,7 @@
           <button mat-fab
             (click)="onHideMitigations()"
             class="open-mitigation-button"
+            [@inOutAnimationWithDelay]
             *ngIf="mitigationsPanelHidden">
             <cvd-icon svgIcon="controller" size="large"></cvd-icon>
           </button>
@@ -33,6 +34,7 @@
 
         <cvd-mitigations-control
           *ngIf="!mitigationsPanelHidden"
+          [@dumbAnimation]
           [isSmallDevice]="isSmallDevice">
         </cvd-mitigations-control>
       </div>

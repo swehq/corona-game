@@ -1,8 +1,8 @@
-import {trigger, transition, style, animate} from '@angular/animations';
+import {trigger, transition, style, animate, animateChild, AnimationTriggerMetadata, query} from '@angular/animations';
 
-export const inOutAnimation = (delay = '0ms') => {
+export const inOutAnimation = (delay = '0ms', name = 'inOutAnimation', leaveAnimationDuration = '100ms') => {
   return trigger(
-    'inOutAnimation',
+    name,
     [
       transition(
         ':enter',
@@ -15,7 +15,7 @@ export const inOutAnimation = (delay = '0ms') => {
         ':leave',
         [
           style({opacity: 1}),
-          animate(`100ms 0ms ease-in`, style({opacity: 0})),
+          animate(`${leaveAnimationDuration} 0ms ease-in`, style({opacity: 0})),
         ],
       ),
     ],
@@ -60,3 +60,11 @@ export const scaleAnimation = (
     ],
   );
 };
+
+export function dumbAnimation(): AnimationTriggerMetadata {
+  return trigger('dumbAnimation', [
+    transition('* => void', [
+      query('@*', [animateChild()], {optional: true}),
+    ]),
+  ]);
+}

@@ -5,8 +5,10 @@
   display: block;
 
   &.is-small-device {
+
     padding-left: 0;
     margin-bottom: 0;
+
     background-color: transparent;
 
     .background-wrapper {
@@ -14,6 +16,10 @@
       top: 0; left: 0; right: 0; bottom: 0;
 
       background-color: $dark-bg-darker;
+    }
+
+    &:after {
+      display: none;
     }
 
     ::ng-deep {

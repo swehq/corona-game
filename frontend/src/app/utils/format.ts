@@ -1,5 +1,3 @@
-import {cloneDeepWith} from 'lodash';
-
 export const locale = 'cs';
 
 /**
@@ -49,10 +47,17 @@ export function formatNumber(value: number, showCurrencySymbol = false, shrink =
   return `${value.toLocaleString(locale, formatOptions)}${affix}`;
 }
 
-export function formatStats(stats: any) {
-  return cloneDeepWith(stats, statsFormat);
-}
+export function formatStats(stats: any, shrink = true, isCost = false) {
+  const ret = {} as any;
 
-function statsFormat(value: any) {
-  if (typeof value === 'number') return formatNumber(value, false, true);
+  Object(stats).keys().forEach(key => {
+    const value = stats[key];
+    if (typeof value === 'number') {
+      ret[key] = formatNumber(value, isCost, shrink);
+    } else {
+      ret[key] = formatStats(value, shrink, key === 'costs' || key.endsWith('Costs'));
+    }
+  });
+
+  return ret;
 }

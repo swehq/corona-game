@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "icons:register": "ts-node --project bin/tsconfig.json bin/register-icons.ts src/assets/icons/ src/app/shared/icon/icons.ts 5000",
-    "i18n:add-pages": "ts-node --project bin/tsconfig.json bin/add-page-translations.ts -i src/assets/i18n/pages/ -o src/assets/i18n/ -l en -l cs -p intro -p outro -p about",
+    "i18n:add-pages": "ts-node --project bin/tsconfig.json bin/add-page-translations.ts -i src/assets/i18n/pages/ -o src/assets/i18n/ -l en -l cs -p intro -p outro -p about -p graphs.help -p mitigations-control.help",
     "version": "ts-node --project ts-node.config.json build/version.ts"
   },
   "private": true,

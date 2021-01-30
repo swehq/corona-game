@@ -17,7 +17,7 @@ export class SocialNetworkShareService {
      const params: any = {
        url: shareUrl,
        text: msg,
-       hashtags: 'covid19,corona',
+       hashtags: 'covid19,corona,koronahra',
      };
 
      for (const prop in params) twitterShareUrl += '&' + prop + '=' + encodeURIComponent(params[prop]);

@@ -7,9 +7,10 @@ import {combineLatest, Observable, of} from 'rxjs';
 import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
-import {formatNumber} from '../../../utils/format';
+import {formatNumber, formatStats} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
+import {settings as randomSettings} from '../../../services/randomize';
 
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
@@ -167,6 +168,15 @@ export class OutroComponent {
 
   get stats() {
     return this.gameService.game?.simulation?.getLastStats();
+  }
+
+  get i18nData() {
+    const stats = this.stats;
+    const estimateInfectionsTotal = stats ?
+      formatNumber(stats.detectedInfections.total / randomSettings.detectionRate[0], false, true) : undefined;
+    const budget2019 = formatNumber(1551e9, true, true);
+    const budget2020 = formatNumber(1842e9, true, true);
+    return {stats: formatStats(stats), estimateInfectionsTotal, budget2019, budget2020};
   }
 
   isGameLost() {

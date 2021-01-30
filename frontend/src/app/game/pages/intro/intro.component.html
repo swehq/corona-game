@@ -1,5 +1,19 @@
 <cvd-col>
-  <div [innerHtml]="'intro.html' | translate:links"></div>
+  <div [innerHtml]="'intro.html' | translate"></div>
+
+  <p>
+    Chcete vědět více
+    <a routerLink="/credits">o tom, kdo za simulací stojí</a>?
+  </p>
+
+  <p>
+    Chcete vědět víc
+    <a id="aboutModel" routerLink="/about">o našem modelu a metodice</a>?
+  </p>
+
+  <p>
+    Přejeme, ať se vám v boji s koronavirem daří!
+  </p>
 
   <cvd-row [horizontalSpacing]="3">
     <cvd-button

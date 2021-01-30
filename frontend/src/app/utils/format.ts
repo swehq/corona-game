@@ -1,3 +1,5 @@
+import {cloneDeepWith} from 'lodash';
+
 export const locale = 'cs';
 
 /**
@@ -45,4 +47,12 @@ export function formatNumber(value: number, showCurrencySymbol = false, shrink =
   affix += showCurrencySymbol ? ' Kč' : '';
 
   return `${value.toLocaleString(locale, formatOptions)}${affix}`;
+}
+
+export function formatStats(stats: any) {
+  return cloneDeepWith(stats, statsFormat);
+}
+
+function statsFormat(value: any) {
+  if (typeof value === 'number') return formatNumber(value, false, true);
 }

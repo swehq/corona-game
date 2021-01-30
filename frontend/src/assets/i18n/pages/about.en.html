@@ -1,0 +1,461 @@
+<h1>How our simulation works</h1>
+
+<h2>About the difficulties of modeling a pandemic</h2>
+
+<p>
+  As you may have seen over the past year, predicting an epidemic is a tricky discipline. In public
+  space you could hear predictions too optimistic and too pessimistic. At the moment, maybe most
+  of
+  you are convinced that the epidemic cannot be mathematically affected because there are many unknowns in the game.
+</p>
+
+<p>
+  This is only partially true. We really can't predict whether an asymptomatic one will come to the big party
+  infected and
+  will cause a so-called "cluster of infected" (one of the new phrases that enriched our vocabulary last year).
+  We don't even know how our government will decide (as a parent, I watched with excitement when schools would be closed). A v
+  not the last
+  many do not know how our fellow citizens will behave. But even a situation of considerable uncertainty does not mean that we know nothing. How
+  the planned vacation will be successful depending on the weather and the decision of us and our fellow passengers. With complete certainty
+  we know nothing, but we are certainly more likely to ski in February than in May.
+</p>
+
+<p>
+  And "probability" is the key word. This is a concept that mathematics can count on very well. Never
+  you don't know if a virgin or an eagle will fall on you when tossing coins. It's even harder to hit the exact number of eagles in a hundred throws
+  coins. But it is very reliable to say that there will be "about" fifty of them.
+</p>
+
+<p>
+  Similarly, mathematics cannot predict the motion of a human-controlled vehicle. Can't calculate if I'll have tomorrow
+  crash. It mainly depends on my driving skills. However, it is possible to calculate the length of my braking distance very accurately
+  at
+  certain speeds. It is possible to calculate how many meters I have to overcome if my reactions are delayed by one due to fatigue
+  "blink of an eye".
+</p>
+
+
+<h2>Epidemics as a computer game</h2>
+
+<p>
+  For the reasons stated above, it is not possible to accurately predict the epidemic. Both chance and the human factor come into play.
+  Professional epidemiologists must therefore resort to the language of probability, statistics, uncertainty and the possible
+  scenarios. For the uninitiated, who is not proficient in this language, professional predictions may sound incomprehensible,
+  inaccurately and with a lot of "dials". However, such a view would be far from the truth.
+</p>
+
+<p>
+  Although formal mathematical speech is complex, each of us can deal with uncertainty and the "human factor." In normal
+  there is nothing more natural in life. Did you know that the problem of stopping a vehicle is described by a differential equation
+  second order? Can you solve it? Maybe not. And yet every driver can reliably brake the vehicle.
+  The differential equation does not decide where you go. With austere, mathematical accuracy, however, he says how many meters
+  you will still run when you fully apply the brake.
+</p>
+
+<p>
+  Our intention is to show you how the epidemiological model works as clearly as when you test driving
+  on the simulator. You will coincide with chance and with the consequences of your own decisions. As you are used to
+  facts. The computer calculates those complex equations for you. You may eventually find that you understand their behavior
+  intuitively without having to know advanced math.
+</p>
+
+<p>
+  You may argue that simulation is not a reality. You're right. For example, we do not have accurate data on how fast the virus is
+  spreads in winter compared to summer. We only work with estimates. Your real car will also have brakes other than
+  simulator. And even different cars are different. However, when you learn to ride one, it's not hard to learn to
+  other.
+</p>
+
+
+<h2>Epidemiological model</h2>
+
+<p>
+  To model epidemics, the so-called
+  <a href="https://portal.matematickabiologie.cz/index.php?pg=analyza-a-modelovani-dynamickych-biologickych-dat--spojite-deterministicke-modely-i--epidemiologicke-modely--epidemiologicke- structured-models "> structured
+    epidemiological model </a>. It is popular
+  <a href="https://portal.matematickabiologie.cz/index.php?pg=analyza-a-modelovani-dynamickych-biologickych-dat--spojite-deterministicke-modely-i--epidemiologicke-modely--epidemiologicke-structured-models - model-sir ">model
+    SIR</a>. The letters SIR in the model name come from the English <i>susceptible</i>, <i>infectious</i> and
+  <i>resistant</i>, ie loosely translated <i>susceptible</i>, <i>infectious</i>and<i>(temporarily) immune</i>.
+</p>
+
+<p>
+  In the model, the whole population is divided into three categories (English
+  <a href="https://en.wikipedia.org/wiki/Compartmental_models_in_epidemiology">compartments</a>). Each
+  <i>infectious</i>
+  it transmits the infection to several other people (the known number <i>R</i>). Everyone <i>prone</i> to whom she was
+  infections are transmitted, they are moved to the <i>infectious</i> category. <i>Infectious</i> and <i>immune</i> have the disease again
+  they can't get it. <i>Infectious</i> will cure over time and become <i>immune</i>. We will not burden you with equations,
+  mathematical details are nicely described
+  <a href="https://portal.matematickabiologie.cz/index.php?pg=analyza-a-modelovani-dynamickych-biologickych-dat--spojite-deterministicke-modely-i--epidemiologicke-modely--epidemiologicke- structured-models - model-sir ">here</a>.
+</p>
+
+<p>
+  We have chosen a more complicated model for our needs. Specifically, we only count on temporary immunity of the cured,
+  like
+  <a href="https://portal.matematickabiologie.cz/index.php?pg=analyza-a-modelovani-dynamickych-biologickych-dat--spojite-deterministicke-modely-i--epidemiologicke-modely--epidemiologicke- structured-models - model-sirs "> model
+  SIRS </a>. The letter S at the end of the model name means that <i>immune</i> (R) becomes <i>susceptible</i> (S) again,
+  as shown in the following diagram:
+</p>
+<div class="figure">
+  <img src="assets/images/about/SIR.svg" class="model-img" alt="SIR model">
+</div>
+
+<p>
+  Furthermore, we took into account in the model the fact that exposure to the virus is followed by an incubation period during which he is still infected
+  not infectious. For this we used the category <i>infected</i> (E from English <i>exposed</i>), similar to
+  standard
+  <a href="https://portal.matematickabiologie.cz/index.php?pg=analyza-a-modelovani-dynamickych-biologickych-dat--spojite-deterministicke-modely-i--epidemiologicke-modely--epidemiologicke- structured-models - other-epidemiological-models "> model
+  SEIR </a>. The existence of the <i>infection</i> category increases the "inertia" of the model. Even if you manage to spread
+  significantly slow down the infections, you are still catching up on cases infected from the past. The diagram will therefore be extended to:
+</p>
+<div class="figure">
+  <img src="assets/images/about/SEIR.svg" class="model-img" alt="SEIR model">
+</div>
+
+<p>
+  We could therefore call the basis of our model, in line with established terminology, SEIRS. However, it is in the game
+  the need to count other statistics such as the number of active cases, the number of hospitalized and sad statistics
+  of the dead. The complete diagram of our model then looks like this:
+</p>
+<div class="figure">
+  <img src="assets/images/about/model.svg" class="model-img" alt="model diagram">
+</div>
+
+
+<h3>Model of detected infections</h3>
+
+<p>
+  The model also takes into account that not all infections are detected in official statistics. It was quite
+  hot topic of public discussion. The estimation of the actual number of infected is based on the estimation of the mortality of the disease
+  covid-19. As of 19.1. According to official statistics, in 2021, 909,131 infected and 14,820 people were killed in the Czech Republic.
+  A simple proportion of these numbers gives a mortality of 1.6%. This number does not take into account those infected who die in
+  future (eg with a calculated death delay against the detection of the disease of 14 days, the calculated mortality rate will increase to
+  1.9%). In reality, however, it could be infected
+  <a href="https://denikn.cz/471276/jaky-je-skorecny-rozsah-nakazy-sledujme-pocet-umrti-epidemie-se-zvrtla-uz-v-srpnu-upozoruji-vedci/"> fourfri
+  more </a> than included in official statistics. The real mortality of the disease of all those infected was therefore
+  significantly lower. In our model, we calculate a mortality of 0.5% and a proportion of detected infections of 25%. That's more on
+  lower limit
+  <a href="https://www.who.int/news-room/commentaries/detail/estimating-mortality-from-covid-19"> estimates
+  World Health Organization </a>.
+</p>
+
+
+<h3>Implementation of the SEIRS model</h3>
+
+<p>
+  In our model, we decided to use rather optimistic estimates of disease parameters. We don't want to be blamed for
+  "Scare" and the game is quite difficult this way as well.
+</p>
+
+<p>
+  Mathematically, epidemiological models are formulated using a system of differential equations
+  (see eg previously cited
+  <a href="https://portal.matematickabiologie.cz/index.php?pg=analyza-a-modelovani-dynamickych-biologickych-dat--spojite-deterministicke-modely-i--epidemiologicke-modely--epidemiologicke- structured-models - model-sir "> model
+  SIR </a>). For simplicity, we have replaced differential equations
+  <a href="https://en.wikipedia.org/wiki/Differential_equations">differential</a>, where each member
+  sequence captures one day. Such a model
+  <a href="https://cran.r-project.org/web/packages/odin/vignettes/discrete.html"> called discrete SIR
+  model </a>.
+</p>
+
+<h3>Calculation of new infections</h3>
+<p>
+  For the calculation of newly infected patients, we assume that each <i>infectious</i> (I) infects during the
+  the letter <i>d<sub>I</sub> </i>) R of other people (we will write about the calculation of the <i>reproduction number</i> R later). For one
+  therefore, all <i>infectious</i> will transmit the infection to <i> R * I / d <sub>I</sub> </i> other people. However, we must
+  take into account that of the people to whom the disease is transmitted, only <i>susceptible</i> (S) become newly infected. Share
+  is <i>susceptible</i>
+  in the total population <i>P</i> given by the ratio <i>S / P</i>. This brings us to the formula for the number of new infected <br>
+  i E = R * I / d <sub>I</sub>* S / P + boundaries</i>, <br>
+  where <i>border</i> is the number of diseases due to cross-border contact.
+</p>
+
+<p>
+  This formula is the most complex formula you will see in this text and it is the core of our model. In simulation
+  we multiply the number of newly infected by a random variable of
+  <a href="https://en.wikipedia.org/wiki/Logarithmic-normal_distribution"> Logarithmic-normal
+  division </a> to capture the element of chance in the spread of the epidemic.
+</p>
+
+<p>
+  We calibrated the number of infected across borders according to
+  <a href="https://denikn.cz/471276/jaky-je-skehecny-rozsah-nakazy-sledujme-pocet-umrti-epidemie-se-zvrtla-uz-v-srpnu-up Warn-scientists/"> estimated
+  the size of the first wave </a> (the first infections came across the border) as 70 infected per day (less than 20
+  detected cases per day). The Czech Republic cannot close the borders in a completely airtight manner, even with the borders closed
+  there will be 10 infected per day in our game (which is 2.5 detected cases per day).
+</p>
+
+<h3>Duration of illness and infectivity</h3>
+
+<p>
+  The duration of the infection before the <i>infected</i> (E) becomes <i>infectious</i> (I) is modeled using exponential
+  distribution with a mean value of approximately 6 days and a median of 4 days. This is one day less than the incubation period stated on
+  <a href="https://cs.wikipedia.org/wiki/Covid-19#Inkuba%C4%8Dn%C3%AD_doba">české wikipedii</a>. we assume
+  namely, that the infected person can spread the virus before the onset of symptoms.
+</p>
+
+<p>
+  We assume an infectivity period of four days. Although the maximum time of infection is longer, most infections occur
+  shortly before and shortly after the onset of symptoms. The time from infection to inclusion in official statistics are in ours
+  simulation very optimistic two days.
+</p>
+
+<p>
+  After four days, most of the infected people start to recover (in the diagram <i>they recover</i>), but some of the infected people have worse
+  course and goes into hospitalized condition.
+</p>
+
+
+<h3>Reinfection model</h3>
+
+<p>
+  We currently do not have good data for
+  <a href="https://en.wikipedia.org/wiki/Severe_acute_respiratory_syndrome_coronavirus_2#Reinfection"> issues
+  reinfection </a>. Although recurrent covid-19 infections are still rare, judging by other types of coronaviruses
+  (for example, those causing the common cold) is
+  <a href="https://www.technologyreview.com/2020/04/27/1000569/how-long-are-people-immune-to-covid-19/"> possible
+  assume </a> that immunity is not permanent. In our game, we chose an exponential distribution for the loss of immunity
+  with a median duration of immunity of one year.
+</p>
+
+
+<h3>Hospitalization model</h3>
+
+<p>
+  For the purposes of the model, we decided to use the simplification that all victims of the disease are hospitalized before death.
+  We set the length of hospitalization of the deceased to 7 days and the average length of hospitalization of survivors to 21 days.
+  The length of the average hospitalization is calibrated rather for severe cases, according to the statistics presented in the presentation
+  <a href="https://koronavirus.mzcr.cz/wp-content/uploads/2020/06/Prezentace-Syst%C3%A9m-akutn%C3%AD-l%C5%AF%C5%BEkov%C3 % A9-p% C3% A9% C4% 8De-in-context-act% C3% A1ln% C3% AD-situation-n% C3% A1kazy-COVID-19-v-% C4% 8CR.pdf "> Ministries
+    healthcare in the Czech Republic </a>. However, the number of days of hospitalization per one patient is important for our model
+  infection - about 0.6 days for survivors.
+</p>
+
+<p>
+  In our model Czech Republic, we set the total capacity of hospitals to
+  <a href="https://en.wikipedia.org/wiki/Pandemie_covidu-19_v_%C4%8Cesku#L%C5%AF%C5%BEkov%C3%A9_kapacity_nemocnic">optimistic</a>
+  25,000 beds, of which 9,000 beds are free for patients with covid. The price of one day hospitalization of light and
+  we estimate the middle course of the disease at CZK 5,000, we estimate the price of one day of hospitalization of the severe course at
+  60 thousand CZK. Given the share of severe cases in the total number of days of hospitalization about 17.2%, we are average
+  the price of hospitalization was set at CZK 14.5 thousand per day.
+</p>
+
+<p>
+  When the capacity of hospitals is exceeded, we calculate twice the mortality of the disease. The reality is rather gradual degradation
+  health care, which begins before the official attainment of its capacity. We have this simple coefficient
+  chosen for clarity. We are convinced that even a few weeks of switching medical staff is complete
+  unsustainable.
+</p>
+
+
+<h3>Reproduction number model</h3>
+
+<p>
+  We model the reproduction number on the basis of the article
+  <a href="https://science.sciencemag.org/content/early/2020/12/15/science.abd9338"> Inferring the effectiveness
+  of government interventions against COVID-19 in the journal Science </a> (co-authored by Czech scientist Jan Kulveit
+  from FHI, University of Oxford). For our purposes, we used the mean values ​​(in the log scale) of the effectiveness of the measure from
+  article:
+</p>
+
+<ul>
+  <li>
+    Meeting restrictions (especially cultural or sports events and various celebrations)
+    <ul>
+      <li>Over 1,000 people: 23%</li>
+      <li>Over 100 people: 34%</li>
+      <li>Over 10 people: 42%</li>
+    </ul>
+  </li>
+
+  <li>
+    Restrictions on services
+    <ul>
+      <li>
+        Risky (includes restaurants, bars, gyms and similar services where there is a high risk of transmission): 18%
+      </li>
+      <li>
+        All except necessary (closing of all shops and services, except necessary as the sale of food,
+        fuel,
+        etc.): 27%
+      </li>
+    </ul>
+  </li>
+
+
+  <li>
+    Transfer of teaching to distance learning. It is not possible to distinguish the effect of university closures from primary and secondary. Therefore
+    we divided the effect in half (on a logarithmic scale)
+    <ul>
+      <li>University closure: 17%</li>
+      <li>Closing of all schools: 38%</li>
+    </ul>
+  </li>
+
+  <li>
+    Effect of curfew (as a further tightening of all other measures): 13%
+  </li>
+</ul>
+
+<p>
+  The article did not estimate the effect of wearing veils - this cheap measure was adopted for the most part in the studied countries
+  duration of the pandemic. Wearing masks has no disadvantages in our game. However, if you decide to take this measure
+  do not turn on, your reproductive number will increase by a very conservative 14% as estimated by the effectiveness of the drapes from
+  older <a href="https://www.thelancet.com/article/S0140-6736(20)31142-9/fulltext"> meta-study published in
+  Lancet magazine </a>.
+</p>
+
+<p>
+  Our model also takes into account seasonal effects. The effect on the reproduction number in the logarithmic scale is the cosine with the maximum in
+  mid-January. The seasonality of the infection is relatively high in the game, the multiplier ranges from 1 / 1.34 (in summer) to 1.34
+  (in winter). It is very important to plan future changes in the rate of spread of the disease. The game will alert you to changes in the seasons,
+  however, changes in the reproduction number are gradual.
+</p>
+
+<p>
+  Last but not least, our model includes a tracing effect. As with hospital congestion mortality, we are
+  they chose an illustrative model. With the number of new infections below one thousand cases per day, we calculate a tracing bonus for reproduction
+  number 10%.
+</p>
+
+<p>
+  All measures will be implemented with a half-life of 3.5 days.
+</p>
+
+
+<h2>Society, action and the economy</h2>
+
+<p>
+  We can describe the basic models of pandemic spread relatively mathematically. And then there are more complex phenomena,
+  which have key implications for our lives. Typically, how efficient the state apparatus is, how quickly it can implement
+  measures or how these measures are complied with are key factors in managing a pandemic. During the preparation of the game
+  we tested a number of concepts that would somehow realistically reflect these factors. Limited state capacity to implement
+  measures. Measures that have not always been implemented. Declining compliance with measures along with declining
+  satisfaction with your government. In the end, we decided on a simple design principle: always choose
+  an optimistic variant that makes it easier for players to manage a pandemic.
+</p>
+
+<p>
+  The measure is thus implemented plus or minus three days and always flawlessly, there can never be any confusion in the rules. People
+  measures are generally followed, tracing works until capacity is filled. The opposition is constructive, the government's efforts
+  it does not block and even helps players easily slow down the spread of the virus in times of great need. They are especially easy
+  detection of infected: we show tested quickly, without false positives and with minimal delay, as well as
+  you can't run out of test capacity - you can test even one hundred thousand infected people a day. This simplistic view is from
+  from our point of view the fairest possible.
+</p>
+
+<p>
+  As part of the simulation, we needed to solve two other quantities. A key game element that in reality
+  of course, it is not possible to measure "social stability" day after day. It is based on the ever-present
+  conflict of any pandemic management - too long measures are unsustainable not only financially but for
+  the population of our model ten million country in Central Europe is not even acceptable to declare for a year and a piece,
+  which the game lasts, a total curfew. At the same time, however, everyone wants the pandemic to be (somehow) managed and too much
+  many of the dead also provoke a strong negative response in society. If these dissatisfaction reached in
+  model democracy of our exemplary state of crisis values, it will mean a change of government and therefore premature
+  end of simulation.
+</p>
+
+<p>
+  For us, these issues are summarized in the issue of Social Stability. It is a pure construct, an artificial scale from a hundred to
+  zero. Stability decreases with too long measures in place or too high death tolls, good news and
+  longer periods without measures reassure society. In the real world, of course, nothing can be measured accurately
+  such, we can only infer from secondary sources, preferences, a number of anti-state actions or weaknesses
+  apparatus, but for the purposes of the game we need a predictable system that reflects the choices of the player and within the limits of possible
+  simulates the moods of Central European society.
+</p>
+
+
+<h1>How did we calculate the cost of anti-epidemiological measures?</h1>
+
+<p>
+  First of all, it is necessary to say what is the meaning of the economic model in the game. Any quantification and transfer of costs from reality
+  to an extremely simplified model of the game is very challenging and our ambition was not to create a system that we can 1: 1
+  take and declare accurate. The model will not capture the asymmetric weakening or strengthening of different parts of the market (where mostly
+  the poorer the poorer the more and the big companies have more opportunities to adapt and draw help). The model captures that now
+  the compensation paid, decided by the player, will spend some money, but will no longer catch that due to its payment
+  the state will quite possibly save on unemployment benefits in the future. The model also only affects the industry
+  indirectly - our measures do not target it. We also omit the effects that we consider obvious:
+  for example, it makes sense to economically motivate people to take tests and isolate themselves in order to reduce the number of transfers. TO
+  However, for many effects, we either do not have strong enough resources or place in our simple game model. The whole economic
+  we take the model as the liveliest part of the model, which we will be happy to gradually update and where we stand for
+  ratios between the costs of individual measures (an intensive curfew has significantly higher costs than closure
+  universities), but we take full note that their pricing in absolute numbers can be determined differently and
+  we are happy to accept suggestions for changes.
+</p>
+
+<p>
+  The basic data source was the Eurostat sector database NAMA_10_A64. We used data for the Czech Republic from this database
+  for 2019, which we subsequently adjusted for the expected growth in 2020 (5%: 3% inflation + 2% real growth). For
+  For each measure in the game, we have defined the sectors in the economy that will be affected and their degree of impact (in
+  percent).
+</p>
+
+<p>
+  Specifically:
+</p>
+<ul>
+  <li>
+    <strong>Closing borders:</strong> The accommodation and hospitality sector contributes an estimated CZK 344 million to the economy
+    daily. Closing the borders will reduce the operation of this sector by 30%, so the costs will be CZK 103 million per day. Another 36
+    CZK million per day are losses due to the travel agency sector. Furthermore, due to "spill-over effects"
+    (supply chains, decrease in demand ..) to a decrease in industrial output by 6%. The total will be CZK 389 million per day.
+  </li>
+
+  <li>
+    <strong>Limitations on mass events:</strong> The arts and recreation sector would contribute to gross domestic product by 2020
+    estimated at CZK 117 million per day. The ban on mass actions will affect this sector 100%, and will further lead to
+    decrease in industrial output by 3%. Partially bans (events over 1000 and 100 people) have a proportional effect.
+  </li>
+  <li>
+    <strong>Closure of risky services:</strong> The accommodation and hospitality sector contributes an estimated 344 to the economy
+    million CZK per day. Closing risky services will reduce the operation of these services by 70%, so the cost per day will be 241
+    million CZK per day. Another CZK 51.9 million are losses due to the closure of sports venues and CZK 250 million due to restrictions
+    industry by 6%. Thus, a total of CZK 0.54 billion.
+  </li>
+  <li>
+    <strong>Closing all services except basic needs:</strong> Retail (including food) contributes to
+    economy an estimated CZK 708 million per day. Closing a "non-essential" retail store will cost 70% of this amount, ie 495
+    CZK million. Another CZK 114 million per day will cost the closure of repairs and other services, such as hairdressing and 375
+    million reduction of industry by 9%. Thus, a total of CZK 984 million.
+  </li>
+  <li>
+    The source table of these calculations is available
+    <a href="https://drive.google.com/file/d/1zM_M3uRjowznnxVlH5pHdoacrnIoujdf/view?usp=sharing">here</a>
+  </li>
+</ul>
+
+
+<p>
+  <strong>Other actions we've used data from other sources:</strong>
+</p>
+<ul>
+  <li> <strong>No curfew:</strong> A curfew cannot be taken as the sum of individual sub-measures.
+    as it affects the whole economy. Based on analyzes <a
+            href="http://www.koronerv-20.cz/2020/11/koronerv-20-rozpovala-modely-moznych-opatreni-a-dopadu-pandemie-covid-19-s-navrhem-oslovi-vladu-ministra -blatneho-a-dalsi-experty / ">KoroNERV-20</a>,
+    we chose a conservative estimate of one day of lockdown CZK 3.5 billion (this amount also includes
+    all the above-mentioned sub-measures, which are therefore not added together).
+  </li>
+<li>
+  <strong>School closures:</strong> The government spent about $ 7.06 billion on nursing homes in the spring. Schools
+  were closed from March 11 until the end of June. The costs are therefore CZK 64 million per day.
+</li>
+  <li>
+    <strong>Rule 3R:</strong> Of course, it brought a lot of changes in the real world, but they generally turned out to be one
+    fixed cargo (interior design) or we do not have sufficient credible resources to justify the daily cargo
+    in a scale relevant to the game.
+  </li>
+  <li>
+    <strong>Hospitalization</strong>: We followed the pricing of hospitalization
+    <a href="https://www.zakonyprolidi.cz/cs/2020-305">relevant payment orders</a>.
+    One day of hospitalization of a mild and moderate case costs CZK 5,000 in play, one day of hospitalization of a severe case
+    case costs CZK 60,000.
+  </li>
+  <li>
+    <strong>Compensation</strong>: The game design takes into account some basic compensation whenever you turn it on
+    measures. In addition, there is the option to turn on "extra measures". These are a very generous contribution to the economy,
+    which the player can compensate for stability problems. These special compensations are purposefully very generous and designed
+    rather for short-term deployment. It must be admitted here that we have determined their value to a greater extent arbitrarily -
+    programs announced in the real Czech Republic often do not reach the planned beneficiaries or are not used at all. They inspired
+    we are the sum of the compensation prices planned through the sectors presented in the game and then adding the whole
+    German <a href="https://ec.europa.eu/commission/presscorner/detail/en/IP_20_2180">"overarching"</a> compensation.
+  </li>
+</ul>

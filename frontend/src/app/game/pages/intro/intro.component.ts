@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {MetaService} from 'src/app/services/meta.service';
 import {GameService} from '../../game.service';
-import {Router} from '@angular/router';
 
 
 @Component({
@@ -10,13 +9,8 @@ import {Router} from '@angular/router';
   styleUrls: ['./intro.component.scss'],
 })
 export class IntroComponent {
-  links: any;
 
-  constructor(meta: MetaService, public gameService: GameService, router: Router) {
-    this.links = {
-      aboutLink: router.createUrlTree(['/about']).toString(),
-      creditsLink: router.createUrlTree(['/credits']).toString(),
-    };
+  constructor(meta: MetaService, public gameService: GameService) {
     meta.setTitle('Vítejte');
   }
 

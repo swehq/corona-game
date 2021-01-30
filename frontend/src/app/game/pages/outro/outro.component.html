@@ -23,43 +23,7 @@
   </div>
 
   <cvd-col *ngIf="stats" [spacing]="2" alignItems="flex-start">
-    <p>
-      V grafu vidíte celkový počet mrtvých a utracené peníze.
-      Ale to nejsou všechny náklady pandemie.
-      <strong>
-        V průběhu vaší hry přišli žáci a studenti o minimálně
-        {{stats.schoolDaysLost.total | formatNumber}} dnů výuky
-      </strong>.
-      Tento výpadek zároveň dopadne
-      nejvíce na skupiny, které to mají se vzděláváním už teď těžké.
-    </p>
-
-    <div>
-      Pro lepší představu, co znamenají vaše finanční náklady?
-    </div>
-    <ul>
-      <li>Vaše náklady pandemie: <strong>{{stats.costs.total | formatNumber:true:true}}</strong>
-      <li>Státní rozpočet 2019: <strong>{{1551e9 | formatNumber:true:true}}</strong>
-      <li>Státní rozpočet 2020: <strong>{{1842e9 | formatNumber:true:true}}</strong>
-    </ul>
-
-    <p>
-      Předtím, než si prohlédnete výsledky, rádi bychom vás upozornili, že simulace zachycuje jen zlomek
-      problémů spjatých s šířením koronaviru. Existuje mnoho dalších otázek, které náš zjednodušený model
-      nezachycuje: dlouhodobé následky covid-19, dopad na psychiku lidí nebo jak pandemie změní svět do budoucna.
-    </p>
-
-    <p>
-      V tomto doufáme, že vám hra poslouží jako odrazový můstek a motivace k dalšímu vlastnímu studiu.
-      Dovolíme si ale přesto na pár prvků upozornit.
-      Mohli bychom legitimně říct, že za vaši hru se nakazilo ne
-      <strong>{{stats.detectedInfections.total | formatNumber}}</strong>,
-      ale podle
-      <a href="https://denikn.cz/471276/jaky-je-skutecny-rozsah-nakazy-sledujme-pocet-umrti-epidemie-se-zvrtla-uz-v-srpnu-upozornuji-vedci/"
-        target="_blank">hypotéz výzkumníků</a> reálně až
-      <strong>{{4 * stats.detectedInfections.total | formatNumber}}</strong> lidí (včetně opakovaných infekcí).
-      Do hry a vašeho výsledku se ale započítávají jen přihlášení nakažení (na základě dat z testů).
-    </p>
+    <div [innerHtml]="'outro.html' | translate:i18nData"></div>
 
     <p>
       Pokud vás více zajímá, jak naše vzorce fungují, koukněte

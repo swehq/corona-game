@@ -1,8 +1,10 @@
 import {Component} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {inOutAnimation} from 'src/app/utils/animations';
+import {cloneDeepWith} from 'lodash';
 import {Event, EventChoice} from '../../../services/events';
 import {GameService} from '../../game.service';
+import {formatNumber} from '../../../utils/format';
 
 @UntilDestroy()
 @Component({
@@ -36,4 +38,12 @@ export class EventsLayoutComponent {
       if (choice?.action === 'pause') this.gameService.setSpeed('pause');
     }
   }
+
+  get translateParams() {
+    return {stats: cloneDeepWith(this.gameService.game.simulation.getLastStats(), statsFormat)};
+  }
+}
+
+function statsFormat(value: any) {
+  if (typeof value === 'number') return formatNumber(value, false, true);
 }

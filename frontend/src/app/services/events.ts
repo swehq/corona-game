@@ -1,5 +1,4 @@
-import {cloneDeep, get, isNil} from 'lodash';
-import {formatNumber, locale} from '../utils/format';
+import {cloneDeep} from 'lodash';
 import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
 import {DayState, MitigationEffect, Stats} from './simulation';
 import {Mitigations} from './mitigations';
@@ -36,13 +35,12 @@ export interface EventAndChoice {
   choice: EventChoice | undefined;
 }
 
-type EventText = ((eventInput: EventInput) => string) | string;
 type EventCondition = (eventInput: EventInput) => boolean;
 
 interface EventDef {
-  title: EventText;
-  text?: EventText;
-  help?: EventText;
+  title: string;
+  text?: string;
+  help?: string;
   condition?: EventCondition;
   choices?: EventChoiceDef[];
 }
@@ -120,14 +118,14 @@ export class EventHandler {
     // safeguard for empty event list
     if (eventDefs.length === 0) return;
 
-    return eventDefs.map(ed => EventHandler.eventFromDef(ed, dayState));
+    return eventDefs.map(ed => EventHandler.eventFromDef(ed));
   }
 
-  static eventFromDef(eventDef: EventDef, data: any): Event {
+  static eventFromDef(eventDef: EventDef): Event {
     return {
-      title: EventHandler.interpolate(eventDef.title, data),
-      text: eventDef.text ? EventHandler.interpolate(eventDef.text, data) : undefined,
-      help: eventDef.help ? EventHandler.interpolate(eventDef.help, data) : undefined,
+      title: eventDef.title,
+      text: eventDef.text,
+      help: eventDef.help,
       choices: eventDef.choices ? eventDef.choices.map(c => EventHandler.choiceFromDef(c)) : undefined,
     };
   }
@@ -135,19 +133,5 @@ export class EventHandler {
   static choiceFromDef(choice: EventChoiceDef) {
     const mitigations = choice.mitigations ? choice.mitigations.map(m => ({duration: 1, ...m})) : undefined;
     return {...choice, mitigations};
-  }
-
-  private static interpolate(text: EventText, data: any) {
-    if (typeof text === 'function') return text(data);
-
-    return text.replace(/\{\{([^}]+)}}/g, (original, attr) => {
-      const value = get(data, attr);
-      let valueToInsert: string;
-
-      if (typeof value === 'number') valueToInsert = formatNumber(value, false, true);
-      else valueToInsert = value.toLocaleString(locale);
-
-      return isNil(value) ? original : valueToInsert;
-    });
   }
 }

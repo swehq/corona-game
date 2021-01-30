@@ -3,15 +3,15 @@
   [@inOutAnimation]
   *ngIf="gameService.currentEvent">
   <h1>
-    {{gameService.currentEvent.title}}
+    {{gameService.currentEvent.title | translate:translateParams}}
   </h1>
 
   <cvd-row [grow]="2" *ngIf="gameService.currentEvent.text">
-    <div [innerHtml]="gameService.currentEvent.text | safeHtml"></div>
+    <div [innerHtml]="gameService.currentEvent.text | translate:translateParams"></div>
   </cvd-row>
 
   <cvd-row [grow]="2" *ngIf="gameService.currentEvent.help" class="chart-overlay-help">
-    <div [innerHtml]="gameService.currentEvent.help | safeHtml"></div>
+    <div [innerHtml]="gameService.currentEvent.help | translate:translateParams"></div>
   </cvd-row>
 
   <cvd-row grow wrap>

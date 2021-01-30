@@ -2,5 +2,8 @@
   "Otevřít vše": "Otevřít vše",
   "Tvůrci": "Tvůrci",
   "Vítejte": "Vítejte",
-  "intro.p1": "Nacházíte se v simulaci šíření nákazy Covid-19 v ČR."
+  "intro.p1": "Nacházíte se v simulaci šíření nákazy Covid-19 v ČR.",
+  "První případ nákazy koronavirem v Česku!": "První případ nákazy koronavirem v Česku!",
+  "<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p><ul>  <li>Opatření různou měrou ovlivňují šíření koronaviru</li>  <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>  <li>Kliknutí na otazníky u panelů otevře nápovědu</li>  <li><strong>Rychlost hry ovládáte v panelu nahoře</strong></li></ul>": "<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p><ul>  <li>Opatření různou měrou ovlivňují šíření koronaviru</li>  <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>  <li>Kliknutí na otazníky u panelů otevře nápovědu</li>  <li><strong>Rychlost hry ovládáte v panelu nahoře</strong></li></ul>",
+  "Covid zabil {{stats.deaths.today}} lidí za pouhý den": "Covid zabil {{stats.deaths.today}} lidí za pouhý den"
 }

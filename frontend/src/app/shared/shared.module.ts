@@ -8,7 +8,6 @@ import {TranslateModule} from '@ngx-translate/core';
 import {AutofocusDirective} from '../directives/autofocus.directive';
 import {FormatNumberPipe} from '../pipes/format-number.pipe';
 import {FormatPercentagePipe} from '../pipes/format-percentage.pipe';
-import {SafeHtmlPipe} from '../pipes/safe-html.pipe';
 import {Declaration} from '../utils/ng.model';
 import {ButtonComponent} from './button/button.component';
 import {ColComponent} from './flex/col.component';
@@ -36,7 +35,6 @@ const DECLARATIONS: Declaration[] = [
   LanguagePickerComponent,
   NavigateBackDirective,
   RowComponent,
-  SafeHtmlPipe,
   AutofocusDirective,
 ];
 

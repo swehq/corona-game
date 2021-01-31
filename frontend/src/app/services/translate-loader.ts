@@ -6,6 +6,14 @@ import {map} from 'rxjs/operators';
 import {LocalStorageKey} from '../../environments/defaults';
 import {DebugModeService} from './debug-mode.service';
 
+let _translateService: TranslateService | undefined;
+
+export function getCurrentLang() {
+  if (!_translateService) return ApplicationLanguage.CZECH;
+
+  return _translateService.currentLang;
+}
+
 export enum ApplicationLanguage {
   CZECH = 'cs',
   ENGLISH = 'en',
@@ -85,6 +93,7 @@ export function loadTranslations(
       'cs';
 
     translateService.setDefaultLang(lang);
+    _translateService = translateService;
 
     return translateService.use(lang).toPromise();
   };

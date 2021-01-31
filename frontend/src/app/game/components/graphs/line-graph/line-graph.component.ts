@@ -369,7 +369,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     const uiChange = this.dataLabelNodes[index].uiChange;
     if (uiChange) {
       if (uiChange.length > 1) {
-        const suffix = uiChange.length < 6 ? 'další' : 'dalších';
+        const suffix = uiChange.length < 6 ? 'další' : 'dalších'; // i18n TODO
         return `${uiChange[0]} (+${uiChange.length - 1} ${suffix})`;
       }
 

@@ -1,4 +1,4 @@
-export const locale = 'cs';
+import {getCurrentLang, ApplicationLanguage} from '../services/translate-loader';
 
 /**
  * Format number in a user friendly locate aware way
@@ -9,7 +9,9 @@ export const locale = 'cs';
  */
 export function formatNumber(value: number, showCurrencySymbol = false, shrink = false,
   accuracy = 1): string {
+  const locale = getCurrentLang();
   let affix = '';
+  let prefix = '';
   let formatOptions;
 
   if (shrink) {
@@ -42,9 +44,15 @@ export function formatNumber(value: number, showCurrencySymbol = false, shrink =
     formatOptions = {maximumFractionDigits: numFractionDigits, minimumFractionDigits: numFractionDigits};
   }
 
-  affix += showCurrencySymbol ? ' Kč' : '';
+  if (showCurrencySymbol) {
+    if (locale === ApplicationLanguage.CZECH) {
+      affix += ' Kč';
+    } else {
+      prefix = 'Cr ' + prefix;
+    }
+  }
 
-  return `${value.toLocaleString(locale, formatOptions)}${affix}`;
+  return `${prefix}${value.toLocaleString(locale, formatOptions)}${affix}`;
 }
 
 export function formatStats(stats: any, shrink = true, isCost = false) {

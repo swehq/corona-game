@@ -20,6 +20,7 @@
 ### Frontend
 - `cd frontend`
 - `npm i`
+- `npm run prebuild`
 - `npm start`
 - open browser at `http://localhost:4200/`
 

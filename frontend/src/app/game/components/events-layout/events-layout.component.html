@@ -19,7 +19,7 @@
       *ngFor="let choice of gameService.currentEvent.choices; let index = index"
       [cvdAutofocus]="index === 0"
       (click)="resumeEvent(gameService.currentEvent, choice)">
-      {{choice.buttonLabel}}
+      {{choice.buttonLabel | translate}}
     </cvd-button>
 
     <cvd-button

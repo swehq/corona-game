@@ -12,12 +12,15 @@ const argv = yargs
 
 const langs = {} as Record<string, any>;
 
-const extractDir = path.join(argv.directory as string, 'extract');
-readdirSync(extractDir).forEach(langFile => {
-  if (langFile.endsWith('.json')) {
-    const lang = langFile.slice(0, -5);
-    langs[lang] = JSON.parse(readFileSync(path.join(extractDir, langFile), 'utf8'));
-  }
+['events', 'extract'].forEach(source => {
+  const sourceDir = path.join(argv.directory as string, source);
+  readdirSync(sourceDir).forEach(langFile => {
+    if (langFile.endsWith('.json')) {
+      const lang = langFile.slice(0, -5);
+      const langData = JSON.parse(readFileSync(path.join(sourceDir, langFile), 'utf8'));
+      langs[lang] = {...langs[lang], ...langData};
+    }
+  });
 });
 
 const pagesDir = path.join(argv.directory as string, 'pages');

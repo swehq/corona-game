@@ -19,7 +19,7 @@
   "Základní statistiky a rychlost hry": "Basic statistics and game speed",
   "Zde můžete sledovat dvě důležitá čísla: hodnotu společenské stability a kapacitu nemocnic. Zároveň vám tento panel umožňuje hru zrychlovat, zpomalovat nebo případně pozastavit tlačítkem pauza.": "Here you can trace two important numbers: the value of social stability and the capacity of hospitals. At the same time, this panel allows you to speed up, slow down or possibly pause the game by pressing the pause button.",
   "reakce společnosti na vaše kroky. Pokud zavádíte příliš omezující opatření, nebo naopak umírá příliš lidí, může dojít k výměně vlády a hra skončí.": "the company's response to your actions. If you introduce too restrictive measures or, conversely, too many people die, there may be a change of government and the game will end.",
-  "pokud překročíte kapacitu nemocnic, zhorší se péče o nemocné a zemřelých tak bude přibývat více.'": "if you exceed the capacity of hospitals, care for the sick will deteriorate and the death toll will increase. '",
+  "pokud překročíte kapacitu nemocnic, zhorší se péče o nemocné a zemřelých tak bude přibývat více.": "if you exceed the capacity of hospitals, care for the sick will deteriorate and the death toll will increase.",
   "Zvláštní pozornost věnujte ukazateli společenské stability. Její propad na minimum je jediný způsob, jak může vaše hra skončit ještě před dostatečnou imunizací.": "Pay special attention to the social stability indicator. Dropping it to a minimum is the only way your game can end before you get enough immunization.",
   "about.html": "about.html",
   "Zpět": "Back",

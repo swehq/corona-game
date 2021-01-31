@@ -2,17 +2,17 @@
   <div [innerHtml]="'intro.html' | translate"></div>
 
   <p>
-    Chcete vědět více
-    <a routerLink="/credits">o tom, kdo za simulací stojí</a>?
+    {{'Chcete vědět více' | translate}}
+    <a routerLink="/credits">{{'o tom, kdo za simulací stojí' | translate}}</a>?
   </p>
 
   <p>
-    Chcete vědět víc
-    <a id="aboutModel" routerLink="/about">o našem modelu a metodice</a>?
+    {{'Chcete vědět víc' | translate}}
+    <a id="aboutModel" routerLink="/about">{{'o našem modelu a metodice' | translate}}</a>?
   </p>
 
   <p>
-    Přejeme, ať se vám v boji s koronavirem daří!
+    {{'Přejeme, ať se vám v boji s koronavirem daří!' | translate}}
   </p>
 
   <cvd-row [horizontalSpacing]="3">
@@ -33,13 +33,13 @@
       [cvdAutofocus]="true"
       type="raised"
       (click)="loadSave()"
-      routerLink="/game">Pokračovat v poslední hře
+      routerLink="/game">{{'Pokračovat v poslední hře' | translate}}
     </cvd-button>
 
     <cvd-button
       (click)="loadNewGame()"
       routerLink="/game">
-      Hrát novou hru
+      {{'Hrát novou hru' | translate}}
     </cvd-button>
   </ng-template>
 

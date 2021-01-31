@@ -50,7 +50,7 @@ export function formatNumber(value: number, showCurrencySymbol = false, shrink =
 export function formatStats(stats: any, shrink = true, isCost = false) {
   const ret = {} as any;
 
-  (Object(stats).keys() as any[]).forEach(key => {
+  Object.keys(stats).forEach(key => {
     const value = stats[key];
     if (typeof value === 'number') {
       ret[key] = formatNumber(value, isCost, shrink);

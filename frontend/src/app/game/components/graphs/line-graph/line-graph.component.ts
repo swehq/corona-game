@@ -385,8 +385,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     let title = `${tooltipItem[0].xLabel}\n`;
     if (dataLabelNode.event) {
       const event = dataLabelNode.event;
-      title += `Událost: ${event?.event.title}\n`;
-      if (event?.choice?.chartLabel) title += `Rozhodnutí: ${event?.choice?.chartLabel}\n`;
+      title += _('Událost') + `: ${event?.event.title}\n`;
+      if (event?.choice?.chartLabel) title += _('Rozhodnutí') + `: ${event?.choice?.chartLabel}\n`;
     }
 
     if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;

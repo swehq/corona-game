@@ -11,6 +11,7 @@ import {formatNumber, formatStats} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 import {settings as randomSettings} from '../../../services/randomize';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
@@ -53,7 +54,7 @@ export class OutroComponent {
 
       if (myPoints) {
         datasets.push({
-          label: 'Můj výsledek',
+          label: _('Můj výsledek'),
           data: myPoints,
           backgroundColor: MY_RESULT_COLOR,
           pointBorderColor: MY_RESULT_COLOR,
@@ -64,7 +65,7 @@ export class OutroComponent {
 
       if (allPoints) {
         datasets.push({
-          label: 'Výsledky ostatních hráčů',
+          label: _('Výsledky ostatních hráčů'),
           data: allPoints,
           backgroundColor: ALL_RESULTS_COLOR,
           pointBorderColor: 'rgba(0,0,0,0)',
@@ -87,13 +88,13 @@ export class OutroComponent {
       displayColors: false,
       callbacks: {
         title: (results, data) => {
-          if (data!.datasets!.length > 1 && !results[0].datasetIndex) return 'Můj výsledek';
-          if (results.length === 1) return 'Výsledek jiného hráče';
-          return `Výsledek ${results.length} jiných hráčů`;
+          if (data!.datasets!.length > 1 && !results[0].datasetIndex) return _('Můj výsledek');
+          if (results.length === 1) return _('Výsledek jiného hráče');
+          return `Výsledek ${results.length} jiných hráčů`; // i18n TODO
         },
         beforeBody: node => [
-          `Celkový počet mrtvých: ${formatNumber(+node[0].xLabel!)}`,
-          `Celkové náklady: ${formatNumber(+node[0].yLabel!, true, true)}`,
+          _('Celkový počet mrtvých') + `: ${formatNumber(+node[0].xLabel!)}`,
+          _('Celkové náklady') + `: ${formatNumber(+node[0].yLabel!, true, true)}`,
         ],
         label: () => '',
       },
@@ -102,7 +103,7 @@ export class OutroComponent {
       xAxes: [{
         scaleLabel: {
           ...this.scalesLabelsDefaults,
-          labelString: 'Celkový počet mrtvých',
+          labelString: _('Celkový počet mrtvých'),
         },
         type: 'linear',
         position: 'bottom',
@@ -115,7 +116,7 @@ export class OutroComponent {
       yAxes: [{
         scaleLabel: {
           ...this.scalesLabelsDefaults,
-          labelString: 'Celkové náklady',
+          labelString: _('Celkové náklady'),
         },
         ticks: {
           callback(value: number | string) {
@@ -146,7 +147,7 @@ export class OutroComponent {
       map(data => data.id),
       tap(id => this.isMyGame = this.gameService.isMyGameId(id)),
     );
-    meta.setTitle('Výsledky');
+    meta.setTitle(_('Výsledky'));
     outroService.fetchAllResults();
 
     if (isPlatformBrowser(platformId)) {

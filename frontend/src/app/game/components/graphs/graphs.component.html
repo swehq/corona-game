@@ -1,7 +1,7 @@
 <div class="tabs">
   <div class="tabs-header">
     <div class="tabs-header-content">
-      <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label" matRipple
+      <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label | translate" matRipple
           (click)="activeTab = index" *ngFor="let tab of templateData; let index = index">
         <span class="tab-icon">
           <cvd-icon size="large" *ngIf="tab.svgIcon" [svgIcon]="tab.svgIcon"></cvd-icon>
@@ -18,7 +18,7 @@
       class="tab-content"
       *ngIf="activeTab === index">
       <h3>
-        {{ content.label }}
+        {{ content.label | translate }}
       </h3>
 
       <cvd-line-graph

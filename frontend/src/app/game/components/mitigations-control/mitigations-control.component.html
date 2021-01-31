@@ -6,20 +6,20 @@
   [formGroup]="mitigationsService.formGroup">
 
   <cvd-row [spacing]="3">
-    <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
-    <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="rrr">{{'Roušky, ruce, rozestupy' | translate}}</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="bordersClosed">{{'Zavřít hranice' | translate}}</cvd-mitigation-bool>
   </cvd-row>
 
   <cvd-col [spacing]="3" alignItems="stretch">
-    <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
-    <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
-    <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="events">{{'Akce' | translate}}</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="businesses">{{'Služby' | translate}}</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="schools">{{'Školy' | translate}}</cvd-mitigation-toggle>
   </cvd-col>
 
   <cvd-row [spacing]="3">
     <cvd-button grow (click)="preset('open')" color="info">{{'Otevřít vše' | translate}}</cvd-button>
-    <cvd-mitigation-bool grow formControlName="stayHome">Zákaz vycházení</cvd-mitigation-bool>
-    <cvd-mitigation-bool grow formControlName="compensations">Extra kompenzace</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="stayHome">{{'Zákaz vycházení' | translate}}</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="compensations">{{'Extra kompenzace' | translate}}</cvd-mitigation-bool>
   </cvd-row>
 
 </cvd-col>
@@ -40,23 +40,23 @@
 
   <cvd-col [spacing]="3" style="margin-left: 2rem;">
     <cvd-row>
-      <cvd-mitigation-bool grow formControlName="rrr">Roušky, ruce, rozestupy</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="rrr">{{'Roušky, ruce, rozestupy' | translate}}</cvd-mitigation-bool>
     </cvd-row>
     <cvd-row>
-      <cvd-mitigation-bool grow formControlName="bordersClosed">Zavřít hranice</cvd-mitigation-bool>
+      <cvd-mitigation-bool grow formControlName="bordersClosed">{{'Zavřít hranice' | translate}}</cvd-mitigation-bool>
   </cvd-row>
   </cvd-col>
 
   <cvd-col [spacing]="3" alignItems="stretch">
-    <cvd-mitigation-toggle formControlName="events">Akce</cvd-mitigation-toggle>
-    <cvd-mitigation-toggle formControlName="businesses">Služby</cvd-mitigation-toggle>
-    <cvd-mitigation-toggle formControlName="schools">Školy</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="events">{{'Akce' | translate}}</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="businesses">{{'Služby' | translate}}</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle formControlName="schools">{{'Školy' | translate}}</cvd-mitigation-toggle>
   </cvd-col>
 
   <cvd-col [spacing]="3">
-    <cvd-button grow (click)="preset('open')" color="info">Otevřít vše</cvd-button>
-    <cvd-mitigation-bool grow formControlName="stayHome">Zákaz vycházení</cvd-mitigation-bool>
-    <cvd-mitigation-bool grow formControlName="compensations">Extra kompenzace</cvd-mitigation-bool>
+    <cvd-button grow (click)="preset('open')" color="info">{{'Otevřít vše' | translate}}</cvd-button>
+    <cvd-mitigation-bool grow formControlName="stayHome">{{'Zákaz vycházení' | translate}}</cvd-mitigation-bool>
+    <cvd-mitigation-bool grow formControlName="compensations">{{'Extra kompenzace' | translate}}</cvd-mitigation-bool>
   </cvd-col>
 
 </cvd-row>

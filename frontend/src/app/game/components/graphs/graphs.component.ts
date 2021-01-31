@@ -9,6 +9,7 @@ import {formatNumber} from '../../../utils/format';
 import {GameService} from '../../game.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
 import {changeFavicon} from '../../../services/router-utils.service';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 export const CRITICAL_VIRUS_THRESHOLD = 15_000;
 
@@ -140,7 +141,7 @@ export class GraphsComponent implements AfterViewInit {
           datasetOptions: {
             backgroundColor: `${colors.critical}33`,
             borderColor: `${colors.warn}`,
-            label: 'Očkovaní',
+            label: _('Očkovaní'),
             fill: 'origin',
           },
           color: colors.warn,
@@ -150,7 +151,7 @@ export class GraphsComponent implements AfterViewInit {
           value: gs.stats.estimatedResistant.total,
           tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
           datasetOptions: {
-            label: 'Imunní po nemoci',
+            label: _('Imunní po nemoci'),
             fill: '-1',
           },
         },
@@ -167,7 +168,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.templateData = [
       {
-        label: 'Nově nakažení',
+        label: _('Nově nakažení'),
         svgIcon: 'virus',
         headerData$: this.infectedToday$.pipe(map(gs => last(gs)?.value)),
         prefix: '+',
@@ -176,7 +177,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [false, false],
       },
       {
-        label: 'Zemřelí',
+        label: _('Zemřelí'),
         svgIcon: 'skull',
         headerData$: this.deathTotal$.pipe(map(gs => last(gs)?.value)),
         data$: this.deathTotal$,
@@ -184,7 +185,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [false, false],
       },
       {
-        label: 'Celkové náklady',
+        label: _('Celkové náklady'),
         svgIcon: 'money',
         headerData$: this.costTotal$.pipe(map(gs => last(gs)?.value)),
         data$: this.costTotal$,
@@ -192,7 +193,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [true, true],
       },
       {
-        label: 'Imunní',
+        label: _('Imunní'),
         svgIcon: 'vaccine',
         headerData$: this.immunized$,
         multiLineData$: this.immunizedChart$,

@@ -26,7 +26,7 @@
       *ngIf="!gameService.currentEvent.choices?.length"
       [cvdAutofocus]="true"
       (click)="resumeEvent(gameService.currentEvent)">
-      OK
+      {{'OK' | translate}}
     </cvd-button>
   </cvd-row>
 </div>

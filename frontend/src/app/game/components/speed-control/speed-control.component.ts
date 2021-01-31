@@ -7,6 +7,7 @@ import {of, Subject, timer} from 'rxjs';
 import {filter, switchMap, takeUntil, tap} from 'rxjs/operators';
 import {SvgIconName} from '../../../shared/icon/icon.registry';
 import {GameService, Speed} from '../../game.service';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 @UntilDestroy()
 @Component({
@@ -39,10 +40,10 @@ export class SpeedControlComponent implements OnChanges, ControlValueAccessor {
   value: Speed = 'play';
   disabled = false;
   speedDictionary: {[key: string]: string} = {
-    pause: 'Pauza',
-    slow: 'Pomalý postup',
-    play: 'Středně rychlý postup',
-    fast: 'Rychlý postup',
+    pause: _('Pauza'),
+    slow: _('Pomalý postup'),
+    play: _('Středně rychlý postup'),
+    fast: _('Rychlý postup'),
   };
 
   constructor(gameService: GameService) {

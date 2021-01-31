@@ -14,6 +14,7 @@ import {Level} from '../../mitigations-control/controls/mitigation-scale.compone
 import {Pan} from './pan';
 import {EventAndChoice} from '../../../../services/events';
 import {formatDate} from 'src/app/utils/format-date';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -61,9 +62,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   pan: Pan;
 
   scaleLevels: Level[] = [
-    [0, 'Celý graf'],
-    [90, 'Kvartál'],
-    [30, 'Měsíc'],
+    [0, _('Celý graf')],
+    [90, _('Kvartál')],
+    [30, _('Měsíc')],
   ];
 
   private currentState: NodeState = 'ok';

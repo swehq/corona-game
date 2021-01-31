@@ -7,21 +7,21 @@
         mat-icon-button
         (click)="pan.applyPan('left')"
         [disabled]="pan.getDisability('left')"
-        matTooltip="Posunout vlevo"
+        [matTooltip]="'Posunout vlevo' | translate"
         class="left-pan-arrow">
         <cvd-icon svgIcon="panLeft"></cvd-icon>
       </button>
 
       <button
         mat-icon-button
-        matTooltip="Posunout vpravo"
+        [matTooltip]="'Posunout vpravo' | translate"
         (click)="pan.applyPan('right')"
         [disabled]="pan.getDisability('right')">
         <cvd-icon svgIcon="panRight"></cvd-icon>
       </button>
 
       <button [ngClass]="{'blinking': pan.autoResetIndicator}" mat-icon-button
-              matTooltip="Posunout na konec"
+              [matTooltip]="'Posunout na konec' | translate"
               (click)="pan.reset()" [disabled]="pan.getDisability('right')"
               class="right-pan-arrow">
         <cvd-icon svgIcon="panEnd"></cvd-icon>

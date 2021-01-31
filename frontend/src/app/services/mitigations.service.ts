@@ -7,6 +7,7 @@ import {delay, filter, map, pairwise, shareReplay, startWith, withLatestFrom} fr
 import {MitigationPair} from './scenario';
 import {defaultMitigations, Mitigations} from './mitigations';
 import {GameService} from '../game/game.service';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 export type MitigationsPresetLevel = 'open' | 'level1' | 'level2';
 
@@ -280,24 +281,24 @@ export class MitigationsService {
     switch (paramName) {
       case 'events':
         return [
-          [false, 'Neomezeno'],
-          [1000, 'Max. 1 000'],
-          [100, 'Max. 100'],
-          [10, 'Max. 10'],
+          [false, _('Neomezeno')],
+          [1000, _('Max. 1 000')],
+          [100, _('Max. 100')],
+          [10, _('Max. 10')],
         ];
 
       case 'schools':
         return [
-          [false, 'Neomezeno'],
-          ['universities', 'Zavřít vysoké'],
-          ['all', 'Zavřít všechny'],
+          [false, _('Neomezeno')],
+          ['universities', _('Zavřít vysoké')],
+          ['all', _('Zavřít všechny')],
         ];
 
       case 'businesses':
         return [
-          [false, 'Neomezeno'],
-          ['some', 'Zavřít rizikové'],
-          ['most', 'Jen základní'],
+          [false, _('Neomezeno')],
+          ['some', _('Zavřít rizikové')],
+          ['most', _('Jen základní')],
         ];
 
       default:

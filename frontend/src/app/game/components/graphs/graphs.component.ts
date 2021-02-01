@@ -102,7 +102,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.infectedToday$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: new Date(gs.date),
+        label: gs.date,
         value: gs.stats.detectedInfections.today,
         tooltipLabel: (value: number) => this.translateService.instant(_('Nově nakažení')) + ': ' + formatNumber(value),
         state: this.infectedThresholds(gs.stats.detectedInfections.today),
@@ -118,7 +118,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.costTotal$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: new Date(gs.date),
+        label: gs.date,
         value: gs.stats.costs.total,
         tooltipLabel: (value: number) =>
           this.translateService.instant(_('Celkové náklady')) + ': ' + formatNumber(value, true, true),
@@ -128,7 +128,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.deathTotal$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: new Date(gs.date),
+        label: gs.date,
         value: gs.stats.deaths.total,
         tooltipLabel: (value: number) => this.translateService.instant(_('Zemřelí')) + ': ' + formatNumber(value),
         state: this.deathDailyThresholds(gs.stats.deaths.today),
@@ -138,7 +138,7 @@ export class GraphsComponent implements AfterViewInit {
     this.immunizedChart$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ([
         {
-          label: new Date(gs.date),
+          label: gs.date,
           value: gs.stats.vaccinated.total,
           tooltipLabel: (value: number) => this.translateService.instant(_('Očkovaní')) + ': ' + formatNumber(value),
           datasetOptions: {
@@ -150,7 +150,7 @@ export class GraphsComponent implements AfterViewInit {
           color: colors.warn,
         },
         {
-          label: new Date(gs.date),
+          label: gs.date,
           value: gs.stats.estimatedResistant.total,
           tooltipLabel: (value: number) =>
             this.translateService.instant(_('Imunní po nemoci')) + ': ' + formatNumber(value),

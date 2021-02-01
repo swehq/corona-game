@@ -21,7 +21,7 @@ import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
 export interface ChartValue {
-  label: string | Date;
+  label: string;
   value: number;
   tooltipLabel: (value: number) => string;
   datasetOptions?: ChartDataSets;
@@ -125,6 +125,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           maxRotation: 0,
           autoSkipPadding: 16,
           fontSize: this.axesFontSize,
+          callback: value => formatDate(new Date(value)),
         },
       }],
     },

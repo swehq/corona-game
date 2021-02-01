@@ -2,7 +2,6 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {map} from 'rxjs/operators';
 import {ConfigService} from '../../../services/config.service';
-import {eventTriggers} from '../../../services/event-list';
 import {GameService, Speed} from '../../game.service';
 import {validateGame} from 'src/app/services/validate';
 import dataTooLong from 'src/app/game/pages/game/data/data-too-long.json';
@@ -41,21 +40,7 @@ export class SimulationControlComponent implements OnInit {
   }
 
   download() {
-    const ret: string[] = [];
-    eventTriggers.forEach(t=>{
-      t.events.forEach(e=>{
-        if (e.title) ret.push(e.title);
-        if (e.text) ret.push(e.text);
-        if (e.help) ret.push(e.help);
-        if (e.choices) {
-          e.choices.forEach(c=>{
-            if (c.buttonLabel) ret.push(c.buttonLabel);
-            if (c.chartLabel) ret.push(c.chartLabel);
-          });
-        }
-      });
-    });
-    const dataString = JSON.stringify(ret, null, 2); // this.gameService.getGameData(), null, 2);
+    const dataString = JSON.stringify(this.gameService.getGameData(), null, 2);
 
     const element = document.createElement('a');
     element.style.display = 'none';

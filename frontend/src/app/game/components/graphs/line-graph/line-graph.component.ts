@@ -186,8 +186,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   constructor(public cd: ChangeDetectorRef, public gameService: GameService,
     private translateService: TranslateService) {
     this.pan = new Pan(this);
-
-    this.translateService.onLangChange.subscribe(() => this.chart.chart.update());
   }
 
   showDataLabel(index: number) {
@@ -275,6 +273,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.pan.init(this.chart);
     this.setScope(this.scopeFormControl.value);
+
+    this.translateService.onLangChange.subscribe(() => this.chart.chart.update());
 
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),

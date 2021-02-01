@@ -41,36 +41,36 @@ export class MitigationsService {
 
   static readonly mitigationsI18n: { [key in keyof Mitigations]: Record<string, string> } = {
     bordersClosed: {
-      true: 'Hranice - zavřené',
-      false: 'Hranice - otevřené',
+      true: _('Hranice - zavřené'),
+      false: _('Hranice - otevřené'),
     },
     businesses: {
-      some: 'Služby - zavřené rizikové',
-      most: 'Služby - otevřené jen základní',
-      false: 'Služby - neomezeno',
+      some: _('Služby - zavřené rizikové'),
+      most: _('Služby - otevřené jen základní'),
+      false: _('Služby - neomezeno'),
     },
     events: {
-      1000: 'Akce - max. 1 000',
-      100: 'Akce - max. 100',
-      10: 'Akce - max. 10',
-      false: 'Akce - neomezeno',
+      1000: _('Akce - max. 1 000'),
+      100: _('Akce - max. 100'),
+      10: _('Akce - max. 10'),
+      false: _('Akce - neomezeno'),
     },
     rrr: {
-      true: '3R - zavedeno',
-      false: '3R - zrušeno',
+      true: _('3R - zavedeno'),
+      false: _('3R - zrušeno'),
     },
     schools: {
-      universities: 'Školy - zavřené vysoké',
-      all: 'Školy - zavřené všechny',
-      false: 'Školy - neomezeno',
+      universities: _('Školy - zavřené vysoké'),
+      all: _('Školy - zavřené všechny'),
+      false: _('Školy - neomezeno'),
     },
     stayHome: {
-      true: 'Zákaz vycházení',
-      false: 'Vycházení neomezeno',
+      true: _('Zákaz vycházení'),
+      false: _('Vycházení neomezeno'),
     },
     compensations: {
-      false: 'Žádné finanční kompenzace',
-      true: 'Finanční kompenzace',
+      false: _('Žádné finanční kompenzace'),
+      true: _('Finanční kompenzace'),
     },
   };
 

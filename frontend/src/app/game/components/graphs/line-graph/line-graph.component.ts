@@ -8,6 +8,8 @@ import {merge} from 'lodash';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
+import {ApplicationLanguage} from '../../../../services/translate-loader';
 import {formatNumber} from '../../../../utils/format';
 import {GameService} from '../../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
@@ -180,8 +182,11 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(public cd: ChangeDetectorRef, public gameService: GameService) {
+  constructor(public cd: ChangeDetectorRef, public gameService: GameService,
+    private translateService: TranslateService) {
     this.pan = new Pan(this);
+
+    this.translateService.onLangChange.subscribe(() => this.chart.chart.update());
   }
 
   showDataLabel(index: number) {
@@ -363,17 +368,21 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private formatDataLabel(index: number) {
     if (this.dataLabelNodes[index]?.event) {
       const label = this.dataLabelNodes[index]?.event?.choice?.chartLabel;
-      return label ? label : null;
+      return label ? this.translateService.instant(label) : null;
     }
 
     const uiChange = this.dataLabelNodes[index].uiChange;
     if (uiChange) {
       if (uiChange.length > 1) {
-        const suffix = uiChange.length < 6 ? 'další' : 'dalších'; // i18n TODO
-        return `${uiChange[0]} (+${uiChange.length - 1} ${suffix})`;
+        if (this.translateService.currentLang === ApplicationLanguage.CZECH && uiChange.length >= 6) {
+          return `${uiChange[0]} (+${uiChange.length - 1} dalších)`;
+        } else {
+          return this.translateService.instant(_('{{first}} (+{{numMore}} další)'),
+            {first: this.translateService.instant(uiChange[0]), numMore: uiChange.length - 1});
+        }
       }
 
-      return uiChange[0];
+      return this.translateService.instant(uiChange[0]);
     }
   }
 
@@ -385,12 +394,16 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     let title = `${tooltipItem[0].xLabel}\n`;
     if (dataLabelNode.event) {
       const event = dataLabelNode.event;
-      title += _('Událost') + `: ${event?.event.title}\n`;
-      if (event?.choice?.chartLabel) title += _('Rozhodnutí') + `: ${event?.choice?.chartLabel}\n`;
+      title += this.translateService.instant(_('Událost')) + ': '
+        + this.translateService.instant(event?.event.title) + '\n'; // i18n TODO: interpolate
+      if (event?.choice?.chartLabel) title += this.translateService.instant(_('Rozhodnutí')) + ': '
+        + this.translateService.instant(event?.choice?.chartLabel) + '\n';
     }
 
     if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;
-    if (dataLabelNode.uiChange) title += `${dataLabelNode.uiChange.join('\n')}\n`;
+    if (dataLabelNode.uiChange) {
+      title += dataLabelNode.uiChange.map(c => this.translateService.instant(c)).join('\n') + '\n';
+    }
 
     return title;
   }

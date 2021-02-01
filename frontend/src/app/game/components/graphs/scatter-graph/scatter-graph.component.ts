@@ -1,6 +1,8 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ViewChild} from '@angular/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {formatNumber} from '../../../../utils/format';
+import {BaseChartDirective} from 'ng2-charts';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'cvd-scatter-graph',
@@ -38,4 +40,10 @@ export class ScatterGraphComponent {
       },
     },
   };
+
+  @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
+
+  constructor(private translateService: TranslateService) {
+    this.translateService.onLangChange.subscribe(() => this.chart.chart.update());
+  }
 }

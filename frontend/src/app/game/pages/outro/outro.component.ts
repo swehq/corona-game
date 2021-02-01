@@ -5,6 +5,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable, of} from 'rxjs';
 import {catchError, map, switchMap, tap} from 'rxjs/operators';
+import {TranslateService} from '@ngx-translate/core';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
 import {formatNumber, formatStats} from '../../../utils/format';
@@ -88,13 +89,15 @@ export class OutroComponent {
       displayColors: false,
       callbacks: {
         title: (results, data) => {
-          if (data!.datasets!.length > 1 && !results[0].datasetIndex) return _('Můj výsledek');
-          if (results.length === 1) return _('Výsledek jiného hráče');
-          return `Výsledek ${results.length} jiných hráčů`; // i18n TODO
+          if (data!.datasets!.length > 1 && !results[0].datasetIndex) {
+            return this.translateService.instant(_('Můj výsledek'));
+          }
+          if (results.length === 1) return this.translateService.instant(_('Výsledek jiného hráče'));
+          return this.translateService.instant(_('Výsledek {{numOthers}} jiných hráčů'), {numOthers: results.length});
         },
         beforeBody: node => [
-          _('Celkový počet mrtvých') + `: ${formatNumber(+node[0].xLabel!)}`,
-          _('Celkové náklady') + `: ${formatNumber(+node[0].yLabel!, true, true)}`,
+          this.translateService.instant(_('Celkový počet mrtvých')) + `: ${formatNumber(+node[0].xLabel!)}`,
+          this.translateService.instant(_('Celkové náklady')) + `: ${formatNumber(+node[0].yLabel!, true, true)}`,
         ],
         label: () => '',
       },
@@ -139,6 +142,7 @@ export class OutroComponent {
     public gameService: GameService,
     meta: MetaService,
     public shareService: SocialNetworkShareService,
+    private translateService: TranslateService,
     activatedRoute: ActivatedRoute,
     router: Router,
     @Inject(PLATFORM_ID) platformId: string,

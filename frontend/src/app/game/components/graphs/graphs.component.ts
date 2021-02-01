@@ -1,6 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 import {ChartOptions} from 'chart.js';
 import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
@@ -77,6 +78,7 @@ export class GraphsComponent implements AfterViewInit {
 
   constructor(
     public gameService: GameService,
+    private translateService: TranslateService,
   ) {
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
@@ -102,7 +104,7 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ({
         label: new Date(gs.date),
         value: gs.stats.detectedInfections.today,
-        tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
+        tooltipLabel: (value: number) => this.translateService.instant(_('Nově nakažení')) + ': ' + formatNumber(value),
         state: this.infectedThresholds(gs.stats.detectedInfections.today),
       }))),
       tap(infected => {
@@ -118,7 +120,8 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ({
         label: new Date(gs.date),
         value: gs.stats.costs.total,
-        tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
+        tooltipLabel: (value: number) =>
+          this.translateService.instant(_('Celkové náklady')) + ': ' + formatNumber(value, true, true),
         state: this.costDailyThresholds(gs.stats.costs.today),
       }))),
     );
@@ -127,7 +130,7 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ({
         label: new Date(gs.date),
         value: gs.stats.deaths.total,
-        tooltipLabel: (value: number) => `Zemřelí: ${formatNumber(value)}`,
+        tooltipLabel: (value: number) => this.translateService.instant(_('Zemřelí')) + ': ' + formatNumber(value),
         state: this.deathDailyThresholds(gs.stats.deaths.today),
       }))),
     );
@@ -137,7 +140,7 @@ export class GraphsComponent implements AfterViewInit {
         {
           label: new Date(gs.date),
           value: gs.stats.vaccinated.total,
-          tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
+          tooltipLabel: (value: number) => this.translateService.instant(_('Očkovaní')) + ': ' + formatNumber(value),
           datasetOptions: {
             backgroundColor: `${colors.critical}33`,
             borderColor: `${colors.warn}`,
@@ -149,7 +152,8 @@ export class GraphsComponent implements AfterViewInit {
         {
           label: new Date(gs.date),
           value: gs.stats.estimatedResistant.total,
-          tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
+          tooltipLabel: (value: number) =>
+            this.translateService.instant(_('Imunní po nemoci')) + ': ' + formatNumber(value),
           datasetOptions: {
             label: _('Imunní po nemoci'),
             fill: '-1',

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import Koa from 'koa';
 import bodyParser from "koa-bodyparser";
 import json from 'koa-json';
@@ -9,13 +11,9 @@ import {influxMonitoring} from './middleware/monitoring';
 const views = require('koa-views');
 
 (async function() {
-  const PORT = process.env.PORT ?? 8000;
-  const MONGO_URI = process.env.MONGO_URI ?? 'mongodb://localhost:8001/corona';
-  const INFLUXDB_URI = process.env.INFLUXDB_URI ?? 'http://admin:admin@influxdb:8086/influx';
-
   const app = new Koa();
 
-  app.use(influxMonitoring(INFLUXDB_URI, 'corona_be_http'));
+  app.use(influxMonitoring(String(process.env.INFLUXDB_URI), String(process.env.MEASUREMENT_HTTP)));
   app.use(json());
   app.use(logger());
   app.use(bodyParser({jsonLimit: '5mb'}));
@@ -26,14 +24,14 @@ const views = require('koa-views');
   }));
   app.use(router.routes()).use(router.allowedMethods());
 
-  await mongoose.connect(MONGO_URI, {
+  await mongoose.connect(String(process.env.MONGO_URI), {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  console.log(`Connected to MongoDB at ${MONGO_URI}`);
+  console.log(`Connected to MongoDB at ${process.env.MONGO_URI}`);
 
-  app.listen(PORT, () => {
-    console.log(`⚡️Server is running at http://localhost:${PORT}`);
+  app.listen(process.env.PORT, () => {
+    console.log(`⚡️Server is running at http://localhost:${process.env.PORT}`);
   });
 })().catch(console.error);

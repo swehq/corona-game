@@ -28,6 +28,7 @@ services:
       PORT: 80
       MONGO_URI: mongodb://mongo/corona
       INFLUXDB_URI: http://admin:admin@influxdb:8086/influx
+      MEASUREMENT_HTTP: corona_be_http_{{ env }}
     expose:
       - 80
 {% endfor %}

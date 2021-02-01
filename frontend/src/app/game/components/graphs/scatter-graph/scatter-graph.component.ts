@@ -75,7 +75,8 @@ export class ScatterGraphComponent {
       this.datasetLabelI18nKeys = [];
       this.chart.datasets.forEach(d => this.datasetLabelI18nKeys!.push(d.label!));
     }
-    this.datasetLabelI18nKeys.forEach((l, index) => this.chart.datasets[index].label = this.translateService.instant(l));
+    this.datasetLabelI18nKeys
+      .forEach((l, index) => this.chart.datasets[index].label = this.translateService.instant(l));
     this.chart.chart.update();
   }
 }

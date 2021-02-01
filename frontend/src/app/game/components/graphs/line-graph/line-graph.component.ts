@@ -396,8 +396,10 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       const event = dataLabelNode.event;
       title += this.translateService.instant(_('Událost')) + ': '
         + this.translateService.instant(event?.event.title) + '\n'; // i18n TODO: interpolate
-      if (event?.choice?.chartLabel) title += this.translateService.instant(_('Rozhodnutí')) + ': '
-        + this.translateService.instant(event?.choice?.chartLabel) + '\n';
+      if (event?.choice?.chartLabel) {
+        title += this.translateService.instant(_('Rozhodnutí')) + ': '
+          + this.translateService.instant(event?.choice?.chartLabel) + '\n';
+      }
     }
 
     if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;

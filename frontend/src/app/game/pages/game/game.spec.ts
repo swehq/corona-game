@@ -2,37 +2,71 @@ import {cloneDeep, last} from 'lodash';
 import {EventHandler} from 'src/app/services/events';
 import {eventTriggers} from 'src/app/services/event-list';
 import {Game, GameData} from 'src/app/services/game';
-import {validateGame} from 'src/app/services/validate';
-import realData from './data-czechia-real.json';
+import {validateGame, Validity} from 'src/app/services/validate';
 
-const data = realData as GameData;
+import jsonDataTooLong from './data/data-too-long.json';
+import jsonDataLostStability from './data/data-lost-stability.json';
+
+// source data others are created out of (easiest for maintanance)
+const dataTooLong = jsonDataTooLong as GameData;
+const dataValid = cloneDeep(dataTooLong);
+dataValid.simulation.pop();
 
 describe('GameValidation', () => {
   it('should validate CZ real scenario', () => {
-    expect(validateGame(data)).toBeTruthy();
+    expect(validateGame(dataValid).validity).toBe('valid');
+  });
+
+  it('should get proper validation results', async () => {
+    const dataLostStability = jsonDataLostStability as GameData;
+    const dataTooShort = cloneDeep(dataValid);
+    dataTooShort.simulation.pop();
+    const dataEmpty = cloneDeep(dataValid);
+    dataEmpty.simulation = [];
+    const dataIncorrectNumbers = cloneDeep(dataValid);
+    last(dataIncorrectNumbers.simulation)!.stats.deaths.totalUnrounded += 1e-4;
+    const dataIncorrectNumbersShort = cloneDeep(dataValid);
+    dataIncorrectNumbersShort.simulation.splice(1);
+    dataIncorrectNumbersShort.simulation[0].sirState.suspectible++;
+
+    const inputs: {validity: Validity, data: any}[] = [
+      {validity: 'valid', data: dataValid},
+      {validity: 'incorrect-numbers', data: dataIncorrectNumbers},
+      {validity: 'incorrect-numbers', data: dataIncorrectNumbersShort},
+      {validity: 'too-short', data: dataTooShort},
+      {validity: 'too-short', data: dataEmpty},
+      {validity: 'bad-structure', data: {}},
+      {validity: 'lost-stability', data: dataLostStability},
+      {validity: 'too-long', data: dataTooLong},
+    ];
+
+    for (const input of inputs) {
+      expect(validateGame(input.data as GameData).validity).toBe(input.validity);
+      expect(validateGame(input.data as GameData, false).validity).toBe(input.validity);
+    }
   });
 
   it('should not validate CZ scenario w/ added mitigation', () => {
-    const modifiedData = cloneDeep(data);
+    const modifiedData = cloneDeep(dataValid);
     modifiedData.mitigations.history['2020-12-07'] = {mitigations: {schools: 'all'}};
-    expect(validateGame(modifiedData)).toBeFalsy();
+    expect(validateGame(modifiedData).validity).toBe('incorrect-numbers');
   });
 
   it('should not validate CZ scenario w/ modified dead state', () => {
-    const modifiedData = cloneDeep(data);
+    const modifiedData = cloneDeep(dataValid);
     last(modifiedData.simulation)!.sirState.dead += 1e-3;
-    expect(validateGame(modifiedData)).toBeFalsy();
+    expect(validateGame(modifiedData).validity).toBe('incorrect-numbers');
   });
 
   it('should not validate CZ scenario w/ modified mortality randomness', () => {
-    const modifiedData = cloneDeep(data);
+    const modifiedData = cloneDeep(dataValid);
     const randomnessToModify = modifiedData.simulation.find(s => s.date === '2020-10-10')!.randomness;
     randomnessToModify!.baseMortality += 1e-6;
-    expect(validateGame(modifiedData)).toBeFalsy();
+    expect(validateGame(modifiedData).validity).toBe('incorrect-numbers');
   });
 
   it('should validate CZ scenario w/ added trivial event mitigation', () => {
-    const modifiedData = cloneDeep(data);
+    const modifiedData = cloneDeep(dataValid);
     const eventMitigation = {
       duration: 10,
       rMult: 1,
@@ -41,11 +75,11 @@ describe('GameValidation', () => {
       vaccinationPerDay: 0,
     };
     modifiedData.mitigations.history['2020-11-01'] = {eventMitigations: [eventMitigation]};
-    expect(validateGame(modifiedData)).toBeTruthy();
+    expect(validateGame(modifiedData).validity).toBe('valid');
   });
 
   it('should not validate CZ scenario w/ added event mitigation', () => {
-    const modifiedData = cloneDeep(data);
+    const modifiedData = cloneDeep(dataValid);
     const eventMitigation = {
       duration: 10,
       label: 'rMult',
@@ -55,14 +89,14 @@ describe('GameValidation', () => {
       vaccinationPerDay: 0,
     };
     modifiedData.mitigations.history['2020-11-01'] = {eventMitigations: [eventMitigation]};
-    expect(validateGame(modifiedData)).toBeFalsy();
+    expect(validateGame(modifiedData).validity).toBe('incorrect-numbers');
   });
 
  });
 
 describe('EventInterpolationTests', () => {
   it('all event strings should interpolate', () => {
-    const dayStats = data.simulation.find(s => s.date === '2020-12-01');
+    const dayStats = dataValid.simulation.find(s => s.date === '2020-12-01');
     expect(dayStats).toBeDefined();
 
     eventTriggers.forEach(et => {

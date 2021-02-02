@@ -25,8 +25,10 @@ router.get('/api/game-data/:id', async (ctx) => {
 
 router.post('/api/game-data', async (ctx) => {
   const inputData: GameData = ctx.request.body;
-  if (!validate(inputData)) {
-    const saveData = new InvalidGameDataModel({data: inputData});
+  const validity = validateGame(inputData).validity;
+
+  if (validity !== 'valid') {
+    const saveData = new InvalidGameDataModel({data: inputData, validity});
     await saveData.save();
     ctx.status = 400;
     ctx.body = genericError();
@@ -75,24 +77,6 @@ router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
 
 function genericError() {
   return {error: 'Game data invalid'};
-}
-
-function validate(data: GameData): boolean {
-  if (!data.mitigations) return false;
-  if (!data.simulation) return false;
-
-  try {
-    const scenario = scenarios[data.scenarioName];
-    const scenarioDuration = 1 + dateDiff(scenario.dates.endDate, scenario.dates.rampUpStartDate);
-    if (data.simulation.length !== scenarioDuration) return false;
-    const game = validateGame(data);
-    if (!game) return false;
-    if (game.isGameLost() || !game.isFinished()) return false;
-  } catch (e) {
-    return false;
-  }
-
-  return true;
 }
 
 function ensureHttps(url: string) {

@@ -79,8 +79,8 @@ export class OutroService {
         const {_id, created, results, ...gameData} = response;
         this._current$.next({id, gameIsReady: false, result: results});
 
-        const game = validateGame(gameData);
-        if (!game) return false;
+        const {validity, game} = validateGame(gameData);
+        if (validity !== 'valid' || !game) return false;
 
         this.gameService.restoreGame(game);
         this._current$.next({id, gameIsReady: true, result: results});

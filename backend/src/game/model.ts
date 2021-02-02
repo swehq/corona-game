@@ -2,6 +2,7 @@
 import {Document, model, Schema} from 'mongoose'
 // import {GameData} from '@frontend/game';
 import {GameData} from '../../../frontend/src/app/services/game';
+import {Validity} from '../app/services/validate';
 
 // TODO be more strict
 const GameDataSchema = new Schema({
@@ -41,16 +42,17 @@ const GameDataSchema = new Schema({
   },
   created: {
     type: Date,
-    reqired: true,
+    required: true,
     default: Date.now,
   },
 }, {minimize: false});
 
 const InvalidGameDataSchema = new Schema({
   data: {},
+  validity: String,
   created: {
     type: Date,
-    reqired: true,
+    required: true,
     default: Date.now,
   },
 }, {minimize: false});
@@ -65,6 +67,7 @@ interface GameDataDocument extends GameData, Document {
 
 interface InvalidGameDataDocument extends Document {
   data: any,
+  validity: Validity,
   created: Date,
 }
 

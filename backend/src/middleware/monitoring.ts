@@ -3,7 +3,7 @@ import {sortedIndex} from 'lodash';
 
 export const Influx = require('influxdb-nodejs');
 
-export function influxMonitoring(influxDbUri: string, measurementName: string) {
+export function influxMonitoring(influxDbUri: string, measurementName: string, env: string | undefined) {
   const influx = new Influx(influxDbUri);
 
   return async (ctx: Koa.Context, next: Koa.Next) => {
@@ -26,6 +26,7 @@ export function influxMonitoring(influxDbUri: string, measurementName: string) {
       spdy: sortedIndex([100, 300, 1000, 3000], delta),
       method,
       route,
+      env,
     };
 
     const fields = {

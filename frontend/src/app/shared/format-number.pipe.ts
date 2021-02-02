@@ -3,6 +3,7 @@ import {I18nService} from '../services/i18n.service';
 
 @Pipe({
   name: 'formatNumber',
+  pure: false,
 })
 export class FormatNumberPipe implements PipeTransform {
 

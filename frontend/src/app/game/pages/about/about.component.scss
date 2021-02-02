@@ -4,6 +4,26 @@
   @include panel;
   display: flex; // TODO move to mixin panel and check all other panels
   text-align: left;
+
+  .about {
+    h3 {
+      font-weight: bolder;
+    }
+
+    p {
+      line-height: 150%;
+      margin-bottom: 1.5rem;
+    }
+
+    li {
+      line-height: 150%;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.back-button {
+  margin-top: 2rem;
 }
 
 .figure {
@@ -13,6 +33,8 @@
 .model-img {
   width: 100%;
   max-width: 700px;
+  margin: 3rem auto;
+  display: block;
 }
 
 cvd-button {

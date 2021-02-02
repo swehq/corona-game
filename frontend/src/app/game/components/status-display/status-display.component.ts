@@ -4,7 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {get, PropertyPath} from 'lodash';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, filter, map, shareReplay} from 'rxjs/operators';
-import {formatDate} from 'src/app/utils/format-date';
+import {I18nService} from '../../../services/i18n.service';
 import {Stats} from '../../../services/simulation';
 import {GameService} from '../../game.service';
 
@@ -31,6 +31,7 @@ export class StatusDisplayComponent {
 
   constructor(
     private gameService: GameService,
+    private i18nService: I18nService,
   ) {
     this.speedFormControl.valueChanges
       .pipe(untilDestroyed(this))
@@ -45,7 +46,7 @@ export class StatusDisplayComponent {
   }
 
   get today() {
-    return formatDate(new Date(this.gameService.lastDate));
+    return this.i18nService.formatDate(new Date(this.gameService.lastDate));
   }
 
   stat$(name: keyof Stats, path?: PropertyPath) {

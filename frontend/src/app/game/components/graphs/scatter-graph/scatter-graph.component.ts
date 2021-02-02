@@ -1,15 +1,17 @@
-import {Component, Input, ViewChild} from '@angular/core';
-import {ChartDataSets, ChartOptions} from 'chart.js';
-import {formatNumber} from '../../../../utils/format';
-import {BaseChartDirective} from 'ng2-charts';
+import {AfterViewInit, Component, Input, ViewChild} from '@angular/core';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TranslateService} from '@ngx-translate/core';
+import {ChartDataSets, ChartOptions} from 'chart.js';
+import {BaseChartDirective} from 'ng2-charts';
+import {I18nService} from '../../../../services/i18n.service';
 
+@UntilDestroy()
 @Component({
   selector: 'cvd-scatter-graph',
   templateUrl: './scatter-graph.component.html',
   styleUrls: ['./scatter-graph.component.scss'],
 })
-export class ScatterGraphComponent {
+export class ScatterGraphComponent implements AfterViewInit {
 
   @Input()
   datasets: ChartDataSets[] = [];
@@ -21,16 +23,12 @@ export class ScatterGraphComponent {
         type: 'linear',
         position: 'bottom',
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true),
         },
       }],
       yAxes: [{
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true),
         },
       }],
     },
@@ -47,14 +45,24 @@ export class ScatterGraphComponent {
   yAxisI18nKey?: string;
   datasetLabelI18nKeys?: string[];
 
-  constructor(private translateService: TranslateService) {}
+  constructor(
+    private i18nService: I18nService,
+    private translateService: TranslateService,
+  ) {
+  }
 
   ngAfterViewInit() {
     this.updateLabels();
-    this.translateService.onLangChange.subscribe(() => this.updateLabels());
+    this.translateService.onLangChange.pipe(
+      untilDestroyed(this),
+    ).subscribe(
+      () => this.updateLabels(),
+    );
   }
 
   updateLabels() {
+    if (!this.chart?.chart) return;
+
     const xAxis = this.chart.chart.options.scales?.xAxes![0];
     if (!this.xAxisI18nKey) {
       this.xAxisI18nKey = xAxis?.scaleLabel?.labelString;
@@ -76,7 +84,11 @@ export class ScatterGraphComponent {
       this.chart.datasets.forEach(d => this.datasetLabelI18nKeys!.push(d.label!));
     }
     this.datasetLabelI18nKeys
-      .forEach((l, index) => this.chart.datasets[index].label = this.translateService.instant(l));
+      .forEach((l, index) => {
+        if (l) {
+          this.chart.datasets[index].label = this.translateService.instant(l);
+        }
+      });
     this.chart.chart.update();
   }
 }

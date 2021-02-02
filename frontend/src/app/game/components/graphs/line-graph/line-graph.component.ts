@@ -1,6 +1,8 @@
 import {AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 import {ChartDataSets, ChartOptions, ChartTooltipItem} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
@@ -8,15 +10,12 @@ import {merge} from 'lodash';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {TranslateService} from '@ngx-translate/core';
+import {EventAndChoice} from '../../../../services/events';
+import {I18nService} from '../../../../services/i18n.service';
 import {ApplicationLanguage} from '../../../../services/translate-loader';
-import {formatNumber} from '../../../../utils/format';
 import {GameService} from '../../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 import {Pan} from './pan';
-import {EventAndChoice} from '../../../../services/events';
-import {formatDate} from 'src/app/utils/format-date';
-import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
@@ -117,7 +116,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       yAxes: [{
         ticks: {
           fontSize: this.axesFontSize,
-          callback: value => formatNumber(+value, false, true),
+          callback: value => this.i18nService.formatNumber(+value, false, true),
         },
       }],
       xAxes: [{
@@ -125,7 +124,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           maxRotation: 0,
           autoSkipPadding: 16,
           fontSize: this.axesFontSize,
-          callback: value => formatDate(new Date(value)),
+          callback: value => this.i18nService.formatDate(new Date(value)),
         },
       }],
     },
@@ -149,7 +148,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           left: 4,
         },
         display: context => this.showDataLabel(context.dataIndex),
-        formatter: (_, context) => this.formatDataLabel(context.dataIndex),
+        formatter: (_fn, context) => this.formatDataLabel(context.dataIndex),
         font: context => {
           const width = context.chart.width;
           let size = Math.round(width! / 52);
@@ -183,8 +182,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(public cd: ChangeDetectorRef, public gameService: GameService,
-    private translateService: TranslateService) {
+  constructor(
+    public cd: ChangeDetectorRef,
+    public gameService: GameService,
+    private i18nService: I18nService,
+    private translateService: TranslateService,
+  ) {
     this.pan = new Pan(this);
   }
 
@@ -225,7 +228,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.tooltipLabels[this.datasets.length - 1] = tick.tooltipLabel;
         this.seriesLength++;
         this.lastValue = tick.value;
-        this.labels.push(typeof tick.label === 'string' ? tick.label : formatDate(tick.label));
+        this.labels.push(typeof tick.label === 'string' ? tick.label : this.i18nService.formatDate(tick.label));
         this.setScope();
       });
     });
@@ -257,7 +260,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.seriesLength++;
         this.labels.push((typeof ticks[0].label === 'string'
           ? ticks[0].label
-          : formatDate(ticks[0].label)),
+          : this.i18nService.formatDate(ticks[0].label)),
         );
       });
     });
@@ -274,7 +277,11 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.pan.init(this.chart);
     this.setScope(this.scopeFormControl.value);
 
-    this.translateService.onLangChange.subscribe(() => this.chart.chart.update());
+    this.translateService.onLangChange.pipe(
+      untilDestroyed(this),
+    ).subscribe(() => {
+      if (this.chart?.chart) this.chart.chart.update();
+    });
 
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),

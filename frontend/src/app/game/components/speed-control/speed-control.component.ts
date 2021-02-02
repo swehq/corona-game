@@ -77,10 +77,10 @@ export class SpeedControlComponent implements OnChanges, ControlValueAccessor {
     this.onChange = cb;
   }
 
-  registerOnTouched(_: any) {
+  registerOnTouched(_fn: any) {
   }
 
-  onChange = (_: any) => {
+  onChange = (_fn: any) => {
   }
 
   writeValue(value: any) {

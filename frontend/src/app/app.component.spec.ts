@@ -4,6 +4,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {AppComponent} from './app.component';
 import {GameModule} from './game/game.module';
 import {SharedModule} from './shared/shared.module';
+import {TestingModule} from './shared/testing/testing.module';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -11,6 +12,7 @@ describe('AppComponent', () => {
       imports: [
         RouterTestingModule,
         HttpClientTestingModule,
+        TestingModule,
         SharedModule,
         GameModule,
       ],

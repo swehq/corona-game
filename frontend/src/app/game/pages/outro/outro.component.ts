@@ -1,18 +1,18 @@
 import {isPlatformBrowser} from '@angular/common';
 import {Component, Inject, PLATFORM_ID} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable, of} from 'rxjs';
 import {catchError, map, switchMap, tap} from 'rxjs/operators';
-import {TranslateService} from '@ngx-translate/core';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
-import {formatNumber, formatStats} from '../../../utils/format';
+import {I18nService} from '../../../services/i18n.service';
+import {settings as randomSettings} from '../../../services/randomize';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
-import {settings as randomSettings} from '../../../services/randomize';
-import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 const MY_RESULT_COLOR = '#9fe348';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
@@ -96,8 +96,8 @@ export class OutroComponent {
           return this.translateService.instant(_('Výsledek {{numOthers}} jiných hráčů'), {numOthers: results.length});
         },
         beforeBody: node => [
-          this.translateService.instant(_('Celkový počet mrtvých')) + `: ${formatNumber(+node[0].xLabel!)}`,
-          this.translateService.instant(_('Celkové náklady')) + `: ${formatNumber(+node[0].yLabel!, true, true)}`,
+          this.translateService.instant(_('Celkový počet mrtvých')) + `: ${this.i18nService.formatNumber(+node[0].xLabel!)}`,
+          this.translateService.instant(_('Celkové náklady')) + `: ${this.i18nService.formatNumber(+node[0].yLabel!, true, true)}`,
         ],
         label: () => '',
       },
@@ -111,9 +111,7 @@ export class OutroComponent {
         type: 'linear',
         position: 'bottom',
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true),
         },
       }],
       yAxes: [{
@@ -122,9 +120,7 @@ export class OutroComponent {
           labelString: _('Celkové náklady'),
         },
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true),
         },
       }],
     },
@@ -138,14 +134,15 @@ export class OutroComponent {
   completeUrl = '';
 
   constructor(
-    private outroService: OutroService,
-    public gameService: GameService,
-    meta: MetaService,
-    public shareService: SocialNetworkShareService,
-    private translateService: TranslateService,
-    activatedRoute: ActivatedRoute,
-    router: Router,
     @Inject(PLATFORM_ID) platformId: string,
+    activatedRoute: ActivatedRoute,
+    meta: MetaService,
+    router: Router,
+    private i18nService: I18nService,
+    private outroService: OutroService,
+    private translateService: TranslateService,
+    public gameService: GameService,
+    public shareService: SocialNetworkShareService,
   ) {
     this.resultId$ = activatedRoute.params.pipe(
       map(data => data.id),
@@ -177,11 +174,12 @@ export class OutroComponent {
 
   get i18nData() {
     const stats = this.stats;
-    const estimateInfectionsTotal = stats ?
-      formatNumber(stats.detectedInfections.total / randomSettings.detectionRate[0], false, true) : undefined;
-    const budget2019 = formatNumber(1551e9, true, true);
-    const budget2020 = formatNumber(1842e9, true, true);
-    return {stats: formatStats(stats), estimateInfectionsTotal, budget2019, budget2020};
+    const estimateInfectionsTotal = stats
+      ? this.i18nService.formatNumber(stats.detectedInfections.total / randomSettings.detectionRate[0], false, true)
+      : undefined;
+    const budget2019 = this.i18nService.formatNumber(1551e9, true, true);
+    const budget2020 = this.i18nService.formatNumber(1842e9, true, true);
+    return {stats: this.i18nService.formatStats(stats), estimateInfectionsTotal, budget2019, budget2020};
   }
 
   isGameLost() {

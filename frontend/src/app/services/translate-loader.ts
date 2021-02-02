@@ -6,14 +6,6 @@ import {map} from 'rxjs/operators';
 import {LocalStorageKey} from '../../environments/defaults';
 import {DebugModeService} from './debug-mode.service';
 
-let _translateService: TranslateService | undefined;
-
-export function getCurrentLang() {
-  if (!_translateService) return ApplicationLanguage.CZECH;
-
-  return _translateService.currentLang;
-}
-
 export enum ApplicationLanguage {
   CZECH = 'cs',
   ENGLISH = 'en',
@@ -37,7 +29,8 @@ export class CvdTranslateLoader implements TranslateLoader {
 
   constructor(
     private httpClient: HttpClient,
-  ) {}
+  ) {
+  }
 
   getTranslation(lang: ApplicationLanguage): Observable<any> {
     const dictionaryObservables: Observable<object>[] = [];
@@ -62,8 +55,7 @@ export function getPreferredBrowserLanguage() {
   if (navigator.languages !== undefined) {
     // 0th item of navigator.languages is the preferred language
     return navigator.languages[0];
-  }
-  else { // IE Fallback
+  } else { // IE Fallback
     return navigator.language;
   }
 }
@@ -71,29 +63,23 @@ export function getPreferredBrowserLanguage() {
 export function loadTranslations(
   translateService: TranslateService,
   debugService: DebugModeService,
-  ): () => Promise<void> {
+): () => Promise<void> {
 
   return () => {
-    if (localStorage.getItem(LocalStorageKey.LANGUAGE) === null) {
-      const userLocal = getPreferredBrowserLanguage();
-      let languageFromLocal;
+    const languages = Object.values(ApplicationLanguage) as string[];
+    translateService.addLangs(languages);
 
-      if (userLocal.includes('cs')) languageFromLocal = ApplicationLanguage.CZECH;
-      else languageFromLocal = ApplicationLanguage.ENGLISH;
+    const defaultLang = ApplicationLanguage.CZECH;
+    let lang = defaultLang as string;
 
-      localStorage.setItem(LocalStorageKey.LANGUAGE, languageFromLocal);
+    // TODO enable in non debug mode after translation finished
+    if (debugService.getDebugMode()) {
+      lang = localStorage.getItem(LocalStorageKey.LANGUAGE) || getPreferredBrowserLanguage().substr(0, 2);
+      if (!languages.includes(lang)) lang = defaultLang;
+      localStorage.setItem(LocalStorageKey.LANGUAGE, lang);
     }
-    translateService.addLangs([
-      ApplicationLanguage.CZECH,
-      ApplicationLanguage.ENGLISH,
-    ]);
-
-    const lang = debugService.getDebugMode() ?
-      localStorage.getItem(LocalStorageKey.LANGUAGE) || navigator.languages[0] :
-      'cs';
 
     translateService.setDefaultLang(lang);
-    _translateService = translateService;
 
     return translateService.use(lang).toPromise();
   };

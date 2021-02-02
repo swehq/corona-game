@@ -2,8 +2,8 @@ import {Component} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {inOutAnimation} from 'src/app/utils/animations';
 import {Event, EventChoice} from '../../../services/events';
+import {I18nService} from '../../../services/i18n.service';
 import {GameService} from '../../game.service';
-import {formatStats} from '../../../utils/format';
 
 @UntilDestroy()
 @Component({
@@ -13,7 +13,10 @@ import {formatStats} from '../../../utils/format';
   animations: [inOutAnimation()],
 })
 export class EventsLayoutComponent {
-  constructor(public gameService: GameService) {
+  constructor(
+    public gameService: GameService,
+    private i18nService: I18nService,
+  ) {
   }
 
   resumeEvent(event: Event, choice?: EventChoice) {
@@ -39,6 +42,6 @@ export class EventsLayoutComponent {
   }
 
   get translateParams() {
-    return {stats: formatStats(this.gameService.game.simulation.getLastStats())};
+    return {stats: this.i18nService.formatStats(this.gameService.game.simulation.getLastStats())};
   }
 }

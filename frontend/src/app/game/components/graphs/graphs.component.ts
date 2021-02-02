@@ -1,16 +1,16 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TranslateService} from '@ngx-translate/core';
 import {ChartOptions} from 'chart.js';
 import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
 import {filter, map, tap} from 'rxjs/operators';
-import {formatNumber} from '../../../utils/format';
+import {I18nService} from '../../../services/i18n.service';
+import {changeFavicon} from '../../../services/router-utils.service';
 import {GameService} from '../../game.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
-import {changeFavicon} from '../../../services/router-utils.service';
-import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 export const CRITICAL_VIRUS_THRESHOLD = 15_000;
 
@@ -28,9 +28,7 @@ export class GraphsComponent implements AfterViewInit {
     scales: {
       yAxes: [{
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true, 2);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true, 2),
         },
       }],
     },
@@ -78,6 +76,7 @@ export class GraphsComponent implements AfterViewInit {
 
   constructor(
     public gameService: GameService,
+    private i18nService: I18nService,
     private translateService: TranslateService,
   ) {
     this.scopeFormControl.valueChanges.pipe(
@@ -100,11 +99,17 @@ export class GraphsComponent implements AfterViewInit {
       });
     });
 
+    const getTooltipFormatter = (label: string, showCurrencySymbol = false, shrink = false) =>
+      (value: number) => [
+        this.translateService.instant(label),
+        this.i18nService.formatNumber(value, showCurrencySymbol, shrink),
+      ].join(': ');
+
     this.infectedToday$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
         label: gs.date,
         value: gs.stats.detectedInfections.today,
-        tooltipLabel: (value: number) => this.translateService.instant(_('Nově nakažení')) + ': ' + formatNumber(value),
+        tooltipLabel: getTooltipFormatter(_('Nově nakažení')),
         state: this.infectedThresholds(gs.stats.detectedInfections.today),
       }))),
       tap(infected => {
@@ -120,8 +125,7 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ({
         label: gs.date,
         value: gs.stats.costs.total,
-        tooltipLabel: (value: number) =>
-          this.translateService.instant(_('Celkové náklady')) + ': ' + formatNumber(value, true, true),
+        tooltipLabel: getTooltipFormatter(_('Celkové náklady'), true, true),
         state: this.costDailyThresholds(gs.stats.costs.today),
       }))),
     );
@@ -130,7 +134,7 @@ export class GraphsComponent implements AfterViewInit {
       map(gameStates => gameStates.map(gs => ({
         label: gs.date,
         value: gs.stats.deaths.total,
-        tooltipLabel: (value: number) => this.translateService.instant(_('Zemřelí')) + ': ' + formatNumber(value),
+        tooltipLabel: getTooltipFormatter(_('Zemřelí')),
         state: this.deathDailyThresholds(gs.stats.deaths.today),
       }))),
     );
@@ -140,7 +144,7 @@ export class GraphsComponent implements AfterViewInit {
         {
           label: gs.date,
           value: gs.stats.vaccinated.total,
-          tooltipLabel: (value: number) => this.translateService.instant(_('Očkovaní')) + ': ' + formatNumber(value),
+          tooltipLabel: getTooltipFormatter(_('Očkovaní')),
           datasetOptions: {
             backgroundColor: `${colors.critical}33`,
             borderColor: `${colors.warn}`,
@@ -152,8 +156,7 @@ export class GraphsComponent implements AfterViewInit {
         {
           label: gs.date,
           value: gs.stats.estimatedResistant.total,
-          tooltipLabel: (value: number) =>
-            this.translateService.instant(_('Imunní po nemoci')) + ': ' + formatNumber(value),
+          tooltipLabel: getTooltipFormatter(_('Imunní po nemoci')),
           datasetOptions: {
             label: _('Imunní po nemoci'),
             fill: '-1',

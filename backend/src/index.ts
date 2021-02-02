@@ -11,11 +11,12 @@ const views = require('koa-views');
 (async function() {
   const PORT = process.env.PORT ?? 8000;
   const MONGO_URI = process.env.MONGO_URI ?? 'mongodb://localhost:8001/corona';
-  const INFLUXDB_URI = process.env.INFLUXDB_URI ?? 'http://admin:admin@influxdb:8086/influx';
 
   const app = new Koa();
 
-  app.use(influxMonitoring(INFLUXDB_URI, 'corona_be_http'));
+  if (process.env.INFLUXDB_URI) {
+    app.use(influxMonitoring(process.env.INFLUXDB_URI, 'corona_be_http', process.env.ENV));
+  }
   app.use(json());
   app.use(logger());
   app.use(bodyParser({jsonLimit: '5mb'}));

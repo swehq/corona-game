@@ -158,8 +158,8 @@
             "devServerTarget": "corona-game:serve"
           },
           "configurations": {
-            "production": {
-              "devServerTarget": "corona-game:serve:production"
+            "prod": {
+              "devServerTarget": "corona-game:serve:prod"
             }
           }
         }

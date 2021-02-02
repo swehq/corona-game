@@ -11,8 +11,12 @@ export class FormatNumberPipe implements PipeTransform {
   ) {
   }
 
-  transform(value: number | null | undefined, showCurrencySymbol = false, shrink = false,
-    accuracy = 1) {
+  transform(
+    value: number | null | undefined,
+    showCurrencySymbol = false,
+    shrink = false,
+    accuracy = 1,
+  ): string {
     value = value || 0;
     return this.i18nService.formatNumber(value, showCurrencySymbol, shrink, accuracy);
   }

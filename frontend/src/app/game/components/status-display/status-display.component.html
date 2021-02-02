@@ -12,8 +12,9 @@
       <cvd-icon size="large" svgIcon="stability"></cvd-icon>
       <span class="u-nowrap status-display-label">{{'Společenská stabilita' | translate}}</span>
       <mat-chip-list>
-        <mat-chip selected
-                  [color]="getColor$(stat$('stability'), 65, 35) | async">{{stat$('stability') | async | formatNumber:false:false:1}}</mat-chip>
+        <mat-chip selected [color]="getColor$(stat$('stability'), 65, 35) | async">
+          {{stat$('stability') | async | limit:0:100 | formatNumber:false:false:1}}
+        </mat-chip>
       </mat-chip-list>
     </cvd-row>
   </cvd-col>

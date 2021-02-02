@@ -50,10 +50,6 @@ export class StatusDisplayComponent {
   }
 
   stat$(name: keyof Stats, path?: PropertyPath) {
-    if (name === 'stability') {
-      return this.stats$.pipe(map(stats => Math.max(0, stats[name])));
-    }
-
     const res = this.stats$.pipe(
       map(stats => stats[name]),
     );

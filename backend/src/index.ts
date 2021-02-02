@@ -3,6 +3,7 @@ import bodyParser from "koa-bodyparser";
 import json from 'koa-json';
 import logger from "koa-logger";
 import mongoose from 'mongoose';
+import {exit} from 'process';
 import {router} from './game/routes';
 import {influxMonitoring} from './middleware/monitoring';
 
@@ -27,14 +28,24 @@ const views = require('koa-views');
   }));
   app.use(router.routes()).use(router.allowedMethods());
 
+
   await mongoose.connect(MONGO_URI, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
+  }).catch(() => {
+    console.error('MongoDB not connected');
+    exit(1);
   });
-  console.log(`Connected to MongoDB at ${MONGO_URI}`);
+  console.log(`MongoDB connected at ${MONGO_URI}`);
 
   app.listen(PORT, () => {
     console.log(`⚡️Server is running at http://localhost:${PORT}`);
+
+    // TODO temporary termination for tests before full env on CircleCI is set up
+    if (process.env.TERMINATE) {
+      console.log('Exiting due to TERMINATE flag')
+      exit();
+    }
   });
 })().catch(console.error);

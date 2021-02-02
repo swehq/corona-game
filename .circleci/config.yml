@@ -28,6 +28,7 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: cimg/node:14.15.2-browsers
+      - image: mongo:4.2.5
     steps:
       - browser-tools/install-chrome
       - checkout
@@ -55,6 +56,14 @@ jobs:
           name: BE build
           working_directory: backend
           command: npm run build
+      - run:
+          name: BE run
+          working_directory: backend
+          command: |
+            TERMINATE=1 npm run start:dev
+            TERMINATE=1 npm run start:prod
+          environment:
+            MONGO_URI: mongodb://localhost:27017/corona
 
 workflows:
   version: 2

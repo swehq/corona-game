@@ -8,7 +8,7 @@ import {Event} from '../services/events';
 import {Game, GameData} from '../services/game';
 import {ScenarioName} from '../services/scenario';
 import {DayState} from '../services/simulation';
-import {validateGame} from '../services/validate';
+import {validateGame, Validity} from '../services/validate';
 
 export type Speed = 'auto' | 'rev' | 'pause' | 'slow' | 'play' | 'fast' | 'max' | 'finished';
 
@@ -203,8 +203,9 @@ export class GameService {
     if (!dataString) return false;
 
     try {
-      const game = validateGame(JSON.parse(dataString));
-      if (!game) return false;
+      const {validity, game} = validateGame(JSON.parse(dataString));
+      const allowedValidity: Validity[] = ['valid', 'too-short'];
+      if (!allowedValidity.includes(validity) || !game) return false;
       this.restoreGame(game);
     } catch {
       return false;

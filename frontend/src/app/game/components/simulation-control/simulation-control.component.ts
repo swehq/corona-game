@@ -4,7 +4,8 @@ import {map} from 'rxjs/operators';
 import {ConfigService} from '../../../services/config.service';
 import {GameService, Speed} from '../../game.service';
 import {validateGame} from 'src/app/services/validate';
-import realData from 'src/app/game/pages/game/data-czechia-real.json';
+import dataTooLong from 'src/app/game/pages/game/data/data-too-long.json';
+import {GameData} from 'src/app/services/game';
 
 @UntilDestroy()
 @Component({
@@ -57,8 +58,8 @@ export class SimulationControlComponent implements OnInit {
   }
 
   replayTest() {
-    const data = realData as any;
-    const game = validateGame(data, false);
+    const data = dataTooLong as GameData;
+    const game = validateGame(data, false).game;
     if (game) {
       this.gameService.restoreGame(game);
     }

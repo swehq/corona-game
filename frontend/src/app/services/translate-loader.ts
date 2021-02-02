@@ -3,13 +3,8 @@ import {TranslateLoader, TranslateService} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {LocalStorageKey} from '../../environments/defaults';
+import {ApplicationLanguage, LocalStorageKey} from '../../environments/defaults';
 import {DebugModeService} from './debug-mode.service';
-
-export enum ApplicationLanguage {
-  CZECH = 'cs',
-  ENGLISH = 'en',
-}
 
 export function CvdLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);

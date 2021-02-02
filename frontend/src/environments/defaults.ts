@@ -1,3 +1,8 @@
+export enum ApplicationLanguage {
+  CZECH = 'cs',
+  ENGLISH = 'en',
+}
+
 export enum LocalStorageKey {
   CONFIG = 'config',
   DEBUG_MODE = 'debugMode',

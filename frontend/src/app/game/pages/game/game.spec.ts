@@ -67,29 +67,31 @@ describe('GameValidation', () => {
 
   it('should validate CZ scenario w/ removed trivial event choice', () => {
     const modifiedData = cloneDeep(dataValid);
-    delete modifiedData.eventChoices['2020-03-02'];
+    delete modifiedData.eventChoices['2020-09-02']; // Beginning school year
+    expect(validateGame(modifiedData).validity).toBe('valid');
+  });
+
+  it('should validate CZ scenario w/ added trivial event choice', () => {
+    const modifiedData = cloneDeep(dataValid);
+    modifiedData.eventChoices['2020-09-01'] = modifiedData.eventChoices['2020-09-02'];
+    expect(validateGame(modifiedData).validity).toBe('valid');
+  });
+
+  it('should not validate CZ scenario w/ nontrivial event choice during rampup', () => {
+    const modifiedData = cloneDeep(dataValid);
+    modifiedData.eventChoices['2020-03-01'] = modifiedData.eventChoices['2020-03-02'];
     expect(validateGame(modifiedData).validity).toBe('incorrect-choice');
   });
 
   it('should not validate CZ scenario w/ removed nontrivial event choice', () => {
     const modifiedData = cloneDeep(dataValid);
-    for (const date in modifiedData.eventChoices) {
-      if (modifiedData.eventChoices[date][0].choice?.mitigations) {
-        delete modifiedData.eventChoices[date];
-        break;
-      }
-    }
+    delete modifiedData.eventChoices['2020-03-02']; // Tutorial question
     expect(validateGame(modifiedData).validity).toBe('incorrect-choice');
   });
 
   it('should not validate CZ scenario w/ added nontrivial event choice', () => {
     const modifiedData = cloneDeep(dataValid);
-    for (const date in modifiedData.eventChoices) {
-      if (modifiedData.eventChoices[date][0].choice?.mitigations) {
-        modifiedData.eventChoices['2020-03-01'] = modifiedData.eventChoices[date];
-        break;
-      }
-    }
+    modifiedData.eventChoices['2020-03-03'] = modifiedData.eventChoices['2020-03-02'];
     expect(validateGame(modifiedData).validity).toBe('incorrect-choice');
   });
 

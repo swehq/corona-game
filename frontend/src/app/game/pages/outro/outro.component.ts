@@ -15,7 +15,10 @@ import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 
 const MY_RESULT_COLOR = '#9fe348';
+const GOV_RESULT_COLOR = '#b57648';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
+
+const GOV_RESULT = {x: 16607, y: 401202997616};
 
 const convert: (result: GameResult) => ChartPoint =
   result => ({
@@ -64,6 +67,15 @@ export class OutroComponent {
         });
       }
 
+      datasets.push({
+        label: 'Česká vláda k 01.02.2021',
+        data: [GOV_RESULT],
+        backgroundColor: GOV_RESULT_COLOR,
+        pointBorderColor: GOV_RESULT_COLOR,
+        pointBackgroundColor: GOV_RESULT_COLOR,
+        pointRadius: 5,
+      });
+
       if (allPoints) {
         datasets.push({
           label: _('Výsledky ostatních hráčů'),
@@ -89,9 +101,8 @@ export class OutroComponent {
       displayColors: false,
       callbacks: {
         title: (results, data) => {
-          if (data!.datasets!.length > 1 && !results[0].datasetIndex) {
-            return this.translateService.instant(_('Můj výsledek'));
-          }
+          const dataset = data!.datasets![results[0]!.datasetIndex!];
+          if (dataset.backgroundColor !== ALL_RESULTS_COLOR) return dataset.label!;
           if (results.length === 1) return this.translateService.instant(_('Výsledek jiného hráče'));
           return this.translateService.instant(_('Výsledek {{numOthers}} jiných hráčů'), {numOthers: results.length});
         },

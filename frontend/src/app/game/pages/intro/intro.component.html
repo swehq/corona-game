@@ -1,4 +1,10 @@
 <cvd-col>
+  <h2>{{'Vítejte' | translate}}</h2>
+
+  <p>
+    {{'Nacházíte se v simulaci šíření nákazy Covid-19 v ČR.' | translate}}
+  </p>
+
   <div [innerHtml]="'intro.html' | translate"></div>
 
   <p>
@@ -9,6 +15,11 @@
   <p>
     {{'Chcete vědět víc' | translate}}
     <a id="aboutModel" routerLink="/about">{{'o našem modelu a metodice' | translate}}</a>?
+  </p>
+
+  <p>
+    {{'Kontakt na tvůrce' | translate}}:
+    <a href="mailto:info@koronahra.cz">info@koronahra.cz</a>
   </p>
 
   <p>

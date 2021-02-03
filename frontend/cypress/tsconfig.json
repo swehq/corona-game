@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "include": [
+    "**/*.ts"
+  ],
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "cypress",
+      "cypress-wait-until",
+      "cypress-image-snapshot"
+    ]
+  },
+  "exclude": []
+}

@@ -23,14 +23,15 @@ const langs = {} as Record<string, any>;
   });
 });
 
+const pageFilePattern = /^(?<pageName>[a-z,0-9,_,\-]+)\.(?<lang>[a-z]+)\.html$/;
 const pagesDir = path.join(argv.directory as string, 'pages');
-readdirSync(pagesDir).forEach(pageFile => {
-  const lang = pageFile.slice(-7, -5);
-  const pageName = pageFile.slice(0, -8);
+const pages = readdirSync(pagesDir).filter(filename => pageFilePattern.test(filename));
+
+pages.forEach(pageFile => {
+  const {pageName, lang} = pageFile.match(pageFilePattern)!.groups as {pageName: string, lang: string};
   const pageData = readFileSync(path.join(pagesDir, pageFile), 'utf8');
   langs[lang][pageName + '.html'] = pageData.replace(/\n/g, ' ');
 });
-
 
 for (const lang in langs) {
   writeFileSync(path.join(argv.directory as string, lang + '.json'), JSON.stringify(langs[lang], null, '  '), 'utf8');

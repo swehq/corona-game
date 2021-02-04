@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {AboutComponent} from './game/pages/about/about.component';
 import {CreditsComponent} from './game/pages/credits/credits.component';
+import {FaqComponent} from './game/pages/faq/faq.component';
 import {CanActivateGame} from './game/pages/game/can-activate-game';
 import {CanDeactivateGame} from './game/pages/game/can-deactivate-game';
 import {GameComponent} from './game/pages/game/game.component';
@@ -16,6 +17,7 @@ const routes: Routes = [
   {path: 'results/:id', component: OutroComponent},
   {path: 'credits', component: CreditsComponent},
   {path: 'about', component: AboutComponent},
+  {path: 'faq', component: FaqComponent},
   {path: '**', redirectTo: '/'},
 ];
 

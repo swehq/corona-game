@@ -1,0 +1,23 @@
+@import '~src/definitions';
+
+:host {
+  @include panel;
+  display: flex; // TODO move to mixin panel and check all other panels
+  text-align: left;
+
+  .faq {
+    p {
+      line-height: 150%;
+      margin-bottom: 1.5rem;
+    }
+  }
+}
+
+.back-button {
+  margin-top: 2rem;
+}
+
+cvd-button {
+  display: table;
+  margin: 1rem auto;
+}

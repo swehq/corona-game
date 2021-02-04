@@ -20,6 +20,7 @@ import {StatusDisplayComponent} from './components/status-display/status-display
 import {GameMaterialModule} from './game-material.module';
 import {AboutComponent} from './pages/about/about.component';
 import {CreditsComponent} from './pages/credits/credits.component';
+import {FaqComponent} from './pages/faq/faq.component';
 import {GameComponent} from './pages/game/game.component';
 import {IntroComponent} from './pages/intro/intro.component';
 import {OutroComponent} from './pages/outro/outro.component';
@@ -29,6 +30,7 @@ import {OutroComponent} from './pages/outro/outro.component';
     AboutComponent,
     EventsLayoutComponent,
     CreditsComponent,
+    FaqComponent,
     GameComponent,
     GraphsComponent,
     IntroComponent,

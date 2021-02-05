@@ -77,7 +77,7 @@ export class FormattingService {
           affix += ' Kč';
           break;
         default:
-          prefix = 'Cr ' + prefix;
+          prefix = 'CZK ' + prefix;
       }
     }
 

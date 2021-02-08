@@ -6,7 +6,7 @@ import {dateDiff} from './utils';
 export type Validity = 'valid' | 'incorrect-numbers' | 'lost-stability' | 'too-short' | 'too-long' | 'bad-structure';
 type ValidationResult = {validity: Validity, game?: Game};
 
-const EPSILON = 1e-9;
+const EPSILON = 1e-8;
 
 function upToEpsilonCustomizer(value1: any, value2: any) {
   if (isNumber(value1) && isNumber(value2)) {
@@ -17,6 +17,26 @@ function upToEpsilonCustomizer(value1: any, value2: any) {
       return Math.abs(value1 - value2) / absValue1 < EPSILON;
     }
   }
+}
+
+function upToTwoCustomizer(value1: any, value2: any) {
+  if (isNumber(value1) && isNumber(value2)) {
+    return Math.abs(value1 - value2) <= 2;
+  }
+}
+
+function gameDataIsEqualCustomizer(value1: any, value2: any) {
+  if (value1.total === undefined || value1.totalUnrounded === undefined || value1.avg7Day === undefined) {
+    return upToEpsilonCustomizer(value1, value2);
+  }
+
+  // Special handling of game statistics
+  // all numbers are compared with "up to two" precision to cover maximal diff of two rounded numbers
+  // unrounded values are compared up to epsilon
+  return isEqualWith(value1, value2, upToTwoCustomizer)
+    && upToEpsilonCustomizer(value1.totalUnrounded, value2.totalUnrounded) === true
+    && value1.total === Math.round(value1.totalUnrounded)
+    && value2.total === Math.round(value2.totalUnrounded);
 }
 
 export function validateGame(data: GameData, breakImmediately = true): ValidationResult {
@@ -45,7 +65,7 @@ export function validateGame(data: GameData, breakImmediately = true): Validatio
       const dayData = data.simulation[i];
       const dayCalculated = last(game.simulation.modelStates);
 
-      if (!isEqualWith(dayData, dayCalculated, upToEpsilonCustomizer)) {
+      if (!isEqualWith(dayData, dayCalculated, gameDataIsEqualCustomizer)) {
         if (breakImmediately) return {...res, validity: 'incorrect-numbers'};
         res.validity = 'incorrect-numbers';
       }

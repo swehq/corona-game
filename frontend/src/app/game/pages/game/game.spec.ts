@@ -63,17 +63,45 @@ describe('GameValidation', () => {
     expect(validateGame(modifiedData).validity).toBe('incorrect-numbers');
   });
 
-  it('should validate CZ scenario w/ added trivial event mitigation', () => {
+  it('should validate CZ scenario w/ removed trivial event choice', () => {
     const modifiedData = cloneDeep(dataValid);
-    const eventMitigation = {
-      duration: 10,
-      rMult: 1,
-      exposedDrift: 0,
-      stabilityCost: 0,
-      vaccinationPerDay: 0,
-    };
-    modifiedData.mitigations.history['2020-11-01'] = {eventMitigations: [eventMitigation]};
+    delete modifiedData.eventChoices['2020-09-02']; // Beginning school year
     expect(validateGame(modifiedData).validity).toBe('valid');
+  });
+
+  it('should validate CZ scenario w/ added trivial event choice', () => {
+    const modifiedData = cloneDeep(dataValid);
+    modifiedData.eventChoices['2020-09-01'] = modifiedData.eventChoices['2020-09-02'];
+    expect(validateGame(modifiedData).validity).toBe('valid');
+  });
+
+  it('should not validate CZ scenario w/ nontrivial event choice during rampup', () => {
+    const modifiedData = cloneDeep(dataValid);
+    modifiedData.eventChoices['2020-03-01'] = modifiedData.eventChoices['2020-03-02'];
+    expect(validateGame(modifiedData).validity).toBe('incorrect-choice');
+  });
+
+  it('should not validate CZ scenario w/ removed nontrivial event choice', () => {
+    const modifiedData = cloneDeep(dataValid);
+    delete modifiedData.eventChoices['2020-03-02']; // Tutorial question
+    expect(validateGame(modifiedData).validity).toBe('incorrect-choice');
+  });
+
+  it('should not validate CZ scenario w/ added nontrivial event choice', () => {
+    const modifiedData = cloneDeep(dataValid);
+    modifiedData.eventChoices['2020-03-03'] = modifiedData.eventChoices['2020-03-02'];
+    expect(validateGame(modifiedData).validity).toBe('incorrect-choice');
+  });
+
+  it('should not validate CZ scenario w/ removed event mitigation', () => {
+    const modifiedData = cloneDeep(dataValid);
+    for (const date in modifiedData.eventChoices) {
+      if (modifiedData.mitigations.history[date].eventMitigations) {
+        modifiedData.mitigations.history[date].eventMitigations = undefined;
+        break;
+      }
+    }
+    expect(validateGame(modifiedData).validity).toBe('incorrect-event-mitigation');
   });
 
   it('should not validate CZ scenario w/ added event mitigation', () => {
@@ -86,8 +114,8 @@ describe('GameValidation', () => {
       stabilityCost: 0,
       vaccinationPerDay: 0,
     };
-    modifiedData.mitigations.history['2020-11-01'] = {eventMitigations: [eventMitigation]};
-    expect(validateGame(modifiedData).validity).toBe('incorrect-numbers');
+    modifiedData.mitigations.history['2020-12-01'] = {eventMitigations: [eventMitigation]};
+    expect(validateGame(modifiedData).validity).toBe('incorrect-event-mitigation');
   });
 
  });

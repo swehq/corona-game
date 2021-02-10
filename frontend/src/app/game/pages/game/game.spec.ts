@@ -22,7 +22,7 @@ describe('GameValidation', () => {
     const dataEmpty = cloneDeep(dataValid);
     dataEmpty.simulation = [];
     const dataIncorrectNumbers = cloneDeep(dataValid);
-    last(dataIncorrectNumbers.simulation)!.stats.deaths.totalUnrounded += 1e-4;
+    last(dataIncorrectNumbers.simulation)!.stats.deaths.totalUnrounded += 1e-3;
     const dataIncorrectNumbersShort = cloneDeep(dataValid);
     dataIncorrectNumbersShort.simulation.splice(1);
     dataIncorrectNumbersShort.simulation[0].sirState.suspectible++;

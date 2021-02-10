@@ -1,11 +1,11 @@
 import {Context, DefaultState} from 'koa';
 import Router from 'koa-router';
-import {last} from 'lodash';
 import {FormattingService} from '../../../frontend/src/app/services/formatting.service';
-import {GameData} from '../../../frontend/src/app/services/game';
-import {validateGame} from '../../../frontend/src/app/services/validate';
 import {SimpleTranslateService} from '../services/translate.service';
 import {GameDataModel, InvalidGameDataModel} from './model';
+import {validateGame} from '../../../frontend/src/app/services/validate';
+import {GameData} from '../../../frontend/src/app/services/game';
+import {last, sampleSize} from 'lodash';
 
 export const router = new Router<DefaultState, Context>();
 
@@ -13,7 +13,7 @@ router.get('/api/game-data', async (ctx) => {
   const data = await GameDataModel
     .find({}, {results: 1, _id: 0})
     .hint('results_1')
-  ctx.body = data.map((i: any) => i.results);
+  ctx.body = sampleSize(data.map((i: any) => i.results), 5000);
 });
 
 router.get('/api/game-data/:id', async (ctx) => {

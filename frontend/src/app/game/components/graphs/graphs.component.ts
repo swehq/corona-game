@@ -1,14 +1,16 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 import {ChartOptions} from 'chart.js';
 import {first, last} from 'lodash';
 import {Observable} from 'rxjs';
 import {filter, map, tap} from 'rxjs/operators';
-import {formatNumber} from '../../../utils/format';
+import {I18nService} from '../../../services/i18n.service';
+import {changeFavicon} from '../../../services/router-utils.service';
 import {GameService} from '../../game.service';
 import {ChartValue, colors, DataLabelNode, NodeState} from './line-graph/line-graph.component';
-import {changeFavicon} from '../../../services/router-utils.service';
 
 export const CRITICAL_VIRUS_THRESHOLD = 15_000;
 
@@ -26,9 +28,7 @@ export class GraphsComponent implements AfterViewInit {
     scales: {
       yAxes: [{
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true, 2);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true, 2),
         },
       }],
     },
@@ -76,6 +76,8 @@ export class GraphsComponent implements AfterViewInit {
 
   constructor(
     public gameService: GameService,
+    private i18nService: I18nService,
+    private translateService: TranslateService,
   ) {
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
@@ -97,11 +99,17 @@ export class GraphsComponent implements AfterViewInit {
       });
     });
 
+    const getTooltipFormatter = (label: string, showCurrencySymbol = false, shrink = false) =>
+      (value: number) => [
+        this.translateService.instant(label),
+        this.i18nService.formatNumber(value, showCurrencySymbol, shrink),
+      ].join(': ');
+
     this.infectedToday$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: new Date(gs.date),
+        label: gs.date,
         value: gs.stats.detectedInfections.today,
-        tooltipLabel: (value: number) => `Nově nakažení: ${formatNumber(value)}`,
+        tooltipLabel: getTooltipFormatter(_('Nově nakažení')),
         state: this.infectedThresholds(gs.stats.detectedInfections.today),
       }))),
       tap(infected => {
@@ -115,18 +123,18 @@ export class GraphsComponent implements AfterViewInit {
 
     this.costTotal$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: new Date(gs.date),
+        label: gs.date,
         value: gs.stats.costs.total,
-        tooltipLabel: (value: number) => `Celkové náklady: ${formatNumber(value, true, true)}`,
+        tooltipLabel: getTooltipFormatter(_('Celkové náklady'), true, true),
         state: this.costDailyThresholds(gs.stats.costs.today),
       }))),
     );
 
     this.deathTotal$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ({
-        label: new Date(gs.date),
+        label: gs.date,
         value: gs.stats.deaths.total,
-        tooltipLabel: (value: number) => `Zemřelí: ${formatNumber(value)}`,
+        tooltipLabel: getTooltipFormatter(_('Zemřelí')),
         state: this.deathDailyThresholds(gs.stats.deaths.today),
       }))),
     );
@@ -134,23 +142,23 @@ export class GraphsComponent implements AfterViewInit {
     this.immunizedChart$ = data$.pipe(
       map(gameStates => gameStates.map(gs => ([
         {
-          label: new Date(gs.date),
+          label: gs.date,
           value: gs.stats.vaccinated.total,
-          tooltipLabel: (value: number) => `Očkovaní: ${formatNumber(value)}`,
+          tooltipLabel: getTooltipFormatter(_('Očkovaní')),
           datasetOptions: {
             backgroundColor: `${colors.critical}33`,
             borderColor: `${colors.warn}`,
-            label: 'Očkovaní',
+            label: _('Očkovaní'),
             fill: 'origin',
           },
           color: colors.warn,
         },
         {
-          label: new Date(gs.date),
+          label: gs.date,
           value: gs.stats.estimatedResistant.total,
-          tooltipLabel: (value: number) => `Imunní po nemoci: ${formatNumber(value)}`,
+          tooltipLabel: getTooltipFormatter(_('Imunní po nemoci')),
           datasetOptions: {
-            label: 'Imunní po nemoci',
+            label: _('Imunní po nemoci'),
             fill: '-1',
           },
         },
@@ -167,7 +175,7 @@ export class GraphsComponent implements AfterViewInit {
 
     this.templateData = [
       {
-        label: 'Nově nakažení',
+        label: _('Nově nakažení'),
         svgIcon: 'virus',
         headerData$: this.infectedToday$.pipe(map(gs => last(gs)?.value)),
         prefix: '+',
@@ -176,7 +184,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [false, false],
       },
       {
-        label: 'Zemřelí',
+        label: _('Zemřelí'),
         svgIcon: 'skull',
         headerData$: this.deathTotal$.pipe(map(gs => last(gs)?.value)),
         data$: this.deathTotal$,
@@ -184,7 +192,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [false, false],
       },
       {
-        label: 'Celkové náklady',
+        label: _('Celkové náklady'),
         svgIcon: 'money',
         headerData$: this.costTotal$.pipe(map(gs => last(gs)?.value)),
         data$: this.costTotal$,
@@ -192,7 +200,7 @@ export class GraphsComponent implements AfterViewInit {
         pipe: [true, true],
       },
       {
-        label: 'Imunní',
+        label: _('Imunní'),
         svgIcon: 'vaccine',
         headerData$: this.immunized$,
         multiLineData$: this.immunizedChart$,

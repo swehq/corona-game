@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {LocalStorageKey} from 'src/environments/defaults';
+import {LocalStorageKey} from '../../environments/defaults';
 
 @Injectable({
   providedIn: 'root',

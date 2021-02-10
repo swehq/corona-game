@@ -2,41 +2,28 @@
   <h2>{{'Vítejte' | translate}}</h2>
 
   <p>
-    {{'intro.p1' | translate}}
+    {{'Nacházíte se v simulaci šíření nákazy Covid-19 v ČR.' | translate}}
+  </p>
+
+  <div [innerHtml]="'intro.html' | translate"></div>
+
+  <p>
+    {{'Chcete vědět více' | translate}}
+    <a routerLink="/credits">{{'o tom, kdo za simulací stojí' | translate}}</a>?
   </p>
 
   <p>
-    Simulace vznikla na základě modelu, o&nbsp;kterém se můžete dozvědět více <a routerLink="/about">zde</a>.
-    Umožní vám dostat se do role vlády, která rozhoduje o&nbsp;tom, jaká proticovidová opatření budou zavedena.
-    Vyzkoušíte si řešení situací spjatých s&nbsp;řešením epidemie koronaviru a&nbsp;přehledně uvidíte následky jednotlivých kroků.
-    Simulace je postavená na přibližně desetimilionový stát v&nbsp;Evropě,
-    z&nbsp;čehož vyplývají některá specifika (například veřejnost reaguje negativně na omezení
-    a&nbsp;není možné se zcela izolovat od světa).
+    {{'Chcete vědět víc' | translate}}
+    <a id="aboutModel" routerLink="/about">{{'o našem modelu a metodice' | translate}}</a>?
   </p>
 
   <p>
-    Hra končí buď tím, že je dostatek obyvatel státu imunní, nebo tím, že je společnost tak nespokojená,
-    že již nemůžete vládnout. Všechno ostatní je ale na vás &ndash; to, co považujete za optimální strategii
-    a&nbsp;dobrý výsledek je vaše rozhodnutí.
-  </p>
-
-  <p>
-    Chcete vědět více
-    <a routerLink="/credits">o tom, kdo za simulací stojí</a>?
-  </p>
-
-  <p>
-    Chcete vědět víc
-    <a routerLink="/about">o našem modelu a metodice</a>?
-  </p>
-
-  <p>
-    Kontakt na tvůrce:
+    {{'Kontakt na tvůrce' | translate}}:
     <a href="mailto:info@koronahra.cz">info@koronahra.cz</a>
   </p>
 
   <p>
-    Přejeme, ať se vám v boji s koronavirem daří!
+    {{'Přejeme, ať se vám v boji s koronavirem daří!' | translate}}
   </p>
 
   <cvd-row [horizontalSpacing]="3">
@@ -47,7 +34,7 @@
       [cvdAutofocus]="true"
       (click)="loadNewGame()"
       routerLink="/game">
-      Hrát
+      {{'Hrát' | translate}}
     </cvd-button>
   </cvd-row>
 
@@ -57,13 +44,13 @@
       [cvdAutofocus]="true"
       type="raised"
       (click)="loadSave()"
-      routerLink="/game">Pokračovat v poslední hře
+      routerLink="/game">{{'Pokračovat v poslední hře' | translate}}
     </cvd-button>
 
     <cvd-button
       (click)="loadNewGame()"
       routerLink="/game">
-      Hrát novou hru
+      {{'Hrát novou hru' | translate}}
     </cvd-button>
   </ng-template>
 

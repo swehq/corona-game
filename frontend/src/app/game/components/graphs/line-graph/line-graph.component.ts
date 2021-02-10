@@ -1,6 +1,8 @@
 import {AfterViewInit, ChangeDetectorRef, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 import {ChartDataSets, ChartOptions, ChartTooltipItem} from 'chart.js';
 import 'chartjs-plugin-datalabels';
 import 'chartjs-plugin-zoom';
@@ -8,17 +10,17 @@ import {merge} from 'lodash';
 import {BaseChartDirective, Label} from 'ng2-charts';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {formatNumber} from '../../../../utils/format';
+import {ApplicationLanguage} from '../../../../../environments/defaults';
+import {EventAndChoice} from '../../../../services/events';
+import {I18nService} from '../../../../services/i18n.service';
 import {GameService} from '../../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 import {Pan} from './pan';
-import {EventAndChoice} from '../../../../services/events';
-import {formatDate} from 'src/app/utils/format-date';
 
 export type NodeState = 'ok' | 'warn' | 'critical' | undefined;
 
 export interface ChartValue {
-  label: string | Date;
+  label: string;
   value: number;
   tooltipLabel: (value: number) => string;
   datasetOptions?: ChartDataSets;
@@ -61,9 +63,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   pan: Pan;
 
   scaleLevels: Level[] = [
-    [0, 'Celý graf'],
-    [90, 'Kvartál'],
-    [30, 'Měsíc'],
+    [0, _('Celý graf')],
+    [90, _('Kvartál')],
+    [30, _('Měsíc')],
   ];
 
   private currentState: NodeState = 'ok';
@@ -114,7 +116,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
       yAxes: [{
         ticks: {
           fontSize: this.axesFontSize,
-          callback: value => formatNumber(+value, false, true),
+          callback: value => this.i18nService.formatNumber(+value, false, true),
         },
       }],
       xAxes: [{
@@ -122,6 +124,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           maxRotation: 0,
           autoSkipPadding: 16,
           fontSize: this.axesFontSize,
+          callback: value => this.i18nService.formatDate(new Date(value)),
         },
       }],
     },
@@ -145,7 +148,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           left: 4,
         },
         display: context => this.showDataLabel(context.dataIndex),
-        formatter: (_, context) => this.formatDataLabel(context.dataIndex),
+        formatter: (_fn, context) => this.formatDataLabel(context.dataIndex),
         font: context => {
           const width = context.chart.width;
           let size = Math.round(width! / 52);
@@ -179,7 +182,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     },
   };
 
-  constructor(public cd: ChangeDetectorRef, public gameService: GameService) {
+  constructor(
+    public cd: ChangeDetectorRef,
+    public gameService: GameService,
+    private i18nService: I18nService,
+    private translateService: TranslateService,
+  ) {
     this.pan = new Pan(this);
   }
 
@@ -220,7 +228,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.tooltipLabels[this.datasets.length - 1] = tick.tooltipLabel;
         this.seriesLength++;
         this.lastValue = tick.value;
-        this.labels.push(typeof tick.label === 'string' ? tick.label : formatDate(tick.label));
+        this.labels.push(typeof tick.label === 'string' ? tick.label : this.i18nService.formatDate(tick.label));
         this.setScope();
       });
     });
@@ -252,7 +260,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.seriesLength++;
         this.labels.push((typeof ticks[0].label === 'string'
           ? ticks[0].label
-          : formatDate(ticks[0].label)),
+          : this.i18nService.formatDate(ticks[0].label)),
         );
       });
     });
@@ -268,6 +276,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.pan.init(this.chart);
     this.setScope(this.scopeFormControl.value);
+
+    this.translateService.onLangChange.pipe(
+      untilDestroyed(this),
+    ).subscribe(() => {
+      if (this.chart?.chart) this.chart.chart.update();
+    });
 
     this.scopeFormControl.valueChanges.pipe(
       untilDestroyed(this),
@@ -362,17 +376,21 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private formatDataLabel(index: number) {
     if (this.dataLabelNodes[index]?.event) {
       const label = this.dataLabelNodes[index]?.event?.choice?.chartLabel;
-      return label ? label : null;
+      return label ? this.translateService.instant(label) : null;
     }
 
     const uiChange = this.dataLabelNodes[index].uiChange;
     if (uiChange) {
       if (uiChange.length > 1) {
-        const suffix = uiChange.length < 6 ? 'další' : 'dalších';
-        return `${uiChange[0]} (+${uiChange.length - 1} ${suffix})`;
+        if (this.translateService.currentLang === ApplicationLanguage.CZECH && uiChange.length >= 6) {
+          return `${uiChange[0]} (+${uiChange.length - 1} dalších)`;
+        } else {
+          return this.translateService.instant(_('{{first}} (+{{numMore}} další)'),
+            {first: this.translateService.instant(uiChange[0]), numMore: uiChange.length - 1});
+        }
       }
 
-      return uiChange[0];
+      return this.translateService.instant(uiChange[0]);
     }
   }
 
@@ -384,12 +402,18 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     let title = `${tooltipItem[0].xLabel}\n`;
     if (dataLabelNode.event) {
       const event = dataLabelNode.event;
-      title += `Událost: ${event?.event.title}\n`;
-      if (event?.choice?.chartLabel) title += `Rozhodnutí: ${event?.choice?.chartLabel}\n`;
+      title += this.translateService.instant(_('Událost')) + ': '
+        + this.translateService.instant(event?.event.title) + '\n'; // i18n TODO: interpolate
+      if (event?.choice?.chartLabel) {
+        title += this.translateService.instant(_('Rozhodnutí')) + ': '
+          + this.translateService.instant(event?.choice?.chartLabel) + '\n';
+      }
     }
 
     if (dataLabelNode.event && dataLabelNode.uiChange) title += `\n`;
-    if (dataLabelNode.uiChange) title += `${dataLabelNode.uiChange.join('\n')}\n`;
+    if (dataLabelNode.uiChange) {
+      title += dataLabelNode.uiChange.map(c => this.translateService.instant(c)).join('\n') + '\n';
+    }
 
     return title;
   }

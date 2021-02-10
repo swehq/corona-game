@@ -35,7 +35,12 @@
             ],
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "**/*",
+                "ignore": ["i18n/{extract,events,pages}/*"],
+                "input": "src/assets",
+                "output": "/assets/"
+              }
             ],
             "styles": [
               "src/material-overwrite.scss",

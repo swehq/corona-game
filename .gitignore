@@ -24,4 +24,7 @@ Thumbs.db
 # Ansible
 *.retry
 
+# Generated language files
+frontend/src/assets/i18n/??.json
+
 /tmp

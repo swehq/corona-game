@@ -20,7 +20,7 @@ type Level = [value: any, label: string];
           *ngFor="let level of levels"
           [value]="level[0]"
         >
-          {{level[1]}}
+          {{level[1] | translate}}
         </mat-button-toggle>
       </mat-button-toggle-group>
     </cvd-row>

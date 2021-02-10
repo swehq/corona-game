@@ -1,13 +1,16 @@
 import {isPlatformBrowser} from '@angular/common';
 import {Component, Inject, PLATFORM_ID} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {TranslateService} from '@ngx-translate/core';
 import {ChartDataSets, ChartOptions, ChartPoint, ScaleTitleOptions} from 'chart.js';
 import {combineLatest, Observable, of} from 'rxjs';
 import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
-import {formatNumber} from '../../../utils/format';
+import {I18nService} from '../../../services/i18n.service';
+import {settings as randomSettings} from '../../../services/randomize';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 
@@ -52,7 +55,7 @@ export class OutroComponent {
 
       if (myPoints) {
         datasets.push({
-          label: 'Můj výsledek',
+          label: _('Můj výsledek'),
           data: myPoints,
           backgroundColor: MY_RESULT_COLOR,
           pointBorderColor: MY_RESULT_COLOR,
@@ -63,7 +66,7 @@ export class OutroComponent {
 
       if (allPoints) {
         datasets.push({
-          label: 'Výsledky ostatních hráčů',
+          label: _('Výsledky ostatních hráčů'),
           data: allPoints,
           backgroundColor: ALL_RESULTS_COLOR,
           pointBorderColor: 'rgba(0,0,0,0)',
@@ -86,13 +89,15 @@ export class OutroComponent {
       displayColors: false,
       callbacks: {
         title: (results, data) => {
-          if (data!.datasets!.length > 1 && !results[0].datasetIndex) return 'Můj výsledek';
-          if (results.length === 1) return 'Výsledek jiného hráče';
-          return `Výsledek ${results.length} jiných hráčů`;
+          if (data!.datasets!.length > 1 && !results[0].datasetIndex) {
+            return this.translateService.instant(_('Můj výsledek'));
+          }
+          if (results.length === 1) return this.translateService.instant(_('Výsledek jiného hráče'));
+          return this.translateService.instant(_('Výsledek {{numOthers}} jiných hráčů'), {numOthers: results.length});
         },
         beforeBody: node => [
-          `Celkový počet mrtvých: ${formatNumber(+node[0].xLabel!)}`,
-          `Celkové náklady: ${formatNumber(+node[0].yLabel!, true, true)}`,
+          this.translateService.instant(_('Celkový počet mrtvých')) + `: ${this.i18nService.formatNumber(+node[0].xLabel!)}`,
+          this.translateService.instant(_('Celkové náklady')) + `: ${this.i18nService.formatNumber(+node[0].yLabel!, true, true)}`,
         ],
         label: () => '',
       },
@@ -101,25 +106,21 @@ export class OutroComponent {
       xAxes: [{
         scaleLabel: {
           ...this.scalesLabelsDefaults,
-          labelString: 'Celkový počet mrtvých',
+          labelString: _('Celkový počet mrtvých'),
         },
         type: 'linear',
         position: 'bottom',
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true),
         },
       }],
       yAxes: [{
         scaleLabel: {
           ...this.scalesLabelsDefaults,
-          labelString: 'Celkové náklady',
+          labelString: _('Celkové náklady'),
         },
         ticks: {
-          callback(value: number | string) {
-            return formatNumber(+value, false, true);
-          },
+          callback: (value: number | string) => this.i18nService.formatNumber(+value, false, true),
         },
       }],
     },
@@ -133,19 +134,21 @@ export class OutroComponent {
   completeUrl = '';
 
   constructor(
-    private outroService: OutroService,
-    public gameService: GameService,
-    meta: MetaService,
-    public shareService: SocialNetworkShareService,
-    activatedRoute: ActivatedRoute,
-    router: Router,
     @Inject(PLATFORM_ID) platformId: string,
+    activatedRoute: ActivatedRoute,
+    meta: MetaService,
+    router: Router,
+    private i18nService: I18nService,
+    private outroService: OutroService,
+    private translateService: TranslateService,
+    public gameService: GameService,
+    public shareService: SocialNetworkShareService,
   ) {
     this.resultId$ = activatedRoute.params.pipe(
       map(data => data.id),
       tap(id => this.isMyGame = this.gameService.isMyGameId(id)),
     );
-    meta.setTitle('Výsledky');
+    meta.setTitle(_('Výsledky'));
     outroService.fetchAllResults();
 
     if (isPlatformBrowser(platformId)) {
@@ -167,6 +170,16 @@ export class OutroComponent {
 
   get stats() {
     return this.gameService.game?.simulation?.getLastStats();
+  }
+
+  get i18nData() {
+    const stats = this.stats;
+    const estimateInfectionsTotal = stats
+      ? this.i18nService.formatNumber(stats.detectedInfections.total / randomSettings.detectionRate[0], false, true)
+      : undefined;
+    const budget2019 = this.i18nService.formatNumber(1551e9, true, true);
+    const budget2020 = this.i18nService.formatNumber(1842e9, true, true);
+    return {stats: this.i18nService.formatStats(stats), estimateInfectionsTotal, budget2019, budget2020};
   }
 
   isGameLost() {

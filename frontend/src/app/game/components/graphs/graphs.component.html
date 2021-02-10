@@ -1,7 +1,7 @@
 <div class="tabs">
   <div class="tabs-header">
     <div class="tabs-header-content">
-      <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label" matRipple
+      <div class="tabs-header-item" [class.is-active]="activeTab === index" [matTooltip]="tab.label | translate" matRipple
           (click)="activeTab = index" *ngFor="let tab of templateData; let index = index">
         <span class="tab-icon">
           <cvd-icon size="large" *ngIf="tab.svgIcon" [svgIcon]="tab.svgIcon"></cvd-icon>
@@ -18,7 +18,7 @@
       class="tab-content"
       *ngIf="activeTab === index">
       <h3>
-        {{ content.label }}
+        {{ content.label | translate }}
       </h3>
 
       <cvd-line-graph
@@ -44,37 +44,5 @@
 <cvd-events-layout></cvd-events-layout>
 
 <cvd-help-tooltip>
-  <h3>Grafy</h3>
-
-  <p>
-    Hlavní zdroj informací o aktuální situaci ve státě. Překlikávat můžete mezi těmito čtyřmi grafy:
-  </p>
-
-  <ul>
-    <li>
-      <strong>Nové nakažení</strong>
-      Tento graf zobrazuje, kolik lidí se v daný den nově nakazilo
-    </li>
-    <li>
-      <strong>Zemřelí</strong>
-      Počet zemřelých denně. Tento graf zobrazuje lidi, kteří zemřeli přímo na covid-19.
-      Mějte ale na mysli i&nbsp;další okolnosti. Například přetížené nemocnice bez volných kapacit vedou k&nbsp;více úmrtím.
-    </li>
-    <li>
-      <strong>Náklady</strong>
-      Graf nákladů značí ztráty, které státní kase i&nbsp;ekonomice jako celku pandemie přináší.
-      Zavádění opatření, vyplácení kompenzací i&nbsp;hospitalizace &ndash; to vše stojí peníze.
-    </li>
-    <li>
-      <strong>Imunizovaní</strong>
-      Tento graf zobrazuje jak obyvatele, kteří prodělali covid-19 a&nbsp;stali se tak na několik měsíců imunní,
-      tak i&nbsp;lidi, kteří imunitu získali očkováním.
-    </li>
-  </ul>
-
-  <p>
-    <em>Grafy v sobě nesou mnoho zajímavých informací. Jestli ale chcete s pandemií efektivně zatočit,
-    doporučujeme se orientovat hlavně podle grafu nově nakažených,
-    který odráží, jak se vám zvládání pandemie momentálně daří.</em>
-  </p>
+  <div [innerHtml]="'graphs.help.html' | translate"></div>
 </cvd-help-tooltip>

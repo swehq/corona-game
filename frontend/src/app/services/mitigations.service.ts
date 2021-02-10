@@ -7,6 +7,7 @@ import {delay, filter, map, pairwise, shareReplay, startWith, withLatestFrom} fr
 import {MitigationPair} from './scenario';
 import {defaultMitigations, Mitigations} from './mitigations';
 import {GameService} from '../game/game.service';
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 
 export type MitigationsPresetLevel = 'open' | 'level1' | 'level2';
 
@@ -40,36 +41,36 @@ export class MitigationsService {
 
   static readonly mitigationsI18n: { [key in keyof Mitigations]: Record<string, string> } = {
     bordersClosed: {
-      true: 'Hranice - zavřené',
-      false: 'Hranice - otevřené',
+      true: _('Hranice - zavřené'),
+      false: _('Hranice - otevřené'),
     },
     businesses: {
-      some: 'Služby - zavřené rizikové',
-      most: 'Služby - otevřené jen základní',
-      false: 'Služby - neomezeno',
+      some: _('Služby - zavřené rizikové'),
+      most: _('Služby - otevřené jen základní'),
+      false: _('Služby - neomezeno'),
     },
     events: {
-      1000: 'Akce - max. 1 000',
-      100: 'Akce - max. 100',
-      10: 'Akce - max. 10',
-      false: 'Akce - neomezeno',
+      1000: _('Akce - max. 1 000'),
+      100: _('Akce - max. 100'),
+      10: _('Akce - max. 10'),
+      false: _('Akce - neomezeno'),
     },
     rrr: {
-      true: '3R - zavedeno',
-      false: '3R - zrušeno',
+      true: _('3R - zavedeno'),
+      false: _('3R - zrušeno'),
     },
     schools: {
-      universities: 'Školy - zavřené vysoké',
-      all: 'Školy - zavřené všechny',
-      false: 'Školy - neomezeno',
+      universities: _('Školy - zavřené vysoké'),
+      all: _('Školy - zavřené všechny'),
+      false: _('Školy - neomezeno'),
     },
     stayHome: {
-      true: 'Zákaz vycházení',
-      false: 'Vycházení neomezeno',
+      true: _('Zákaz vycházení'),
+      false: _('Vycházení neomezeno'),
     },
     compensations: {
-      false: 'Žádné finanční kompenzace',
-      true: 'Finanční kompenzace',
+      false: _('Žádné finanční kompenzace'),
+      true: _('Finanční kompenzace'),
     },
   };
 
@@ -280,24 +281,24 @@ export class MitigationsService {
     switch (paramName) {
       case 'events':
         return [
-          [false, 'Neomezeno'],
-          [1000, 'Max. 1 000'],
-          [100, 'Max. 100'],
-          [10, 'Max. 10'],
+          [false, _('Neomezeno')],
+          [1000, _('Max. 1 000')],
+          [100, _('Max. 100')],
+          [10, _('Max. 10')],
         ];
 
       case 'schools':
         return [
-          [false, 'Neomezeno'],
-          ['universities', 'Zavřít vysoké'],
-          ['all', 'Zavřít všechny'],
+          [false, _('Neomezeno')],
+          ['universities', _('Zavřít vysoké')],
+          ['all', _('Zavřít všechny')],
         ];
 
       case 'businesses':
         return [
-          [false, 'Neomezeno'],
-          ['some', 'Zavřít rizikové'],
-          ['most', 'Jen základní'],
+          [false, _('Neomezeno')],
+          ['some', _('Zavřít rizikové')],
+          ['most', _('Jen základní')],
         ];
 
       default:

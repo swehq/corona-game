@@ -16,7 +16,7 @@ export type Level = [value: any, label: string];
         [min]="0" [max]="levels.length - 1" [tickInterval]="1"
         (input)="onUserAction($event.value)"
       ></mat-slider>
-      <div [ngStyle]="{'min-width': labelMinWidth}">{{label}}</div>
+      <div [ngStyle]="{'min-width': labelMinWidth}">{{label | translate}}</div>
     </cvd-row>
   `,
   providers: [{provide: NG_VALUE_ACCESSOR, useExisting: MitigationScaleComponent, multi: true}],

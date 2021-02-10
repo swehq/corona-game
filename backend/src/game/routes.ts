@@ -1,12 +1,11 @@
-import Router from 'koa-router';
-import {GameDataModel, InvalidGameDataModel} from './model';
-import {validateGame} from '../../../frontend/src/app/services/validate';
-import {GameData} from '../../../frontend/src/app/services/game';
-import {scenarios} from '../../../frontend/src/app/services/scenario';
-import {dateDiff} from '../../../frontend/src/app/services/utils';
-import {last} from 'lodash';
 import {Context, DefaultState} from 'koa';
-import {formatNumber} from '../../../frontend/src/app/utils/format';
+import Router from 'koa-router';
+import {last} from 'lodash';
+import {FormattingService} from '../../../frontend/src/app/services/formatting.service';
+import {GameData} from '../../../frontend/src/app/services/game';
+import {validateGame} from '../../../frontend/src/app/services/validate';
+import {SimpleTranslateService} from '../services/translate.service';
+import {GameDataModel, InvalidGameDataModel} from './model';
 
 export const router = new Router<DefaultState, Context>();
 
@@ -54,6 +53,7 @@ router.post('/api/game-data', async (ctx) => {
 // use data for `/results/:id` path, fallback otherwise
 router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
   let data: any;
+  const formattingService = new FormattingService(new SimpleTranslateService('cs'));
 
   const res = {
     origin: ensureHttps(ctx.origin),
@@ -70,8 +70,8 @@ router.get(['/og/results/:id', /\/og($|\/.*)/], async (ctx) => {
 
   await ctx.render('results', {
     ...res,
-    dead: formatNumber(data.results.dead),
-    cost: formatNumber(data.results.cost, true, true),
+    dead: formattingService.formatNumber(data.results.dead),
+    cost: formattingService.formatNumber(data.results.cost, true, true),
   });
 })
 

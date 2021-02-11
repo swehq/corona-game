@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import Koa from 'koa';
 import bodyParser from "koa-bodyparser";
 import json from 'koa-json';
@@ -10,9 +12,6 @@ import {influxMonitoring} from './middleware/monitoring';
 const views = require('koa-views');
 
 (async function() {
-  const PORT = process.env.PORT ?? 8000;
-  const MONGO_URI = process.env.MONGO_URI ?? 'mongodb://localhost:8001/corona';
-
   const app = new Koa();
 
   if (process.env.INFLUXDB_URI) {
@@ -29,7 +28,7 @@ const views = require('koa-views');
   app.use(router.routes()).use(router.allowedMethods());
 
 
-  await mongoose.connect(MONGO_URI, {
+  await mongoose.connect(String(process.env.MONGO_URI), {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -37,10 +36,10 @@ const views = require('koa-views');
     console.error('MongoDB not connected');
     exit(1);
   });
-  console.log(`MongoDB connected at ${MONGO_URI}`);
+  console.log(`MongoDB connected at ${process.env.MONGO_URI}`);
 
-  app.listen(PORT, () => {
-    console.log(`⚡️Server is running at http://localhost:${PORT}`);
+  app.listen(process.env.PORT, () => {
+    console.log(`⚡️Server is running at http://localhost:${process.env.PORT}`);
 
     // TODO temporary termination for tests before full env on CircleCI is set up
     if (process.env.TERMINATE) {

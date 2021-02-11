@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import {last} from 'lodash';
 import mongoose from 'mongoose';
 import {exit} from 'process';
@@ -6,7 +8,6 @@ import {GameData} from '../app/services/game';
 import {GameDataModel, InvalidGameDataModel} from './model';
 
 const BATCH_SIZE = 10;
-const MONGO_URI = process.env.MONGO_URI ?? 'mongodb://localhost:8001/corona';
 
 let command: () => Promise<void>;
 switch (process.argv[2]) {
@@ -22,7 +23,7 @@ command()
   .finally(exit);
 
 async function connect(): Promise<void> {
-  await mongoose.connect(MONGO_URI, {
+  await mongoose.connect(String(process.env.MONGO_URI), {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -78,7 +79,7 @@ async function validate(): Promise<void> {
       const validity = validateGame(result.data).validity;
       result.validity = validity;
       await result.save();
-    };
+    }
   }
 
   console.timeEnd('validate');

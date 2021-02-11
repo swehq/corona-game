@@ -3,7 +3,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TranslateService} from '@ngx-translate/core';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {BaseChartDirective} from 'ng2-charts';
-import {I18nService} from '../../../../services/i18n.service';
+import {ChartI18nKeys, I18nService} from '../../../../services/i18n.service';
 
 @UntilDestroy()
 @Component({
@@ -41,9 +41,7 @@ export class ScatterGraphComponent implements AfterViewInit {
 
   @ViewChild(BaseChartDirective, {static: false}) chart!: BaseChartDirective;
 
-  xAxisI18nKey?: string;
-  yAxisI18nKey?: string;
-  datasetLabelI18nKeys?: string[];
+  chartI18nKeys: ChartI18nKeys = {};
 
   constructor(
     private i18nService: I18nService,
@@ -52,43 +50,16 @@ export class ScatterGraphComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.updateLabels();
+    this.updateChartLabels();
     this.translateService.onLangChange.pipe(
       untilDestroyed(this),
     ).subscribe(
-      () => this.updateLabels(),
+      () => this.updateChartLabels(),
     );
   }
 
-  updateLabels() {
-    if (!this.chart?.chart) return;
-
-    const xAxis = this.chart.chart.options.scales?.xAxes![0];
-    if (!this.xAxisI18nKey) {
-      this.xAxisI18nKey = xAxis?.scaleLabel?.labelString;
-    }
-    if (this.xAxisI18nKey) {
-      xAxis!.scaleLabel!.labelString = this.translateService.instant(this.xAxisI18nKey);
-    }
-
-    const yAxis = this.chart.chart.options.scales?.yAxes![0];
-    if (!this.yAxisI18nKey) {
-      this.yAxisI18nKey = yAxis?.scaleLabel?.labelString;
-    }
-    if (this.yAxisI18nKey) {
-      yAxis!.scaleLabel!.labelString = this.translateService.instant(this.yAxisI18nKey);
-    }
-
-    if (!this.datasetLabelI18nKeys) {
-      this.datasetLabelI18nKeys = [];
-      this.chart.datasets.forEach(d => this.datasetLabelI18nKeys!.push(d.label!));
-    }
-    this.datasetLabelI18nKeys
-      .forEach((l, index) => {
-        if (l) {
-          this.chart.datasets[index].label = this.translateService.instant(l);
-        }
-      });
+  updateChartLabels() {
+    this.i18nService.updateChartLabels(this.chart, this.chartI18nKeys);
     this.chart.chart.update();
   }
 }

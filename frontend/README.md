@@ -10,6 +10,9 @@ Run `npx ng generate component component-name` to generate a new component. You 
 - run `npm run icons:register`
 - use it in code: `<cvd-icon svgIcon="xxx">`
 
+## Extract strings strings for translation
+- run `npm run i18n:extract`
+
 ## Debug Mode
 
 - You can insert `true` value under `debugMode` key into your LocalStorage to turn on the debug panel

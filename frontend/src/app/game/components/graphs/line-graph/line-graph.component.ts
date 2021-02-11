@@ -12,7 +12,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ApplicationLanguage} from '../../../../../environments/defaults';
 import {EventAndChoice} from '../../../../services/events';
-import {I18nService} from '../../../../services/i18n.service';
+import {ChartI18nKeys, I18nService} from '../../../../services/i18n.service';
 import {GameService} from '../../../game.service';
 import {Level} from '../../mitigations-control/controls/mitigation-scale.component';
 import {Pan} from './pan';
@@ -67,6 +67,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     [90, _('Kvartál')],
     [30, _('Měsíc')],
   ];
+
+  chartI18nKeys: ChartI18nKeys = {};
 
   private currentState: NodeState = 'ok';
   private tooltipLabels: ((value: number) => string)[] = [];
@@ -276,11 +278,13 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.pan.init(this.chart);
     this.setScope(this.scopeFormControl.value);
+    this.i18nService.updateChartLabels(this.chart, this.chartI18nKeys);
 
     this.translateService.onLangChange.pipe(
       untilDestroyed(this),
     ).subscribe(() => {
-      if (this.chart?.chart) this.chart.chart.update();
+      this.i18nService.updateChartLabels(this.chart, this.chartI18nKeys);
+      this.chart.chart.update();
     });
 
     this.scopeFormControl.valueChanges.pipe(

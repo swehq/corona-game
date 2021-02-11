@@ -23,7 +23,7 @@ const langs = {} as Record<string, any>;
   });
 });
 
-const pageFilePattern = /^(?<pageName>[a-z,0-9,_,\-]+)\.(?<lang>[a-z]+)\.html$/;
+const pageFilePattern = /^(?<pageName>[a-z,0-9,_,\-]+(\.help)?)\.(?<lang>[a-z]+)\.html$/;
 const pagesDir = path.join(argv.directory as string, 'pages');
 const pages = readdirSync(pagesDir).filter(filename => pageFilePattern.test(filename));
 

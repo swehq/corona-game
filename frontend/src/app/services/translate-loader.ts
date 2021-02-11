@@ -1,49 +1,12 @@
 import {HttpClient} from '@angular/common/http';
-import {TranslateLoader, TranslateService} from '@ngx-translate/core';
+import {TranslateService} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {combineLatest, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {build} from 'src/environments/version';
 import {ApplicationLanguage, LocalStorageKey} from '../../environments/defaults';
 import {DebugModeService} from './debug-mode.service';
 
 export function CvdLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http);
-}
-
-function checkDictionaryEmpty(dictionary: object) {
-  if (!Object.keys(dictionary).length) {
-    // tslint:disable-next-line:no-console
-    console.error('Dictionary is empty');
-    // tslint:disable-next-line:no-console
-    console.error(dictionary);
-  }
-}
-
-
-export class CvdTranslateLoader implements TranslateLoader {
-
-  constructor(
-    private httpClient: HttpClient,
-  ) {
-  }
-
-  getTranslation(lang: ApplicationLanguage): Observable<any> {
-    const dictionaryObservables: Observable<object>[] = [];
-    const frontendDictionary$ = this.httpClient.get(`/assets/i18n/${lang}.json`);
-    dictionaryObservables.push(frontendDictionary$);
-
-    return combineLatest(dictionaryObservables).pipe(
-      map(dictionaries => {
-        const frontendDictionary = dictionaries[0] ?? {};
-
-        checkDictionaryEmpty(frontendDictionary);
-
-        return {
-          ...frontendDictionary,
-        };
-      }),
-    );
-  }
+  return new TranslateHttpLoader(http, undefined, `.json?v=${build.commit}`);
 }
 
 export function getPreferredBrowserLanguage() {

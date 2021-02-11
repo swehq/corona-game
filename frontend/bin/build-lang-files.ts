@@ -8,7 +8,7 @@ const argv = yargs
   .alias('d', 'directory')
   .help('h')
   .alias('h', 'help')
-  .parse(process.argv)
+  .parse(process.argv);
 
 const langs = {} as Record<string, any>;
 

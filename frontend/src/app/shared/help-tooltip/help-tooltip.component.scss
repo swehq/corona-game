@@ -103,7 +103,13 @@ $backgroundCard: map-get($theme, background);
   color: $dark-primary-text;
   pointer-events: auto;
 
-  ::ng-deep & ul {
-    list-style: none;
+  ::ng-deep & {
+    ul {
+      list-style: none;
+    }
+
+    strong {
+      color: $dark-primary-text;
+    }
   }
 }

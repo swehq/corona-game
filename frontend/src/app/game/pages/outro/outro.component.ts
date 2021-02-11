@@ -68,7 +68,7 @@ export class OutroComponent {
       }
 
       datasets.push({
-        label: 'Česká vláda k 01.02.2021',
+        label: _('Česká vláda k 01.02.2021'),
         data: [GOV_RESULT],
         backgroundColor: GOV_RESULT_COLOR,
         pointBorderColor: GOV_RESULT_COLOR,

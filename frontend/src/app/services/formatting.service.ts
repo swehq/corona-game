@@ -16,7 +16,7 @@ export class FormattingService {
   }
 
   constructor(
-    private translateService: InstantTranslateService,
+    protected translateService: InstantTranslateService,
   ) {
   }
 

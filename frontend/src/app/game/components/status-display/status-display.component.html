@@ -39,27 +39,24 @@
     Zároveň vám tento panel umožňuje hru zrychlovat, zpomalovat nebo případně pozastavit tlačítkem pauza.
   </p>
 
-  <ul>
-    <li>
-      <cvd-row justifyContent="flex-start" grow [horizontalSpacing]="2">
-        <cvd-icon size="large" svgIcon="stability"></cvd-icon>
-        <div translate>
-          <strong>{{'Společenská stabilita' | translate}}:</strong>
-          reakce společnosti na vaše kroky. Pokud zavádíte příliš omezující opatření,
-          nebo naopak umírá příliš lidí, může dojít k výměně vlády a hra skončí.
-        </div>
-      </cvd-row>
-    </li>
-    <li>
-      <cvd-row justifyContent="flex-start" grow [horizontalSpacing]="2">
-        <cvd-icon size="large" svgIcon="hospital"></cvd-icon>
-        <div translate>
-          <strong>{{'Vytíženost nemocnic' | translate}}:</strong>
+  <dl>
+    <dt>{{'Společenská stabilita' | translate}}</dt>
+    <cvd-row justifyContent="flex-start" grow [horizontalSpacing]="2">
+      <cvd-icon size="large" svgIcon="stability"></cvd-icon>
+      <dd translate>
+        reakce společnosti na vaše kroky. Pokud zavádíte příliš omezující opatření,
+        nebo naopak umírá příliš lidí, může dojít k výměně vlády a hra skončí.
+      </dd>
+    </cvd-row>
+    <br>
+    <dt>{{'Vytíženost nemocnic' | translate}}</dt>
+    <cvd-row justifyContent="flex-start" grow [horizontalSpacing]="2">
+      <cvd-icon size="large" svgIcon="hospital"></cvd-icon>
+      <dd translate>
           pokud překročíte kapacitu nemocnic, zhorší se péče o nemocné a zemřelých tak bude přibývat více.
-        </div>
-      </cvd-row>
-    </li>
-  </ul>
+      </dd>
+    </cvd-row>
+  </dl>
 
   <p>
     <em translate>Zvláštní pozornost věnujte ukazateli společenské stability.

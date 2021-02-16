@@ -74,7 +74,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
   private tooltipLabels: ((value: number) => string)[] = [];
   private seriesLength = 0;
   private lastValue: number | undefined;
-  lastDate: string | undefined;
 
   private axesFontSize = 11;
   private readonly widthThresholds = {
@@ -334,7 +333,6 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     const chartOptions = chart?.scales['x-axis-0']?.options;
     if (!chartOptions) return;
     chartOptions.ticks = {...chartOptions.ticks, ...options};
-    this.lastDate = String(this.labels[this.labels.length - 1]);
   }
 
   private reset() {

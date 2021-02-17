@@ -38,6 +38,8 @@
   "Jan Vybíral za nakopnutí": "Jan Vybíral za nakopnutí",
   "Jiří Vaněk za nadšené spojení Michala a SWEHQ": "Jiří Vaněk za nadšené spojení Michala a SWEHQ",
   "Manželky, manželé, partneři, děti za trpělivost": "Manželky, manželé, partneři, děti za trpělivost",
+  "Často kladené otázky": "Často kladené otázky",
+  "faq.html": "faq.html",
   "Vítejte": "Vítejte",
   "Nacházíte se v simulaci šíření nákazy Covid-19 v ČR.": "Nacházíte se v simulaci šíření nákazy Covid-19 v ČR.",
   "intro.html": "intro.html",
@@ -60,6 +62,7 @@
   "Hrát znovu a lépe": "Hrát znovu a lépe",
   "Hrát lépe": "Hrát lépe",
   "Metodika": "Metodika",
+  "Časté otázky": "Časté otázky",
   "assets/images/logos/logo.png": "assets/images/logos/logo.png",
   "Korona Hra": "Korona Hra",
   ": ": ": ",
@@ -114,5 +117,6 @@
   "Zavřít vysoké": "Zavřít vysoké",
   "Zavřít všechny": "Zavřít všechny",
   "Zavřít rizikové": "Zavřít rizikové",
-  "Jen základní": "Jen základní"
+  "Jen základní": "Jen základní",
+  "FAQs": ""
 }

@@ -1,9 +1,10 @@
 <div class="faq">
-  <h1>FAQ</h1>
-  <!-- TODO add <p> and <h2> with coresponding content-->
+  <h1>{{'Často kladené otázky' | translate}}</h1>
+
+  <div [innerHtml]="'faq.html' | translate"></div>
 
   <cvd-button class="back-button" cvdNavigateBack>
     <cvd-icon>undo</cvd-icon>
-    Zpět
+    {{'Zpět' | translate}}
   </cvd-button>
 </div>

@@ -20,7 +20,7 @@ const SELF_ISOLATION_TRIGGER = 'selfIsolation';
 const WINTER_EVENTS = ['skiareals', 'christmas', 'newYear'] as const;
 type WinterEvent = typeof WINTER_EVENTS[number];
 
-const selfIsolationThreshold = 2000 / 7;
+const selfIsolationThreshold = 20000 / 7;
 const selfIsolationMitigation1 = {rMult: 0.8, economicCost: 200_000_000};
 
 // LCG pseudorandom number generator parameters for event randomization
@@ -771,7 +771,6 @@ export const eventTriggers: EventTrigger[] = [
    *
    * Virus mutation
    *
-   ****************************************************************************/
   {
     events: [
       {
@@ -793,6 +792,7 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
     ],
     condition: (ei: EventInput) => randomDateBetweenTrigger(ei.date, '2021-03-01', '2021-03-08'),
   },
+   ****************************************************************************/
   /****************************************************************************
    *
    * Vaccination events

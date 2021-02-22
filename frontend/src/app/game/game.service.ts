@@ -56,7 +56,7 @@ export class GameService {
     return this.game.simulation.modelStates;
   }
 
-  restartSimulation(speed: Speed = 'play', scenarioName: ScenarioName = 'czechiaGame') {
+  restartSimulation(speed: Speed = 'play', scenarioName: ScenarioName = 'czechiaReal') {
     this.setSpeed('pause');
     this.removeCheckpoint();
     this.game = new Game(scenarioName);

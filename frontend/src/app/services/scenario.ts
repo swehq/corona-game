@@ -131,10 +131,12 @@ addCzechiaVaccination(czechiaGame);
 // reproduce mitigation actions of Czech Republic up to December 2020
 const czechiaReal = new Scenario({
   rampUpStartDate: '2020-02-25',
-  rampUpEndDate: '2021-01-09',
+  rampUpEndDate: '2021-02-22',
   endDate: '2021-06-30',
 });
 addCzechiaVaccination(czechiaReal);
+
+
 
 // First wave
 czechiaReal.addRampUpMitigationAction(['rrr', true], '2020-03-14', '2020-06-01');
@@ -159,7 +161,7 @@ czechiaReal.addRampUpMitigationAction(['schools', 'all'], '2020-10-14');
 czechiaReal.addRampUpMitigationAction(['businesses', 'most'], '2020-10-21', '2020-11-30');
 czechiaReal.addRampUpMitigationAction(['schools', 'universities'], '2020-11-30');
 czechiaReal.addRampUpMitigationAction(['events', 100], '2020-11-30');
-czechiaReal.addRampUpMitigationAction(['businesses', 'most'], '2020-12-27', '2021-01-23');
+czechiaReal.addRampUpMitigationAction(['businesses', 'most'], '2020-12-27');
 czechiaReal.addRampUpMitigationAction(['events', 10], '2020-12-27');
 czechiaReal.addRampUpMitigationAction(['schools', 'all'], '2020-12-27');
 

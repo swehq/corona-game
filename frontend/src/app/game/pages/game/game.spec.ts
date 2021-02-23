@@ -2,6 +2,7 @@ import {cloneDeep, last} from 'lodash';
 import {Game, GameData} from 'src/app/services/game';
 import {validateGame, Validity} from 'src/app/services/validate';
 
+import jsonValidLegacy from './data/data-valid-legacy.json';
 import jsonDataTooLong from './data/data-too-long.json';
 import jsonDataLostStability from './data/data-lost-stability.json';
 
@@ -15,8 +16,12 @@ describe('GameValidation', () => {
     expect(validateGame(dataValid).validity).toBe('valid');
   });
 
+  it('should validate legacy data', () => {
+    expect(validateGame(jsonValidLegacy as any).validity).toBe('valid');
+  });
+
   it('should get proper validation results', async () => {
-    const dataLostStability = jsonDataLostStability as GameData;
+    const dataLostStability = jsonDataLostStability as any; // this dataset is in the legacy format
     const dataTooShort = cloneDeep(dataValid);
     dataTooShort.simulation.pop();
     const dataEmpty = cloneDeep(dataValid);

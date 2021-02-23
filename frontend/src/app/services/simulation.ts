@@ -32,6 +32,7 @@ import {getSeasonality, nextDay} from './utils';
 export interface MitigationEffect {
   rMult: number;
   exposedDrift: number;
+  mutationExposedDrift: number;
   economicCost: number;
   compensationCost: number;
   stabilityCost: number;
@@ -43,6 +44,8 @@ interface SirState {
   suspectible: number;
   exposed: number;
   infectious: number;
+  mutationExposed: number;
+  mutationInfectious: number;
   recovering: number;
   resistant: number;
   hospitalized1: number;
@@ -50,6 +53,8 @@ interface SirState {
   dead: number;
   exposedNew: number;
   infectiousNew: number;
+  mutationExposedNew: number;
+  mutationInfectiousNew: number;
   recoveringNew: number;
   resistantNew: number;
   hospitalized1New: number;
@@ -63,6 +68,7 @@ interface SirState {
 
 interface ModelInputs {
   exposedDrift: number;
+  mutationExposedDrift: number;
   seasonalityMult: number;
   R: number;
   stability: number;
@@ -114,6 +120,7 @@ export class Simulation {
   readonly hospitalsOverwhelmedMortalityMultiplier = 2;
   readonly tracingOverwhelmedThreshold = 1_000;
   readonly tracingRMultiplier = 0.9;
+  readonly mutationRMult = 2.0;
   readonly hospitalsBaselineUtilization = 0.64;
   readonly initialStability = 100;
   readonly stabilityRecovery = 0.2;
@@ -137,6 +144,8 @@ export class Simulation {
     suspectible: this.initialPopulation,
     exposed: 0,
     infectious: 0,
+    mutationExposed: 0,
+    mutationInfectious: 0,
     recovering: 0,
     resistant: 0,
     hospitalized1: 0,
@@ -144,6 +153,8 @@ export class Simulation {
     dead: 0,
     exposedNew: 0,
     infectiousNew: 0,
+    mutationExposedNew: 0,
+    mutationInfectiousNew: 0,
     recoveringNew: 0,
     resistantNew: 0,
     hospitalized1New: 0,
@@ -193,6 +204,7 @@ export class Simulation {
       stability,
       seasonalityMult,
       exposedDrift: mitigationEffect.exposedDrift,
+      mutationExposedDrift: mitigationEffect.mutationExposedDrift,
       vaccinationRate,
       R,
     };
@@ -204,6 +216,8 @@ export class Simulation {
     let suspectible = yesterday.suspectible;
     let exposed = yesterday.exposed;
     let infectious = yesterday.infectious;
+    let mutationExposed = yesterday.mutationExposed;
+    let mutationInfectious = yesterday.mutationInfectious;
     let recovering = yesterday.recovering;
     let resistant = yesterday.resistant;
     let hospitalized1 = yesterday.hospitalized1;
@@ -225,24 +239,40 @@ export class Simulation {
     // Simplifying assumption that only people in "suspectible" compartement are vaccinated
     const vaccinated = totalPopulation * modelInputs.vaccinationRate;
     const suspectibleUnvaccinated = Math.max(0, suspectible - vaccinated);
-    let exposedNew = infectious * randomness.rNoiseMult * tracingMult * modelInputs.R /
-      this.infectiousDuration * suspectibleUnvaccinated / activePopulation;
+    const newExposedPerInfection = randomness.rNoiseMult * tracingMult * modelInputs.R / this.infectiousDuration
+      * suspectibleUnvaccinated / activePopulation;
+    let exposedNew = infectious * newExposedPerInfection;
     exposedNew += modelInputs.exposedDrift;
     exposedNew = Math.min(exposedNew, suspectible);
     suspectible -= exposedNew;
     exposed += exposedNew;
+
+    // suspectible -> mutationExposed
+    let mutationExposedNew = mutationInfectious * newExposedPerInfection * this.mutationRMult;
+    mutationExposedNew += modelInputs.mutationExposedDrift;
+    mutationExposedNew = Math.min(mutationExposedNew, suspectible);
+    suspectible -= mutationExposedNew;
+    mutationExposed += mutationExposedNew;
 
     // exposed -> infectious
     const infectiousNew = this.infectiousRate * exposed;
     exposed -= infectiousNew;
     infectious += infectiousNew;
 
+    // mutationExposed -> mutationInfectious
+    const mutationInfectiousNew = this.infectiousRate * mutationExposed;
+    mutationExposed -= mutationInfectiousNew;
+    mutationInfectious += mutationInfectiousNew;
+
     // infectious -> recovering
     // infectious -> hospitalized1
     const infectiousEnd = this.getSirStateInPast(this.infectiousDuration).infectiousNew;
-    const hospitalized1New = infectiousEnd * randomness.hospitalizationRate;
-    let recoveringNew = infectiousEnd - hospitalized1New;
+    const mutationInfectiousEnd = this.getSirStateInPast(this.infectiousDuration).mutationInfectiousNew;
+    const totalInfectiousEnd = infectiousEnd + mutationInfectiousEnd;
+    const hospitalized1New = totalInfectiousEnd * randomness.hospitalizationRate;
+    let recoveringNew = totalInfectiousEnd - hospitalized1New;
     infectious -= infectiousEnd;
+    mutationInfectious -= mutationInfectiousEnd;
     hospitalized1 += hospitalized1New;
     // resistant will be updated in the next block
 
@@ -273,7 +303,9 @@ export class Simulation {
     suspectible += resistantEnd;
 
     // detected infections
-    const detectedNew = randomness.detectionRate * this.getSirStateInPast(this.symptomsDelay).infectiousNew;
+    const symptomsDelayState = this.getSirStateInPast(this.symptomsDelay);
+    const detectedNew = randomness.detectionRate
+      * (symptomsDelayState.infectiousNew + symptomsDelayState.mutationInfectiousNew);
 
     // detected infections going to recovering
     const incubationToInfectiousEndDuration = this.infectiousDuration - this.symptomsDelay;
@@ -284,6 +316,8 @@ export class Simulation {
       suspectible,
       exposed,
       infectious,
+      mutationExposed,
+      mutationInfectious,
       recovering,
       resistant,
       hospitalized1,
@@ -291,6 +325,8 @@ export class Simulation {
       dead,
       exposedNew,
       infectiousNew,
+      mutationExposedNew,
+      mutationInfectiousNew,
       recoveringNew,
       resistantNew,
       hospitalized1New,

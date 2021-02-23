@@ -40,6 +40,7 @@ export class Game {
   static readonly zeroMitigationEffect: MitigationEffect = {
     rMult: 1.0,
     exposedDrift: 0,
+    mutationExposedDrift: 0,
     economicCost: 0,
     compensationCost: 0,
     stabilityCost: 0,
@@ -56,7 +57,7 @@ export class Game {
   randomSeed: string;
   rng: SeededRandom;
   simulation: Simulation;
-  eventHandler = new EventHandler();
+  eventHandler: EventHandler;
   mitigationParams: MitigationParams[];
   // History of user mitigation action; useful for replay; doesn't contain scenario mitigations
   mitigationHistory: MitigationActionHistory;
@@ -74,6 +75,7 @@ export class Game {
     this.mitigationParams = Game.randomizeMitigations(this.randomSeed + '$MitigationSalt');
     this.simulation = new Simulation(this.scenario.dates.rampUpStartDate, this.rng.getRandomness());
     this.mitigationHistory = cloneDeep(this.scenario.rampUpMitigationHistory);
+    this.eventHandler = new EventHandler(this.scenario);
   }
 
   rampUpGame() {
@@ -267,6 +269,7 @@ export class Game {
     if (applied.rMult !== undefined) affected.rMult *= applied.rMult;
 
     if (applied.exposedDrift !== undefined) affected.exposedDrift += applied.exposedDrift;
+    if (applied.mutationExposedDrift !== undefined) affected.mutationExposedDrift += applied.mutationExposedDrift;
     if (applied.economicCost !== undefined) affected.economicCost += applied.economicCost;
     if (applied.compensationCost !== undefined) affected.compensationCost += applied.compensationCost;
     if (applied.stabilityCost !== undefined) affected.stabilityCost += applied.stabilityCost;
@@ -327,6 +330,7 @@ export class Game {
         level,
         rMult: rng.clippedLogNormal(1 - effectivity, effectivitySigma),
         exposedDrift: 0,
+        mutationExposedDrift: 0,
         economicCost,
         compensationCost: 0,
         stabilityCost,

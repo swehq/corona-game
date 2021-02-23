@@ -1,4 +1,4 @@
-import {isEqualWith, isNumber, last} from 'lodash';
+import {cloneDeep, isEqualWith, isNumber, last} from 'lodash';
 import {Game, GameData} from './game';
 import {ScenarioName} from './scenario';
 import {dateDiff} from './utils';
@@ -39,12 +39,42 @@ function gameDataIsEqualCustomizer(value1: any, value2: any) {
     && value2.total === Math.round(value2.totalUnrounded);
 }
 
+// Complete missing data in a legacy game data (for backward compatibility)
+function completeLegacyGameData(legacyData: GameData) {
+  if (legacyData.mitigations.params[0]!.mutationExposedDrift !== undefined) {
+    // Day state seems to be in up-to-date format
+    return legacyData;
+  }
+
+  // Fill missing data
+  const data: GameData = cloneDeep(legacyData);
+  data.simulation.forEach(dayState => {
+    const modelInputs = dayState.modelInputs;
+    if (modelInputs) {
+      modelInputs.mutationExposedDrift = 0;
+    }
+
+    const sirState = dayState.sirState;
+    sirState.mutationExposed = 0;
+    sirState.mutationInfectious = 0;
+    sirState.mutationExposedNew = 0;
+    sirState.mutationInfectiousNew = 0;
+  });
+
+  data.mitigations.params.forEach(m => {
+    if (m.mutationExposedDrift === undefined) m.mutationExposedDrift = 0;
+  });
+
+  return data;
+}
+
 export function validateGame(data: GameData, breakImmediately = true): ValidationResult {
   let game: Game;
   let scenarioName: ScenarioName;
   const res: ValidationResult = {validity: 'valid'};
 
   try {
+    data = completeLegacyGameData(data);
     scenarioName = data.scenarioName || 'czechiaGame';
 
     game = new Game(scenarioName, data.randomSeed);

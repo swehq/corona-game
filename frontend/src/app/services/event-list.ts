@@ -173,36 +173,12 @@ const antivaxEventTexts = [
   },
 ];
 
-// no type check below for interpolated attributes
-export const eventTriggers: EventTrigger[] = [
+export const tutorialEvents: EventTrigger[] = [
   /****************************************************************************
    *
    * Tutorial events
    *
    ****************************************************************************/
-  {
-    events: [
-      {
-        title: 'První případ nákazy koronavirem v Česku!',
-        text: '<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p>\
-<ul>\
-  <li>Opatření různou měrou ovlivňují šíření koronaviru</li>\
-  <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
-  <li>Kliknutí na otazníky u panelů otevře nápovědu</li>\
-  <li><strong>Rychlost hry ovládáte v panelu nahoře</strong></li>\
-</ul>',
-        help: 'Modrá barva značí nezávazné rady průvodce. Naložte s nimi dle svého!',
-        choices: [
-          simpleChoice('Ukázat ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
-          {
-            buttonLabel: 'Hrát',
-            action: 'pause',
-          },
-        ],
-      },
-    ],
-    condition: (ei: EventInput) => ei.date === '2020-03-01',
-  },
   {
     events: [
       {
@@ -249,6 +225,33 @@ export const eventTriggers: EventTrigger[] = [
       },
     ],
     condition: (ei: EventInput) => isEventMitigationActive(ei, TUTORIAL_ID),
+  },
+];
+
+export const czechiaEventTriggers: EventTrigger[] = [
+  ...tutorialEvents,
+  {
+    events: [
+      {
+        title: 'První případ nákazy koronavirem v Česku!',
+        text: '<p>Řešení této situace máte teď ve svých rukou. Pamatujte, že:</p>\
+<ul>\
+  <li>Opatření různou měrou ovlivňují šíření koronaviru</li>\
+  <li>Nějaký čas trvá, než se opatření na množství nakažených projeví</li>\
+  <li>Kliknutí na otazníky u panelů otevře nápovědu</li>\
+  <li><strong>Rychlost hry ovládáte v panelu nahoře</strong></li>\
+</ul>',
+        help: 'Modrá barva značí nezávazné rady průvodce. Naložte s nimi dle svého!',
+        choices: [
+          simpleChoice('Ukázat ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
+          {
+            buttonLabel: 'Hrát',
+            action: 'pause',
+          },
+        ],
+      },
+    ],
+    condition: (ei: EventInput) => ei.date === '2020-03-01',
   },
   /****************************************************************************
    *
@@ -955,5 +958,36 @@ Dejte si větší pozor na počet nakažených a zvažte přísnější opatřen
       },
     ],
     condition: (ei: EventInput) => ei.stats.stability <= 0,
+  },
+];
+
+// Mutation scenario
+export const czechiaB117EventTriggers: EventTrigger[] = [
+  ...tutorialEvents,
+  {
+    events: [
+      {
+        title: 'Aktulní situace v ČR',
+        text: 'Připravili jsme pro vás scénář hry s aktuální situací v ČR. V průběhu února v zemi převážila britská mutace B.1.1.7 a dosavadní opatření již nedostačují.',
+        choices: [
+          simpleChoice('Ukázat ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
+          {
+            buttonLabel: 'Hrát',
+            action: 'pause',
+          },
+        ],
+      },
+    ],
+    condition: (ei: EventInput) => ei.date === '2021-02-01',
+  },
+  {
+    events: [
+      {
+        title: 'Zmutovaný koronavirus v zemi dominuje!',
+        help: 'Nová mutace viru už je v zemi hojně rozšířená. Virus je výrazně nakažlivější.',
+        choices: okButton(),
+      },
+    ],
+    condition: (ei: EventInput) => ei.date === '2021-02-14',
   },
 ];

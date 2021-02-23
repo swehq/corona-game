@@ -17,6 +17,7 @@ export function influxMonitoring(influxDbUri: string, measurementName: string, e
     const statusCode = ctx.status;
     const delta = Date.now() - start;
     const method = ctx.method;
+    const hostname = ctx.request.hostname;
     const route = ctx._matchedRoute;
     const requestLength = ctx.request?.length ?? 0;
     const responseLength = ctx.response?.length ?? 0;
@@ -27,6 +28,7 @@ export function influxMonitoring(influxDbUri: string, measurementName: string, e
       method,
       route,
       env,
+      origin: hostname,
     };
 
     const fields = {

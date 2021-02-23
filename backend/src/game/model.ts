@@ -40,6 +40,7 @@ const GameDataSchema = new Schema({
     required: true,
     index: true,
   },
+  origin: String,
   created: {
     type: Date,
     required: true,
@@ -50,6 +51,7 @@ const GameDataSchema = new Schema({
 const InvalidGameDataSchema = new Schema({
   data: {},
   validity: String,
+  origin: String,
   created: {
     type: Date,
     required: true,
@@ -62,12 +64,14 @@ interface GameDataDocument extends GameData, Document {
     dead: number,
     cost: number,
   }
+  origin: string,
   created: Date,
 }
 
 interface InvalidGameDataDocument extends Document {
   data: any,
   validity: Validity,
+  origin: string,
   created: Date,
 }
 

@@ -24,10 +24,11 @@ router.get('/api/game-data/:id', async (ctx) => {
 
 router.post('/api/game-data', async (ctx) => {
   const inputData: GameData = ctx.request.body;
+  const hostname = ctx.request.hostname;
   const validity = validateGame(inputData).validity;
 
   if (validity !== 'valid') {
-    const saveData = new InvalidGameDataModel({data: inputData, validity});
+    const saveData = new InvalidGameDataModel({data: inputData, validity, origin: hostname});
     await saveData.save();
     ctx.status = 400;
     ctx.body = genericError();
@@ -38,7 +39,7 @@ router.post('/api/game-data', async (ctx) => {
   const dead = lastDayData.stats.deaths.total;
   const cost = lastDayData.stats.costs.total;
 
-  const saveData = new GameDataModel({...inputData, results: {dead, cost}});
+  const saveData = new GameDataModel({...inputData, results: {dead, cost}, origin: hostname});
   const saveResult = await saveData.save();
 
   if (saveResult.errors) {

@@ -1,7 +1,11 @@
 - name: Copy docker-compose.yml file
-  copy:
-    src: "{{ local_tmp_dir }}/docker-compose.yml"
+  template:
+    src: "{{ item }}"
     dest: "{{ deploy_dir }}/"
+  with_items:
+    - shared/templates/docker-compose.be.base.yml
+    - shared/templates/docker-compose.be.deploy.yml
+    - shared/templates/docker-compose.fe.yml
 
 - name: Copy other files
   copy:

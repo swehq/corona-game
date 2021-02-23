@@ -1,6 +1,11 @@
 env: prod
 url: koronahra.cz
-admin_email: admin@koronahra.cz
-backend_container_count: 4
+domains:
+  - koronahra.cz
+  - covidgame.info
+www_domains:
+  - www.koronahra.cz
+  - www.covidgame.info
+admin_email: admin@swehq.com
+backend_container_count: 8
 
-www_redirection: true

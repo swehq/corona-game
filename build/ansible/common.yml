@@ -1,14 +1,3 @@
-- name: Prepare docker-compose files
-  hosts: localhost
-  gather_facts: no
-
-  vars_files:
-    - "environments/shared-vars.yml"
-    - "{{ inventory_dir }}/group_vars/all.yml"
-
-  roles:
-    - docker-compose
-
 - name: Reload server
   hosts: server
   gather_facts: no

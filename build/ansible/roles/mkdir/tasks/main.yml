@@ -3,7 +3,8 @@
     path: "{{ deploy_dir }}"
     state: directory
 
-- name: Empty deployment directory
-  shell: "cd {{ deploy_dir }} && rm -rf *"
+- name: Empty deployment directories
+  # delete files but keep directories as those could be bound to containers
+  shell: "find . -type f -exec rm {} \\;"
   args:
-    warn: False
+    chdir: "{{ deploy_dir }}"

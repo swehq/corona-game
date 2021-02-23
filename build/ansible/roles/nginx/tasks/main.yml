@@ -1,12 +1,19 @@
+- name: Create nginx directory
+  file:
+    path: "{{ deploy_dir }}/nginx"
+    state: directory
+
 - name: Copy nginx config
   template:
-    src: "{{ nginx_file }}"
-    dest: "{{ nginx_dir }}/conf.d/corona-game-{{ env }}.conf"
+    src: "nginx.conf"
+    dest: "{{ deploy_dir }}/nginx/{{ item }}.conf"
+  with_items: "{{ domains }}"
 
-- name: Copy vhost config
+- name: Copy nginx redirect config
   template:
-    src: "vhost"
-    dest: "{{ nginx_dir }}/vhost.d/{{ url }}"
+    src: "redirect.conf"
+    dest: "{{ deploy_dir }}/nginx/{{ item }}.conf"
+  with_items: "{{ www_domains }}"
 
 - name: Reload nginx
-  command: docker exec {{ nginx_container }} nginx -s reload
+  shell: docker exec $(docker ps -q -f name={{ stack_name }}_nginx) nginx -s reload

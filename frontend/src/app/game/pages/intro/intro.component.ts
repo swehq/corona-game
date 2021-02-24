@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {MetaService} from 'src/app/services/meta.service';
 import {GameService} from '../../game.service';
+import {ScenarioName} from '../../../services/scenario';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class IntroComponent {
     this.loadNewGame();
   }
 
-  loadNewGame() {
-    this.gameService.restartSimulation();
+  loadNewGame(scenarioName?: ScenarioName) {
+    this.gameService.restartSimulation(undefined, scenarioName);
   }
 }

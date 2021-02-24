@@ -36,6 +36,12 @@
       routerLink="/game">
       {{'Hrát' | translate}}
     </cvd-button>
+
+    <cvd-button
+      (click)="loadNewGame('czechiaB117')"
+      routerLink="/game">
+      {{'Česko současnost' | translate}}
+    </cvd-button>
   </cvd-row>
 
   <ng-template #savedGameOptions>

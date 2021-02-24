@@ -90,7 +90,11 @@ export class Game {
     const nextDate = nextDay(lastDate);
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
-    const dayState = this.simulation.simOneDay(mitigationEffect, this.rng.getRandomness());
+    let realHistory = undefined;
+    if (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
+      realHistory = this.scenario.realRampUpHistory;
+    }
+    const dayState = this.simulation.simOneDay(mitigationEffect, this.rng.getRandomness(), realHistory);
     const events = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.mitigations, this.eventMitigations);
 
     return {dayState, events};

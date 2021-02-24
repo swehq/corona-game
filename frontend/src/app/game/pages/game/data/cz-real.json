@@ -1,0 +1,1570 @@
+{
+  "2020-01-27": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-01-28": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-01-29": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-01-30": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-01-31": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-01": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-02": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-03": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-04": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-05": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-06": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-07": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-08": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-09": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-10": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-11": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-12": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-13": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-14": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-15": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-16": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-17": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-18": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-19": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-20": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-21": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-22": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-23": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-24": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-25": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-26": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-27": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-28": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-02-29": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-03-01": {
+    "infections": 3,
+    "deaths": 0
+  },
+  "2020-03-02": {
+    "infections": 0,
+    "deaths": 0
+  },
+  "2020-03-03": {
+    "infections": 2,
+    "deaths": 0
+  },
+  "2020-03-04": {
+    "infections": 1,
+    "deaths": 0
+  },
+  "2020-03-05": {
+    "infections": 3,
+    "deaths": 0
+  },
+  "2020-03-06": {
+    "infections": 11,
+    "deaths": 0
+  },
+  "2020-03-07": {
+    "infections": 7,
+    "deaths": 0
+  },
+  "2020-03-08": {
+    "infections": 6,
+    "deaths": 0
+  },
+  "2020-03-09": {
+    "infections": 6,
+    "deaths": 0
+  },
+  "2020-03-10": {
+    "infections": 25,
+    "deaths": 0
+  },
+  "2020-03-11": {
+    "infections": 31,
+    "deaths": 0
+  },
+  "2020-03-12": {
+    "infections": 22,
+    "deaths": 0
+  },
+  "2020-03-13": {
+    "infections": 25,
+    "deaths": 0
+  },
+  "2020-03-14": {
+    "infections": 48,
+    "deaths": 0
+  },
+  "2020-03-15": {
+    "infections": 109,
+    "deaths": 0
+  },
+  "2020-03-16": {
+    "infections": 85,
+    "deaths": 0
+  },
+  "2020-03-17": {
+    "infections": 67,
+    "deaths": 0
+  },
+  "2020-03-18": {
+    "infections": 110,
+    "deaths": 0
+  },
+  "2020-03-19": {
+    "infections": 206,
+    "deaths": 0
+  },
+  "2020-03-20": {
+    "infections": 124,
+    "deaths": 0
+  },
+  "2020-03-21": {
+    "infections": 159,
+    "deaths": 0
+  },
+  "2020-03-22": {
+    "infections": 115,
+    "deaths": 1
+  },
+  "2020-03-23": {
+    "infections": 126,
+    "deaths": 0
+  },
+  "2020-03-24": {
+    "infections": 185,
+    "deaths": 2
+  },
+  "2020-03-25": {
+    "infections": 292,
+    "deaths": 7
+  },
+  "2020-03-26": {
+    "infections": 259,
+    "deaths": 0
+  },
+  "2020-03-27": {
+    "infections": 377,
+    "deaths": 2
+  },
+  "2020-03-28": {
+    "infections": 263,
+    "deaths": 5
+  },
+  "2020-03-29": {
+    "infections": 159,
+    "deaths": 6
+  },
+  "2020-03-30": {
+    "infections": 184,
+    "deaths": 5
+  },
+  "2020-03-31": {
+    "infections": 304,
+    "deaths": 7
+  },
+  "2020-04-01": {
+    "infections": 283,
+    "deaths": 8
+  },
+  "2020-04-02": {
+    "infections": 268,
+    "deaths": 6
+  },
+  "2020-04-03": {
+    "infections": 333,
+    "deaths": 8
+  },
+  "2020-04-04": {
+    "infections": 283,
+    "deaths": 9
+  },
+  "2020-04-05": {
+    "infections": 117,
+    "deaths": 8
+  },
+  "2020-04-06": {
+    "infections": 236,
+    "deaths": 8
+  },
+  "2020-04-07": {
+    "infections": 196,
+    "deaths": 10
+  },
+  "2020-04-08": {
+    "infections": 294,
+    "deaths": 15
+  },
+  "2020-04-09": {
+    "infections": 257,
+    "deaths": 10
+  },
+  "2020-04-10": {
+    "infections": 163,
+    "deaths": 11
+  },
+  "2020-04-11": {
+    "infections": 170,
+    "deaths": 8
+  },
+  "2020-04-12": {
+    "infections": 89,
+    "deaths": 10
+  },
+  "2020-04-13": {
+    "infections": 68,
+    "deaths": 11
+  },
+  "2020-04-14": {
+    "infections": 82,
+    "deaths": 9
+  },
+  "2020-04-15": {
+    "infections": 160,
+    "deaths": 0
+  },
+  "2020-04-16": {
+    "infections": 132,
+    "deaths": 2
+  },
+  "2020-04-17": {
+    "infections": 116,
+    "deaths": 8
+  },
+  "2020-04-18": {
+    "infections": 105,
+    "deaths": 4
+  },
+  "2020-04-19": {
+    "infections": 92,
+    "deaths": 9
+  },
+  "2020-04-20": {
+    "infections": 154,
+    "deaths": 7
+  },
+  "2020-04-21": {
+    "infections": 133,
+    "deaths": 8
+  },
+  "2020-04-22": {
+    "infections": 99,
+    "deaths": 2
+  },
+  "2020-04-23": {
+    "infections": 55,
+    "deaths": 6
+  },
+  "2020-04-24": {
+    "infections": 86,
+    "deaths": 6
+  },
+  "2020-04-25": {
+    "infections": 79,
+    "deaths": 4
+  },
+  "2020-04-26": {
+    "infections": 52,
+    "deaths": 2
+  },
+  "2020-04-27": {
+    "infections": 41,
+    "deaths": 1
+  },
+  "2020-04-28": {
+    "infections": 60,
+    "deaths": 4
+  },
+  "2020-04-29": {
+    "infections": 75,
+    "deaths": 5
+  },
+  "2020-04-30": {
+    "infections": 104,
+    "deaths": 8
+  },
+  "2020-05-01": {
+    "infections": 55,
+    "deaths": 8
+  },
+  "2020-05-02": {
+    "infections": 18,
+    "deaths": 1
+  },
+  "2020-05-03": {
+    "infections": 26,
+    "deaths": 3
+  },
+  "2020-05-04": {
+    "infections": 38,
+    "deaths": 5
+  },
+  "2020-05-05": {
+    "infections": 77,
+    "deaths": 3
+  },
+  "2020-05-06": {
+    "infections": 79,
+    "deaths": 3
+  },
+  "2020-05-07": {
+    "infections": 58,
+    "deaths": 4
+  },
+  "2020-05-08": {
+    "infections": 46,
+    "deaths": 5
+  },
+  "2020-05-09": {
+    "infections": 18,
+    "deaths": 3
+  },
+  "2020-05-10": {
+    "infections": 28,
+    "deaths": 3
+  },
+  "2020-05-11": {
+    "infections": 56,
+    "deaths": 2
+  },
+  "2020-05-12": {
+    "infections": 45,
+    "deaths": 3
+  },
+  "2020-05-13": {
+    "infections": 50,
+    "deaths": 4
+  },
+  "2020-05-14": {
+    "infections": 82,
+    "deaths": 3
+  },
+  "2020-05-15": {
+    "infections": 55,
+    "deaths": 2
+  },
+  "2020-05-16": {
+    "infections": 51,
+    "deaths": 1
+  },
+  "2020-05-17": {
+    "infections": 20,
+    "deaths": 2
+  },
+  "2020-05-18": {
+    "infections": 113,
+    "deaths": 3
+  },
+  "2020-05-19": {
+    "infections": 62,
+    "deaths": 2
+  },
+  "2020-05-20": {
+    "infections": 74,
+    "deaths": 5
+  },
+  "2020-05-21": {
+    "infections": 35,
+    "deaths": 3
+  },
+  "2020-05-22": {
+    "infections": 59,
+    "deaths": 2
+  },
+  "2020-05-23": {
+    "infections": 77,
+    "deaths": 1
+  },
+  "2020-05-24": {
+    "infections": 65,
+    "deaths": 1
+  },
+  "2020-05-25": {
+    "infections": 47,
+    "deaths": 1
+  },
+  "2020-05-26": {
+    "infections": 51,
+    "deaths": 1
+  },
+  "2020-05-27": {
+    "infections": 37,
+    "deaths": 0
+  },
+  "2020-05-28": {
+    "infections": 54,
+    "deaths": 2
+  },
+  "2020-05-29": {
+    "infections": 57,
+    "deaths": 0
+  },
+  "2020-05-30": {
+    "infections": 34,
+    "deaths": 0
+  },
+  "2020-05-31": {
+    "infections": 38,
+    "deaths": 0
+  },
+  "2020-06-01": {
+    "infections": 34,
+    "deaths": 2
+  },
+  "2020-06-02": {
+    "infections": 63,
+    "deaths": 1
+  },
+  "2020-06-03": {
+    "infections": 74,
+    "deaths": 1
+  },
+  "2020-06-04": {
+    "infections": 61,
+    "deaths": 3
+  },
+  "2020-06-05": {
+    "infections": 35,
+    "deaths": 0
+  },
+  "2020-06-06": {
+    "infections": 38,
+    "deaths": 0
+  },
+  "2020-06-07": {
+    "infections": 61,
+    "deaths": 1
+  },
+  "2020-06-08": {
+    "infections": 69,
+    "deaths": 0
+  },
+  "2020-06-09": {
+    "infections": 55,
+    "deaths": 1
+  },
+  "2020-06-10": {
+    "infections": 73,
+    "deaths": 1
+  },
+  "2020-06-11": {
+    "infections": 64,
+    "deaths": 1
+  },
+  "2020-06-12": {
+    "infections": 52,
+    "deaths": 1
+  },
+  "2020-06-13": {
+    "infections": 53,
+    "deaths": 0
+  },
+  "2020-06-14": {
+    "infections": 33,
+    "deaths": 1
+  },
+  "2020-06-15": {
+    "infections": 40,
+    "deaths": 1
+  },
+  "2020-06-16": {
+    "infections": 47,
+    "deaths": 1
+  },
+  "2020-06-17": {
+    "infections": 51,
+    "deaths": 1
+  },
+  "2020-06-18": {
+    "infections": 118,
+    "deaths": 2
+  },
+  "2020-06-19": {
+    "infections": 126,
+    "deaths": 1
+  },
+  "2020-06-20": {
+    "infections": 42,
+    "deaths": 1
+  },
+  "2020-06-21": {
+    "infections": 50,
+    "deaths": 1
+  },
+  "2020-06-22": {
+    "infections": 64,
+    "deaths": 1
+  },
+  "2020-06-23": {
+    "infections": 89,
+    "deaths": 0
+  },
+  "2020-06-24": {
+    "infections": 127,
+    "deaths": 4
+  },
+  "2020-06-25": {
+    "infections": 93,
+    "deaths": 0
+  },
+  "2020-06-26": {
+    "infections": 168,
+    "deaths": 1
+  },
+  "2020-06-27": {
+    "infections": 260,
+    "deaths": 1
+  },
+  "2020-06-28": {
+    "infections": 305,
+    "deaths": 0
+  },
+  "2020-06-29": {
+    "infections": 201,
+    "deaths": 0
+  },
+  "2020-06-30": {
+    "infections": 149,
+    "deaths": 1
+  },
+  "2020-07-01": {
+    "infections": 91,
+    "deaths": 0
+  },
+  "2020-07-02": {
+    "infections": 132,
+    "deaths": 1
+  },
+  "2020-07-03": {
+    "infections": 140,
+    "deaths": 0
+  },
+  "2020-07-04": {
+    "infections": 121,
+    "deaths": 2
+  },
+  "2020-07-05": {
+    "infections": 75,
+    "deaths": 2
+  },
+  "2020-07-06": {
+    "infections": 51,
+    "deaths": 1
+  },
+  "2020-07-07": {
+    "infections": 118,
+    "deaths": 0
+  },
+  "2020-07-08": {
+    "infections": 129,
+    "deaths": 0
+  },
+  "2020-07-09": {
+    "infections": 105,
+    "deaths": 1
+  },
+  "2020-07-10": {
+    "infections": 141,
+    "deaths": 0
+  },
+  "2020-07-11": {
+    "infections": 53,
+    "deaths": 0
+  },
+  "2020-07-12": {
+    "infections": 59,
+    "deaths": 1
+  },
+  "2020-07-13": {
+    "infections": 64,
+    "deaths": 1
+  },
+  "2020-07-14": {
+    "infections": 104,
+    "deaths": 2
+  },
+  "2020-07-15": {
+    "infections": 134,
+    "deaths": 0
+  },
+  "2020-07-16": {
+    "infections": 137,
+    "deaths": 0
+  },
+  "2020-07-17": {
+    "infections": 128,
+    "deaths": 2
+  },
+  "2020-07-18": {
+    "infections": 112,
+    "deaths": 0
+  },
+  "2020-07-19": {
+    "infections": 91,
+    "deaths": 1
+  },
+  "2020-07-20": {
+    "infections": 168,
+    "deaths": 0
+  },
+  "2020-07-21": {
+    "infections": 207,
+    "deaths": 2
+  },
+  "2020-07-22": {
+    "infections": 245,
+    "deaths": 2
+  },
+  "2020-07-23": {
+    "infections": 231,
+    "deaths": 1
+  },
+  "2020-07-24": {
+    "infections": 278,
+    "deaths": 3
+  },
+  "2020-07-25": {
+    "infections": 132,
+    "deaths": 2
+  },
+  "2020-07-26": {
+    "infections": 114,
+    "deaths": 1
+  },
+  "2020-07-27": {
+    "infections": 194,
+    "deaths": 2
+  },
+  "2020-07-28": {
+    "infections": 276,
+    "deaths": 2
+  },
+  "2020-07-29": {
+    "infections": 274,
+    "deaths": 2
+  },
+  "2020-07-30": {
+    "infections": 254,
+    "deaths": 2
+  },
+  "2020-07-31": {
+    "infections": 231,
+    "deaths": 2
+  },
+  "2020-08-01": {
+    "infections": 124,
+    "deaths": 2
+  },
+  "2020-08-02": {
+    "infections": 101,
+    "deaths": 2
+  },
+  "2020-08-03": {
+    "infections": 208,
+    "deaths": 2
+  },
+  "2020-08-04": {
+    "infections": 287,
+    "deaths": 2
+  },
+  "2020-08-05": {
+    "infections": 241,
+    "deaths": 1
+  },
+  "2020-08-06": {
+    "infections": 214,
+    "deaths": 1
+  },
+  "2020-08-07": {
+    "infections": 322,
+    "deaths": 0
+  },
+  "2020-08-08": {
+    "infections": 173,
+    "deaths": 0
+  },
+  "2020-08-09": {
+    "infections": 122,
+    "deaths": 1
+  },
+  "2020-08-10": {
+    "infections": 141,
+    "deaths": 0
+  },
+  "2020-08-11": {
+    "infections": 288,
+    "deaths": 2
+  },
+  "2020-08-12": {
+    "infections": 289,
+    "deaths": 0
+  },
+  "2020-08-13": {
+    "infections": 330,
+    "deaths": 1
+  },
+  "2020-08-14": {
+    "infections": 291,
+    "deaths": 2
+  },
+  "2020-08-15": {
+    "infections": 197,
+    "deaths": 2
+  },
+  "2020-08-16": {
+    "infections": 121,
+    "deaths": 2
+  },
+  "2020-08-17": {
+    "infections": 191,
+    "deaths": 4
+  },
+  "2020-08-18": {
+    "infections": 281,
+    "deaths": 0
+  },
+  "2020-08-19": {
+    "infections": 312,
+    "deaths": 3
+  },
+  "2020-08-20": {
+    "infections": 246,
+    "deaths": 3
+  },
+  "2020-08-21": {
+    "infections": 504,
+    "deaths": 3
+  },
+  "2020-08-22": {
+    "infections": 234,
+    "deaths": 0
+  },
+  "2020-08-23": {
+    "infections": 136,
+    "deaths": 3
+  },
+  "2020-08-24": {
+    "infections": 259,
+    "deaths": 1
+  },
+  "2020-08-25": {
+    "infections": 364,
+    "deaths": 2
+  },
+  "2020-08-26": {
+    "infections": 396,
+    "deaths": 1
+  },
+  "2020-08-27": {
+    "infections": 350,
+    "deaths": 0
+  },
+  "2020-08-28": {
+    "infections": 485,
+    "deaths": 0
+  },
+  "2020-08-29": {
+    "infections": 320,
+    "deaths": 3
+  },
+  "2020-08-30": {
+    "infections": 274,
+    "deaths": 1
+  },
+  "2020-08-31": {
+    "infections": 256,
+    "deaths": 1
+  },
+  "2020-09-01": {
+    "infections": 499,
+    "deaths": 1
+  },
+  "2020-09-02": {
+    "infections": 645,
+    "deaths": 0
+  },
+  "2020-09-03": {
+    "infections": 675,
+    "deaths": 4
+  },
+  "2020-09-04": {
+    "infections": 797,
+    "deaths": 3
+  },
+  "2020-09-05": {
+    "infections": 504,
+    "deaths": 5
+  },
+  "2020-09-06": {
+    "infections": 410,
+    "deaths": 3
+  },
+  "2020-09-07": {
+    "infections": 561,
+    "deaths": 2
+  },
+  "2020-09-08": {
+    "infections": 1161,
+    "deaths": 5
+  },
+  "2020-09-09": {
+    "infections": 1158,
+    "deaths": 3
+  },
+  "2020-09-10": {
+    "infections": 1382,
+    "deaths": 5
+  },
+  "2020-09-11": {
+    "infections": 1443,
+    "deaths": 3
+  },
+  "2020-09-12": {
+    "infections": 1537,
+    "deaths": 6
+  },
+  "2020-09-13": {
+    "infections": 791,
+    "deaths": 5
+  },
+  "2020-09-14": {
+    "infections": 1028,
+    "deaths": 6
+  },
+  "2020-09-15": {
+    "infections": 1676,
+    "deaths": 10
+  },
+  "2020-09-16": {
+    "infections": 2133,
+    "deaths": 7
+  },
+  "2020-09-17": {
+    "infections": 3124,
+    "deaths": 7
+  },
+  "2020-09-18": {
+    "infections": 2108,
+    "deaths": 12
+  },
+  "2020-09-19": {
+    "infections": 2045,
+    "deaths": 8
+  },
+  "2020-09-20": {
+    "infections": 984,
+    "deaths": 6
+  },
+  "2020-09-21": {
+    "infections": 1476,
+    "deaths": 15
+  },
+  "2020-09-22": {
+    "infections": 2387,
+    "deaths": 10
+  },
+  "2020-09-23": {
+    "infections": 2306,
+    "deaths": 22
+  },
+  "2020-09-24": {
+    "infections": 2906,
+    "deaths": 10
+  },
+  "2020-09-25": {
+    "infections": 2946,
+    "deaths": 10
+  },
+  "2020-09-26": {
+    "infections": 1981,
+    "deaths": 16
+  },
+  "2020-09-27": {
+    "infections": 1304,
+    "deaths": 16
+  },
+  "2020-09-28": {
+    "infections": 1284,
+    "deaths": 11
+  },
+  "2020-09-29": {
+    "infections": 1963,
+    "deaths": 21
+  },
+  "2020-09-30": {
+    "infections": 2926,
+    "deaths": 16
+  },
+  "2020-10-01": {
+    "infections": 3502,
+    "deaths": 29
+  },
+  "2020-10-02": {
+    "infections": 3795,
+    "deaths": 21
+  },
+  "2020-10-03": {
+    "infections": 2554,
+    "deaths": 13
+  },
+  "2020-10-04": {
+    "infections": 1841,
+    "deaths": 35
+  },
+  "2020-10-05": {
+    "infections": 3118,
+    "deaths": 29
+  },
+  "2020-10-06": {
+    "infections": 4458,
+    "deaths": 38
+  },
+  "2020-10-07": {
+    "infections": 5336,
+    "deaths": 51
+  },
+  "2020-10-08": {
+    "infections": 5394,
+    "deaths": 26
+  },
+  "2020-10-09": {
+    "infections": 8618,
+    "deaths": 61
+  },
+  "2020-10-10": {
+    "infections": 4636,
+    "deaths": 53
+  },
+  "2020-10-11": {
+    "infections": 3104,
+    "deaths": 42
+  },
+  "2020-10-12": {
+    "infections": 4308,
+    "deaths": 69
+  },
+  "2020-10-13": {
+    "infections": 8324,
+    "deaths": 53
+  },
+  "2020-10-14": {
+    "infections": 9545,
+    "deaths": 66
+  },
+  "2020-10-15": {
+    "infections": 9724,
+    "deaths": 62
+  },
+  "2020-10-16": {
+    "infections": 11104,
+    "deaths": 80
+  },
+  "2020-10-17": {
+    "infections": 8713,
+    "deaths": 81
+  },
+  "2020-10-18": {
+    "infections": 5059,
+    "deaths": 83
+  },
+  "2020-10-19": {
+    "infections": 8077,
+    "deaths": 109
+  },
+  "2020-10-20": {
+    "infections": 11985,
+    "deaths": 109
+  },
+  "2020-10-21": {
+    "infections": 14971,
+    "deaths": 130
+  },
+  "2020-10-22": {
+    "infections": 14155,
+    "deaths": 127
+  },
+  "2020-10-23": {
+    "infections": 15248,
+    "deaths": 124
+  },
+  "2020-10-24": {
+    "infections": 12473,
+    "deaths": 141
+  },
+  "2020-10-25": {
+    "infections": 7300,
+    "deaths": 154
+  },
+  "2020-10-26": {
+    "infections": 10272,
+    "deaths": 162
+  },
+  "2020-10-27": {
+    "infections": 15666,
+    "deaths": 194
+  },
+  "2020-10-28": {
+    "infections": 12977,
+    "deaths": 168
+  },
+  "2020-10-29": {
+    "infections": 13051,
+    "deaths": 199
+  },
+  "2020-10-30": {
+    "infections": 13603,
+    "deaths": 218
+  },
+  "2020-10-31": {
+    "infections": 11427,
+    "deaths": 194
+  },
+  "2020-11-01": {
+    "infections": 6551,
+    "deaths": 222
+  },
+  "2020-11-02": {
+    "infections": 9239,
+    "deaths": 223
+  },
+  "2020-11-03": {
+    "infections": 12090,
+    "deaths": 262
+  },
+  "2020-11-04": {
+    "infections": 15725,
+    "deaths": 226
+  },
+  "2020-11-05": {
+    "infections": 13234,
+    "deaths": 193
+  },
+  "2020-11-06": {
+    "infections": 11546,
+    "deaths": 216
+  },
+  "2020-11-07": {
+    "infections": 7721,
+    "deaths": 199
+  },
+  "2020-11-08": {
+    "infections": 3609,
+    "deaths": 204
+  },
+  "2020-11-09": {
+    "infections": 6048,
+    "deaths": 186
+  },
+  "2020-11-10": {
+    "infections": 9056,
+    "deaths": 214
+  },
+  "2020-11-11": {
+    "infections": 8921,
+    "deaths": 183
+  },
+  "2020-11-12": {
+    "infections": 7874,
+    "deaths": 171
+  },
+  "2020-11-13": {
+    "infections": 7358,
+    "deaths": 178
+  },
+  "2020-11-14": {
+    "infections": 4196,
+    "deaths": 183
+  },
+  "2020-11-15": {
+    "infections": 1891,
+    "deaths": 151
+  },
+  "2020-11-16": {
+    "infections": 5414,
+    "deaths": 173
+  },
+  "2020-11-17": {
+    "infections": 4246,
+    "deaths": 139
+  },
+  "2020-11-18": {
+    "infections": 5514,
+    "deaths": 154
+  },
+  "2020-11-19": {
+    "infections": 6470,
+    "deaths": 133
+  },
+  "2020-11-20": {
+    "infections": 5808,
+    "deaths": 116
+  },
+  "2020-11-21": {
+    "infections": 3191,
+    "deaths": 132
+  },
+  "2020-11-22": {
+    "infections": 1509,
+    "deaths": 125
+  },
+  "2020-11-23": {
+    "infections": 4379,
+    "deaths": 129
+  },
+  "2020-11-24": {
+    "infections": 5861,
+    "deaths": 136
+  },
+  "2020-11-25": {
+    "infections": 4929,
+    "deaths": 121
+  },
+  "2020-11-26": {
+    "infections": 4049,
+    "deaths": 131
+  },
+  "2020-11-27": {
+    "infections": 4462,
+    "deaths": 137
+  },
+  "2020-11-28": {
+    "infections": 2667,
+    "deaths": 117
+  },
+  "2020-11-29": {
+    "infections": 1074,
+    "deaths": 94
+  },
+  "2020-11-30": {
+    "infections": 3572,
+    "deaths": 126
+  },
+  "2020-12-01": {
+    "infections": 5180,
+    "deaths": 98
+  },
+  "2020-12-02": {
+    "infections": 4561,
+    "deaths": 115
+  },
+  "2020-12-03": {
+    "infections": 4624,
+    "deaths": 98
+  },
+  "2020-12-04": {
+    "infections": 4747,
+    "deaths": 94
+  },
+  "2020-12-05": {
+    "infections": 3312,
+    "deaths": 128
+  },
+  "2020-12-06": {
+    "infections": 1112,
+    "deaths": 87
+  },
+  "2020-12-07": {
+    "infections": 4251,
+    "deaths": 94
+  },
+  "2020-12-08": {
+    "infections": 5855,
+    "deaths": 93
+  },
+  "2020-12-09": {
+    "infections": 6413,
+    "deaths": 81
+  },
+  "2020-12-10": {
+    "infections": 5872,
+    "deaths": 113
+  },
+  "2020-12-11": {
+    "infections": 6208,
+    "deaths": 105
+  },
+  "2020-12-12": {
+    "infections": 3655,
+    "deaths": 96
+  },
+  "2020-12-13": {
+    "infections": 1998,
+    "deaths": 107
+  },
+  "2020-12-14": {
+    "infections": 5176,
+    "deaths": 130
+  },
+  "2020-12-15": {
+    "infections": 7908,
+    "deaths": 106
+  },
+  "2020-12-16": {
+    "infections": 8255,
+    "deaths": 113
+  },
+  "2020-12-17": {
+    "infections": 7614,
+    "deaths": 106
+  },
+  "2020-12-18": {
+    "infections": 8835,
+    "deaths": 97
+  },
+  "2020-12-19": {
+    "infections": 5324,
+    "deaths": 112
+  },
+  "2020-12-20": {
+    "infections": 3401,
+    "deaths": 97
+  },
+  "2020-12-21": {
+    "infections": 7949,
+    "deaths": 102
+  },
+  "2020-12-22": {
+    "infections": 10907,
+    "deaths": 101
+  },
+  "2020-12-23": {
+    "infections": 14131,
+    "deaths": 114
+  },
+  "2020-12-24": {
+    "infections": 4373,
+    "deaths": 108
+  },
+  "2020-12-25": {
+    "infections": 2671,
+    "deaths": 105
+  },
+  "2020-12-26": {
+    "infections": 3031,
+    "deaths": 122
+  },
+  "2020-12-27": {
+    "infections": 3778,
+    "deaths": 108
+  },
+  "2020-12-28": {
+    "infections": 10933,
+    "deaths": 132
+  },
+  "2020-12-29": {
+    "infections": 16460,
+    "deaths": 131
+  },
+  "2020-12-30": {
+    "infections": 17057,
+    "deaths": 148
+  },
+  "2020-12-31": {
+    "infections": 13306,
+    "deaths": 127
+  },
+  "2021-01-01": {
+    "infections": 3446,
+    "deaths": 150
+  },
+  "2021-01-02": {
+    "infections": 4983,
+    "deaths": 151
+  },
+  "2021-01-03": {
+    "infections": 6267,
+    "deaths": 139
+  },
+  "2021-01-04": {
+    "infections": 12949,
+    "deaths": 148
+  },
+  "2021-01-05": {
+    "infections": 17395,
+    "deaths": 178
+  },
+  "2021-01-06": {
+    "infections": 17764,
+    "deaths": 155
+  },
+  "2021-01-07": {
+    "infections": 14879,
+    "deaths": 184
+  },
+  "2021-01-08": {
+    "infections": 13098,
+    "deaths": 191
+  },
+  "2021-01-09": {
+    "infections": 8435,
+    "deaths": 160
+  },
+  "2021-01-10": {
+    "infections": 4311,
+    "deaths": 181
+  },
+  "2021-01-11": {
+    "infections": 9382,
+    "deaths": 163
+  },
+  "2021-01-12": {
+    "infections": 10803,
+    "deaths": 172
+  },
+  "2021-01-13": {
+    "infections": 10911,
+    "deaths": 161
+  },
+  "2021-01-14": {
+    "infections": 8086,
+    "deaths": 176
+  },
+  "2021-01-15": {
+    "infections": 9296,
+    "deaths": 164
+  },
+  "2021-01-16": {
+    "infections": 5238,
+    "deaths": 148
+  },
+  "2021-01-17": {
+    "infections": 2640,
+    "deaths": 153
+  },
+  "2021-01-18": {
+    "infections": 7665,
+    "deaths": 157
+  },
+  "2021-01-19": {
+    "infections": 9607,
+    "deaths": 149
+  },
+  "2021-01-20": {
+    "infections": 8214,
+    "deaths": 146
+  },
+  "2021-01-21": {
+    "infections": 7530,
+    "deaths": 147
+  },
+  "2021-01-22": {
+    "infections": 8464,
+    "deaths": 133
+  },
+  "2021-01-23": {
+    "infections": 4239,
+    "deaths": 141
+  },
+  "2021-01-24": {
+    "infections": 2394,
+    "deaths": 141
+  },
+  "2021-01-25": {
+    "infections": 6970,
+    "deaths": 133
+  },
+  "2021-01-26": {
+    "infections": 9193,
+    "deaths": 142
+  },
+  "2021-01-27": {
+    "infections": 8498,
+    "deaths": 152
+  },
+  "2021-01-28": {
+    "infections": 8007,
+    "deaths": 130
+  },
+  "2021-01-29": {
+    "infections": 8052,
+    "deaths": 149
+  },
+  "2021-01-30": {
+    "infections": 4055,
+    "deaths": 122
+  },
+  "2021-01-31": {
+    "infections": 2573,
+    "deaths": 114
+  },
+  "2021-02-01": {
+    "infections": 7213,
+    "deaths": 132
+  },
+  "2021-02-02": {
+    "infections": 9148,
+    "deaths": 133
+  },
+  "2021-02-03": {
+    "infections": 9664,
+    "deaths": 129
+  },
+  "2021-02-04": {
+    "infections": 8105,
+    "deaths": 124
+  },
+  "2021-02-05": {
+    "infections": 8620,
+    "deaths": 123
+  },
+  "2021-02-06": {
+    "infections": 4820,
+    "deaths": 120
+  },
+  "2021-02-07": {
+    "infections": 2451,
+    "deaths": 126
+  },
+  "2021-02-08": {
+    "infections": 7774,
+    "deaths": 131
+  },
+  "2021-02-09": {
+    "infections": 10280,
+    "deaths": 130
+  },
+  "2021-02-10": {
+    "infections": 9534,
+    "deaths": 128
+  },
+  "2021-02-11": {
+    "infections": 9011,
+    "deaths": 126
+  },
+  "2021-02-12": {
+    "infections": 8826,
+    "deaths": 140
+  },
+  "2021-02-13": {
+    "infections": 5141,
+    "deaths": 110
+  },
+  "2021-02-14": {
+    "infections": 2879,
+    "deaths": 141
+  },
+  "2021-02-15": {
+    "infections": 8901,
+    "deaths": 123
+  },
+  "2021-02-16": {
+    "infections": 12601,
+    "deaths": 145
+  },
+  "2021-02-17": {
+    "infections": 10929,
+    "deaths": 129
+  },
+  "2021-02-18": {
+    "infections": 11695,
+    "deaths": 159
+  },
+  "2021-02-19": {
+    "infections": 11277,
+    "deaths": 161
+  },
+  "2021-02-20": {
+    "infections": 6767,
+    "deaths": 154
+  },
+  "2021-02-21": {
+    "infections": 4057,
+    "deaths": 121
+  }
+}

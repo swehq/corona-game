@@ -1,9 +1,13 @@
-import {addDays, differenceInDays, format} from 'date-fns';
+import {addDays as dateFnsAddDays, differenceInDays, format} from 'date-fns';
+
+export function addDays(day: string, nDays: number): string {
+  // works internally with local time (TZ-resistant)
+  const date = dateFnsAddDays(new Date(`${day}T00:00`), nDays);
+  return format(date, 'yyyy-MM-dd');
+}
 
 export function nextDay(day: string): string {
-  // works internally with local time (TZ-resistant)
-  const date = addDays(new Date(`${day}T00:00`), 1);
-  return format(date, 'yyyy-MM-dd');
+  return addDays(day, 1);
 }
 
 export function dateDiff(laterDate: string, earlierDate: string) {

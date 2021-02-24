@@ -27,7 +27,7 @@
 
 import {last} from 'lodash';
 import {settings as randomizeSettings, Randomness} from './randomize';
-import {getSeasonality, nextDay} from './utils';
+import {getSeasonality, addDays, nextDay} from './utils';
 
 export interface MitigationEffect {
   rMult: number;
@@ -108,6 +108,13 @@ export interface DayState {
   stats: Stats;
 }
 
+interface RealDayStats {
+  infections: number;
+  deaths: number;
+}
+
+export type RealHistory = Record<string, RealDayStats>;
+
 export class Simulation {
   readonly R0 = 3.3;
   readonly seasonalityConst = 0.3;
@@ -120,7 +127,7 @@ export class Simulation {
   readonly hospitalsOverwhelmedMortalityMultiplier = 2;
   readonly tracingOverwhelmedThreshold = 1_000;
   readonly tracingRMultiplier = 0.9;
-  readonly mutationRMult = 2.0;
+  readonly mutationRMult = 2.3;
   readonly hospitalsBaselineUtilization = 0.64;
   readonly initialStability = 100;
   readonly stabilityRecovery = 0.2;
@@ -210,7 +217,8 @@ export class Simulation {
     };
   }
 
-  private calcSirState(modelInputs: ModelInputs, randomness: Randomness): SirState {
+  private calcSirState(modelInputs: ModelInputs, randomness: Randomness,
+    date: string, realData?: RealHistory): SirState {
     const yesterday = this.getSirStateInPast(1);
 
     let suspectible = yesterday.suspectible;
@@ -223,6 +231,15 @@ export class Simulation {
     let hospitalized1 = yesterday.hospitalized1;
     let hospitalized2 = yesterday.hospitalized2;
     let dead = yesterday.dead;
+
+    let realInfectious = undefined;
+    let realDetectedInfections = undefined;
+    let realDeaths = undefined;
+    if (realData) {
+      realDeaths = realData[date]?.deaths;
+      realInfectious = realData[addDays(date, this.symptomsDelay)]?.infections / randomizeSettings.detectionRate[0];
+      realDetectedInfections = realData[date]?.infections;
+    }
 
     // Hospitals overwhelmedness logic
     const hospitalsUtilization = this.hospitalsBaselineUtilization
@@ -254,15 +271,19 @@ export class Simulation {
     suspectible -= mutationExposedNew;
     mutationExposed += mutationExposedNew;
 
-    // exposed -> infectious
-    const infectiousNew = this.infectiousRate * exposed;
-    exposed -= infectiousNew;
-    infectious += infectiousNew;
-
     // mutationExposed -> mutationInfectious
     const mutationInfectiousNew = this.infectiousRate * mutationExposed;
     mutationExposed -= mutationInfectiousNew;
     mutationInfectious += mutationInfectiousNew;
+
+    // exposed -> infectious
+    let infectiousNew = this.infectiousRate * exposed;
+    exposed -= infectiousNew;
+    if (realInfectious) {
+      suspectible -= realInfectious - mutationInfectiousNew - infectiousNew;
+      infectiousNew = realInfectious - mutationInfectiousNew;
+    }
+    infectious += infectiousNew;
 
     // infectious -> recovering
     // infectious -> hospitalized1
@@ -280,7 +301,7 @@ export class Simulation {
     // hospitalized1 -> dead
     const hospitalized1End = this.getSirStateInPast(this.hospitalized1Duration).hospitalized1New;
     const mortalityToday = hospitalsOverwhelmedMultiplier * randomness.baseMortality;
-    const deathsNew = hospitalized1End * mortalityToday / this.hospitalizationRateMean;
+    const deathsNew = realDeaths ? realDeaths : hospitalized1End * mortalityToday / this.hospitalizationRateMean;
     const hospitalized2New = hospitalized1End - deathsNew;
     hospitalized1 -= hospitalized1End;
     hospitalized2 += hospitalized2New;
@@ -304,8 +325,8 @@ export class Simulation {
 
     // detected infections
     const symptomsDelayState = this.getSirStateInPast(this.symptomsDelay);
-    const detectedNew = randomness.detectionRate
-      * (symptomsDelayState.infectiousNew + symptomsDelayState.mutationInfectiousNew);
+    const detectedNew = realDetectedInfections ? realDetectedInfections :
+      randomness.detectionRate * (symptomsDelayState.infectiousNew + symptomsDelayState.mutationInfectiousNew);
 
     // detected infections going to recovering
     const incubationToInfectiousEndDuration = this.infectiousDuration - this.symptomsDelay;
@@ -346,10 +367,10 @@ export class Simulation {
     return lastState.date;
   }
 
-  simOneDay(mitigationEffect: MitigationEffect, randomness: Randomness): DayState {
+  simOneDay(mitigationEffect: MitigationEffect, randomness: Randomness, realData?: RealHistory): DayState {
     const date = nextDay(last(this.modelStates)!.date);
     const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
-    const sirState: SirState = this.calcSirState(modelInputs, randomness);
+    const sirState: SirState = this.calcSirState(modelInputs, randomness, date, realData);
     const stats: Stats = this.calcStats(sirState, mitigationEffect, modelInputs);
     const state: DayState = {date, sirState, randomness, modelInputs, stats};
     this.modelStates.push(state);

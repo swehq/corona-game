@@ -2,7 +2,9 @@
 import {defaultMitigations, Mitigations} from './mitigations';
 import {EventAndChoice, EventMitigation, EventTrigger} from './events';
 import {maxMitigationDuration, czechiaEventTriggers, czechiaB117EventTriggers} from './event-list';
+import {RealHistory} from './simulation';
 import {nextDay} from './utils';
+import czRealData from '../game/pages/game/data/cz-real.json';
 
 interface ScenarioDates {
   rampUpStartDate: string; // Date from we start simulation
@@ -32,6 +34,7 @@ export class Scenario {
   scenarioMitigations: MitigationActionHistory = {};
   dates: ScenarioDates;
   eventTriggers: EventTrigger[];
+  realRampUpHistory?: RealHistory;
 
   constructor(scenarioDates: ScenarioDates, eventTriggers: EventTrigger[],
     scenarioMitigations?: MitigationActionHistory) {
@@ -178,6 +181,7 @@ const czechiaB117 = new Scenario({
 addCzechiaVaccination(czechiaB117);
 addCzechiaRealMitigations(czechiaB117);
 czechiaB117.addGameplayEventMitigation({duration: maxMitigationDuration, mutationExposedDrift: 30}, '2020-12-15');
+czechiaB117.realRampUpHistory = czRealData;
 
 export const scenarios = {
   czechiaGame,

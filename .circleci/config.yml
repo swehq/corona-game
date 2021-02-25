@@ -64,6 +64,12 @@ jobs:
             TERMINATE=1 npm run start:prod
           environment:
             MONGO_URI: mongodb://localhost:27017/corona
+      - run:
+          name: Cypress
+          working_directory: frontend
+          command: npm run http & npm run cypress:ci
+      - store_test_results:
+          path: frontend/cypress/snapshots
 
 workflows:
   version: 2

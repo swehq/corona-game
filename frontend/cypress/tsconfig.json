@@ -1,15 +1,13 @@
 {
-  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "es5",
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "types": ["cypress"]
+  },
   "include": [
     "**/*.ts"
-  ],
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "types": [
-      "cypress",
-      "cypress-wait-until",
-      "cypress-image-snapshot"
-    ]
-  },
-  "exclude": []
+  ]
 }

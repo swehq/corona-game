@@ -2,9 +2,10 @@
 import {defaultMitigations, Mitigations} from './mitigations';
 import {EventAndChoice, EventMitigation, EventTrigger} from './events';
 import {maxMitigationDuration, czechiaEventTriggers, czechiaB117EventTriggers} from './event-list';
+import {RandomnessSettings} from './randomize';
 import {RealHistory} from './simulation';
 import {nextDay} from './utils';
-import czRealData from '../game/pages/game/data/cz-real.json';
+import czRealData from '../game/pages/game/data/cz-real-smooth.json';
 
 interface ScenarioDates {
   rampUpStartDate: string; // Date from we start simulation
@@ -27,6 +28,36 @@ export type MitigationPair = {
 
 export type ScenarioName = keyof typeof scenarios;
 
+export interface SimulationParams extends RandomnessSettings {
+  R0: number;
+  seasonalityConst: number;
+  seasonPeak: string;
+  initialPopulation: number;
+  exposedStart: number;
+  vaccinationMaxRate: number;
+  hospitalsOverwhelmedThreshold: number;
+  hospitalsOverwhelmedMortalityMultiplier: number;
+  tracingOverwhelmedThreshold: number;
+  tracingRMultiplier: number;
+  mutationRMult: number;
+  hospitalsBaselineUtilization: number;
+  initialStability: number;
+  stabilityRecovery: number;
+  hospitalizationCostPerDay: number;
+  hospitalizationExponentialDuration: boolean;
+
+  // Durations of various model states
+  infectiousRate: number;        // Rate of E -> I transition
+  infectiousDuration: number;    // How long people stay infectious before they isolate or get hospitalized
+  hospitalized1Duration: number; // Duration of the hospitalization before the average death
+  hospitalized2Duration: number; // Duration of the remaining hospitalization for the recovering patients
+  recoveringDuration: number;    // How long is the infection considered active in statistics
+  immunityMeanDuration: number;  // Average time of R -> S transition
+
+  // This is used to calculate the number of active cases
+  symptomsDelay: number;         // Days until infection is detected
+}
+
 export class Scenario {
   // Ramp up mitigations are used to initialize game mitigationHistory
   rampUpMitigationHistory: MitigationActionHistory = {};
@@ -35,11 +66,13 @@ export class Scenario {
   dates: ScenarioDates;
   eventTriggers: EventTrigger[];
   realRampUpHistory?: RealHistory;
+  simParams: SimulationParams;
 
-  constructor(scenarioDates: ScenarioDates, eventTriggers: EventTrigger[],
+  constructor(scenarioDates: ScenarioDates, eventTriggers: EventTrigger[], simParams: SimulationParams,
     scenarioMitigations?: MitigationActionHistory) {
     this.dates = scenarioDates;
     this.eventTriggers = eventTriggers;
+    this.simParams = simParams;
     if (scenarioMitigations) this.scenarioMitigations = scenarioMitigations;
   }
 
@@ -97,12 +130,49 @@ export class Scenario {
   }
 }
 
+function genRandomnessSettings(detectionRate: number): RandomnessSettings {
+  return {
+    rNoiseMult: {mean: 1.0, stdev: 0.05},
+    baseMortality: {mean: 0.02 * detectionRate, stdev: 0.001 * detectionRate},
+    hospitalizationRate: {mean: 0.05 * detectionRate, stdev: 0.01 * detectionRate},
+    detectionRate: {mean: detectionRate, stdev: 0.2 * detectionRate},
+  };
+}
+
+const czechiaSimParams = {
+  ...genRandomnessSettings(0.25),
+  R0: 3.3,
+  seasonalityConst: 0.3,
+  seasonPeak: '2020-01-15',
+  initialPopulation: 10_690_000,
+  exposedStart: 12,
+  vaccinationMaxRate: 0.75,
+  hospitalsOverwhelmedThreshold: 25_000,
+  hospitalsOverwhelmedMortalityMultiplier: 2,
+  tracingOverwhelmedThreshold: 1_000,
+  tracingRMultiplier: 0.9,
+  mutationRMult: 1.8,
+  hospitalsBaselineUtilization: 0.64,
+  initialStability: 100,
+  stabilityRecovery: 0.2,
+  hospitalizationCostPerDay: 14_500,
+  hospitalizationExponentialDuration: false,
+
+  infectiousRate: 0.175,
+  infectiousDuration: 4,
+  hospitalized1Duration: 7,
+  hospitalized2Duration: 14,
+  recoveringDuration: 14,
+  immunityMeanDuration: 365,
+  symptomsDelay: 2,
+};
+
 // Czech Republic at the beginning of March, game scenario
 const czechiaGame = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-03-01',
   endDate: '2021-06-30',
-}, czechiaEventTriggers);
+}, czechiaEventTriggers, czechiaSimParams);
 
 // Czechia vaccination schedule
 function addCzechiaVaccination(scenario: Scenario) {
@@ -139,7 +209,7 @@ const czechiaReal = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2021-01-09',
   endDate: '2021-06-30',
-}, czechiaEventTriggers);
+}, czechiaEventTriggers, czechiaSimParams);
 addCzechiaVaccination(czechiaReal);
 
 function addCzechiaRealMitigations(scenario: Scenario) {
@@ -173,14 +243,25 @@ function addCzechiaRealMitigations(scenario: Scenario) {
 addCzechiaRealMitigations(czechiaReal);
 
 // Czechia with a more realistic "British" mutation
+const czechiaB117SimParams = {
+  ...czechiaSimParams,
+  ...genRandomnessSettings(0.33),
+  R0: 3.7, // some mitigations were relaxed, lower compliance
+  hospitalsBaselineUtilization: 0.67,
+  hospitalizationExponentialDuration: true,
+  hospitalized2Duration: 21,
+};
+
 const czechiaB117 = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2021-02-01',
-  endDate: '2021-06-30',
-}, czechiaB117EventTriggers);
+  endDate: '2021-05-30',
+}, czechiaB117EventTriggers, czechiaB117SimParams);
 addCzechiaVaccination(czechiaB117);
 addCzechiaRealMitigations(czechiaB117);
-czechiaB117.addGameplayEventMitigation({duration: maxMitigationDuration, mutationExposedDrift: 30}, '2020-12-15');
+czechiaB117.addGameplayEventMitigation({duration: maxMitigationDuration, mutationExposedDrift: 20}, '2020-12-15');
+czechiaB117.addGameplayEventMitigation({id: 'exceptions', duration: maxMitigationDuration, rMult: 1.1},
+  '2021-01-15', '2021-03-01');
 czechiaB117.realRampUpHistory = czRealData;
 
 export const scenarios = {

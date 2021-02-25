@@ -5,7 +5,7 @@ import {dateDiff, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario,
   ScenarioName, scenarios, EventAndChoiceHistory} from './scenario';
 import {defaultMitigations} from './mitigations';
-import {SeededRandom} from './randomize';
+import {RandomnessSettings, SeededRandom} from './randomize';
 
 export interface MitigationParams extends MitigationEffect {
   id: MitigationPair[0];
@@ -71,9 +71,10 @@ export class Game {
     this.scenarioName = scenarioName;
     this.scenario = scenarios[scenarioName];
     this.randomSeed = randomSeed ? randomSeed : Math.random().toString();
-    this.rng = new SeededRandom(this.randomSeed);
-    this.mitigationParams = Game.randomizeMitigations(this.randomSeed + '$MitigationSalt');
-    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate, this.rng.getRandomness());
+    const simParams = this.scenario.simParams;
+    this.rng = new SeededRandom(this.randomSeed, simParams);
+    this.mitigationParams = Game.randomizeMitigations(this.randomSeed + '$MitigationSalt', simParams);
+    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate, simParams, this.rng.getRandomness());
     this.mitigationHistory = cloneDeep(this.scenario.rampUpMitigationHistory);
     this.eventHandler = new EventHandler(this.scenario);
   }
@@ -90,7 +91,7 @@ export class Game {
     const nextDate = nextDay(lastDate);
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
-    let realHistory = undefined;
+    let realHistory;
     if (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) {
       realHistory = this.scenario.realRampUpHistory;
     }
@@ -281,9 +282,9 @@ export class Game {
     if (applied.schoolDaysLost !== undefined) affected.schoolDaysLost += applied.schoolDaysLost;
   }
 
-  static randomizeMitigations(randomSeed: string) {
+  static randomizeMitigations(randomSeed: string, randomnessSettings: RandomnessSettings) {
     const res: MitigationParams[] = [];
-    const rng = new SeededRandom(randomSeed);
+    const rng = new SeededRandom(randomSeed, randomnessSettings);
 
     // Randomization of mitigation effect is turned off
     const effectivitySigmaScaling = 0;

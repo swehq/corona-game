@@ -1,18 +1,16 @@
 import seedrandom from 'seedrandom';
 
-interface Settings {
-  rNoiseMult: [number, number];
-  baseMortality: [number, number];
-  hospitalizationRate: [number, number];
-  detectionRate: [number, number];
+interface MeanAndStDev {
+  mean: number;
+  stdev: number;
 }
 
-export const settings: Settings = {
-  rNoiseMult: [1.0, 0.05],
-  baseMortality: [0.005, 0.00025],
-  hospitalizationRate: [0.0125, 0.0025],
-  detectionRate: [0.25, 0.05],
-};
+export interface RandomnessSettings {
+  rNoiseMult: MeanAndStDev;
+  baseMortality: MeanAndStDev;
+  hospitalizationRate: MeanAndStDev;
+  detectionRate: MeanAndStDev;
+}
 
 export interface Randomness {
   rNoiseMult: number;
@@ -24,9 +22,11 @@ export interface Randomness {
 
 export class SeededRandom {
   private _rng;
+  settings: RandomnessSettings;
 
-  constructor(seed: string) {
+  constructor(seed: string, settings: RandomnessSettings) {
     this._rng = seedrandom(seed);
+    this.settings = settings;
   }
 
   random(): number {
@@ -71,7 +71,7 @@ export class SeededRandom {
     return ret;
   }
 
-  private getRandom(variable: keyof typeof settings) {
-    return this.clippedLogNormal(settings[variable][0], settings[variable][1]);
+  private getRandom(variable: keyof RandomnessSettings) {
+    return this.clippedLogNormal(this.settings[variable].mean, this.settings[variable].stdev);
   }
 }

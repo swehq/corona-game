@@ -10,7 +10,6 @@ import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
 import {I18nService} from '../../../services/i18n.service';
-import {settings as randomSettings} from '../../../services/randomize';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 
@@ -185,8 +184,9 @@ export class OutroComponent {
 
   get i18nData() {
     const stats = this.stats;
+    const detectionRate = this.gameService.game.simulation.params.detectionRate.mean;
     const estimateInfectionsTotal = stats
-      ? this.i18nService.formatNumber(stats.detectedInfections.total / randomSettings.detectionRate[0], false, true)
+      ? this.i18nService.formatNumber(stats.detectedInfections.total / detectionRate, false, true)
       : undefined;
     const budget2019 = this.i18nService.formatNumber(1551e9, true, true);
     const budget2020 = this.i18nService.formatNumber(1842e9, true, true);

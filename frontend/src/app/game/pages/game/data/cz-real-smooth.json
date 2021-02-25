@@ -1,1570 +1,1562 @@
 {
-  "2020-01-27": {
-    "infections": 0,
-    "deaths": 0
-  },
   "2020-01-28": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-01-29": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-01-30": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-01-31": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-01": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-02": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-03": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-04": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-05": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-06": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-07": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-08": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-09": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-10": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-11": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-12": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-13": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-14": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-15": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-16": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-17": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-18": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-19": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-20": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-21": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-22": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-23": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-24": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-25": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-26": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-27": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-28": {
-    "infections": 0,
+    "infections": 0.0,
     "deaths": 0
   },
   "2020-02-29": {
-    "infections": 0,
+    "infections": 1.0,
     "deaths": 0
   },
   "2020-03-01": {
-    "infections": 3,
+    "infections": 1.0,
     "deaths": 0
   },
   "2020-03-02": {
-    "infections": 0,
+    "infections": 1.6666666666666667,
     "deaths": 0
   },
   "2020-03-03": {
-    "infections": 2,
+    "infections": 1.0,
     "deaths": 0
   },
   "2020-03-04": {
-    "infections": 1,
+    "infections": 2.0,
     "deaths": 0
   },
   "2020-03-05": {
-    "infections": 3,
+    "infections": 5.0,
     "deaths": 0
   },
   "2020-03-06": {
-    "infections": 11,
+    "infections": 7.0,
     "deaths": 0
   },
   "2020-03-07": {
-    "infections": 7,
+    "infections": 8.0,
     "deaths": 0
   },
   "2020-03-08": {
-    "infections": 6,
+    "infections": 6.333333333333333,
     "deaths": 0
   },
   "2020-03-09": {
-    "infections": 6,
+    "infections": 12.333333333333334,
     "deaths": 0
   },
   "2020-03-10": {
-    "infections": 25,
+    "infections": 20.666666666666668,
     "deaths": 0
   },
   "2020-03-11": {
-    "infections": 31,
+    "infections": 26.0,
     "deaths": 0
   },
   "2020-03-12": {
-    "infections": 22,
+    "infections": 26.0,
     "deaths": 0
   },
   "2020-03-13": {
-    "infections": 25,
+    "infections": 31.666666666666668,
     "deaths": 0
   },
   "2020-03-14": {
-    "infections": 48,
+    "infections": 60.666666666666664,
     "deaths": 0
   },
   "2020-03-15": {
-    "infections": 109,
+    "infections": 80.66666666666667,
     "deaths": 0
   },
   "2020-03-16": {
-    "infections": 85,
+    "infections": 87.0,
     "deaths": 0
   },
   "2020-03-17": {
-    "infections": 67,
+    "infections": 87.33333333333333,
     "deaths": 0
   },
   "2020-03-18": {
-    "infections": 110,
+    "infections": 127.66666666666667,
     "deaths": 0
   },
   "2020-03-19": {
-    "infections": 206,
+    "infections": 146.66666666666666,
     "deaths": 0
   },
   "2020-03-20": {
-    "infections": 124,
+    "infections": 163.0,
     "deaths": 0
   },
   "2020-03-21": {
-    "infections": 159,
+    "infections": 132.66666666666666,
     "deaths": 0
   },
   "2020-03-22": {
-    "infections": 115,
+    "infections": 133.33333333333334,
     "deaths": 1
   },
   "2020-03-23": {
-    "infections": 126,
+    "infections": 142.0,
     "deaths": 0
   },
   "2020-03-24": {
-    "infections": 185,
+    "infections": 201.0,
     "deaths": 2
   },
   "2020-03-25": {
-    "infections": 292,
+    "infections": 245.33333333333334,
     "deaths": 7
   },
   "2020-03-26": {
-    "infections": 259,
+    "infections": 309.3333333333333,
     "deaths": 0
   },
   "2020-03-27": {
-    "infections": 377,
+    "infections": 299.6666666666667,
     "deaths": 2
   },
   "2020-03-28": {
-    "infections": 263,
+    "infections": 266.3333333333333,
     "deaths": 5
   },
   "2020-03-29": {
-    "infections": 159,
+    "infections": 202.0,
     "deaths": 6
   },
   "2020-03-30": {
-    "infections": 184,
+    "infections": 215.66666666666666,
     "deaths": 5
   },
   "2020-03-31": {
-    "infections": 304,
+    "infections": 257.0,
     "deaths": 7
   },
   "2020-04-01": {
-    "infections": 283,
+    "infections": 285.0,
     "deaths": 8
   },
   "2020-04-02": {
-    "infections": 268,
+    "infections": 294.6666666666667,
     "deaths": 6
   },
   "2020-04-03": {
-    "infections": 333,
+    "infections": 294.6666666666667,
     "deaths": 8
   },
   "2020-04-04": {
-    "infections": 283,
+    "infections": 244.33333333333334,
     "deaths": 9
   },
   "2020-04-05": {
-    "infections": 117,
+    "infections": 212.0,
     "deaths": 8
   },
   "2020-04-06": {
-    "infections": 236,
+    "infections": 183.0,
     "deaths": 8
   },
   "2020-04-07": {
-    "infections": 196,
+    "infections": 242.0,
     "deaths": 10
   },
   "2020-04-08": {
-    "infections": 294,
+    "infections": 249.0,
     "deaths": 15
   },
   "2020-04-09": {
-    "infections": 257,
+    "infections": 238.0,
     "deaths": 10
   },
   "2020-04-10": {
-    "infections": 163,
+    "infections": 196.66666666666666,
     "deaths": 11
   },
   "2020-04-11": {
-    "infections": 170,
+    "infections": 140.66666666666666,
     "deaths": 8
   },
   "2020-04-12": {
-    "infections": 89,
+    "infections": 109.0,
     "deaths": 10
   },
   "2020-04-13": {
-    "infections": 68,
+    "infections": 79.66666666666667,
     "deaths": 11
   },
   "2020-04-14": {
-    "infections": 82,
+    "infections": 103.33333333333333,
     "deaths": 9
   },
   "2020-04-15": {
-    "infections": 160,
+    "infections": 124.66666666666667,
     "deaths": 0
   },
   "2020-04-16": {
-    "infections": 132,
+    "infections": 136.0,
     "deaths": 2
   },
   "2020-04-17": {
-    "infections": 116,
+    "infections": 117.66666666666667,
     "deaths": 8
   },
   "2020-04-18": {
-    "infections": 105,
+    "infections": 104.33333333333333,
     "deaths": 4
   },
   "2020-04-19": {
-    "infections": 92,
+    "infections": 117.0,
     "deaths": 9
   },
   "2020-04-20": {
-    "infections": 154,
+    "infections": 126.33333333333333,
     "deaths": 7
   },
   "2020-04-21": {
-    "infections": 133,
+    "infections": 128.66666666666666,
     "deaths": 8
   },
   "2020-04-22": {
-    "infections": 99,
+    "infections": 95.66666666666667,
     "deaths": 2
   },
   "2020-04-23": {
-    "infections": 55,
+    "infections": 80.0,
     "deaths": 6
   },
   "2020-04-24": {
-    "infections": 86,
+    "infections": 73.33333333333333,
     "deaths": 6
   },
   "2020-04-25": {
-    "infections": 79,
+    "infections": 72.33333333333333,
     "deaths": 4
   },
   "2020-04-26": {
-    "infections": 52,
+    "infections": 57.333333333333336,
     "deaths": 2
   },
   "2020-04-27": {
-    "infections": 41,
+    "infections": 51.0,
     "deaths": 1
   },
   "2020-04-28": {
-    "infections": 60,
+    "infections": 58.666666666666664,
     "deaths": 4
   },
   "2020-04-29": {
-    "infections": 75,
+    "infections": 79.66666666666667,
     "deaths": 5
   },
   "2020-04-30": {
-    "infections": 104,
+    "infections": 78.0,
     "deaths": 8
   },
   "2020-05-01": {
-    "infections": 55,
+    "infections": 59.0,
     "deaths": 8
   },
   "2020-05-02": {
-    "infections": 18,
+    "infections": 33.0,
     "deaths": 1
   },
   "2020-05-03": {
-    "infections": 26,
+    "infections": 27.333333333333332,
     "deaths": 3
   },
   "2020-05-04": {
-    "infections": 38,
+    "infections": 47.0,
     "deaths": 5
   },
   "2020-05-05": {
-    "infections": 77,
+    "infections": 64.66666666666667,
     "deaths": 3
   },
   "2020-05-06": {
-    "infections": 79,
+    "infections": 71.33333333333333,
     "deaths": 3
   },
   "2020-05-07": {
-    "infections": 58,
+    "infections": 61.0,
     "deaths": 4
   },
   "2020-05-08": {
-    "infections": 46,
+    "infections": 40.666666666666664,
     "deaths": 5
   },
   "2020-05-09": {
-    "infections": 18,
+    "infections": 30.666666666666668,
     "deaths": 3
   },
   "2020-05-10": {
-    "infections": 28,
+    "infections": 34.0,
     "deaths": 3
   },
   "2020-05-11": {
-    "infections": 56,
+    "infections": 43.0,
     "deaths": 2
   },
   "2020-05-12": {
-    "infections": 45,
+    "infections": 50.333333333333336,
     "deaths": 3
   },
   "2020-05-13": {
-    "infections": 50,
+    "infections": 59.0,
     "deaths": 4
   },
   "2020-05-14": {
-    "infections": 82,
+    "infections": 62.333333333333336,
     "deaths": 3
   },
   "2020-05-15": {
-    "infections": 55,
+    "infections": 62.666666666666664,
     "deaths": 2
   },
   "2020-05-16": {
-    "infections": 51,
+    "infections": 42.0,
     "deaths": 1
   },
   "2020-05-17": {
-    "infections": 20,
+    "infections": 61.333333333333336,
     "deaths": 2
   },
   "2020-05-18": {
-    "infections": 113,
+    "infections": 65.0,
     "deaths": 3
   },
   "2020-05-19": {
-    "infections": 62,
+    "infections": 83.0,
     "deaths": 2
   },
   "2020-05-20": {
-    "infections": 74,
+    "infections": 57.0,
     "deaths": 5
   },
   "2020-05-21": {
-    "infections": 35,
+    "infections": 56.0,
     "deaths": 3
   },
   "2020-05-22": {
-    "infections": 59,
+    "infections": 57.0,
     "deaths": 2
   },
   "2020-05-23": {
-    "infections": 77,
+    "infections": 67.0,
     "deaths": 1
   },
   "2020-05-24": {
-    "infections": 65,
+    "infections": 63.0,
     "deaths": 1
   },
   "2020-05-25": {
-    "infections": 47,
+    "infections": 54.333333333333336,
     "deaths": 1
   },
   "2020-05-26": {
-    "infections": 51,
+    "infections": 45.0,
     "deaths": 1
   },
   "2020-05-27": {
-    "infections": 37,
+    "infections": 47.333333333333336,
     "deaths": 0
   },
   "2020-05-28": {
-    "infections": 54,
+    "infections": 49.333333333333336,
     "deaths": 2
   },
   "2020-05-29": {
-    "infections": 57,
+    "infections": 48.333333333333336,
     "deaths": 0
   },
   "2020-05-30": {
-    "infections": 34,
+    "infections": 43.0,
     "deaths": 0
   },
   "2020-05-31": {
-    "infections": 38,
+    "infections": 35.333333333333336,
     "deaths": 0
   },
   "2020-06-01": {
-    "infections": 34,
+    "infections": 45.0,
     "deaths": 2
   },
   "2020-06-02": {
-    "infections": 63,
+    "infections": 57.0,
     "deaths": 1
   },
   "2020-06-03": {
-    "infections": 74,
+    "infections": 66.0,
     "deaths": 1
   },
   "2020-06-04": {
-    "infections": 61,
+    "infections": 56.666666666666664,
     "deaths": 3
   },
   "2020-06-05": {
-    "infections": 35,
+    "infections": 44.666666666666664,
     "deaths": 0
   },
   "2020-06-06": {
-    "infections": 38,
+    "infections": 44.666666666666664,
     "deaths": 0
   },
   "2020-06-07": {
-    "infections": 61,
+    "infections": 56.0,
     "deaths": 1
   },
   "2020-06-08": {
-    "infections": 69,
+    "infections": 61.666666666666664,
     "deaths": 0
   },
   "2020-06-09": {
-    "infections": 55,
+    "infections": 65.66666666666667,
     "deaths": 1
   },
   "2020-06-10": {
-    "infections": 73,
+    "infections": 64.0,
     "deaths": 1
   },
   "2020-06-11": {
-    "infections": 64,
+    "infections": 63.0,
     "deaths": 1
   },
   "2020-06-12": {
-    "infections": 52,
+    "infections": 56.333333333333336,
     "deaths": 1
   },
   "2020-06-13": {
-    "infections": 53,
+    "infections": 46.0,
     "deaths": 0
   },
   "2020-06-14": {
-    "infections": 33,
+    "infections": 42.0,
     "deaths": 1
   },
   "2020-06-15": {
-    "infections": 40,
+    "infections": 40.0,
     "deaths": 1
   },
   "2020-06-16": {
-    "infections": 47,
+    "infections": 46.0,
     "deaths": 1
   },
   "2020-06-17": {
-    "infections": 51,
+    "infections": 72.0,
     "deaths": 1
   },
   "2020-06-18": {
-    "infections": 118,
+    "infections": 98.33333333333333,
     "deaths": 2
   },
   "2020-06-19": {
-    "infections": 126,
+    "infections": 95.33333333333333,
     "deaths": 1
   },
   "2020-06-20": {
-    "infections": 42,
+    "infections": 72.66666666666667,
     "deaths": 1
   },
   "2020-06-21": {
-    "infections": 50,
+    "infections": 52.0,
     "deaths": 1
   },
   "2020-06-22": {
-    "infections": 64,
+    "infections": 67.66666666666667,
     "deaths": 1
   },
   "2020-06-23": {
-    "infections": 89,
+    "infections": 93.33333333333333,
     "deaths": 0
   },
   "2020-06-24": {
-    "infections": 127,
+    "infections": 103.0,
     "deaths": 4
   },
   "2020-06-25": {
-    "infections": 93,
+    "infections": 129.33333333333334,
     "deaths": 0
   },
   "2020-06-26": {
-    "infections": 168,
+    "infections": 173.66666666666666,
     "deaths": 1
   },
   "2020-06-27": {
-    "infections": 260,
+    "infections": 244.33333333333334,
     "deaths": 1
   },
   "2020-06-28": {
-    "infections": 305,
+    "infections": 255.33333333333334,
     "deaths": 0
   },
   "2020-06-29": {
-    "infections": 201,
+    "infections": 218.33333333333334,
     "deaths": 0
   },
   "2020-06-30": {
-    "infections": 149,
+    "infections": 147.0,
     "deaths": 1
   },
   "2020-07-01": {
-    "infections": 91,
+    "infections": 124.0,
     "deaths": 0
   },
   "2020-07-02": {
-    "infections": 132,
+    "infections": 121.0,
     "deaths": 1
   },
   "2020-07-03": {
-    "infections": 140,
+    "infections": 131.0,
     "deaths": 0
   },
   "2020-07-04": {
-    "infections": 121,
+    "infections": 112.0,
     "deaths": 2
   },
   "2020-07-05": {
-    "infections": 75,
+    "infections": 82.33333333333333,
     "deaths": 2
   },
   "2020-07-06": {
-    "infections": 51,
+    "infections": 81.33333333333333,
     "deaths": 1
   },
   "2020-07-07": {
-    "infections": 118,
+    "infections": 99.33333333333333,
     "deaths": 0
   },
   "2020-07-08": {
-    "infections": 129,
+    "infections": 117.33333333333333,
     "deaths": 0
   },
   "2020-07-09": {
-    "infections": 105,
+    "infections": 125.0,
     "deaths": 1
   },
   "2020-07-10": {
-    "infections": 141,
+    "infections": 99.66666666666667,
     "deaths": 0
   },
   "2020-07-11": {
-    "infections": 53,
+    "infections": 84.33333333333333,
     "deaths": 0
   },
   "2020-07-12": {
-    "infections": 59,
+    "infections": 58.666666666666664,
     "deaths": 1
   },
   "2020-07-13": {
-    "infections": 64,
+    "infections": 75.66666666666667,
     "deaths": 1
   },
   "2020-07-14": {
-    "infections": 104,
+    "infections": 100.66666666666667,
     "deaths": 2
   },
   "2020-07-15": {
-    "infections": 134,
+    "infections": 125.0,
     "deaths": 0
   },
   "2020-07-16": {
-    "infections": 137,
+    "infections": 133.0,
     "deaths": 0
   },
   "2020-07-17": {
-    "infections": 128,
+    "infections": 125.66666666666667,
     "deaths": 2
   },
   "2020-07-18": {
-    "infections": 112,
+    "infections": 110.33333333333333,
     "deaths": 0
   },
   "2020-07-19": {
-    "infections": 91,
+    "infections": 123.66666666666667,
     "deaths": 1
   },
   "2020-07-20": {
-    "infections": 168,
+    "infections": 155.33333333333334,
     "deaths": 0
   },
   "2020-07-21": {
-    "infections": 207,
+    "infections": 206.66666666666666,
     "deaths": 2
   },
   "2020-07-22": {
-    "infections": 245,
+    "infections": 227.66666666666666,
     "deaths": 2
   },
   "2020-07-23": {
-    "infections": 231,
+    "infections": 251.33333333333334,
     "deaths": 1
   },
   "2020-07-24": {
-    "infections": 278,
+    "infections": 213.66666666666666,
     "deaths": 3
   },
   "2020-07-25": {
-    "infections": 132,
+    "infections": 174.66666666666666,
     "deaths": 2
   },
   "2020-07-26": {
-    "infections": 114,
+    "infections": 146.66666666666666,
     "deaths": 1
   },
   "2020-07-27": {
-    "infections": 194,
+    "infections": 194.66666666666666,
     "deaths": 2
   },
   "2020-07-28": {
-    "infections": 276,
+    "infections": 248.0,
     "deaths": 2
   },
   "2020-07-29": {
-    "infections": 274,
+    "infections": 268.0,
     "deaths": 2
   },
   "2020-07-30": {
-    "infections": 254,
+    "infections": 253.0,
     "deaths": 2
   },
   "2020-07-31": {
-    "infections": 231,
+    "infections": 203.0,
     "deaths": 2
   },
   "2020-08-01": {
-    "infections": 124,
+    "infections": 152.0,
     "deaths": 2
   },
   "2020-08-02": {
-    "infections": 101,
+    "infections": 144.33333333333334,
     "deaths": 2
   },
   "2020-08-03": {
-    "infections": 208,
+    "infections": 198.66666666666666,
     "deaths": 2
   },
   "2020-08-04": {
-    "infections": 287,
+    "infections": 245.33333333333334,
     "deaths": 2
   },
   "2020-08-05": {
-    "infections": 241,
+    "infections": 247.33333333333334,
     "deaths": 1
   },
   "2020-08-06": {
-    "infections": 214,
+    "infections": 259.0,
     "deaths": 1
   },
   "2020-08-07": {
-    "infections": 322,
+    "infections": 236.33333333333334,
     "deaths": 0
   },
   "2020-08-08": {
-    "infections": 173,
+    "infections": 205.66666666666666,
     "deaths": 0
   },
   "2020-08-09": {
-    "infections": 122,
+    "infections": 145.33333333333334,
     "deaths": 1
   },
   "2020-08-10": {
-    "infections": 141,
+    "infections": 183.66666666666666,
     "deaths": 0
   },
   "2020-08-11": {
-    "infections": 288,
+    "infections": 239.33333333333334,
     "deaths": 2
   },
   "2020-08-12": {
-    "infections": 289,
+    "infections": 302.3333333333333,
     "deaths": 0
   },
   "2020-08-13": {
-    "infections": 330,
+    "infections": 303.3333333333333,
     "deaths": 1
   },
   "2020-08-14": {
-    "infections": 291,
+    "infections": 272.6666666666667,
     "deaths": 2
   },
   "2020-08-15": {
-    "infections": 197,
+    "infections": 203.0,
     "deaths": 2
   },
   "2020-08-16": {
-    "infections": 121,
+    "infections": 169.66666666666666,
     "deaths": 2
   },
   "2020-08-17": {
-    "infections": 191,
+    "infections": 197.66666666666666,
     "deaths": 4
   },
   "2020-08-18": {
-    "infections": 281,
+    "infections": 261.3333333333333,
     "deaths": 0
   },
   "2020-08-19": {
-    "infections": 312,
+    "infections": 279.6666666666667,
     "deaths": 3
   },
   "2020-08-20": {
-    "infections": 246,
+    "infections": 354.0,
     "deaths": 3
   },
   "2020-08-21": {
-    "infections": 504,
+    "infections": 328.0,
     "deaths": 3
   },
   "2020-08-22": {
-    "infections": 234,
+    "infections": 291.3333333333333,
     "deaths": 0
   },
   "2020-08-23": {
-    "infections": 136,
+    "infections": 209.66666666666666,
     "deaths": 3
   },
   "2020-08-24": {
-    "infections": 259,
+    "infections": 253.0,
     "deaths": 1
   },
   "2020-08-25": {
-    "infections": 364,
+    "infections": 339.6666666666667,
     "deaths": 2
   },
   "2020-08-26": {
-    "infections": 396,
+    "infections": 370.0,
     "deaths": 1
   },
   "2020-08-27": {
-    "infections": 350,
+    "infections": 410.3333333333333,
     "deaths": 0
   },
   "2020-08-28": {
-    "infections": 485,
+    "infections": 385.0,
     "deaths": 0
   },
   "2020-08-29": {
-    "infections": 320,
+    "infections": 359.6666666666667,
     "deaths": 3
   },
   "2020-08-30": {
-    "infections": 274,
+    "infections": 283.3333333333333,
     "deaths": 1
   },
   "2020-08-31": {
-    "infections": 256,
+    "infections": 343.0,
     "deaths": 1
   },
   "2020-09-01": {
-    "infections": 499,
+    "infections": 466.6666666666667,
     "deaths": 1
   },
   "2020-09-02": {
-    "infections": 645,
+    "infections": 606.3333333333334,
     "deaths": 0
   },
   "2020-09-03": {
-    "infections": 675,
+    "infections": 705.6666666666666,
     "deaths": 4
   },
   "2020-09-04": {
-    "infections": 797,
+    "infections": 658.6666666666666,
     "deaths": 3
   },
   "2020-09-05": {
-    "infections": 504,
+    "infections": 570.3333333333334,
     "deaths": 5
   },
   "2020-09-06": {
-    "infections": 410,
+    "infections": 491.6666666666667,
     "deaths": 3
   },
   "2020-09-07": {
-    "infections": 561,
+    "infections": 710.6666666666666,
     "deaths": 2
   },
   "2020-09-08": {
-    "infections": 1161,
+    "infections": 960.0,
     "deaths": 5
   },
   "2020-09-09": {
-    "infections": 1158,
+    "infections": 1233.6666666666667,
     "deaths": 3
   },
   "2020-09-10": {
-    "infections": 1382,
+    "infections": 1327.6666666666667,
     "deaths": 5
   },
   "2020-09-11": {
-    "infections": 1443,
+    "infections": 1454.0,
     "deaths": 3
   },
   "2020-09-12": {
-    "infections": 1537,
+    "infections": 1257.0,
     "deaths": 6
   },
   "2020-09-13": {
-    "infections": 791,
+    "infections": 1118.6666666666667,
     "deaths": 5
   },
   "2020-09-14": {
-    "infections": 1028,
+    "infections": 1165.0,
     "deaths": 6
   },
   "2020-09-15": {
-    "infections": 1676,
+    "infections": 1612.3333333333333,
     "deaths": 10
   },
   "2020-09-16": {
-    "infections": 2133,
+    "infections": 2311.0,
     "deaths": 7
   },
   "2020-09-17": {
-    "infections": 3124,
+    "infections": 2455.0,
     "deaths": 7
   },
   "2020-09-18": {
-    "infections": 2108,
+    "infections": 2425.6666666666665,
     "deaths": 12
   },
   "2020-09-19": {
-    "infections": 2045,
+    "infections": 1712.3333333333333,
     "deaths": 8
   },
   "2020-09-20": {
-    "infections": 984,
+    "infections": 1501.6666666666667,
     "deaths": 6
   },
   "2020-09-21": {
-    "infections": 1476,
+    "infections": 1615.6666666666667,
     "deaths": 15
   },
   "2020-09-22": {
-    "infections": 2387,
+    "infections": 2056.3333333333335,
     "deaths": 10
   },
   "2020-09-23": {
-    "infections": 2306,
+    "infections": 2533.0,
     "deaths": 22
   },
   "2020-09-24": {
-    "infections": 2906,
+    "infections": 2719.3333333333335,
     "deaths": 10
   },
   "2020-09-25": {
-    "infections": 2946,
+    "infections": 2611.0,
     "deaths": 10
   },
   "2020-09-26": {
-    "infections": 1981,
+    "infections": 2077.0,
     "deaths": 16
   },
   "2020-09-27": {
-    "infections": 1304,
+    "infections": 1523.0,
     "deaths": 16
   },
   "2020-09-28": {
-    "infections": 1284,
+    "infections": 1517.0,
     "deaths": 11
   },
   "2020-09-29": {
-    "infections": 1963,
+    "infections": 2057.6666666666665,
     "deaths": 21
   },
   "2020-09-30": {
-    "infections": 2926,
+    "infections": 2797.0,
     "deaths": 16
   },
   "2020-10-01": {
-    "infections": 3502,
+    "infections": 3407.6666666666665,
     "deaths": 29
   },
   "2020-10-02": {
-    "infections": 3795,
+    "infections": 3283.6666666666665,
     "deaths": 21
   },
   "2020-10-03": {
-    "infections": 2554,
+    "infections": 2730.0,
     "deaths": 13
   },
   "2020-10-04": {
-    "infections": 1841,
+    "infections": 2504.3333333333335,
     "deaths": 35
   },
   "2020-10-05": {
-    "infections": 3118,
+    "infections": 3139.0,
     "deaths": 29
   },
   "2020-10-06": {
-    "infections": 4458,
+    "infections": 4304.0,
     "deaths": 38
   },
   "2020-10-07": {
-    "infections": 5336,
+    "infections": 5062.666666666667,
     "deaths": 51
   },
   "2020-10-08": {
-    "infections": 5394,
+    "infections": 6449.333333333333,
     "deaths": 26
   },
   "2020-10-09": {
-    "infections": 8618,
+    "infections": 6216.0,
     "deaths": 61
   },
   "2020-10-10": {
-    "infections": 4636,
+    "infections": 5452.666666666667,
     "deaths": 53
   },
   "2020-10-11": {
-    "infections": 3104,
+    "infections": 4016.0,
     "deaths": 42
   },
   "2020-10-12": {
-    "infections": 4308,
+    "infections": 5245.333333333333,
     "deaths": 69
   },
   "2020-10-13": {
-    "infections": 8324,
+    "infections": 7392.333333333333,
     "deaths": 53
   },
   "2020-10-14": {
-    "infections": 9545,
+    "infections": 9197.666666666666,
     "deaths": 66
   },
   "2020-10-15": {
-    "infections": 9724,
+    "infections": 10124.333333333334,
     "deaths": 62
   },
   "2020-10-16": {
-    "infections": 11104,
+    "infections": 9847.0,
     "deaths": 80
   },
   "2020-10-17": {
-    "infections": 8713,
+    "infections": 8292.0,
     "deaths": 81
   },
   "2020-10-18": {
-    "infections": 5059,
+    "infections": 7283.0,
     "deaths": 83
   },
   "2020-10-19": {
-    "infections": 8077,
+    "infections": 8373.666666666666,
     "deaths": 109
   },
   "2020-10-20": {
-    "infections": 11985,
+    "infections": 11677.666666666666,
     "deaths": 109
   },
   "2020-10-21": {
-    "infections": 14971,
+    "infections": 13703.666666666666,
     "deaths": 130
   },
   "2020-10-22": {
-    "infections": 14155,
+    "infections": 14791.333333333334,
     "deaths": 127
   },
   "2020-10-23": {
-    "infections": 15248,
+    "infections": 13958.666666666666,
     "deaths": 124
   },
   "2020-10-24": {
-    "infections": 12473,
+    "infections": 11673.666666666666,
     "deaths": 141
   },
   "2020-10-25": {
-    "infections": 7300,
+    "infections": 10015.0,
     "deaths": 154
   },
   "2020-10-26": {
-    "infections": 10272,
+    "infections": 11079.333333333334,
     "deaths": 162
   },
   "2020-10-27": {
-    "infections": 15666,
+    "infections": 12971.666666666666,
     "deaths": 194
   },
   "2020-10-28": {
-    "infections": 12977,
+    "infections": 13898.0,
     "deaths": 168
   },
   "2020-10-29": {
-    "infections": 13051,
+    "infections": 13210.333333333334,
     "deaths": 199
   },
   "2020-10-30": {
-    "infections": 13603,
+    "infections": 12693.666666666666,
     "deaths": 218
   },
   "2020-10-31": {
-    "infections": 11427,
+    "infections": 10527.0,
     "deaths": 194
   },
   "2020-11-01": {
-    "infections": 6551,
+    "infections": 9072.333333333334,
     "deaths": 222
   },
   "2020-11-02": {
-    "infections": 9239,
+    "infections": 9293.333333333334,
     "deaths": 223
   },
   "2020-11-03": {
-    "infections": 12090,
+    "infections": 12351.333333333334,
     "deaths": 262
   },
   "2020-11-04": {
-    "infections": 15725,
+    "infections": 13683.0,
     "deaths": 226
   },
   "2020-11-05": {
-    "infections": 13234,
+    "infections": 13501.666666666666,
     "deaths": 193
   },
   "2020-11-06": {
-    "infections": 11546,
+    "infections": 10833.666666666666,
     "deaths": 216
   },
   "2020-11-07": {
-    "infections": 7721,
+    "infections": 7625.333333333333,
     "deaths": 199
   },
   "2020-11-08": {
-    "infections": 3609,
+    "infections": 5792.666666666667,
     "deaths": 204
   },
   "2020-11-09": {
-    "infections": 6048,
+    "infections": 6237.666666666667,
     "deaths": 186
   },
   "2020-11-10": {
-    "infections": 9056,
+    "infections": 8008.333333333333,
     "deaths": 214
   },
   "2020-11-11": {
-    "infections": 8921,
+    "infections": 8617.0,
     "deaths": 183
   },
   "2020-11-12": {
-    "infections": 7874,
+    "infections": 8051.0,
     "deaths": 171
   },
   "2020-11-13": {
-    "infections": 7358,
+    "infections": 6476.0,
     "deaths": 178
   },
   "2020-11-14": {
-    "infections": 4196,
+    "infections": 4481.666666666667,
     "deaths": 183
   },
   "2020-11-15": {
-    "infections": 1891,
+    "infections": 3833.6666666666665,
     "deaths": 151
   },
   "2020-11-16": {
-    "infections": 5414,
+    "infections": 3850.3333333333335,
     "deaths": 173
   },
   "2020-11-17": {
-    "infections": 4246,
+    "infections": 5058.0,
     "deaths": 139
   },
   "2020-11-18": {
-    "infections": 5514,
+    "infections": 5410.0,
     "deaths": 154
   },
   "2020-11-19": {
-    "infections": 6470,
+    "infections": 5930.666666666667,
     "deaths": 133
   },
   "2020-11-20": {
-    "infections": 5808,
+    "infections": 5156.333333333333,
     "deaths": 116
   },
   "2020-11-21": {
-    "infections": 3191,
+    "infections": 3502.6666666666665,
     "deaths": 132
   },
   "2020-11-22": {
-    "infections": 1509,
+    "infections": 3026.3333333333335,
     "deaths": 125
   },
   "2020-11-23": {
-    "infections": 4379,
+    "infections": 3916.3333333333335,
     "deaths": 129
   },
   "2020-11-24": {
-    "infections": 5861,
+    "infections": 5056.333333333333,
     "deaths": 136
   },
   "2020-11-25": {
-    "infections": 4929,
+    "infections": 4946.333333333333,
     "deaths": 121
   },
   "2020-11-26": {
-    "infections": 4049,
+    "infections": 4480.0,
     "deaths": 131
   },
   "2020-11-27": {
-    "infections": 4462,
+    "infections": 3726.0,
     "deaths": 137
   },
   "2020-11-28": {
-    "infections": 2667,
+    "infections": 2734.3333333333335,
     "deaths": 117
   },
   "2020-11-29": {
-    "infections": 1074,
+    "infections": 2437.6666666666665,
     "deaths": 94
   },
   "2020-11-30": {
-    "infections": 3572,
+    "infections": 3275.3333333333335,
     "deaths": 126
   },
   "2020-12-01": {
-    "infections": 5180,
+    "infections": 4437.666666666667,
     "deaths": 98
   },
   "2020-12-02": {
-    "infections": 4561,
+    "infections": 4788.333333333333,
     "deaths": 115
   },
   "2020-12-03": {
-    "infections": 4624,
+    "infections": 4644.0,
     "deaths": 98
   },
   "2020-12-04": {
-    "infections": 4747,
+    "infections": 4227.666666666667,
     "deaths": 94
   },
   "2020-12-05": {
-    "infections": 3312,
+    "infections": 3057.0,
     "deaths": 128
   },
   "2020-12-06": {
-    "infections": 1112,
+    "infections": 2891.6666666666665,
     "deaths": 87
   },
   "2020-12-07": {
-    "infections": 4251,
+    "infections": 3739.3333333333335,
     "deaths": 94
   },
   "2020-12-08": {
-    "infections": 5855,
+    "infections": 5506.333333333333,
     "deaths": 93
   },
   "2020-12-09": {
-    "infections": 6413,
+    "infections": 6046.666666666667,
     "deaths": 81
   },
   "2020-12-10": {
-    "infections": 5872,
+    "infections": 6164.333333333333,
     "deaths": 113
   },
   "2020-12-11": {
-    "infections": 6208,
+    "infections": 5245.0,
     "deaths": 105
   },
   "2020-12-12": {
-    "infections": 3655,
+    "infections": 3953.6666666666665,
     "deaths": 96
   },
   "2020-12-13": {
-    "infections": 1998,
+    "infections": 3609.6666666666665,
     "deaths": 107
   },
   "2020-12-14": {
-    "infections": 5176,
+    "infections": 5027.333333333333,
     "deaths": 130
   },
   "2020-12-15": {
-    "infections": 7908,
+    "infections": 7113.0,
     "deaths": 106
   },
   "2020-12-16": {
-    "infections": 8255,
+    "infections": 7925.666666666667,
     "deaths": 113
   },
   "2020-12-17": {
-    "infections": 7614,
+    "infections": 8234.666666666666,
     "deaths": 106
   },
   "2020-12-18": {
-    "infections": 8835,
+    "infections": 7257.666666666667,
     "deaths": 97
   },
   "2020-12-19": {
-    "infections": 5324,
+    "infections": 5853.333333333333,
     "deaths": 112
   },
   "2020-12-20": {
-    "infections": 3401,
+    "infections": 5558.0,
     "deaths": 97
   },
   "2020-12-21": {
-    "infections": 7949,
+    "infections": 7419.0,
     "deaths": 102
   },
   "2020-12-22": {
-    "infections": 10907,
+    "infections": 10995.666666666666,
     "deaths": 101
   },
   "2020-12-23": {
-    "infections": 14131,
+    "infections": 9803.666666666666,
     "deaths": 114
   },
   "2020-12-24": {
-    "infections": 4373,
+    "infections": 7058.333333333333,
     "deaths": 108
   },
   "2020-12-25": {
-    "infections": 2671,
+    "infections": 3358.3333333333335,
     "deaths": 105
   },
   "2020-12-26": {
-    "infections": 3031,
+    "infections": 3160.0,
     "deaths": 122
   },
   "2020-12-27": {
-    "infections": 3778,
+    "infections": 5914.0,
     "deaths": 108
   },
   "2020-12-28": {
-    "infections": 10933,
+    "infections": 10390.333333333334,
     "deaths": 132
   },
   "2020-12-29": {
-    "infections": 16460,
+    "infections": 14816.666666666666,
     "deaths": 131
   },
   "2020-12-30": {
-    "infections": 17057,
+    "infections": 15607.666666666666,
     "deaths": 148
   },
   "2020-12-31": {
-    "infections": 13306,
+    "infections": 11269.666666666666,
     "deaths": 127
   },
   "2021-01-01": {
-    "infections": 3446,
+    "infections": 7245.0,
     "deaths": 150
   },
   "2021-01-02": {
-    "infections": 4983,
+    "infections": 4898.666666666667,
     "deaths": 151
   },
   "2021-01-03": {
-    "infections": 6267,
+    "infections": 8066.333333333333,
     "deaths": 139
   },
   "2021-01-04": {
-    "infections": 12949,
+    "infections": 12203.666666666666,
     "deaths": 148
   },
   "2021-01-05": {
-    "infections": 17395,
+    "infections": 16036.0,
     "deaths": 178
   },
   "2021-01-06": {
-    "infections": 17764,
+    "infections": 16679.333333333332,
     "deaths": 155
   },
   "2021-01-07": {
-    "infections": 14879,
+    "infections": 15247.0,
     "deaths": 184
   },
   "2021-01-08": {
-    "infections": 13098,
+    "infections": 12137.333333333334,
     "deaths": 191
   },
   "2021-01-09": {
-    "infections": 8435,
+    "infections": 8614.666666666666,
     "deaths": 160
   },
   "2021-01-10": {
-    "infections": 4311,
+    "infections": 7376.0,
     "deaths": 181
   },
   "2021-01-11": {
-    "infections": 9382,
+    "infections": 8165.333333333333,
     "deaths": 163
   },
   "2021-01-12": {
-    "infections": 10803,
+    "infections": 10365.333333333334,
     "deaths": 172
   },
   "2021-01-13": {
-    "infections": 10911,
+    "infections": 9933.333333333334,
     "deaths": 161
   },
   "2021-01-14": {
-    "infections": 8086,
+    "infections": 9431.0,
     "deaths": 176
   },
   "2021-01-15": {
-    "infections": 9296,
+    "infections": 7540.0,
     "deaths": 164
   },
   "2021-01-16": {
-    "infections": 5238,
+    "infections": 5724.666666666667,
     "deaths": 148
   },
   "2021-01-17": {
-    "infections": 2640,
+    "infections": 5181.0,
     "deaths": 153
   },
   "2021-01-18": {
-    "infections": 7665,
+    "infections": 6637.333333333333,
     "deaths": 157
   },
   "2021-01-19": {
-    "infections": 9607,
+    "infections": 8495.333333333334,
     "deaths": 149
   },
   "2021-01-20": {
-    "infections": 8214,
+    "infections": 8450.333333333334,
     "deaths": 146
   },
   "2021-01-21": {
-    "infections": 7530,
+    "infections": 8069.333333333333,
     "deaths": 147
   },
   "2021-01-22": {
-    "infections": 8464,
+    "infections": 6744.333333333333,
     "deaths": 133
   },
   "2021-01-23": {
-    "infections": 4239,
+    "infections": 5032.333333333333,
     "deaths": 141
   },
   "2021-01-24": {
-    "infections": 2394,
+    "infections": 4534.333333333333,
     "deaths": 141
   },
   "2021-01-25": {
-    "infections": 6970,
+    "infections": 6185.666666666667,
     "deaths": 133
   },
   "2021-01-26": {
-    "infections": 9193,
+    "infections": 8220.333333333334,
     "deaths": 142
   },
   "2021-01-27": {
-    "infections": 8498,
+    "infections": 8566.0,
     "deaths": 152
   },
   "2021-01-28": {
-    "infections": 8007,
+    "infections": 8185.666666666667,
     "deaths": 130
   },
   "2021-01-29": {
-    "infections": 8052,
+    "infections": 6704.666666666667,
     "deaths": 149
   },
   "2021-01-30": {
-    "infections": 4055,
+    "infections": 4893.333333333333,
     "deaths": 122
   },
   "2021-01-31": {
-    "infections": 2573,
+    "infections": 4613.666666666667,
     "deaths": 114
   },
   "2021-02-01": {
-    "infections": 7213,
+    "infections": 6311.333333333333,
     "deaths": 132
   },
   "2021-02-02": {
-    "infections": 9148,
+    "infections": 8675.0,
     "deaths": 133
   },
   "2021-02-03": {
-    "infections": 9664,
+    "infections": 8972.333333333334,
     "deaths": 129
   },
   "2021-02-04": {
-    "infections": 8105,
+    "infections": 8796.333333333334,
     "deaths": 124
   },
   "2021-02-05": {
-    "infections": 8620,
+    "infections": 7181.666666666667,
     "deaths": 123
   },
   "2021-02-06": {
-    "infections": 4820,
+    "infections": 5297.0,
     "deaths": 120
   },
   "2021-02-07": {
-    "infections": 2451,
+    "infections": 5015.0,
     "deaths": 126
   },
   "2021-02-08": {
-    "infections": 7774,
+    "infections": 6835.0,
     "deaths": 131
   },
   "2021-02-09": {
-    "infections": 10280,
+    "infections": 9196.0,
     "deaths": 130
   },
   "2021-02-10": {
-    "infections": 9534,
+    "infections": 9608.333333333334,
     "deaths": 128
   },
   "2021-02-11": {
-    "infections": 9011,
+    "infections": 9123.666666666666,
     "deaths": 126
   },
   "2021-02-12": {
-    "infections": 8826,
+    "infections": 7659.333333333333,
     "deaths": 140
   },
   "2021-02-13": {
-    "infections": 5141,
+    "infections": 5615.333333333333,
     "deaths": 110
   },
   "2021-02-14": {
-    "infections": 2879,
+    "infections": 5640.333333333333,
     "deaths": 141
   },
   "2021-02-15": {
-    "infections": 8901,
+    "infections": 8127.0,
     "deaths": 123
   },
   "2021-02-16": {
-    "infections": 12601,
+    "infections": 10810.333333333334,
     "deaths": 145
   },
   "2021-02-17": {
-    "infections": 10929,
+    "infections": 11741.666666666666,
     "deaths": 129
   },
   "2021-02-18": {
-    "infections": 11695,
+    "infections": 11300.333333333334,
     "deaths": 159
   },
   "2021-02-19": {
-    "infections": 11277,
+    "infections": 9913.0,
     "deaths": 161
   },
   "2021-02-20": {
-    "infections": 6767,
+    "infections": 7367.0,
     "deaths": 154
-  },
-  "2021-02-21": {
-    "infections": 4057,
-    "deaths": 121
   }
 }

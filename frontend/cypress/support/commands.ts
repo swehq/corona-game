@@ -1,41 +1,8 @@
-declare namespace Cypress {
-  interface Chainable {
-    playEvents(num: number): Chainable<Response>;
-    checkEventPresence(): Chainable<Response>;
-    playUntilDate(date: string): Chainable<Response>;
-  }
-}
+import {addMatchImageSnapshotCommand} from 'cypress-image-snapshot/command';
 
-Cypress.Commands.add('playEvents', (num) => {
-  let i = 0;
-  for (i; i<num; i++) {
-    cy.get('[data-cy=event]', {timeout: 2000}).then(() => {
-      cy.wait(500);
-      cy.get('[data-cy=event-continue]', {timeout: 2000}).first().click();
-    });
-    cy.wait(500);
-  }
-})
-
-Cypress.Commands.add('checkEventPresence', () => {
-  cy.get('cvd-events-layout').then(($events) => {
-    if ($events.children().length > 0) {
-      cy.playEvents(1);
-    }
-  });
-})
-
-Cypress.Commands.add('playUntilDate', (date) => {
-  // Requires medium speed and then plays for a month
-  var monthLoop = Array.from({length:35}, (v,k)=>k+1);
-
-  cy.wrap(monthLoop).each(()=> {
-    cy.wait(1000);
-    cy.get('cvd-status-display > cvd-row:first-child > div > div:first-child').then($node => {
-      cy.checkEventPresence();
-      if ($node.get(0).innerHTML === 'Dnes je ' + date) {
-        cy.get('[ng-reflect-svg-icon=pause]').first().click();
-      }
-    });
-  });
-})
+addMatchImageSnapshotCommand({
+  failureThreshold: 0, // threshold for entire image
+  failureThresholdType: 'percent', // percent of image or number of pixels
+  customDiffConfig: {threshold: 0}, // threshold for each pixel
+  capture: 'viewport', // capture viewport in screenshot
+});

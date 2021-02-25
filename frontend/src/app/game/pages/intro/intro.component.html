@@ -28,6 +28,7 @@
 
   <cvd-row [horizontalSpacing]="3">
     <cvd-button
+      data-cy="start-game"
       themePalette="accent"
       type="raised"
       *ngIf="!gameService.isLocalStorageGame(); else savedGameOptions"

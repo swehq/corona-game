@@ -67,6 +67,7 @@ export class Scenario {
   eventTriggers: EventTrigger[];
   realRampUpHistory?: RealHistory;
   simParams: SimulationParams;
+  hasIndustryMitigation = false;
 
   constructor(scenarioDates: ScenarioDates, eventTriggers: EventTrigger[], simParams: SimulationParams,
     scenarioMitigations?: MitigationActionHistory) {
@@ -263,6 +264,7 @@ czechiaB117.addGameplayEventMitigation({duration: maxMitigationDuration, mutatio
 czechiaB117.addGameplayEventMitigation({id: 'exceptions', duration: maxMitigationDuration, rMult: 1.1},
   '2021-01-15', '2021-03-01');
 czechiaB117.realRampUpHistory = czRealData;
+czechiaB117.hasIndustryMitigation = true;
 
 export const scenarios = {
   czechiaGame,

@@ -35,6 +35,7 @@ export class MitigationsService {
     events: new FormControl(),
     rrr: new FormControl(),
     schools: new FormControl(),
+    industry: new FormControl(),
     stayHome: new FormControl(),
     compensations: new FormControl(),
   });
@@ -63,6 +64,11 @@ export class MitigationsService {
       universities: _('Školy - zavřené vysoké'),
       all: _('Školy - zavřené všechny'),
       false: _('Školy - neomezeno'),
+    },
+    industry: {
+      reduce50: _('Průmysl - omezeno 50%'),
+      reduce25: _('Průmysl - omezeno 25%'),
+      false: _('Průmysl - neomezen'),
     },
     stayHome: {
       true: _('Zákaz vycházení'),
@@ -237,11 +243,16 @@ export class MitigationsService {
       force('stayHome', false);
     }
 
+    if (changed.includes('industry') && newValue.industry !== 'reduce50') {
+      force('stayHome', false);
+    }
+
     if (changed.includes('stayHome') && newValue.stayHome) {
       force('businesses', 'most');
       force('events', 10);
       force('rrr', true);
       force('schools', 'all');
+      if (this.hasIndustryMitigation) force('industry', 'reduce50');
     }
   }
 
@@ -301,6 +312,13 @@ export class MitigationsService {
           ['most', _('Jen základní')],
         ];
 
+      case 'industry':
+        return [
+          [false, _('Neomezen')],
+          ['reduce25', _('Omezit 25%')],
+          ['reduce50', _('Omezit 50%')],
+        ];
+
       default:
         throw new Error(`No options defined for mitigation param ${paramName}`);
     }
@@ -308,5 +326,9 @@ export class MitigationsService {
 
   getLabel(variable: keyof Mitigations, value: any) {
     return MitigationsService.mitigationsI18n[variable][String(value)];
+  }
+
+  get hasIndustryMitigation() {
+    return this.gameService.game.scenario.hasIndustryMitigation;
   }
 }

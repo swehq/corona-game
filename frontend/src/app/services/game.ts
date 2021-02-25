@@ -314,6 +314,10 @@ export class Game {
     // Marginal effect of lockdowns on the top of the other measures
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 1.74 * cs(), 0.089 * ss());
 
+    // Industry
+    addMitigation(['industry', 'reduce25'], 0.10, [0, 0], 1.04 * cs(), 0.05 * ss());
+    addMitigation(['industry', 'reduce50'], 0.17, [0, 0], 1.88 * cs(), 0.10 * ss());
+
     // Compensations
     addMitigation(['compensations', true], 0, [0, 0], 0 * cs(), -0.3 * ss(),
       undefined, {compensationCost: 1.1 * cs()});

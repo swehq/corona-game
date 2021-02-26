@@ -149,7 +149,7 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           right: 4,
           left: 4,
         },
-        display: context => this.showDataLabel(context.dataIndex),
+        display: context => this.showDataLabel(context),
         formatter: (_fn, context) => this.formatDataLabel(context.dataIndex),
         font: context => {
           const width = context.chart.width;
@@ -193,10 +193,12 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
     this.pan = new Pan(this);
   }
 
-  showDataLabel(index: number) {
-    const uiChange = this.dataLabelNodes[index]?.uiChange;
-    const event = this.dataLabelNodes[index]?.event;
-    return uiChange || event ? 'auto' : false;
+  showDataLabel(context: any) {
+    const uiChange = this.dataLabelNodes[context.dataIndex]?.uiChange;
+    const event = this.dataLabelNodes[context.dataIndex]?.event;
+    return (uiChange || event) &&
+    context.dataIndex >= context.chart.scales['x-axis-0'].minIndex ?
+      'auto' : false;
   }
 
   ngOnInit() {

@@ -269,5 +269,5 @@ czechiaB117.hasIndustryMitigation = true;
 export const scenarios = {
   czechiaGame,
   czechiaReal,
-  czechiaB117,
+  czechiaB117beta: czechiaB117,
 };

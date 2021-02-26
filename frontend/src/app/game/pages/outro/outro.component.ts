@@ -14,10 +14,10 @@ import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 
 const MY_RESULT_COLOR = '#9fe348';
-const GOV_RESULT_COLOR = '#b57648';
+// const GOV_RESULT_COLOR = '#b57648';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
 
-const GOV_RESULT = {x: 16607, y: 401202997616};
+// const GOV_RESULT = {x: 16607, y: 401202997616};
 
 const convert: (result: GameResult) => ChartPoint =
   result => ({
@@ -66,6 +66,7 @@ export class OutroComponent {
         });
       }
 
+      /* This needs to be scenario dependent
       datasets.push({
         label: _('Česká vláda k 01.02.2021'),
         data: [GOV_RESULT],
@@ -74,6 +75,7 @@ export class OutroComponent {
         pointBackgroundColor: GOV_RESULT_COLOR,
         pointRadius: 5,
       });
+      */
 
       if (allPoints) {
         datasets.push({

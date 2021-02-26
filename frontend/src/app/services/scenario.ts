@@ -256,7 +256,7 @@ const czechiaB117SimParams = {
 const czechiaB117 = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2021-02-01',
-  endDate: '2021-05-30',
+  endDate: '2021-06-30',
 }, czechiaB117EventTriggers, czechiaB117SimParams);
 addCzechiaVaccination(czechiaB117);
 addCzechiaRealMitigations(czechiaB117);

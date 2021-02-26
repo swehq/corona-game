@@ -5,6 +5,7 @@ export type IndustryLevel = false | 'reduce25' | 'reduce50';
 
 export interface Mitigations {
   bordersClosed: boolean;
+  testing: boolean;
   businesses: BusinessesLevel;
   events: EventsLevel;
   rrr: boolean;
@@ -16,6 +17,7 @@ export interface Mitigations {
 
 export const defaultMitigations: Mitigations = {
   bordersClosed: false,
+  testing: false,
   businesses: false,
   events: false,
   rrr: false,

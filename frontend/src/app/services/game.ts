@@ -315,8 +315,9 @@ export class Game {
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 1.74 * cs(), 0.089 * ss());
 
     // Industry
-    addMitigation(['industry', 'reduce25'], 0.10, [0, 0], 1.04 * cs(), 0.05 * ss());
-    addMitigation(['industry', 'reduce50'], 0.17, [0, 0], 1.88 * cs(), 0.10 * ss());
+    addMitigation(['industry', 'reduce25'], 0.08, [0, 0], 1.5 * 1.04 * cs(), 0.05 * ss());
+    addMitigation(['industry', 'reduce50'], 0.17, [0, 0], 1.5 * 1.88 * cs(), 0.10 * ss());
+    addMitigation(['testing', true], 0.06, [0.00, 0.00], 0.06 * cs(), 0.001 * ss());
 
     // Compensations
     addMitigation(['compensations', true], 0, [0, 0], 0 * cs(), -0.3 * ss(),

@@ -31,6 +31,7 @@ type MitigationForceCallback =
 export class MitigationsService {
   formGroup = new FormGroup({
     bordersClosed: new FormControl(),
+    testing: new FormControl(),
     businesses: new FormControl(),
     events: new FormControl(),
     rrr: new FormControl(),
@@ -44,6 +45,10 @@ export class MitigationsService {
     bordersClosed: {
       true: _('Hranice - zavřené'),
       false: _('Hranice - otevřené'),
+    },
+    testing: {
+      true: _('Testování zaměstnanců - začátek'),
+      false: _('Testování zaměstnanců - konec'),
     },
     businesses: {
       some: _('Služby - zavřené rizikové'),

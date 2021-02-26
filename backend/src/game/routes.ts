@@ -9,12 +9,17 @@ import {last, sampleSize} from 'lodash';
 
 export const router = new Router<DefaultState, Context>();
 
-router.get('/api/game-data', async (ctx) => {
+async function processResultsQuery(ctx: Context, query: any = {}) {
   const data = await GameDataModel
-    .find({}, {results: 1, _id: 0})
+    .find(query, {results: 1, _id: 0})
     .hint('results_1')
   ctx.body = sampleSize(data.map((i: any) => i.results), 5000);
-});
+}
+
+router.get('/api/game-results', async (ctx) => processResultsQuery(ctx));
+router.get('/api/game-results/:scenario', async (ctx) =>
+  processResultsQuery(ctx, {scenarioName: {$eq: ctx.params.scenario}}));
+router.get('/api/game-data', async (ctx) => processResultsQuery(ctx)); // Backward compatibility
 
 router.get('/api/game-data/:id', async (ctx) => {
   const data = await GameDataModel.findOne({_id: ctx.params.id});

@@ -159,7 +159,9 @@ export class OutroComponent {
       tap(id => this.isMyGame = this.gameService.isMyGameId(id)),
     );
     meta.setTitle(_('Výsledky'));
-    outroService.fetchAllResults();
+    if (this.gameService.game) {
+      outroService.fetchAllResults(this.gameService.game.scenarioName);
+    }
 
     if (isPlatformBrowser(platformId)) {
       this.completeUrl = window.location.href;

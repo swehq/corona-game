@@ -4,6 +4,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {GameData} from '../../../services/game';
+import {ScenarioName} from '../../../services/scenario';
 import {validateGame} from '../../../services/validate';
 import {GameService} from '../../game.service';
 
@@ -35,7 +36,7 @@ export class OutroService {
 
   allResults$: Observable<GameResult[]>;
 
-  private fetch$ = new Subject();
+  private fetch$ = new Subject<ScenarioName>();
 
   constructor(
     private httpClient: HttpClient,
@@ -55,7 +56,7 @@ export class OutroService {
     );
 
     this.allResults$ = this.fetch$.pipe(
-      switchMap(() => this.httpClient.get<GameResult[]>('/api/game-data')),
+      switchMap(scenarioName => this.httpClient.get<GameResult[]>('/api/game-results/' + scenarioName)),
       shareReplay(1),
       untilDestroyed(this),
     );
@@ -63,8 +64,8 @@ export class OutroService {
     this.allResults$.subscribe();
   }
 
-  fetchAllResults() {
-    this.fetch$.next();
+  fetchAllResults(scenarioName: ScenarioName) {
+    this.fetch$.next(scenarioName);
   }
 
   loadGame$(id: string) {
@@ -84,6 +85,9 @@ export class OutroService {
 
         this.gameService.restoreGame(game);
         this._current$.next({id, gameIsReady: true, result: results});
+
+        this.fetchAllResults(game.scenarioName);
+
         return true;
       },
     ));

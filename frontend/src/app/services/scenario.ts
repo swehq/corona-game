@@ -1,4 +1,5 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
+import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {defaultMitigations, Mitigations} from './mitigations';
 import {EventAndChoice, EventMitigation, EventTrigger} from './events';
 import {maxMitigationDuration, czechiaEventTriggers, czechiaB117EventTriggers} from './event-list';
@@ -58,6 +59,12 @@ export interface SimulationParams extends RandomnessSettings {
   symptomsDelay: number;         // Days until infection is detected
 }
 
+interface ReferenceResult {
+  label: string;
+  dead: number;
+  cost: number;
+}
+
 export class Scenario {
   // Ramp up mitigations are used to initialize game mitigationHistory
   rampUpMitigationHistory: MitigationActionHistory = {};
@@ -68,6 +75,7 @@ export class Scenario {
   realRampUpHistory?: RealHistory;
   simParams: SimulationParams;
   hasIndustryMitigation = false;
+  referenceResult?: ReferenceResult;
 
   constructor(scenarioDates: ScenarioDates, eventTriggers: EventTrigger[], simParams: SimulationParams,
     scenarioMitigations?: MitigationActionHistory) {
@@ -168,12 +176,19 @@ const czechiaSimParams = {
   symptomsDelay: 2,
 };
 
+const czechiaReference = {
+  label: _('Česká vláda k 01.02.2021'),
+  dead: 16_607,
+  cost: 401_202_997_616,
+};
+
 // Czech Republic at the beginning of March, game scenario
 const czechiaGame = new Scenario({
   rampUpStartDate: '2020-02-25',
   rampUpEndDate: '2020-03-01',
   endDate: '2021-06-30',
 }, czechiaEventTriggers, czechiaSimParams);
+czechiaGame.referenceResult = czechiaReference;
 
 // Czechia vaccination schedule
 function addCzechiaVaccination(scenario: Scenario) {
@@ -211,6 +226,7 @@ const czechiaReal = new Scenario({
   rampUpEndDate: '2021-01-09',
   endDate: '2021-06-30',
 }, czechiaEventTriggers, czechiaSimParams);
+czechiaReal.referenceResult = czechiaReference;
 addCzechiaVaccination(czechiaReal);
 
 function addCzechiaRealMitigations(scenario: Scenario) {

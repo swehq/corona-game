@@ -1,7 +1,7 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {GameData} from '../../../services/game';
 import {ScenarioName} from '../../../services/scenario';
@@ -36,7 +36,7 @@ export class OutroService {
 
   allResults$: Observable<GameResult[]>;
 
-  private fetch$ = new Subject<ScenarioName>();
+  scenarioName$ = new ReplaySubject<ScenarioName>(1);
 
   constructor(
     private httpClient: HttpClient,
@@ -55,7 +55,7 @@ export class OutroService {
       result => this._current$.next({result, gameIsReady: true}),
     );
 
-    this.allResults$ = this.fetch$.pipe(
+    this.allResults$ = this.scenarioName$.pipe(
       switchMap(scenarioName => this.httpClient.get<GameResult[]>('/api/game-results/' + scenarioName)),
       shareReplay(1),
       untilDestroyed(this),
@@ -65,7 +65,7 @@ export class OutroService {
   }
 
   fetchAllResults(scenarioName: ScenarioName) {
-    this.fetch$.next(scenarioName);
+    this.scenarioName$.next(scenarioName);
   }
 
   loadGame$(id: string) {

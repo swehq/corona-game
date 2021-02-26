@@ -39,6 +39,7 @@ export interface MitigationEffect {
   stabilityCost: number;
   vaccinationPerDay: number;
   schoolDaysLost: number;
+  costScaler?: number;
 }
 
 interface SirState {
@@ -405,11 +406,13 @@ export class Simulation {
       + this.getSirStateInPast(params.recoveringDuration + params.hospitalized2Duration).hospitalized2New
       + state.deathsNew);
     const deaths = this.calcMetricStats('deaths', state.deathsNew);
-    const economicCosts = this.calcMetricStats('economicCosts', mitigationEffect ? mitigationEffect.economicCost : 0);
+    const costScaler = mitigationEffect?.costScaler !== undefined ? mitigationEffect?.costScaler : 1;
+    const economicCosts = this.calcMetricStats('economicCosts',
+      mitigationEffect ? costScaler * mitigationEffect.economicCost : 0);
     const compensationCosts = this.calcMetricStats('compensationCosts',
       mitigationEffect ? mitigationEffect.compensationCost : 0);
     const hospitalizationCosts = this.calcMetricStats('hospitalizationCosts',
-      params.hospitalizationCostPerDay * (state.hospitalized1 + state.hospitalized2));
+      costScaler * params.hospitalizationCostPerDay * (state.hospitalized1 + state.hospitalized2));
     const costs = this.calcMetricStats('costs',
       economicCosts.today + compensationCosts.today + hospitalizationCosts.today);
     const schoolDaysLost = this.calcMetricStats('schoolDaysLost',

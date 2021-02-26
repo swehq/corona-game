@@ -280,6 +280,10 @@ export class Game {
     if (applied.stabilityCost !== undefined) affected.stabilityCost += applied.stabilityCost;
     if (applied.vaccinationPerDay !== undefined) affected.vaccinationPerDay += applied.vaccinationPerDay;
     if (applied.schoolDaysLost !== undefined) affected.schoolDaysLost += applied.schoolDaysLost;
+    if (applied.costScaler !== undefined) {
+      const affectedCostScaler = affected.costScaler !== undefined ? affected.costScaler : 1;
+      affected.costScaler = affectedCostScaler * applied.costScaler;
+    }
   }
 
   static randomizeMitigations(randomSeed: string, randomnessSettings: RandomnessSettings) {

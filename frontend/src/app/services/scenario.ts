@@ -263,6 +263,8 @@ addCzechiaRealMitigations(czechiaB117);
 czechiaB117.addGameplayEventMitigation({duration: maxMitigationDuration, mutationExposedDrift: 20}, '2020-12-15');
 czechiaB117.addGameplayEventMitigation({id: 'exceptions', duration: maxMitigationDuration, rMult: 1.1},
   '2021-01-15', '2021-03-01');
+czechiaB117.addGameplayEventMitigation({id: 'nocosts', duration: maxMitigationDuration, costScaler: 0},
+  '2020-02-26', '2021-02-01');
 czechiaB117.realRampUpHistory = czRealData;
 czechiaB117.hasIndustryMitigation = true;
 

@@ -1,5 +1,4 @@
 // Scenarios with different gameplays (e.g. reproducing real country response)
-import {marker as _} from '@biesbjerg/ngx-translate-extract-marker';
 import {defaultMitigations, Mitigations} from './mitigations';
 import {EventAndChoice, EventMitigation, EventTrigger} from './events';
 import {maxMitigationDuration, czechiaEventTriggers, czechiaB117EventTriggers} from './event-list';
@@ -177,7 +176,7 @@ const czechiaSimParams = {
 };
 
 const czechiaReference = {
-  label: _('Česká vláda k 01.02.2021'),
+  label: 'Česká vláda k 01.02.2021',
   dead: 16_607,
   cost: 401_202_997_616,
 };

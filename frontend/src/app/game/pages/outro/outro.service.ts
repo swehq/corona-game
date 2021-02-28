@@ -56,7 +56,7 @@ export class OutroService {
     );
 
     this.allResults$ = this.scenarioName$.pipe(
-      switchMap(scenarioName => this.httpClient.get<GameResult[]>('/api/game-results/' + scenarioName)),
+      switchMap(scenarioName => this.httpClient.get<GameResult[]>('/api/game-data/scenario/' + scenarioName)),
       shareReplay(1),
       untilDestroyed(this),
     );

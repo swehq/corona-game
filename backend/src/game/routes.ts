@@ -16,10 +16,10 @@ async function processResultsQuery(ctx: Context, query: any = {}) {
   ctx.body = sampleSize(data.map((i: any) => i.results), 5000);
 }
 
-router.get('/api/game-results', async (ctx) => processResultsQuery(ctx));
-router.get('/api/game-results/:scenario', async (ctx) =>
+router.get('/api/game-data/scenario/:scenario', async (ctx) =>
   processResultsQuery(ctx, {scenarioName: {$eq: ctx.params.scenario}}));
-router.get('/api/game-data', async (ctx) => processResultsQuery(ctx)); // Backward compatibility
+
+router.get('/api/game-data', async (ctx) => processResultsQuery(ctx));
 
 router.get('/api/game-data/:id', async (ctx) => {
   const data = await GameDataModel.findOne({_id: ctx.params.id});

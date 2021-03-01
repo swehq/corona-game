@@ -226,10 +226,20 @@ export class Simulation {
     }
 
     // Hospitals overwhelmedness logic
-    const hospitalsUtilization = params.hospitalsBaselineUtilization
-      + (hospitalized1 + hospitalized2) / params.hospitalsOverwhelmedThreshold;
-    const hospitalsOverwhelmedMultiplier = (hospitalsUtilization > 1) ?
-      params.hospitalsOverwhelmedMortalityMultiplier : 1;
+    const hospitalsOccupancy = params.hospitalsBaselineUtilization * params.hospitalsMaxCapacity
+      + (hospitalized1 + hospitalized2);
+    const hospitalsUtilization = hospitalsOccupancy / params.hospitalsMaxCapacity;
+    let hospitalsOverwhelmedMultiplier;
+    if (hospitalsOccupancy <= params.hospitalsMaxCapacity) {
+      hospitalsOverwhelmedMultiplier = 1;
+    } else if (hospitalsOccupancy >= params.hospitalsOverwhelmedThreshold) {
+      hospitalsOverwhelmedMultiplier = params.hospitalsOverwhelmedMortalityMultiplier;
+    } else {
+      const mortalityCoeff = (hospitalsOccupancy - params.hospitalsMaxCapacity)
+        / (params.hospitalsOverwhelmedThreshold - params.hospitalsMaxCapacity);
+      hospitalsOverwhelmedMultiplier =
+        (1 - mortalityCoeff) + mortalityCoeff * params.hospitalsOverwhelmedMortalityMultiplier;
+    }
 
     // Contact tracing multiplier logic
     const tracingMult = (yesterday.detectedNew <= params.tracingOverwhelmedThreshold) ? params.tracingRMultiplier : 1;

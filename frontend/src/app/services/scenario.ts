@@ -35,6 +35,7 @@ export interface SimulationParams extends RandomnessSettings {
   initialPopulation: number;
   exposedStart: number;
   vaccinationMaxRate: number;
+  hospitalsMaxCapacity: number;
   hospitalsOverwhelmedThreshold: number;
   hospitalsOverwhelmedMortalityMultiplier: number;
   tracingOverwhelmedThreshold: number;
@@ -155,6 +156,7 @@ const czechiaSimParams = {
   initialPopulation: 10_690_000,
   exposedStart: 12,
   vaccinationMaxRate: 0.75,
+  hospitalsMaxCapacity: 25_000,
   hospitalsOverwhelmedThreshold: 25_000,
   hospitalsOverwhelmedMortalityMultiplier: 2,
   tracingOverwhelmedThreshold: 1_000,
@@ -266,6 +268,7 @@ const czechiaB117SimParams = {
   hospitalsBaselineUtilization: 0.67,
   hospitalizationExponentialDuration: true,
   hospitalized2Duration: 21,
+  hospitalsOverwhelmedThreshold: 30_000,
 };
 
 const czechiaB117 = new Scenario({

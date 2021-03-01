@@ -113,6 +113,7 @@ export interface DayState {
 interface RealDayStats {
   infections: number;
   deaths: number;
+  mutationInfections?: number;
 }
 
 export type RealHistory = Record<string, RealDayStats>;
@@ -212,12 +213,15 @@ export class Simulation {
     let hospitalized2 = yesterday.hospitalized2;
     let dead = yesterday.dead;
 
-    let realInfectious;
+    let realInfections;
+    let realMutationInfections;
     let realDetectedInfections;
     let realDeaths;
     if (realData) {
       realDeaths = realData[date]?.deaths;
-      realInfectious = realData[addDays(date, params.symptomsDelay)]?.infections / params.detectionRate.mean;
+      realInfections = realData[addDays(date, params.symptomsDelay)]?.infections / params.detectionRate.mean;
+      realMutationInfections = realData[addDays(date, params.symptomsDelay)]?.mutationInfections;
+      if (realMutationInfections) realMutationInfections /= params.detectionRate.mean;
       realDetectedInfections = realData[date]?.infections;
     }
 
@@ -252,16 +256,20 @@ export class Simulation {
     mutationExposed += mutationExposedNew;
 
     // mutationExposed -> mutationInfectious
-    const mutationInfectiousNew = params.infectiousRate * mutationExposed;
+    let mutationInfectiousNew = params.infectiousRate * mutationExposed;
     mutationExposed -= mutationInfectiousNew;
+    if (realMutationInfections) {
+      suspectible -= realMutationInfections - mutationInfectiousNew;
+      mutationInfectiousNew = realMutationInfections;
+    }
     mutationInfectious += mutationInfectiousNew;
 
     // exposed -> infectious
     let infectiousNew = params.infectiousRate * exposed;
     exposed -= infectiousNew;
-    if (realInfectious) {
-      suspectible -= realInfectious - mutationInfectiousNew - infectiousNew;
-      infectiousNew = realInfectious - mutationInfectiousNew;
+    if (realInfections) {
+      suspectible -= realInfections - mutationInfectiousNew - infectiousNew;
+      infectiousNew = realInfections - mutationInfectiousNew;
     }
     infectious += infectiousNew;
 

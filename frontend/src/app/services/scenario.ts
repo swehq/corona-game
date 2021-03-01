@@ -275,7 +275,6 @@ const czechiaB117 = new Scenario({
 }, czechiaB117EventTriggers, czechiaB117SimParams);
 addCzechiaVaccination(czechiaB117);
 addCzechiaRealMitigations(czechiaB117);
-czechiaB117.addGameplayEventMitigation({duration: maxMitigationDuration, mutationExposedDrift: 20}, '2020-12-15');
 czechiaB117.addGameplayEventMitigation({id: 'exceptions', duration: maxMitigationDuration, rMult: 1.1},
   '2021-01-15', '2021-03-01');
 czechiaB117.addGameplayEventMitigation({id: 'nocosts', duration: maxMitigationDuration, costScaler: 0},

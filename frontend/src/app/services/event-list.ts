@@ -968,7 +968,9 @@ export const czechiaB117EventTriggers: EventTrigger[] = [
     events: [
       {
         title: 'Aktulní situace v ČR',
-        text: 'Připravili jsme pro vás scénář hry s aktuální situací v ČR. V průběhu února v zemi převážila britská mutace B.1.1.7 a dosavadní opatření již nedostačují.',
+        text: '<p>Připravili jsme pro vás scénář simulace s aktuální situací v ČR.</p>\
+<p>V polovině února v zemi převážila britská mutace B.1.1.7 a došlo k výraznému zvýšení rychlosti šíření viru. \
+Zároveň byla do existující sady opatření přidána řada vyjímek.</p>',
         choices: [
           simpleChoice('Ukázat ovládání', {id: TUTORIAL_ID, duration: maxMitigationDuration}),
           {
@@ -983,11 +985,11 @@ export const czechiaB117EventTriggers: EventTrigger[] = [
   {
     events: [
       {
-        title: 'Zmutovaný koronavirus v zemi dominuje!',
-        help: 'Nová mutace viru už je v zemi hojně rozšířená. Virus je výrazně nakažlivější.',
+        title: 'V účinnost vstupují nová opatření',
+        help: 'Od 1. 3. 2021 vstupují v účinnost nová vládní opatření. V naší simulaci se projeví především zrušením předchozích vyjímek (např. otevření některých ročníků škol).',
         choices: okButton(),
       },
     ],
-    condition: (ei: EventInput) => ei.date === '2021-02-14',
+    condition: (ei: EventInput) => ei.date === '2021-03-01',
   },
 ];

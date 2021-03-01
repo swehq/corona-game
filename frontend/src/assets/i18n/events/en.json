@@ -186,5 +186,9 @@
   "Vláda padla kvůli fatálnímu neúspěchu při řešení koronavirové krize": "The government fell due to a fatal failure to address the coronavirus crisis",
   "Vaše hra v roli vlády skončila. Hodnota společenské stability dosáhla svého minima, došlo k pádu vlády a vy jste tak ztratili možnost ovlivňovat řešení šíření pandemie covid-19.": "Your game as the government is over. Social stability reached its minimum, the government fell and you lost your chance to influence how the Covid-19 pandemic is managed.",
   "Proč se tak stalo? Jedním z důvodů může být to, že jste drželi velmi přísná opatření příliš dlouhou dobu. Stabilita také rychleji klesá ve chvíli, kdy se počty mrtvých zvyšují na číslo neúnosné pro obyvatele.": "Why did it happen? One reason might be that you had very strict measures in force for too long. Stability also goes down faster when the death rate gets too high to be acceptable for the public.",
-  "Zobrazit výsledky": "Show results"
+  "Zobrazit výsledky": "Show results",
+  "Aktulní situace v ČR": "Current situation in Czechia",
+  "<p>Připravili jsme pro vás scénář simulace s aktuální situací v ČR.</p><p>V polovině února v zemi převážila britská mutace B.1.1.7 a došlo k výraznému zvýšení rychlosti šíření viru. Zároveň byla do existující sady opatření přidána řada vyjímek.</p>": "<p>This is a simulation of the current situation in Czechia</p><p>In the middle of February, the “British variant” B.1.1.7 dominated older variants and the resproduction number significantly increased. Also, many exceptions to the mitigation measures were implemented since the beginning of the year.</p>",
+  "V účinnost vstupují nová opatření": "New measures take effect",
+  "Od 1. 3. 2021 vstupují v účinnost nová vládní opatření. V naší simulaci se projeví především zrušením předchozích vyjímek (např. otevření některých ročníků škol).": "New anti-covid measures are taking effect form 03/01/2021. In our simulation, we mostly assume these measure revoke some of the earlier exceptions to the rules (e.g. reopening some businesses and schools for some grades)."
 }

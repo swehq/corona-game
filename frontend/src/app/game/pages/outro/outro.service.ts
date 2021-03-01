@@ -36,7 +36,8 @@ export class OutroService {
 
   allResults$: Observable<GameResult[]>;
 
-  scenarioName$ = new ReplaySubject<ScenarioName>(1);
+  private _scenarioName$ = new ReplaySubject<ScenarioName>(1);
+  scenarioName$ = this._scenarioName$.asObservable();
 
   constructor(
     private httpClient: HttpClient,
@@ -55,7 +56,7 @@ export class OutroService {
       result => this._current$.next({result, gameIsReady: true}),
     );
 
-    this.allResults$ = this.scenarioName$.pipe(
+    this.allResults$ = this._scenarioName$.pipe(
       switchMap(scenarioName => this.httpClient.get<GameResult[]>('/api/game-data/scenario/' + scenarioName)),
       shareReplay(1),
       untilDestroyed(this),
@@ -65,7 +66,7 @@ export class OutroService {
   }
 
   fetchAllResults(scenarioName: ScenarioName) {
-    this.scenarioName$.next(scenarioName);
+    this._scenarioName$.next(scenarioName);
   }
 
   loadGame$(id: string) {

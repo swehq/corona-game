@@ -21,7 +21,7 @@ describe('GameValidation', () => {
   });
 
   it('should get proper validation results', async () => {
-    const dataLostStability = jsonDataLostStability as any; // this dataset is in the legacy format
+    const dataLostStability = jsonDataLostStability;
     const dataTooShort = cloneDeep(dataValid);
     dataTooShort.simulation.pop();
     const dataEmpty = cloneDeep(dataValid);

@@ -3,7 +3,9 @@ import {Game, GameData} from './game';
 import {ScenarioName} from './scenario';
 import {dateDiff} from './utils';
 
-export type Validity = 'valid' | 'incorrect-numbers' | 'lost-stability' | 'too-short' | 'too-long' | 'bad-structure';
+export type Validity = 'valid' | 'incorrect-numbers' | 'lost-stability' | 'too-short' | 'too-long' | 'bad-structure'
+  | 'valid-moved';
+
 type ValidationResult = {validity: Validity, game?: Game};
 
 const EPSILON = 1e-8;

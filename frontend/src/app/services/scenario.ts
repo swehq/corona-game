@@ -26,8 +26,6 @@ export type MitigationPair = {
   [P in keyof Mitigations]: [P, Mitigations[P]];
 }[keyof Mitigations];
 
-export type ScenarioName = keyof typeof scenarios;
-
 export interface SimulationParams extends RandomnessSettings {
   R0: number;
   seasonalityConst: number;
@@ -285,8 +283,10 @@ czechiaB117.addGameplayEventMitigation({id: 'nocosts', duration: maxMitigationDu
 czechiaB117.realRampUpHistory = czRealData;
 czechiaB117.hasIndustryMitigation = true;
 
-export const scenarios = {
+export const scenarios: Record<string, Scenario> = {
   czechiaGame,
   czechiaReal,
   czechiaB117,
 };
+
+export type ScenarioName = keyof typeof scenarios;

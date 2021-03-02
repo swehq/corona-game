@@ -7,13 +7,21 @@
 
   <cvd-row [spacing]="3">
     <cvd-mitigation-bool grow formControlName="rrr">{{'Roušky, ruce, rozestupy' | translate}}</cvd-mitigation-bool>
-    <cvd-mitigation-bool grow formControlName="bordersClosed">{{'Zavřít hranice' | translate}}</cvd-mitigation-bool>
+    <cvd-mitigation-bool *ngIf="!mitigationsService.hasIndustryMitigation" grow formControlName="bordersClosed">
+      {{'Zavřít hranice' | translate}}
+    </cvd-mitigation-bool>
+    <cvd-mitigation-bool *ngIf="mitigationsService.hasIndustryMitigation" grow formControlName="testing">
+      {{'Testování zaměstnanců' | translate}}
+    </cvd-mitigation-bool>
   </cvd-row>
 
   <cvd-col [spacing]="3" alignItems="stretch">
     <cvd-mitigation-toggle formControlName="events">{{'Akce' | translate}}</cvd-mitigation-toggle>
     <cvd-mitigation-toggle formControlName="businesses">{{'Služby' | translate}}</cvd-mitigation-toggle>
     <cvd-mitigation-toggle formControlName="schools">{{'Školy' | translate}}</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle *ngIf="mitigationsService.hasIndustryMitigation" formControlName="industry">
+      {{'Průmysl' | translate}}
+    </cvd-mitigation-toggle>
   </cvd-col>
 
   <cvd-row [spacing]="3">
@@ -43,7 +51,12 @@
       <cvd-mitigation-bool grow formControlName="rrr">{{'Roušky, ruce, rozestupy' | translate}}</cvd-mitigation-bool>
     </cvd-row>
     <cvd-row>
-      <cvd-mitigation-bool grow formControlName="bordersClosed">{{'Zavřít hranice' | translate}}</cvd-mitigation-bool>
+      <cvd-mitigation-bool *ngIf="!mitigationsService.hasIndustryMitigation" grow formControlName="bordersClosed">
+        {{'Zavřít hranice' | translate}}
+      </cvd-mitigation-bool>
+      <cvd-mitigation-bool *ngIf="mitigationsService.hasIndustryMitigation" grow formControlName="testing">
+        {{'Testování zaměstnanců' | translate}}
+      </cvd-mitigation-bool>
   </cvd-row>
   </cvd-col>
 
@@ -51,6 +64,9 @@
     <cvd-mitigation-toggle formControlName="events">{{'Akce' | translate}}</cvd-mitigation-toggle>
     <cvd-mitigation-toggle formControlName="businesses">{{'Služby' | translate}}</cvd-mitigation-toggle>
     <cvd-mitigation-toggle formControlName="schools">{{'Školy' | translate}}</cvd-mitigation-toggle>
+    <cvd-mitigation-toggle *ngIf="mitigationsService.hasIndustryMitigation" formControlName="industry">
+      {{'Průmysl' | translate}}
+    </cvd-mitigation-toggle>
   </cvd-col>
 
   <cvd-col [spacing]="3">

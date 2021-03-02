@@ -10,15 +10,13 @@ import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import {MetaService} from 'src/app/services/meta.service';
 import {SocialNetworkShareService} from 'src/app/services/social-network-share.service';
 import {I18nService} from '../../../services/i18n.service';
-import {settings as randomSettings} from '../../../services/randomize';
+import {scenarios} from '../../../services/scenario';
 import {GameService} from '../../game.service';
 import {GameResult, OutroService} from './outro.service';
 
 const MY_RESULT_COLOR = '#9fe348';
 const GOV_RESULT_COLOR = '#b57648';
 const ALL_RESULTS_COLOR = 'rgb(71, 227, 217, 0.25)';
-
-const GOV_RESULT = {x: 16607, y: 401202997616};
 
 const convert: (result: GameResult) => ChartPoint =
   result => ({
@@ -49,11 +47,14 @@ export class OutroComponent {
       map(current => current.result),
       map(result => result ? [convert(result)] : null),
     ),
+    this.outroService.scenarioName$.pipe(
+      map(scenarioName => scenarios[scenarioName].referenceResult),
+    ),
     this.outroService.allResults$.pipe(
       map(results => results ? results.map(convert) : null),
     ),
   ]).pipe(
-    map(([myPoints, allPoints]) => {
+    map(([myPoints, referenceResult, allPoints]) => {
       const datasets: ChartDataSets[] = [];
 
       if (myPoints) {
@@ -67,14 +68,16 @@ export class OutroComponent {
         });
       }
 
-      datasets.push({
-        label: _('Česká vláda k 01.02.2021'),
-        data: [GOV_RESULT],
-        backgroundColor: GOV_RESULT_COLOR,
-        pointBorderColor: GOV_RESULT_COLOR,
-        pointBackgroundColor: GOV_RESULT_COLOR,
-        pointRadius: 5,
-      });
+      if (referenceResult) {
+        datasets.push({
+          label: referenceResult.label,
+          data: [convert(referenceResult)],
+          backgroundColor: GOV_RESULT_COLOR,
+          pointBorderColor: GOV_RESULT_COLOR,
+          pointBackgroundColor: GOV_RESULT_COLOR,
+          pointRadius: 5,
+        });
+      }
 
       if (allPoints) {
         datasets.push({
@@ -160,7 +163,9 @@ export class OutroComponent {
       tap(id => this.isMyGame = this.gameService.isMyGameId(id)),
     );
     meta.setTitle(_('Výsledky'));
-    outroService.fetchAllResults();
+    if (this.gameService.game) {
+      outroService.fetchAllResults(this.gameService.game.scenarioName);
+    }
 
     if (isPlatformBrowser(platformId)) {
       this.completeUrl = window.location.href;
@@ -185,8 +190,9 @@ export class OutroComponent {
 
   get i18nData() {
     const stats = this.stats;
+    const detectionRate = this.gameService.game.simulation.params.detectionRate.mean;
     const estimateInfectionsTotal = stats
-      ? this.i18nService.formatNumber(stats.detectedInfections.total / randomSettings.detectionRate[0], false, true)
+      ? this.i18nService.formatNumber(stats.detectedInfections.total / detectionRate, false, true)
       : undefined;
     const budget2019 = this.i18nService.formatNumber(1551e9, true, true);
     const budget2020 = this.i18nService.formatNumber(1842e9, true, true);

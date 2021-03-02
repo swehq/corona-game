@@ -5,7 +5,7 @@ import {dateDiff, nextDay} from './utils';
 import {MitigationActions, MitigationActionHistory, MitigationPair, Scenario,
   ScenarioName, scenarios, EventAndChoiceHistory} from './scenario';
 import {defaultMitigations} from './mitigations';
-import {SeededRandom} from './randomize';
+import {RandomnessSettings, SeededRandom} from './randomize';
 
 export interface MitigationParams extends MitigationEffect {
   id: MitigationPair[0];
@@ -40,6 +40,7 @@ export class Game {
   static readonly zeroMitigationEffect: MitigationEffect = {
     rMult: 1.0,
     exposedDrift: 0,
+    mutationExposedDrift: 0,
     economicCost: 0,
     compensationCost: 0,
     stabilityCost: 0,
@@ -56,7 +57,7 @@ export class Game {
   randomSeed: string;
   rng: SeededRandom;
   simulation: Simulation;
-  eventHandler = new EventHandler();
+  eventHandler: EventHandler;
   mitigationParams: MitigationParams[];
   // History of user mitigation action; useful for replay; doesn't contain scenario mitigations
   mitigationHistory: MitigationActionHistory;
@@ -70,10 +71,12 @@ export class Game {
     this.scenarioName = scenarioName;
     this.scenario = scenarios[scenarioName];
     this.randomSeed = randomSeed ? randomSeed : Math.random().toString();
-    this.rng = new SeededRandom(this.randomSeed);
-    this.mitigationParams = Game.randomizeMitigations(this.randomSeed + '$MitigationSalt');
-    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate, this.rng.getRandomness());
+    const simParams = this.scenario.simParams;
+    this.rng = new SeededRandom(this.randomSeed, simParams);
+    this.mitigationParams = Game.randomizeMitigations(this.randomSeed + '$MitigationSalt', simParams);
+    this.simulation = new Simulation(this.scenario.dates.rampUpStartDate, simParams, this.rng.getRandomness());
     this.mitigationHistory = cloneDeep(this.scenario.rampUpMitigationHistory);
+    this.eventHandler = new EventHandler(this.scenario);
   }
 
   rampUpGame() {
@@ -88,7 +91,9 @@ export class Game {
     const nextDate = nextDay(lastDate);
     this.moveForwardMitigations();
     const mitigationEffect = this.calcMitigationEffect(nextDate);
-    const dayState = this.simulation.simOneDay(mitigationEffect, this.rng.getRandomness());
+    const realRampUpHistory =
+      (this.simulation.lastDate < this.scenario.dates.rampUpEndDate) ? this.scenario.realRampUpHistory : undefined;
+    const dayState = this.simulation.simOneDay(mitigationEffect, this.rng.getRandomness(), realRampUpHistory);
     const events = this.eventHandler.evaluateDay(lastDate, nextDate, dayState, this.mitigations, this.eventMitigations);
 
     return {dayState, events};
@@ -267,16 +272,21 @@ export class Game {
     if (applied.rMult !== undefined) affected.rMult *= applied.rMult;
 
     if (applied.exposedDrift !== undefined) affected.exposedDrift += applied.exposedDrift;
+    if (applied.mutationExposedDrift !== undefined) affected.mutationExposedDrift += applied.mutationExposedDrift;
     if (applied.economicCost !== undefined) affected.economicCost += applied.economicCost;
     if (applied.compensationCost !== undefined) affected.compensationCost += applied.compensationCost;
     if (applied.stabilityCost !== undefined) affected.stabilityCost += applied.stabilityCost;
     if (applied.vaccinationPerDay !== undefined) affected.vaccinationPerDay += applied.vaccinationPerDay;
     if (applied.schoolDaysLost !== undefined) affected.schoolDaysLost += applied.schoolDaysLost;
+    if (applied.costScaler !== undefined) {
+      const affectedCostScaler = affected.costScaler !== undefined ? affected.costScaler : 1;
+      affected.costScaler = affectedCostScaler * applied.costScaler;
+    }
   }
 
-  static randomizeMitigations(randomSeed: string) {
+  static randomizeMitigations(randomSeed: string, randomnessSettings: RandomnessSettings) {
     const res: MitigationParams[] = [];
-    const rng = new SeededRandom(randomSeed);
+    const rng = new SeededRandom(randomSeed, randomnessSettings);
 
     // Randomization of mitigation effect is turned off
     const effectivitySigmaScaling = 0;
@@ -306,6 +316,11 @@ export class Game {
     // Marginal effect of lockdowns on the top of the other measures
     addMitigation(['stayHome', true], 0.13, [-0.05, 0.31], 1.74 * cs(), 0.089 * ss());
 
+    // Industry
+    addMitigation(['industry', 'reduce25'], 0.08, [0, 0], 1.5 * 1.04 * cs(), 0.05 * ss());
+    addMitigation(['industry', 'reduce50'], 0.17, [0, 0], 1.5 * 1.88 * cs(), 0.10 * ss());
+    addMitigation(['testing', true], 0.06, [0.00, 0.00], 0.06 * cs(), 0.001 * ss());
+
     // Compensations
     addMitigation(['compensations', true], 0, [0, 0], 0 * cs(), -0.3 * ss(),
       undefined, {compensationCost: 1.1 * cs()});
@@ -327,6 +342,7 @@ export class Game {
         level,
         rMult: rng.clippedLogNormal(1 - effectivity, effectivitySigma),
         exposedDrift: 0,
+        mutationExposedDrift: 0,
         economicCost,
         compensationCost: 0,
         stabilityCost,

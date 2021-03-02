@@ -26,23 +26,28 @@
 */
 
 import {last} from 'lodash';
-import {settings as randomizeSettings, Randomness} from './randomize';
-import {getSeasonality, nextDay} from './utils';
+import {SimulationParams} from './scenario';
+import {Randomness} from './randomize';
+import {getSeasonality, addDays, nextDay} from './utils';
 
 export interface MitigationEffect {
   rMult: number;
   exposedDrift: number;
+  mutationExposedDrift: number;
   economicCost: number;
   compensationCost: number;
   stabilityCost: number;
   vaccinationPerDay: number;
   schoolDaysLost: number;
+  costScaler?: number;
 }
 
 interface SirState {
   suspectible: number;
   exposed: number;
   infectious: number;
+  mutationExposed: number;
+  mutationInfectious: number;
   recovering: number;
   resistant: number;
   hospitalized1: number;
@@ -50,6 +55,8 @@ interface SirState {
   dead: number;
   exposedNew: number;
   infectiousNew: number;
+  mutationExposedNew: number;
+  mutationInfectiousNew: number;
   recoveringNew: number;
   resistantNew: number;
   hospitalized1New: number;
@@ -63,6 +70,7 @@ interface SirState {
 
 interface ModelInputs {
   exposedDrift: number;
+  mutationExposedDrift: number;
   seasonalityMult: number;
   R: number;
   stability: number;
@@ -102,64 +110,53 @@ export interface DayState {
   stats: Stats;
 }
 
+interface RealDayStats {
+  infections: number;
+  deaths: number;
+  mutationInfections?: number;
+}
+
+export type RealHistory = Record<string, RealDayStats>;
+
 export class Simulation {
-  readonly R0 = 3.3;
-  readonly seasonalityConst = 0.3;
-  readonly seasonPeak = '2020-01-15';
-  readonly initialPopulation = 10_690_000;
-  readonly exposedStart = 12;
-  readonly vaccinationMaxRate = 0.75;
-  readonly hospitalizationRateMean = randomizeSettings.hospitalizationRate[0];
-  readonly hospitalsOverwhelmedThreshold = 25_000;
-  readonly hospitalsOverwhelmedMortalityMultiplier = 2;
-  readonly tracingOverwhelmedThreshold = 1_000;
-  readonly tracingRMultiplier = 0.9;
-  readonly hospitalsBaselineUtilization = 0.64;
-  readonly initialStability = 100;
-  readonly stabilityRecovery = 0.2;
-  readonly hospitalizationCostPerDay = 14_500;
-
-  readonly rEmaUpdater = Simulation.createEmaUpdater(3.5, this.R0);
-
-  // Durations of various model states
-  readonly infectiousRate = 0.175;     // Rate of E -> I transition
-  readonly infectiousDuration = 4;     // How long people stay infectious before they isolate or get hospitalized
-  readonly hospitalized1Duration = 7;  // Duration of the hospitalization before the average death
-  readonly hospitalized2Duration = 14; // Duration of the remaining hospitalization for the recovering patients
-  readonly recoveringDuration = 14;    // How long is the infection considered active in statistics
-  readonly immunityMeanDuration = 365; // Average time of R -> S transition
-
-  // This is used to calculate the number of active cases
-  readonly symptomsDelay = 2;       // Days until infection is detected
+  rEmaUpdater;
 
   modelStates: DayState[] = [];
-  sirStateBeforeStart: SirState = {
-    suspectible: this.initialPopulation,
-    exposed: 0,
-    infectious: 0,
-    recovering: 0,
-    resistant: 0,
-    hospitalized1: 0,
-    hospitalized2: 0,
-    dead: 0,
-    exposedNew: 0,
-    infectiousNew: 0,
-    recoveringNew: 0,
-    resistantNew: 0,
-    hospitalized1New: 0,
-    hospitalized2New: 0,
-    deathsNew: 0,
-    detectedNew: 0,
-    hospitalsUtilization: this.hospitalsBaselineUtilization,
-    vaccinated: 0,
-    recoveringDetectedNotHospitalizedNew: 0,
-  };
+  sirStateBeforeStart: SirState;
+  params: SimulationParams;
 
-  constructor(startDate: string, randomness: Randomness) {
+  constructor(startDate: string, params: SimulationParams, randomness: Randomness) {
+    this.params = params;
+    this.rEmaUpdater = Simulation.createEmaUpdater(3.5, params.R0);
+    this.sirStateBeforeStart = {
+      suspectible: params.initialPopulation,
+      exposed: 0,
+      infectious: 0,
+      mutationExposed: 0,
+      mutationInfectious: 0,
+      recovering: 0,
+      resistant: 0,
+      hospitalized1: 0,
+      hospitalized2: 0,
+      dead: 0,
+      exposedNew: 0,
+      infectiousNew: 0,
+      mutationExposedNew: 0,
+      mutationInfectiousNew: 0,
+      recoveringNew: 0,
+      resistantNew: 0,
+      hospitalized1New: 0,
+      hospitalized2New: 0,
+      deathsNew: 0,
+      detectedNew: 0,
+      hospitalsUtilization: params.hospitalsBaselineUtilization,
+      vaccinated: 0,
+      recoveringDetectedNotHospitalizedNew: 0,
+    };
     const sirState: SirState = {...this.sirStateBeforeStart};
-    sirState.suspectible = this.initialPopulation - this.exposedStart;
-    sirState.exposed = this.exposedStart;
-    sirState.exposedNew = this.exposedStart;
+    sirState.suspectible = params.initialPopulation - params.exposedStart;
+    sirState.exposed = params.exposedStart;
+    sirState.exposedNew = params.exposedStart;
     this.modelStates.push(
       {date: startDate, randomness, sirState, stats: this.calcStats(sirState, undefined, undefined)});
   }
@@ -176,48 +173,76 @@ export class Simulation {
   }
 
   private calcModelInputs(date: string, mitigationEffect: MitigationEffect): ModelInputs {
+    const params = this.params;
     const yesterday = last(this.modelStates)?.modelInputs;
     const seasonalityMult = this.getSeasonalityMult(date);
 
     const prevVaccinationRate = yesterday?.vaccinationRate ? yesterday.vaccinationRate : 0;
-    let vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, this.vaccinationMaxRate);
+    let vaccinationRate = Math.min(prevVaccinationRate + mitigationEffect.vaccinationPerDay, params.vaccinationMaxRate);
     vaccinationRate = Math.max(vaccinationRate, 0);
 
-    let stability = (yesterday ? yesterday.stability : this.initialStability);
-    stability += this.stabilityRecovery - mitigationEffect.stabilityCost;
-    stability = Math.min(stability, this.initialStability);
+    let stability = (yesterday ? yesterday.stability : params.initialStability);
+    stability += params.stabilityRecovery - mitigationEffect.stabilityCost;
+    stability = Math.min(stability, params.initialStability);
 
-    const R = this.rEmaUpdater(yesterday?.R, this.R0 * mitigationEffect.rMult * seasonalityMult);
+    const R = this.rEmaUpdater(yesterday?.R, params.R0 * mitigationEffect.rMult * seasonalityMult);
 
     return {
       stability,
       seasonalityMult,
       exposedDrift: mitigationEffect.exposedDrift,
+      mutationExposedDrift: mitigationEffect.mutationExposedDrift,
       vaccinationRate,
       R,
     };
   }
 
-  private calcSirState(modelInputs: ModelInputs, randomness: Randomness): SirState {
+  private calcSirState(modelInputs: ModelInputs, randomness: Randomness,
+    date: string, realData?: RealHistory): SirState {
+    const params = this.params;
     const yesterday = this.getSirStateInPast(1);
 
     let suspectible = yesterday.suspectible;
     let exposed = yesterday.exposed;
     let infectious = yesterday.infectious;
+    let mutationExposed = yesterday.mutationExposed;
+    let mutationInfectious = yesterday.mutationInfectious;
     let recovering = yesterday.recovering;
     let resistant = yesterday.resistant;
     let hospitalized1 = yesterday.hospitalized1;
     let hospitalized2 = yesterday.hospitalized2;
     let dead = yesterday.dead;
 
+    let realInfections;
+    let realMutationInfections;
+    let realDetectedInfections;
+    let realDeaths;
+    if (realData) {
+      realDeaths = realData[date]?.deaths;
+      realInfections = realData[addDays(date, params.symptomsDelay)]?.infections / params.detectionRate.mean;
+      realMutationInfections = realData[addDays(date, params.symptomsDelay)]?.mutationInfections;
+      if (realMutationInfections) realMutationInfections /= params.detectionRate.mean;
+      realDetectedInfections = realData[date]?.infections;
+    }
+
     // Hospitals overwhelmedness logic
-    const hospitalsUtilization = this.hospitalsBaselineUtilization
-      + (hospitalized1 + hospitalized2) / this.hospitalsOverwhelmedThreshold;
-    const hospitalsOverwhelmedMultiplier = (hospitalsUtilization > 1) ?
-      this.hospitalsOverwhelmedMortalityMultiplier : 1;
+    const hospitalsOccupancy = params.hospitalsBaselineUtilization * params.hospitalsMaxCapacity
+      + (hospitalized1 + hospitalized2);
+    const hospitalsUtilization = hospitalsOccupancy / params.hospitalsMaxCapacity;
+    let hospitalsOverwhelmedMultiplier;
+    if (hospitalsOccupancy <= params.hospitalsMaxCapacity) {
+      hospitalsOverwhelmedMultiplier = 1;
+    } else if (hospitalsOccupancy >= params.hospitalsOverwhelmedThreshold) {
+      hospitalsOverwhelmedMultiplier = params.hospitalsOverwhelmedMortalityMultiplier;
+    } else {
+      const mortalityCoeff = (hospitalsOccupancy - params.hospitalsMaxCapacity)
+        / (params.hospitalsOverwhelmedThreshold - params.hospitalsMaxCapacity);
+      hospitalsOverwhelmedMultiplier =
+        (1 - mortalityCoeff) + mortalityCoeff * params.hospitalsOverwhelmedMortalityMultiplier;
+    }
 
     // Contact tracing multiplier logic
-    const tracingMult = (yesterday.detectedNew <= this.tracingOverwhelmedThreshold) ? this.tracingRMultiplier : 1;
+    const tracingMult = (yesterday.detectedNew <= params.tracingOverwhelmedThreshold) ? params.tracingRMultiplier : 1;
 
     // suspectible -> exposed
     const activePopulation = suspectible + exposed + infectious + recovering + resistant;
@@ -225,58 +250,86 @@ export class Simulation {
     // Simplifying assumption that only people in "suspectible" compartement are vaccinated
     const vaccinated = totalPopulation * modelInputs.vaccinationRate;
     const suspectibleUnvaccinated = Math.max(0, suspectible - vaccinated);
-    let exposedNew = infectious * randomness.rNoiseMult * tracingMult * modelInputs.R /
-      this.infectiousDuration * suspectibleUnvaccinated / activePopulation;
+    const newExposedPerInfection = randomness.rNoiseMult * tracingMult * modelInputs.R / params.infectiousDuration
+      * suspectibleUnvaccinated / activePopulation;
+    let exposedNew = infectious * newExposedPerInfection;
     exposedNew += modelInputs.exposedDrift;
     exposedNew = Math.min(exposedNew, suspectible);
     suspectible -= exposedNew;
     exposed += exposedNew;
 
+    // suspectible -> mutationExposed
+    let mutationExposedNew = mutationInfectious * newExposedPerInfection * params.mutationRMult;
+    mutationExposedNew += modelInputs.mutationExposedDrift;
+    mutationExposedNew = Math.min(mutationExposedNew, suspectible);
+    suspectible -= mutationExposedNew;
+    mutationExposed += mutationExposedNew;
+
+    // mutationExposed -> mutationInfectious
+    let mutationInfectiousNew = params.infectiousRate * mutationExposed;
+    mutationExposed -= mutationInfectiousNew;
+    if (realMutationInfections) {
+      suspectible -= realMutationInfections - mutationInfectiousNew;
+      mutationInfectiousNew = realMutationInfections;
+    }
+    mutationInfectious += mutationInfectiousNew;
+
     // exposed -> infectious
-    const infectiousNew = this.infectiousRate * exposed;
+    let infectiousNew = params.infectiousRate * exposed;
     exposed -= infectiousNew;
+    if (realInfections) {
+      suspectible -= realInfections - mutationInfectiousNew - infectiousNew;
+      infectiousNew = realInfections - mutationInfectiousNew;
+    }
     infectious += infectiousNew;
 
     // infectious -> recovering
     // infectious -> hospitalized1
-    const infectiousEnd = this.getSirStateInPast(this.infectiousDuration).infectiousNew;
-    const hospitalized1New = infectiousEnd * randomness.hospitalizationRate;
-    let recoveringNew = infectiousEnd - hospitalized1New;
+    const infectiousEnd = this.getSirStateInPast(params.infectiousDuration).infectiousNew;
+    const mutationInfectiousEnd = this.getSirStateInPast(params.infectiousDuration).mutationInfectiousNew;
+    const totalInfectiousEnd = infectiousEnd + mutationInfectiousEnd;
+    const hospitalized1New = totalInfectiousEnd * randomness.hospitalizationRate;
+    let recoveringNew = totalInfectiousEnd - hospitalized1New;
     infectious -= infectiousEnd;
+    mutationInfectious -= mutationInfectiousEnd;
     hospitalized1 += hospitalized1New;
     // resistant will be updated in the next block
 
     // hospitalized1 -> hospitalized2
     // hospitalized1 -> dead
-    const hospitalized1End = this.getSirStateInPast(this.hospitalized1Duration).hospitalized1New;
+    const hospitalized1End = params.hospitalizationExponentialDuration ? hospitalized1 / params.hospitalized1Duration
+      : this.getSirStateInPast(params.hospitalized1Duration).hospitalized1New;
     const mortalityToday = hospitalsOverwhelmedMultiplier * randomness.baseMortality;
-    const deathsNew = hospitalized1End * mortalityToday / this.hospitalizationRateMean;
+    const deathsNew = realDeaths ? realDeaths : hospitalized1End * mortalityToday / params.hospitalizationRate.mean;
     const hospitalized2New = hospitalized1End - deathsNew;
     hospitalized1 -= hospitalized1End;
     hospitalized2 += hospitalized2New;
     dead += deathsNew;
 
     // hospitalized2 -> recovering
-    const hospitalized2End = this.getSirStateInPast(this.hospitalized2Duration).hospitalized2New;
+    const hospitalized2End = params.hospitalizationExponentialDuration ? hospitalized2 / params.hospitalized2Duration
+      : this.getSirStateInPast(params.hospitalized2Duration).hospitalized2New;
     hospitalized2 -= hospitalized2End;
     recoveringNew += hospitalized2End;
     recovering += recoveringNew;
 
     // recovering -> resistant
-    const resistantNew = this.getSirStateInPast(this.recoveringDuration).recoveringNew;
+    const resistantNew = this.getSirStateInPast(params.recoveringDuration).recoveringNew;
     recovering -= resistantNew;
     resistant += resistantNew;
 
     // resistant -> suspectible
-    const resistantEnd = yesterday.resistant / this.immunityMeanDuration;
+    const resistantEnd = yesterday.resistant / params.immunityMeanDuration;
     resistant -= resistantEnd;
     suspectible += resistantEnd;
 
     // detected infections
-    const detectedNew = randomness.detectionRate * this.getSirStateInPast(this.symptomsDelay).infectiousNew;
+    const symptomsDelayState = this.getSirStateInPast(params.symptomsDelay);
+    const detectedNew = realDetectedInfections ? realDetectedInfections :
+      randomness.detectionRate * (symptomsDelayState.infectiousNew + symptomsDelayState.mutationInfectiousNew);
 
     // detected infections going to recovering
-    const incubationToInfectiousEndDuration = this.infectiousDuration - this.symptomsDelay;
+    const incubationToInfectiousEndDuration = params.infectiousDuration - params.symptomsDelay;
     const detectedInfectiousEnd = this.getSirStateInPast(incubationToInfectiousEndDuration).detectedNew;
     const recoveringDetectedNotHospitalizedNew = detectedInfectiousEnd - hospitalized1New;
 
@@ -284,6 +337,8 @@ export class Simulation {
       suspectible,
       exposed,
       infectious,
+      mutationExposed,
+      mutationInfectious,
       recovering,
       resistant,
       hospitalized1,
@@ -291,6 +346,8 @@ export class Simulation {
       dead,
       exposedNew,
       infectiousNew,
+      mutationExposedNew,
+      mutationInfectiousNew,
       recoveringNew,
       resistantNew,
       hospitalized1New,
@@ -310,10 +367,10 @@ export class Simulation {
     return lastState.date;
   }
 
-  simOneDay(mitigationEffect: MitigationEffect, randomness: Randomness): DayState {
+  simOneDay(mitigationEffect: MitigationEffect, randomness: Randomness, realData?: RealHistory): DayState {
     const date = nextDay(last(this.modelStates)!.date);
     const modelInputs: ModelInputs = this.calcModelInputs(date, mitigationEffect);
-    const sirState: SirState = this.calcSirState(modelInputs, randomness);
+    const sirState: SirState = this.calcSirState(modelInputs, randomness, date, realData);
     const stats: Stats = this.calcStats(sirState, mitigationEffect, modelInputs);
     const state: DayState = {date, sirState, randomness, modelInputs, stats};
     this.modelStates.push(state);
@@ -330,7 +387,8 @@ export class Simulation {
   }
 
   private getSeasonalityMult(date: string): number {
-    return Math.exp(this.seasonalityConst * Math.cos(2 * Math.PI * getSeasonality(date, this.seasonPeak)));
+    const params = this.params;
+    return Math.exp(params.seasonalityConst * Math.cos(2 * Math.PI * getSeasonality(date, params.seasonPeak)));
   }
 
   private calcMetricStats(name: string, todayUnrounded: number): MetricStats {
@@ -357,18 +415,22 @@ export class Simulation {
   }
 
   private calcStats(state: SirState, mitigationEffect?: MitigationEffect, modelInputs?: ModelInputs): Stats {
+    const params = this.params;
     const lastStat = this.getLastStats();
     const detectedInfections = this.calcMetricStats('detectedInfections', state.detectedNew);
     const detectedInfectionsResolved = this.calcMetricStats('detectedInfectionsResolved',
-      this.getSirStateInPast(this.recoveringDuration).recoveringDetectedNotHospitalizedNew
-      + this.getSirStateInPast(this.recoveringDuration + this.hospitalized2Duration).hospitalized2New
+      this.getSirStateInPast(params.recoveringDuration).recoveringDetectedNotHospitalizedNew
+      // TODO update logic for exponential recovery distribution
+      + this.getSirStateInPast(params.recoveringDuration + params.hospitalized2Duration).hospitalized2New
       + state.deathsNew);
     const deaths = this.calcMetricStats('deaths', state.deathsNew);
-    const economicCosts = this.calcMetricStats('economicCosts', mitigationEffect ? mitigationEffect.economicCost : 0);
+    const costScaler = mitigationEffect?.costScaler !== undefined ? mitigationEffect?.costScaler : 1;
+    const economicCosts = this.calcMetricStats('economicCosts',
+      mitigationEffect ? costScaler * mitigationEffect.economicCost : 0);
     const compensationCosts = this.calcMetricStats('compensationCosts',
       mitigationEffect ? mitigationEffect.compensationCost : 0);
     const hospitalizationCosts = this.calcMetricStats('hospitalizationCosts',
-      this.hospitalizationCostPerDay * (state.hospitalized1 + state.hospitalized2));
+      costScaler * params.hospitalizationCostPerDay * (state.hospitalized1 + state.hospitalized2));
     const costs = this.calcMetricStats('costs',
       economicCosts.today + compensationCosts.today + hospitalizationCosts.today);
     const schoolDaysLost = this.calcMetricStats('schoolDaysLost',
@@ -377,7 +439,7 @@ export class Simulation {
     const mortality = detectedInfections.total > 0 ? deaths.total / detectedInfections.total : 0;
 
     const estimatedResistantLast = (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0);
-    const estimatedResistantCurrent = estimatedResistantLast * (1 - 1 / this.immunityMeanDuration)
+    const estimatedResistantCurrent = estimatedResistantLast * (1 - 1 / params.immunityMeanDuration)
       + detectedInfectionsResolved.today;
     const estimatedResistant = this.calcMetricStats('estimatedResistant',
       estimatedResistantCurrent - (lastStat ? lastStat.estimatedResistant.totalUnrounded : 0));
@@ -399,7 +461,7 @@ export class Simulation {
       hospitalsUtilization: state.hospitalsUtilization,
       vaccinationRate: modelInputs ? modelInputs.vaccinationRate : 0,
       vaccinated,
-      stability: modelInputs ? modelInputs.stability : this.initialStability,
+      stability: modelInputs ? modelInputs.stability : params.initialStability,
     };
 
     return stats;

@@ -1,5 +1,6 @@
 import {cloneDeep} from 'lodash';
-import {EventData, eventTriggers, initialEventData, updateEventData} from './event-list';
+import {EventData, initialEventData, updateEventData} from './event-list';
+import {Scenario} from './scenario';
 import {DayState, MitigationEffect, Stats} from './simulation';
 import {Mitigations} from './mitigations';
 import {indexByFraction} from './utils';
@@ -72,13 +73,18 @@ export interface EventInput extends EventState {
 
 export class EventHandler {
   eventStateHistory: Record<string, EventState> = {};
+  eventTriggers: EventTrigger[];
+
+  constructor(scenario: Scenario) {
+    this.eventTriggers = scenario.eventTriggers;
+  }
 
   evaluateDay(prevDate: string, currentDate: string, dayState: DayState,
     mitigations: Mitigations, eventMitigations: EventMitigation[]) {
     let prevState = this.eventStateHistory[prevDate];
     if (!prevState) {
       prevState = {
-        triggerStates: eventTriggers.map(et => ({trigger: et})),
+        triggerStates: this.eventTriggers.map(et => ({trigger: et})),
         eventData: initialEventData(dayState.randomness.eventRandomSeed),
       };
     }

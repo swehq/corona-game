@@ -41,7 +41,7 @@ export class GameComponent {
     }
 
     // fetch historical game results from BE
-    window.setTimeout(() => outroService.fetchAllResults(), 10_000);
+    window.setTimeout(() => outroService.fetchAllResults(gameService.game.scenarioName), 10_000);
 
     // trigger end of game
     gameService.speed$.pipe(

@@ -2,24 +2,27 @@ import {Context, DefaultState} from 'koa';
 import Router from 'koa-router';
 import {FormattingService} from '../../../frontend/src/app/services/formatting.service';
 import {SimpleTranslateService} from '../services/translate.service';
-import {GameDataModel, InvalidGameDataModel} from './model';
+import {GameDataDocument, GameDataModel, InvalidGameDataModel} from './model';
 import {validateGame} from '../../../frontend/src/app/services/validate';
 import {GameData} from '../../../frontend/src/app/services/game';
 import {last, sampleSize} from 'lodash';
 
 export const router = new Router<DefaultState, Context>();
 
-async function processResultsQuery(ctx: Context, query: any = {}) {
-  const data = await GameDataModel
-    .find(query, {results: 1, _id: 0})
-    .hint('results_1')
-  ctx.body = sampleSize(data.map((i: any) => i.results), 5000);
+async function processResultsQuery(scenarioName?: string) {
+  let data: GameDataDocument[] = [];
+
+  if (scenarioName) {
+    data = await GameDataModel.find({scenarioName}, {results: 1, _id: 0});
+  } else
+    data = await GameDataModel.find({scenarioName}, {results: 1, _id: 0}).hint('results_1');
+
+  return sampleSize(data.map((i: any) => i.results), 5000);
 }
 
-router.get('/api/game-data/scenario/:scenario', async (ctx) =>
-  processResultsQuery(ctx, {scenarioName: {$eq: ctx.params.scenario}}));
+router.get('/api/game-data/scenario/:scenario', async (ctx) => ctx.body = processResultsQuery(ctx.params.scenario));
 
-router.get('/api/game-data', async (ctx) => processResultsQuery(ctx));
+router.get('/api/game-data', async (ctx) => ctx.body = processResultsQuery());
 
 router.get('/api/game-data/:id', async (ctx) => {
   const data = await GameDataModel.findOne({_id: ctx.params.id});

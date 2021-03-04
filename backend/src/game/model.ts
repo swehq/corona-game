@@ -48,6 +48,8 @@ const GameDataSchema = new Schema({
   },
 }, {minimize: false});
 
+GameDataSchema.index({scenarioName: 1, results: 1});
+
 const InvalidGameDataSchema = new Schema({
   data: {},
   validity: String,
@@ -59,7 +61,7 @@ const InvalidGameDataSchema = new Schema({
   },
 }, {minimize: false});
 
-interface GameDataDocument extends GameData, Document {
+export interface GameDataDocument extends GameData, Document {
   results: {
     dead: number,
     cost: number,

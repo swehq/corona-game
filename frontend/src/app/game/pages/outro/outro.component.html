@@ -58,14 +58,28 @@
     </cvd-row>
   </cvd-col>
 
-  <cvd-col>
+  <cvd-col [verticalSpacing]="3">
     <cvd-button
       routerLink="/game"
       themePalette="primary"
       type="raised"
-      (click)="gameService.restartSimulation()">
+      (click)="gameService.restartSimulation(undefined, gameService.game.scenarioName)">
       <ng-container *ngIf="isMyGame">{{'Hrát znovu a lépe' | translate}}</ng-container>
       <ng-container *ngIf="!isMyGame">{{'Hrát lépe' | translate}}</ng-container>
     </cvd-button>
+
+    <cvd-row [horizontalSpacing]="3">
+      <cvd-button
+        (click)="gameService.restartSimulation(undefined, 'czechiaGame')"
+        routerLink="/game">
+        {{'Hrát od 1. března 2020' | translate}}
+      </cvd-button>
+
+      <cvd-button
+        (click)="gameService.restartSimulation(undefined, 'czechiaB117')"
+        routerLink="/game">
+        {{'Hrát od 1. února 2021' | translate}}
+      </cvd-button>
+    </cvd-row>
   </cvd-col>
 </cvd-col>

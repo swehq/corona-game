@@ -14,15 +14,16 @@ async function processResultsQuery(scenarioName?: string) {
 
   if (scenarioName) {
     data = await GameDataModel.find({scenarioName}, {results: 1, _id: 0});
-  } else
-    data = await GameDataModel.find({scenarioName}, {results: 1, _id: 0}).hint('results_1');
+  } else {
+    data = await GameDataModel.find({}, {results: 1, _id: 0}).hint('results_1');
+  }
 
   return sampleSize(data.map((i: any) => i.results), 5000);
 }
 
-router.get('/api/game-data/scenario/:scenario', async (ctx) => ctx.body = processResultsQuery(ctx.params.scenario));
+router.get('/api/game-data/scenario/:scenario', async (ctx) => ctx.body = await processResultsQuery(ctx.params.scenario));
 
-router.get('/api/game-data', async (ctx) => ctx.body = processResultsQuery());
+router.get('/api/game-data', async (ctx) => ctx.body = await processResultsQuery());
 
 router.get('/api/game-data/:id', async (ctx) => {
   const data = await GameDataModel.findOne({_id: ctx.params.id});

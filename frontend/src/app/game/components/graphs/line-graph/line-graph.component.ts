@@ -233,8 +233,9 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
         this.seriesLength++;
         this.lastValue = tick.value;
         this.labels.push(typeof tick.label === 'string' ? tick.label : this.i18nService.formatDate(tick.label));
-        this.setScope();
       });
+
+      this.setScope();
     });
 
     this.multiLineTick$?.pipe(
@@ -267,6 +268,8 @@ export class LineGraphComponent implements OnInit, AfterViewInit {
           : this.i18nService.formatDate(ticks[0].label)),
         );
       });
+
+      this.setScope();
     });
 
     this.gameService.reset$

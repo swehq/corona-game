@@ -1,17 +1,11 @@
-version: "3"
-
-networks:
-  nginx:
-    external: true
+version: "3.8"
 
 services:
   frontend:
-    image: "{{ frontend_remote_image_latest }}"
-    container_name: "{{ frontend_container }}"
-    restart: unless-stopped
+    image: {{ frontend_remote_image_latest }}
     networks:
-      - nginx
-    environment:
-      - VIRTUAL_HOST={{ url }}
-      - LETSENCRYPT_HOST={{ url }}
-      - LETSENCRYPT_EMAIL={{ admin_email }}
+      - {{ base_name }}-{{ env }}
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.fast==true"

@@ -2,6 +2,6 @@ all:
   hosts:
     server:
       ansible_user: admin
-      ansible_host: dev.swehq.com
+      ansible_host: fast.swehq.com
     localhost:
       ansible_connection: local

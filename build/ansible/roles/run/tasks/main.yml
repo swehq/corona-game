@@ -1,10 +1,36 @@
 - name: Docker login
   shell: cat {{ deploy_dir }}/gcloud-key.json | docker login -u _json_key --password-stdin https://eu.gcr.io
+  register: docker_login
+  until: docker_login is not failed
+  retries: 3
 
-- name: Compose docker containers
-  shell: docker-compose {{item}}
-  with_items:
-    - pull
-    - up -d --remove-orphans
+- name: Create file deploy.sh
+  copy:
+    dest: "{{ deploy_dir }}/deploy.sh"
+    content: |
+      #!/bin/bash
+
+      docker stack deploy \
+      --with-registry-auth \
+      --prune \
+      -c docker-compose.be.base.yml \
+      -c docker-compose.be.deploy.yml \
+      -c docker-compose.fe.yml \
+      {{ stack_name }}
+
+      timeout 5m /srv/docker-stack-wait/docker-stack-wait.sh {{ stack_name }}
+    mode: "774"
+
+- name: Create file stop.sh
+  copy:
+    dest: "{{ deploy_dir }}/stop.sh"
+    content: |
+      #!/bin/bash
+
+      docker stack rm {{ stack_name }}
+    mode: "774"
+
+- name: Execute deploy.sh
+  shell: ./deploy.sh
   args:
     chdir: "{{ deploy_dir }}"

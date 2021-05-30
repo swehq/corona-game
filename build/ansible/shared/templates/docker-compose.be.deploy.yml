@@ -1,34 +1,64 @@
-version: "3"
+version: "3.8"
 
 networks:
-  nginx:
-    external:
-      name: nginx
+  traefik:
+    external: true
   monitoring:
-    external:
-      name: monitoring
+    external: true
 
 services:
-{% if backend_container_count is not defined %}
-{% set backend_container_count = 1 %}
-{% endif %}
-{% for counter in range(1, backend_container_count + 1) %}
-  backend-{{ counter }}:
-    hostname: "{{ backend_container }}"
-    container_name: "{{ backend_container }}-{{ counter }}"
-    image: "{{ backend_remote_image_latest }}"
-    restart: unless-stopped
+  backend:
+    image: {{ backend_remote_image_latest }}
+    depends_on:
+      - mongo
     networks:
-      nginx:
-        aliases:
-          - "{{ backend_container }}"
-      monitoring:
-      "{{ base_name }}-{{ env }}":
+      - {{ base_name }}-{{ env }}
+      - monitoring
     environment:
       PORT: 80
       MONGO_URI: mongodb://mongo/corona
       INFLUXDB_URI: http://admin:admin@influxdb:8086/influx
       ENV: {{ env }}
-    expose:
-      - 80
-{% endfor %}
+    deploy:
+      replicas: {{ backend_container_count }}
+      placement:
+        constraints:
+          - "node.labels.fast==true"
+
+  mongo:
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.fast==true"
+
+  nginx:
+    image: nginx
+    networks:
+      - "{{ base_name }}-{{ env }}"
+      - traefik
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - "./nginx:/etc/nginx/conf.d"
+    labels:
+      - "traefik.enable=true"
+      {% for url in (domains + www_domains) -%}
+      - "traefik.http.routers.{{ url | replace('.', '-') }}.rule=Host(`{{ url }}`)"
+      - "traefik.http.routers.{{ url | replace('.', '-') }}.entrypoints=https"
+      - "traefik.http.routers.{{ url | replace('.', '-') }}.tls.certresolver=leresolver"
+      {% endfor -%}
+      - "traefik.docker.network=traefik"
+    deploy:
+      placement:
+        constraints:
+          - "node.labels.fast==true"
+      labels:
+        - "traefik.enable=true"
+        {% for url in (domains + www_domains) -%}
+        - "traefik.http.routers.{{ url | replace('.', '-') }}.rule=Host(`{{ url }}`)"
+        - "traefik.http.routers.{{ url | replace('.', '-') }}.entrypoints=https"
+        - "traefik.http.routers.{{ url | replace('.', '-') }}.tls.certresolver=leresolver"
+        {% endfor -%}
+        - "traefik.docker.network=traefik"
+        - "traefik.http.services.{{ url | replace('.', '-') }}.loadbalancer.server.port=80"

@@ -26,39 +26,31 @@
     {{'Přejeme, ať se vám v boji s koronavirem daří!' | translate}}
   </p>
 
-  <cvd-row [horizontalSpacing]="3">
-    <cvd-button
-      data-cy="start-game"
-      themePalette="accent"
-      type="raised"
-      *ngIf="!gameService.isLocalStorageGame(); else savedGameOptions"
-      [cvdAutofocus]="true"
-      (click)="loadNewGame()"
-      routerLink="/game">
-      {{'Hrát' | translate}}
-    </cvd-button>
-
-    <cvd-button
-      (click)="loadNewGame('czechiaB117')"
-      routerLink="/game">
-      {{'Česko současnost' | translate}}
-    </cvd-button>
-  </cvd-row>
-
-  <ng-template #savedGameOptions>
+  <cvd-col [verticalSpacing]="3">
     <cvd-button
       themePalette="accent"
       [cvdAutofocus]="true"
       type="raised"
+      *ngIf="gameService.isLocalStorageGame()"
       (click)="loadSave()"
       routerLink="/game">{{'Pokračovat v poslední hře' | translate}}
     </cvd-button>
 
-    <cvd-button
-      (click)="loadNewGame()"
-      routerLink="/game">
-      {{'Hrát novou hru' | translate}}
-    </cvd-button>
-  </ng-template>
+    <cvd-row [horizontalSpacing]="3">
+      <cvd-button
+        [cvdAutofocus]="!gameService.isLocalStorageGame()"
+        data-cy="start-game"
+        (click)="loadNewGame('czechiaGame')"
+        routerLink="/game">
+        {{'Hrát od 1. března 2020' | translate}}
+      </cvd-button>
+
+      <cvd-button
+        (click)="loadNewGame('czechiaB117')"
+        routerLink="/game">
+        {{'Hrát od 1. února 2021' | translate}}
+      </cvd-button>
+    </cvd-row>
+  </cvd-col>
 
 </cvd-col>

@@ -17,6 +17,11 @@ Run `npx ng generate component component-name` to generate a new component. You 
 
 - You can insert `true` value under `debugMode` key into your LocalStorage to turn on the debug panel
 
+## Cypress tests
+
+Run `npm run cypress` to open cypress testing window
+Windows: Run `npm run cypress:win` to open cypress testing window
+
 ## TODO
 
 - remove temp explicit `any`s

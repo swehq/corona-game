@@ -3,4 +3,4 @@ url: korona.swehq.com
 domains:
   - korona.swehq.com
 admin_email: admin@swehq.com
-backend_container_count: 2
+backend_container_count: 1

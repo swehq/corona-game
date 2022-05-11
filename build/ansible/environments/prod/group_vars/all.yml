@@ -7,5 +7,5 @@ www_domains:
   - www.koronahra.cz
   - www.covidgame.info
 admin_email: admin@swehq.com
-backend_container_count: 8
+backend_container_count: 1
 

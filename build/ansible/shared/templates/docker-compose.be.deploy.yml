@@ -23,13 +23,13 @@ services:
       replicas: {{ backend_container_count }}
       placement:
         constraints:
-          - "node.labels.fast==true"
+          - "node.labels.vds==true"
 
   mongo:
     deploy:
       placement:
         constraints:
-          - "node.labels.fast==true"
+          - "node.labels.vds==true"
 
   nginx:
     image: nginx
@@ -52,7 +52,7 @@ services:
     deploy:
       placement:
         constraints:
-          - "node.labels.fast==true"
+          - "node.labels.vds==true"
       labels:
         - "traefik.enable=true"
         {% for url in (domains + www_domains) -%}

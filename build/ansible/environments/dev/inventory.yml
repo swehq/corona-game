@@ -2,7 +2,7 @@ all:
   hosts:
     server:
       ansible_user: admin
-      ansible_host: fast.swehq.com
+      ansible_host: vds.swehq.com
       ansible_python_interpreter: python3
     localhost:
       ansible_connection: local

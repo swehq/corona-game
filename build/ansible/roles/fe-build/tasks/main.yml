@@ -15,7 +15,7 @@
     frontend_remote_image_commit: "{{ frontend_remote_image }}:{{ commit }}"
 
 - name: Build frontend docker image
-  shell: docker build -t {{ frontend_image }} -f build/docker/Dockerfile .
+  shell: docker build --platform linux/amd64 -t {{ frontend_image }} -f build/docker/Dockerfile .
   args:
     chdir: ../../frontend
 

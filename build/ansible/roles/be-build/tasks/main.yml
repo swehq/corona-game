@@ -8,7 +8,7 @@
     backend_remote_image_commit: "{{ backend_remote_image }}:{{ commit }}"
 
 - name: Build backend docker image
-  shell: docker build -t {{ backend_image }} -f backend/Dockerfile .
+  shell: docker build --platform linux/amd64 -t {{ backend_image }} -f backend/Dockerfile .
   args:
     chdir: ../..
 
